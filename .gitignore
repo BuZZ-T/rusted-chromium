@@ -1,2 +1,7 @@
 .vscode/
-*.pyc
+
+node_modules/
+out/
+
+# Downloaded binaries
+chrome-*.zip
