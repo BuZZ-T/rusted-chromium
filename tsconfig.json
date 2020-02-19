@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "moduleResolution": "node",
+        "lib": [
+            "es2017",
+            "dom"
+        ],
+        "target": "es5",
+        "outDir": "out",
+        "sourceMap": true
+    },
+    "exclude": [
+        "node_modules"
+    ]
+}
