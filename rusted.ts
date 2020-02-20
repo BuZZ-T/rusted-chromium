@@ -2,33 +2,9 @@ import { parse } from 'node-html-parser'
 import * as fetch  from 'node-fetch'
 import * as prompts from 'prompts'
 import * as program from 'commander'
-import { Choice } from 'prompts'
 import { createWriteStream } from 'fs'
-import { type } from 'os'
 
-interface IConfig {
-    min: number
-    max: number
-    results: string
-}
-
-interface IMetadata {
-    kind: string
-    mediaLink: string
-    name: string
-    size: string
-    updated: string
-    metadata: {
-        'cr-commit-position': string
-        'cr-commit-position-number': string
-        'cr-git-commit': string
-    }
-}
-
-interface IMetadataResponse {
-    kind: string
-    items: IMetadata[]
-}
+import { IConfig, IMappedVersion, IMetadataResponse } from './interfaces'
 
 const CHROMIUM_TAGS_URL = 'https://chromium.googlesource.com/chromium/src/+refs'
 
@@ -116,26 +92,30 @@ async function fetchVersions(): Promise<string[]> {
     return versions
 }
 
-async function userSelectedVersion(versions: string[], config: IConfig): Promise<string> {
-    const sortedVersions = versions
+function mapVersions(versions: string[], config: IConfig): IMappedVersion[] {
+    return versions
         .map(version => ({
             value: version,
             comparable: versionToComparableVersion(version),
+            disabled: false,
         }))
         .sort((a,b) => b.comparable - a.comparable) // descending
         .filter(version => version.comparable >= config.min && version.comparable <= config.max)
         .slice(0, Number(config.results))
+}
 
+async function userSelectedVersion(versions: IMappedVersion[], config: IConfig): Promise<string> {
     if (config.results === '1') {
-        return sortedVersions[0].value
+        return versions[0].value
     }
 
     const { version } = await prompts({
         type: 'select',
         name: 'version',
         message: 'Select a version',
-        choices: sortedVersions as unknown as Choice[],
-    })
+        warn: 'This version seems to not have a binary',
+        choices: versions,
+    } as any)
     return version
 }
 
@@ -181,15 +161,27 @@ async function fetchChromeZipFile(url: string, filenameOS: string, version: stri
 async function main(): Promise<any> {
     const config = checkProgramArguments()
     const versions = await fetchVersions()
-    const selectedVersion = await userSelectedVersion(versions, config)
-    const branchPosition = await fetchBranchPosition(selectedVersion)
+    const mappedVersions = mapVersions(versions, config)
 
-    const [chromeUrl, filenameOS] = await fetchChromeUrl(branchPosition)
-
+    let chromeUrl: string
+    let filenameOS: string
+    let selectedVersion: string
+    do {
+        selectedVersion = await userSelectedVersion(mappedVersions, config)
+        if (!selectedVersion) {
+            break
+        }
+        const branchPosition = await fetchBranchPosition(selectedVersion);
+    
+        [chromeUrl, filenameOS] = await fetchChromeUrl(branchPosition)
+        
+        if (!chromeUrl && !filenameOS) {
+            const invalidVersion = mappedVersions.find(version => version.value === selectedVersion)
+            invalidVersion.disabled = true
+        }
+    } while (!chromeUrl)
     if (chromeUrl && filenameOS) {
         await fetchChromeZipFile(chromeUrl, filenameOS, selectedVersion)
-    } else {
-        console.log(`no binary found for version "${selectedVersion}" for Linux_x84`)
     }
 }
 
