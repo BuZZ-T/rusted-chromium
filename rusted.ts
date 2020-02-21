@@ -15,8 +15,20 @@ function checkStatus(response) {
     return response
 }
 
-function determineOperatingSystem(): [string, string] {
-    return ['Linux_x64', 'linux']
+function detectOperatingSystem(config: IConfig): [string, string] {
+    const os = config.os || process.platform
+    switch(os) {
+        case 'linux':
+            return ['Linux_x64', 'linux']
+        case 'win32':
+        case 'win':
+            return ['Win_x64', 'win']
+        case 'darwin':
+        case 'mac':
+            return ['Mac', 'mac']
+        default:
+            throw new Error(`Unsupported operation system: ${os}`)
+    }
 }
 
 /**
@@ -42,6 +54,7 @@ function checkProgramArguments(): IConfig {
         .option('--min <version>', 'The minimum version', '0')
         .option('--max <version>', 'The maximum version. Newest version if not specificied', '10000')
         .option('--max-results <results>', 'The maximum amount of results to choose from', 10)
+        .option('--os <os>', 'The operating system for what the binary should be downloaded')
         .parse(process.argv)
 
     const min = versionToComparableVersion(program.min)
@@ -50,7 +63,8 @@ function checkProgramArguments(): IConfig {
     return {
         min,
         max,
-        results: program.maxResults
+        results: program.maxResults,
+        os: program.os
     }
 }
 
@@ -127,8 +141,8 @@ async function fetchBranchPosition(version: string): Promise<string> {
         .then(response => response.chromium_base_position)
 }
 
-async function fetchChromeUrl(branchPosition: string): Promise<[string, string]> {
-    const [urlOS, filenameOS] = determineOperatingSystem()
+async function fetchChromeUrl(branchPosition: string, config: IConfig): Promise<[string, string]> {
+    const [urlOS, filenameOS] = detectOperatingSystem(config)
 
     console.log('Searching for binary...')
     const snapshotUrl = `https://www.googleapis.com/storage/v1/b/chromium-browser-snapshots/o?delimiter=/&prefix=${urlOS}/${branchPosition}/&fields=items(kind,mediaLink,metadata,name,size,updated),kind,prefixes,nextPageToken`
@@ -173,7 +187,7 @@ async function main(): Promise<any> {
         }
         const branchPosition = await fetchBranchPosition(selectedVersion);
     
-        [chromeUrl, filenameOS] = await fetchChromeUrl(branchPosition)
+        [chromeUrl, filenameOS] = await fetchChromeUrl(branchPosition, config)
         
         if (!chromeUrl && !filenameOS) {
             const invalidVersion = mappedVersions.find(version => version.value === selectedVersion)

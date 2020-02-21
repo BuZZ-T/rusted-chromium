@@ -2,6 +2,7 @@ export interface IConfig {
     min: number
     max: number
     results: string
+    os: string | null
 }
 
 export interface IMappedVersion {
