@@ -10,31 +10,37 @@ const CHROMIUM_TAGS_URL = 'https://chromium.googlesource.com/chromium/src/+refs'
 
 function checkStatus(response) {
     if (!response.ok) {
-        throw new Error()
+        throw new Error(`Status Code: ${response.status} ${response.error}`)
     }
     return response
 }
 
 function detectOperatingSystem(config: IConfig): [string, string] {
-    const os = config.os || process.platform
-    switch(os) {
+
+    const archForUrl = config.arch === 'x64' ? '_x64' : ''
+
+    switch(config.os) {
         case 'linux':
-            return ['Linux_x64', 'linux']
+            return [`Linux${archForUrl}`, 'linux']
         case 'win32':
         case 'win':
-            return ['Win_x64', 'win']
+            return [`Win${archForUrl}`, 'win']
         case 'darwin':
         case 'mac':
+            if (config.arch === 'x86') {
+                console.warn('WARN: A mac version is not available for "x86" architecture, using "x64"!')
+                config.arch = 'x64'
+            }
             return ['Mac', 'mac']
         default:
-            throw new Error(`Unsupported operation system: ${os}`)
+            throw new Error(`Unsupported operation system: ${config.os}`)
     }
 }
 
 /**
- * Pads each version part except major (so minor, branch and patch) with at least one digit as now necessary
+ * Pads each version part except major (so minor, branch and patch) with at least one digit more as now necessary
  * so versions can be compared just by < and <= as strings
- * @param version 
+ * E.g. "79.0.3945.10" will become "7900039450010"
  */
 function versionToComparableVersion(version: string): number {
     const splitVersion = version.split('.')
@@ -49,22 +55,32 @@ function versionToComparableVersion(version: string): number {
 /**
  * Checks the arguments passed to the programm and returns them
  */
-function checkProgramArguments(): IConfig {
+function readConfig(): IConfig {
     program
         .option('--min <version>', 'The minimum version', '0')
         .option('--max <version>', 'The maximum version. Newest version if not specificied', '10000')
         .option('--max-results <results>', 'The maximum amount of results to choose from', 10)
         .option('--os <os>', 'The operating system for what the binary should be downloaded')
+        .option('--arch <arch>', 'The architecture for what the binary should be downloaded. Valid values are "x86" and "x64". Only works when --os is also set')
         .parse(process.argv)
 
     const min = versionToComparableVersion(program.min)
     const max = versionToComparableVersion(program.max)
 
+    const os = program.os || process.platform
+
+    if (!program.os && program.arch) {
+        console.warn('WARN: Setting "--arch" has no effect, when "--os" is not set!')
+    }
+
+    const is64Bit = (program.os && program.arch) ? program.arch === 'x64' : true
+
     return {
         min,
         max,
         results: program.maxResults,
-        os: program.os
+        os,
+        arch: is64Bit ? 'x64' : 'x86'
     }
 }
 
@@ -120,7 +136,7 @@ function mapVersions(versions: string[], config: IConfig): IMappedVersion[] {
 
 async function userSelectedVersion(versions: IMappedVersion[], config: IConfig): Promise<string> {
     if (config.results === '1') {
-        return versions[0].value
+        return versions[0].disabled ? null : versions[0].value
     }
 
     const { version } = await prompts({
@@ -129,6 +145,7 @@ async function userSelectedVersion(versions: IMappedVersion[], config: IConfig):
         message: 'Select a version',
         warn: 'This version seems to not have a binary',
         choices: versions,
+        hint: `for ${config.os} ${config.arch}`
     } as any)
     return version
 }
@@ -141,9 +158,7 @@ async function fetchBranchPosition(version: string): Promise<string> {
         .then(response => response.chromium_base_position)
 }
 
-async function fetchChromeUrl(branchPosition: string, config: IConfig): Promise<[string, string]> {
-    const [urlOS, filenameOS] = detectOperatingSystem(config)
-
+async function fetchChromeUrl(branchPosition: string, urlOS: string, filenameOS: string): Promise<string> {
     console.log('Searching for binary...')
     const snapshotUrl = `https://www.googleapis.com/storage/v1/b/chromium-browser-snapshots/o?delimiter=/&prefix=${urlOS}/${branchPosition}/&fields=items(kind,mediaLink,metadata,name,size,updated),kind,prefixes,nextPageToken`
     // TODO: adjust field in request
@@ -153,14 +168,14 @@ async function fetchChromeUrl(branchPosition: string, config: IConfig): Promise<
 
     if (chromeMetadataResponse.items) {
         const chromeMetadata = chromeMetadataResponse.items.find(item => item.name === `${urlOS}/${branchPosition}/chrome-${filenameOS}.zip`)
-        return [chromeMetadata.mediaLink, filenameOS]
+        return chromeMetadata.mediaLink
     }
-    return [null, null]
+    return null
 }
 
-async function fetchChromeZipFile(url: string, filenameOS: string, version: string): Promise<void> {
+async function fetchChromeZipFile(url: string, filenameOS: string, arch: string, version: string): Promise<void> {
     console.log('Binary found. Downloading...')
-    const filename = `chrome-${filenameOS}-${version}.zip`
+    const filename = `chrome-${filenameOS}-${arch}-${version}.zip`
     return fetch(url)
         .then(checkStatus)
         .then(res => {
@@ -172,30 +187,33 @@ async function fetchChromeZipFile(url: string, filenameOS: string, version: stri
         })
 }
 
-async function main(): Promise<any> {
-    const config = checkProgramArguments()
+async function main(): Promise<void> {
+    const config = readConfig()
     const versions = await fetchVersions()
     const mappedVersions = mapVersions(versions, config)
 
+    const [urlOS, filenameOS] = detectOperatingSystem(config)
+
     let chromeUrl: string
-    let filenameOS: string
     let selectedVersion: string
     do {
         selectedVersion = await userSelectedVersion(mappedVersions, config)
         if (!selectedVersion) {
+            console.log('quitting...')
             break
         }
         const branchPosition = await fetchBranchPosition(selectedVersion);
     
-        [chromeUrl, filenameOS] = await fetchChromeUrl(branchPosition, config)
+        chromeUrl = await fetchChromeUrl(branchPosition, urlOS, filenameOS)
         
-        if (!chromeUrl && !filenameOS) {
+        if (!chromeUrl) {
             const invalidVersion = mappedVersions.find(version => version.value === selectedVersion)
+            console.log(`No binary found for version ${invalidVersion.value}`)
             invalidVersion.disabled = true
         }
     } while (!chromeUrl)
-    if (chromeUrl && filenameOS) {
-        await fetchChromeZipFile(chromeUrl, filenameOS, selectedVersion)
+    if (chromeUrl) {
+        await fetchChromeZipFile(chromeUrl, filenameOS, config.arch, selectedVersion)
     }
 }
 
