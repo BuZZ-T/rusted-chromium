@@ -62,6 +62,8 @@ function readConfig(): IConfig {
         .option('--max-results <results>', 'The maximum amount of results to choose from', 10)
         .option('--os <os>', 'The operating system for what the binary should be downloaded')
         .option('--arch <arch>', 'The architecture for what the binary should be downloaded. Valid values are "x86" and "x64". Only works when --os is also set')
+        .option('-d, --decreaseOnFail', 'If a binary does not exist, go to the next lower version number and try again (regarding --min, --max and --max-results)')
+        .option('-i, --increaseOnFail', 'If a binary does not exist, go to the next higher version number and try again (regarding --min, --max and --max-results), overwrites "--decreaseOnFail" if both set')
         .parse(process.argv)
 
     const min = versionToComparableVersion(program.min)
@@ -80,7 +82,8 @@ function readConfig(): IConfig {
         max,
         results: program.maxResults,
         os,
-        arch: is64Bit ? 'x64' : 'x86'
+        arch: is64Bit ? 'x64' : 'x86',
+        onFail: program.increaseOnFail ? 'increase' : program.decreaseOnFail ? 'decrease' : 'nothing'
     }
 }
 
@@ -195,21 +198,44 @@ async function main(): Promise<void> {
     const [urlOS, filenameOS] = detectOperatingSystem(config)
 
     let chromeUrl: string
-    let selectedVersion: string
+    let selectedVersion = await userSelectedVersion(mappedVersions, config)
     do {
-        selectedVersion = await userSelectedVersion(mappedVersions, config)
-        if (!selectedVersion) {
-            console.log('quitting...')
-            break
-        }
         const branchPosition = await fetchBranchPosition(selectedVersion);
     
         chromeUrl = await fetchChromeUrl(branchPosition, urlOS, filenameOS)
         
         if (!chromeUrl) {
-            const invalidVersion = mappedVersions.find(version => version.value === selectedVersion)
+            const index = mappedVersions.findIndex(version => version.value === selectedVersion)
+            const invalidVersion = mappedVersions[index]
             console.log(`No binary found for version ${invalidVersion.value}`)
             invalidVersion.disabled = true
+
+            switch(config.onFail) {
+                case 'increase':
+                    if (index > 0) {
+                        selectedVersion = mappedVersions[index - 1].value
+                        console.log(`continue searching with version "${selectedVersion}"`)
+                    } else {
+                        selectedVersion = null
+                    }
+                    break
+                case 'decrease':
+                    if (index < mappedVersions.length - 1) {
+                        selectedVersion = mappedVersions[index + 1].value
+                    } else {
+                        selectedVersion = null
+                    }
+                    console.log(`continue searching with version "${selectedVersion}"`)
+                    break
+                case 'nothing':
+                    selectedVersion = await userSelectedVersion(mappedVersions, config)
+                    break
+            }
+        }
+
+        if (!selectedVersion) {
+            console.log('quitting...')
+            break
         }
     } while (!chromeUrl)
     if (chromeUrl) {

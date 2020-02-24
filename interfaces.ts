@@ -4,6 +4,7 @@ export interface IConfig {
     results: string
     os: string
     arch: 'x86' | 'x64'
+    onFail: 'nothing' | 'increase' | 'decrease'
 }
 
 export interface IMappedVersion {
