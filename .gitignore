@@ -5,3 +5,6 @@ out/
 
 # Downloaded binaries
 chrome-*.zip
+
+# Extracted zips
+chrome-*/
