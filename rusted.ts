@@ -1,8 +1,9 @@
+import { createWriteStream } from 'fs'
 import { parse } from 'node-html-parser'
 import * as fetch  from 'node-fetch'
 import * as prompts from 'prompts'
 import * as program from 'commander'
-import { createWriteStream } from 'fs'
+import * as unzipper from 'unzipper'
 
 import { IConfig, IMappedVersion, IMetadataResponse } from './interfaces'
 
@@ -64,6 +65,7 @@ function readConfig(): IConfig {
         .option('--arch <arch>', 'The architecture for what the binary should be downloaded. Valid values are "x86" and "x64". Only works when --os is also set')
         .option('-d, --decreaseOnFail', 'If a binary does not exist, go to the next lower version number and try again (regarding --min, --max and --max-results)')
         .option('-i, --increaseOnFail', 'If a binary does not exist, go to the next higher version number and try again (regarding --min, --max and --max-results), overwrites "--decreaseOnFail" if both set')
+        .option('--unzip', 'Directly unzip the downloaded zip-file and delete the .zip afterwards')
         .parse(process.argv)
 
     const min = versionToComparableVersion(program.min)
@@ -78,6 +80,7 @@ function readConfig(): IConfig {
     const is64Bit = (program.os && program.arch) ? program.arch === 'x64' : true
 
     return {
+        autoUnzip: !!program.unzip,
         min,
         max,
         results: program.maxResults,
@@ -169,24 +172,30 @@ async function fetchChromeUrl(branchPosition: string, urlOS: string, filenameOS:
         .then(checkStatus)
         .then(response => response.json())
 
-    if (chromeMetadataResponse.items) {
-        const chromeMetadata = chromeMetadataResponse.items.find(item => item.name === `${urlOS}/${branchPosition}/chrome-${filenameOS}.zip`)
-        return chromeMetadata.mediaLink
-    }
-    return null
+        return chromeMetadataResponse.items?.find(item => item.name === `${urlOS}/${branchPosition}/chrome-${filenameOS}.zip`)?.mediaLink
 }
 
-async function fetchChromeZipFile(url: string, filenameOS: string, arch: string, version: string): Promise<void> {
+async function fetchChromeZipFile(url: string, filenameOS: string, config: IConfig, version: string): Promise<void> {
     console.log('Binary found. Downloading...')
-    const filename = `chrome-${filenameOS}-${arch}-${version}.zip`
+    const filename = `chrome-${filenameOS}-${config.arch}-${version}`
     return fetch(url)
         .then(checkStatus)
         .then(res => {
-            const file = createWriteStream(filename)
-            res.body.pipe(file)
-            file.on('close', () => {
-                console.log(`${filename} successfully downloaded`)
-            })
+            if (config.autoUnzip) {
+                res.body.pipe(
+                    unzipper.Extract({path: filename})
+                )
+                .on('close', () => {
+                    console.log(`Successfully downloaded and extracted to ${filename}/`)
+                })
+            } else {
+                const file = createWriteStream(filename+'.zip')
+                res.body.pipe(file)
+                file.on('close', () => {
+                    console.log(`${filename}.zip successfully downloaded`)
+                })
+            }
+
         })
 }
 
@@ -239,7 +248,7 @@ async function main(): Promise<void> {
         }
     } while (!chromeUrl)
     if (chromeUrl) {
-        await fetchChromeZipFile(chromeUrl, filenameOS, config.arch, selectedVersion)
+        await fetchChromeZipFile(chromeUrl, filenameOS, config, selectedVersion)
     }
 }
 

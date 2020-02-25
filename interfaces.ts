@@ -5,6 +5,7 @@ export interface IConfig {
     os: string
     arch: 'x86' | 'x64'
     onFail: 'nothing' | 'increase' | 'decrease'
+    autoUnzip: boolean
 }
 
 export interface IMappedVersion {
