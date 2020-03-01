@@ -1,19 +1,20 @@
 {
   "name": "rusted-chromium",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Download legacy versions of chromium with a command-line tool",
   "main": "rusted.ts",
   "scripts": {
     "start": "ts-node rusted.ts",
     "build": "tsc -p tsconfig.json && cp -r package.json bin/ out/ && cp README.md out/",
-    "release": "npm run build && cd out/ && npm publish"
+    "release": "npm run build && cd out/ && npm publish",
+    "release-github": "npm run build && cd out/ && npm publish --registry=https://npm.pkg.github.com/"
   },
   "bin": {
     "rusted-chromimum": "bin/rusted-chromium.js"
   },
   "repository": {
     "type": "git",
-    "url": "ssh://buzz-t.eu/home/buzzy/git/rusted_chromium"
+    "url": "https://github.com/BuZZ-T/rusted_chromium"
   },
   "keywords": [
     "TypeScript",
