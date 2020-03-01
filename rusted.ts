@@ -6,6 +6,8 @@ import * as program from 'commander'
 import * as unzipper from 'unzipper'
 
 import { IConfig, IMappedVersion, IMetadataResponse } from './interfaces'
+import { logger } from './loggerSpinner'
+import { threadId } from 'worker_threads'
 
 const CHROMIUM_TAGS_URL = 'https://chromium.googlesource.com/chromium/src/+refs'
 
@@ -158,15 +160,22 @@ async function userSelectedVersion(versions: IMappedVersion[], config: IConfig):
 }
 
 async function fetchBranchPosition(version: string): Promise<string> {
-    console.log('Resolving version to branch position...')
+    logger.start(['Resolving version to branch position...', 'Version resolved!', 'Error resolving version!'])
     return fetch(`https://omahaproxy.appspot.com/deps.json?version=${version}`)
         .then(checkStatus)
         .then(response => response.json())
         .then(response => response.chromium_base_position)
+        .then(resolvedVersion => {
+            if (resolvedVersion) {
+                logger.success()
+            } else {
+                logger.error()
+            }
+            return resolvedVersion
+        })
 }
 
 async function fetchChromeUrl(branchPosition: string, urlOS: string, filenameOS: string): Promise<string> {
-    console.log('Searching for binary...')
     const snapshotUrl = `https://www.googleapis.com/storage/v1/b/chromium-browser-snapshots/o?delimiter=/&prefix=${urlOS}/${branchPosition}/&fields=items(kind,mediaLink,metadata,name,size,updated),kind,prefixes,nextPageToken`
     // TODO: adjust field in request
     const chromeMetadataResponse: IMetadataResponse = await fetch(snapshotUrl)
@@ -177,8 +186,8 @@ async function fetchChromeUrl(branchPosition: string, urlOS: string, filenameOS:
 }
 
 async function fetchChromeZipFile(url: string, filenameOS: string, config: IConfig, version: string): Promise<void> {
-    console.log('Binary found. Downloading...')
     const filename = `chrome-${filenameOS}-${config.arch}-${version}`
+    logger.start(['Downloading binary...', config.autoUnzip ? `Successfully downloaded and extracted to ${filename}/` : `${filename}.zip successfully downloaded`])
     return fetch(url)
         .then(checkStatus)
         .then(res => {
@@ -187,13 +196,13 @@ async function fetchChromeZipFile(url: string, filenameOS: string, config: IConf
                     unzipper.Extract({path: filename})
                 )
                 .on('close', () => {
-                    console.log(`Successfully downloaded and extracted to ${filename}/`)
+                    logger.success()
                 })
             } else {
                 const file = createWriteStream(filename+'.zip')
                 res.body.pipe(file)
                 file.on('close', () => {
-                    console.log(`${filename}.zip successfully downloaded`)
+                    logger.success()
                 })
             }
 
@@ -212,19 +221,20 @@ async function main(): Promise<void> {
     do {
         const branchPosition = await fetchBranchPosition(selectedVersion);
     
+        logger.start(['Searching for binary...', 'Binary found.', 'No binary found!'])
         chromeUrl = await fetchChromeUrl(branchPosition, urlOS, filenameOS)
         
         if (!chromeUrl) {
             const index = mappedVersions.findIndex(version => version.value === selectedVersion)
             const invalidVersion = mappedVersions[index]
-            console.log(`No binary found for version ${invalidVersion.value}`)
+            logger.error()
             invalidVersion.disabled = true
 
             switch(config.onFail) {
                 case 'increase':
                     if (index > 0) {
                         selectedVersion = mappedVersions[index - 1].value
-                        console.log(`continue searching with version "${selectedVersion}"`)
+                        logger.info(`continue searching with version "${selectedVersion}"`)
                     } else {
                         selectedVersion = null
                     }
@@ -232,10 +242,10 @@ async function main(): Promise<void> {
                 case 'decrease':
                     if (index < mappedVersions.length - 1) {
                         selectedVersion = mappedVersions[index + 1].value
+                        logger.info(`continue searching with version "${selectedVersion}"`)
                     } else {
                         selectedVersion = null
                     }
-                    console.log(`continue searching with version "${selectedVersion}"`)
                     break
                 case 'nothing':
                     selectedVersion = await userSelectedVersion(mappedVersions, config)
@@ -244,11 +254,12 @@ async function main(): Promise<void> {
         }
 
         if (!selectedVersion) {
-            console.log('quitting...')
+            logger.info('quitting...')
             break
         }
     } while (!chromeUrl)
     if (chromeUrl) {
+        logger.success()
         await fetchChromeZipFile(chromeUrl, filenameOS, config, selectedVersion)
     }
 }

@@ -24,6 +24,7 @@
   "author": "Bastian Gebhardt <buzz-t@buzz-t.eu>",
   "license": "MIT",
   "dependencies": {
+    "chalk": "^3.0.0",
     "commander": "^4.1.1",
     "node-fetch": "^2.6.0",
     "node-html-parser": "^1.2.5",
