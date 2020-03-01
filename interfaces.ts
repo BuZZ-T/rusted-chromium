@@ -31,3 +31,8 @@ export interface IMetadataResponse {
     kind: string
     items: IMetadata[]
 }
+
+/**
+ * start / success / error
+ */
+export type LoggingConfig = [string, string, string?]
