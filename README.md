@@ -5,15 +5,6 @@
 
 This cli tool can be used to download old (and therefore unsupported) versions of chromium.
 
-Basically it automates the manual steps mentioned in https://www.chromium.org/getting-involved/download-chromium in the section Downloading old builds of Chrome / Chromium".
-So only official chromium APIs are called and only official binaries are downloaded.
-
-So, this project:
-
-* has **NO own repository** for chromium sources
-* **does not build** versions of chromium itself
-* **does not store** binaries or archives of chromium
-
 ## Caution
 
 In case you found this tool: This is not ready-to-use yet. You might be able to use it, but the documentation is incomplete and some features are not implemented yet. And no tests are written, yet. Contact me for more information: <a href="mailto:buzz-t@buzz-t.eu">buzz-t@buzz-t.eu</a>
@@ -24,7 +15,7 @@ In case you found this tool: This is not ready-to-use yet. You might be able to 
 * [Installation](#installation)
 * [All available flags](#all-available-flags)
 * [Examples](#examples)
-* [Participation](#participation)
+* [FAQ](#faq)
 
 ## Disclaimer 🔥
 
@@ -138,5 +129,18 @@ rusted-chromium --help
 ```bash
 rusted-chromium --version
 ```
-## Participation
+## FAQ
+
+### Can i contribute?
 I'm accepting pull requests and feature requests (no guarantee that i will implement this fast or implement this at all, but feel free to ask).
+
+### Do you build chromium versions? Do you store chromium binaries/archives? Do you have your own chromium repository?
+
+NO. This cli basically automates the manual steps mentioned in https://www.chromium.org/getting-involved/download-chromium in the section "Downloading old builds of Chrome / Chromium".
+So only official chromium APIs are called and only official binaries are downloaded.
+
+So, this project:
+
+* has **NO own repository** for chromium sources
+* **does not build** versions of chromium itself
+* **does not store** binaries or archives of chromium
