@@ -7,7 +7,6 @@ import * as unzipper from 'unzipper'
 
 import { IConfig, IMappedVersion, IMetadataResponse } from './interfaces'
 import { logger } from './loggerSpinner'
-import { threadId } from 'worker_threads'
 
 const CHROMIUM_TAGS_URL = 'https://chromium.googlesource.com/chromium/src/+refs'
 
@@ -219,6 +218,10 @@ async function main(): Promise<void> {
     let chromeUrl: string
     let selectedVersion = await userSelectedVersion(mappedVersions, config)
     do {
+        if (!selectedVersion) {
+            logger.info('quitting...')
+            break
+        }
         const branchPosition = await fetchBranchPosition(selectedVersion);
     
         logger.start(['Searching for binary...', 'Binary found.', 'No binary found!'])
@@ -251,11 +254,6 @@ async function main(): Promise<void> {
                     selectedVersion = await userSelectedVersion(mappedVersions, config)
                     break
             }
-        }
-
-        if (!selectedVersion) {
-            logger.info('quitting...')
-            break
         }
     } while (!chromeUrl)
     if (chromeUrl) {
