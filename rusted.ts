@@ -59,7 +59,7 @@ function versionToComparableVersion(version: string): number {
  */
 function readConfig(): IConfig {
     program
-        .version('0.0.4')
+        .version('0.0.6')
         .option('--min <version>', 'The minimum version', '0')
         .option('--max <version>', 'The maximum version. Newest version if not specificied', '10000')
         .option('--max-results <results>', 'The maximum amount of results to choose from', 10)
@@ -68,6 +68,7 @@ function readConfig(): IConfig {
         .option('-d, --decreaseOnFail', 'If a binary does not exist, go to the next lower version number and try again (regarding --min, --max and --max-results)')
         .option('-i, --increaseOnFail', 'If a binary does not exist, go to the next higher version number and try again (regarding --min, --max and --max-results), overwrites "--decreaseOnFail" if both set')
         .option('--unzip', 'Directly unzip the downloaded zip-file and delete the .zip afterwards')
+        .option('-n, --non-interactive', 'Don\'t show the selection menu. Automatically select the newest version. Only works when -d or -i is also set.', false)
         .parse(process.argv)
 
     const min = versionToComparableVersion(program.min)
@@ -76,7 +77,10 @@ function readConfig(): IConfig {
     const os = program.os || process.platform
 
     if (!program.os && program.arch) {
-        console.warn('WARN: Setting "--arch" has no effect, when "--os" is not set!')
+        logger.warn('Setting "--arch" has no effect, when "--os" is not set!')
+    }
+    if (program.nonInteractive && !program.decreaseOnFail) {
+        logger.warn('Setting "--non-interactive" has no effect, when "--decreaseOnFail" is not set!')
     }
 
     const is64Bit = (program.os && program.arch) ? program.arch === 'x64' : true
@@ -88,7 +92,8 @@ function readConfig(): IConfig {
         results: program.maxResults,
         os,
         arch: is64Bit ? 'x64' : 'x86',
-        onFail: program.increaseOnFail ? 'increase' : program.decreaseOnFail ? 'decrease' : 'nothing'
+        onFail: program.increaseOnFail ? 'increase' : program.decreaseOnFail ? 'decrease' : 'nothing',
+        interactive: !program.nonInteractive,
     }
 }
 
@@ -216,7 +221,17 @@ async function main(): Promise<void> {
     const [urlOS, filenameOS] = detectOperatingSystem(config)
 
     let chromeUrl: string
-    let selectedVersion = await userSelectedVersion(mappedVersions, config)
+
+    const isAutoSearch = !config.interactive && config.onFail === "decrease"
+
+    let selectedVersion = isAutoSearch
+        ? mappedVersions[0].value
+        : await userSelectedVersion(mappedVersions, config)
+
+    if (isAutoSearch) {
+        logger.info(`Auto-searching with version ${selectedVersion}`)
+    }
+
     do {
         if (!selectedVersion) {
             logger.info('quitting...')
@@ -237,7 +252,7 @@ async function main(): Promise<void> {
                 case 'increase':
                     if (index > 0) {
                         selectedVersion = mappedVersions[index - 1].value
-                        logger.info(`continue searching with version "${selectedVersion}"`)
+                        logger.info(`Continue with next higher version "${selectedVersion}"`)
                     } else {
                         selectedVersion = null
                     }
@@ -245,7 +260,7 @@ async function main(): Promise<void> {
                 case 'decrease':
                     if (index < mappedVersions.length - 1) {
                         selectedVersion = mappedVersions[index + 1].value
-                        logger.info(`continue searching with version "${selectedVersion}"`)
+                        logger.info(`Continue with next lower version "${selectedVersion}"`)
                     } else {
                         selectedVersion = null
                     }

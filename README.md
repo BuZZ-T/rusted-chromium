@@ -61,6 +61,7 @@ npm start -- --help # the two extra dashes are important to pass arguments to th
 | `--arch`|  | The architecture on the current system | Set the architecture of the binary. The flag is only regarded, if `--os` is present. Valid values are "x86" and "x64". "x86" is ignored for "mac".
 | `--decreaseOnFail`| `-d` | false | Automatically try the next lower version, if the selected version has no binary
 | `--increaseOnFail`| `-i` | false | Automatically try the next higher version, if the selected version has no binary
+|`--non-interactive` | `-n` | false | Don't display the version selection. Automatically select the newest version in the available range (set by `--min`, `--max` and `--max-results`). Only works when `--decreaseOnFail` is set as well.
 | `--version`| `-V` | - | Show current version
 | `--help`| `-h` | - | Display a help with all available flags
 
@@ -120,12 +121,20 @@ rusted-chromium --max=30 --increaseOnFail
 rusted-chromium --max=30 -i
 ```
 
-##### Show the help
+##### Automatically select the newest of 7 results and automatically try the next lower version, if the tried version has no binary
+```bash
+# long version
+rusted-chromium --max 78 --max 79.0.3909.0 --max-results=7 -d --non-interactive
+# short version
+rusted-chromium --max 79.0.3909.0 --max-results=7 -d -n
+```
+
+##### Show the help and quit
 ```bash
 rusted-chromium --help
 ```
 
-##### Show the version
+##### Show the version and quit
 ```bash
 rusted-chromium --version
 ```
@@ -136,7 +145,7 @@ I'm accepting pull requests and feature requests (no guarantee that i will imple
 
 ### Do you build chromium versions? Do you store chromium binaries/archives? Do you have your own chromium repository?
 
-NO. This cli basically automates the manual steps mentioned in https://www.chromium.org/getting-involved/download-chromium in the section "Downloading old builds of Chrome / Chromium".
+NO, NO and NO. This CLI basically automates the manual steps mentioned in https://www.chromium.org/getting-involved/download-chromium in the section "Downloading old builds of Chrome / Chromium".
 So only official chromium APIs are called and only official binaries are downloaded.
 
 So, this project:

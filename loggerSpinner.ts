@@ -7,6 +7,7 @@ export class LoggerSpinner {
     private readonly SPINNER_STATES = '⠏⠋⠙⠹⠸⠼⠴⠦⠧⠇'
     private readonly SUCCESS_FN = msg => chalk.green(`✔ ${msg}`)
     private readonly ERROR_FN = msg => chalk.red(`✘ ${msg}`)
+    private readonly WARN_FN = msg => chalk.yellow(`! ${msg}`)
 
     private startText: string
     private successText: string
@@ -52,8 +53,8 @@ export class LoggerSpinner {
         this.successText = this.SUCCESS_FN(success)
         this.errorText = this.ERROR_FN(error || this.DEFAULT_ERROR)
 
+        this.stop()
         let count = 0
-
         this.timer = setInterval(() => {
             this.clearLine()
             
@@ -70,6 +71,13 @@ export class LoggerSpinner {
         return this.clearLine()
                    .stop()
                    .write(text)
+                   .newline()
+    }
+
+    public warn(text: string): LoggerSpinner {
+        return this.clearLine()
+                   .stop()
+                   .write(this.WARN_FN(text))
                    .newline()
     }
 
