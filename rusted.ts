@@ -59,7 +59,7 @@ function versionToComparableVersion(version: string): number {
  */
 function readConfig(): IConfig {
     program
-        .version('0.0.6')
+        .version(require('./package.json').version)
         .option('--min <version>', 'The minimum version', '0')
         .option('--max <version>', 'The maximum version. Newest version if not specificied', '10000')
         .option('--max-results <results>', 'The maximum amount of results to choose from', 10)
