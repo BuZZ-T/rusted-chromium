@@ -54,11 +54,12 @@ npm start -- --help # the two extra dashes are important to pass arguments to th
 
 | Flag | Short | Default | Description |
 |-|-|-|-
-| `--max`| | 10000 | Maximum version which should be selectable
-| `--min`| | 0 | Minimum version which should be selectable
-| `--max-results`| | 10 | Maximum number of results to select. Directly downloads the binary, if set to 1
-| `--os`|  | The operation system on the current system | Set the operation system of the binary. Valid values are "win", "linux" and "mac"/"darwin".
-| `--arch`|  | The architecture on the current system | Set the architecture of the binary. The flag is only regarded, if `--os` is present. Valid values are "x86" and "x64". "x86" is ignored for "mac".
+| `--max`| `-M` | 10000 | Maximum version which should be selectable
+| `--min`| `-m` | 0 | Minimum version which should be selectable
+| `--max-results`| `-r` | 10 | Maximum number of results to select. Directly downloads the binary, if set to 1
+| `--os`| `-o` | The operation system on the current system | Set the operation system of the binary. Valid values are "win", "linux" and "mac"/"darwin".
+| `--arch`| `-a` | The architecture on the current system | Set the architecture of the binary. The flag is only regarded, if `--os` is present. Valid values are "x86" and "x64". "x86" is ignored for "mac".
+| `--unzip` | `-z` | false | Directly unzip the downloaded zip-file and delete the .zip afterwards
 | `--decreaseOnFail`| `-d` | false | Automatically try the next lower version, if the selected version has no binary
 | `--increaseOnFail`| `-i` | false | Automatically try the next higher version, if the selected version has no binary
 |`--non-interactive` | `-n` | false | Don't display the version selection. Automatically select the newest version in the available range (set by `--min`, `--max` and `--max-results`). Only works when `--decreaseOnFail` is set as well.
@@ -69,7 +70,10 @@ npm start -- --help # the two extra dashes are important to pass arguments to th
 
 ##### Define a minimum and maximum major version
 ```bash
+# long version
 rusted-chromium --min 60 --max 70
+# short version
+rusted-chromium -m 60 -M 70
 ```
 ##### Define a maximum major/minor version
 *NOTE: Currently makes no sense, as the minor version is always "0".*
@@ -88,7 +92,10 @@ rusted-chromium --max 70.0.3539.100
 
 ##### Define a maximum version and an amount of results
 ```bash
+# long version
 rusted-chromium --max 70 --max-results 30
+# short version
+rusted-chromium -M 70 -r 30
 ```
 
 ##### Directly download the version without interactive selection
@@ -100,7 +107,10 @@ rusted-chromium --max-results 1
 ##### Automatically unzip the downloaded archive
 *NOTE: This is using `unzipper` which loses executable flags for binaries*
 ```bash
+# long version
 rusted-chromium --unzip
+# short version
+rusted-chromium -z
 ```
 
 ##### Automatically try the next lower version, if the selected version has no binary

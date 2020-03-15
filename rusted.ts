@@ -60,14 +60,14 @@ function versionToComparableVersion(version: string): number {
 function readConfig(): IConfig {
     program
         .version(require('./package.json').version)
-        .option('--min <version>', 'The minimum version', '0')
-        .option('--max <version>', 'The maximum version. Newest version if not specificied', '10000')
-        .option('--max-results <results>', 'The maximum amount of results to choose from', 10)
-        .option('--os <os>', 'The operating system for what the binary should be downloaded')
-        .option('--arch <arch>', 'The architecture for what the binary should be downloaded. Valid values are "x86" and "x64". Only works when --os is also set')
+        .option('-m, --min <version>', 'The minimum version', '0')
+        .option('-M, --max <version>', 'The maximum version. Newest version if not specificied', '10000')
+        .option('-r, --max-results <results>', 'The maximum amount of results to choose from', 10)
+        .option('-o, --os <os>', 'The operating system for what the binary should be downloaded')
+        .option('-a, --arch <arch>', 'The architecture for what the binary should be downloaded. Valid values are "x86" and "x64". Only works when --os is also set')
         .option('-d, --decreaseOnFail', 'If a binary does not exist, go to the next lower version number and try again (regarding --min, --max and --max-results)')
         .option('-i, --increaseOnFail', 'If a binary does not exist, go to the next higher version number and try again (regarding --min, --max and --max-results), overwrites "--decreaseOnFail" if both set')
-        .option('--unzip', 'Directly unzip the downloaded zip-file and delete the .zip afterwards')
+        .option('-z, --unzip', 'Directly unzip the downloaded zip-file and delete the .zip afterwards')
         .option('-n, --non-interactive', 'Don\'t show the selection menu. Automatically select the newest version. Only works when -d or -i is also set.', false)
         .parse(process.argv)
 
