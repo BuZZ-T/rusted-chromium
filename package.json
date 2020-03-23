@@ -5,6 +5,8 @@
   "main": "rusted.ts",
   "scripts": {
     "start": "ts-node rusted.ts",
+    "test": "jest",
+    "test:debug": "node --inspect --inspect-brk node_modules/.bin/jest --runInBand",
     "build": "tsc -p tsconfig.json && cp -r package.json bin/ out/ && cp README.md out/",
     "release": "npm run build && cd out/ && npm publish",
     "release-github": "npm run build && cd out/ && npm publish --registry=https://npm.pkg.github.com/"
@@ -33,8 +35,11 @@
     "unzipper": "^0.10.9"
   },
   "devDependencies": {
+    "@types/jest": "^25.1.4",
     "@types/node": "^13.7.2",
     "@types/prompts": "^2.0.3",
+    "jest": "^25.1.0",
+    "ts-jest": "^25.2.1",
     "ts-node": "^8.6.2"
   }
 }
