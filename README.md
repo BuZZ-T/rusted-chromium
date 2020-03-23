@@ -7,7 +7,7 @@ This cli tool can be used to download old (and therefore unsupported) versions o
 
 ## Caution
 
-In case you found this tool: This is not ready-to-use yet. You might be able to use it, but the documentation is incomplete and some features are not implemented yet. And no tests are written, yet. Contact me for more information: <a href="mailto:buzz-t@buzz-t.eu">buzz-t@buzz-t.eu</a>
+In case you found this tool: This is not ready-to-use yet. You might be able to use it, but the documentation is incomplete and some features are not implemented yet. Contact me for more information: <a href="mailto:buzz-t@buzz-t.eu">buzz-t@buzz-t.eu</a>
 
 ## Table of contents
 
@@ -46,6 +46,7 @@ rusted-chromium --help
 git clone https://github.com/BuZZ-T/rusted-chromium
 cd rusted-chromium
 npm install
+npm test
 npm start -- --help # the two extra dashes are important to pass arguments to the script!
 
 ```

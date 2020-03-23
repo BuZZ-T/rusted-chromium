@@ -1,58 +1,13 @@
 import { createWriteStream } from 'fs'
 import { parse } from 'node-html-parser'
-import * as fetch  from 'node-fetch'
 import * as prompts from 'prompts'
 import * as program from 'commander'
 import * as unzipper from 'unzipper'
 
-import { IConfig, IMappedVersion, IMetadataResponse } from './interfaces'
+import { IConfig, IMappedVersion } from './interfaces'
 import { logger } from './loggerSpinner'
-
-const CHROMIUM_TAGS_URL = 'https://chromium.googlesource.com/chromium/src/+refs'
-
-function checkStatus(response) {
-    if (!response.ok) {
-        throw new Error(`Status Code: ${response.status} ${response.error}`)
-    }
-    return response
-}
-
-function detectOperatingSystem(config: IConfig): [string, string] {
-
-    const archForUrl = config.arch === 'x64' ? '_x64' : ''
-
-    switch(config.os) {
-        case 'linux':
-            return [`Linux${archForUrl}`, 'linux']
-        case 'win32':
-        case 'win':
-            return [`Win${archForUrl}`, 'win']
-        case 'darwin':
-        case 'mac':
-            if (config.arch === 'x86') {
-                console.warn('WARN: A mac version is not available for "x86" architecture, using "x64"!')
-                config.arch = 'x64'
-            }
-            return ['Mac', 'mac']
-        default:
-            throw new Error(`Unsupported operation system: ${config.os}`)
-    }
-}
-
-/**
- * Pads each version part except major (so minor, branch and patch) with at least one digit more as now necessary
- * so versions can be compared just by < and <= as strings
- * E.g. "79.0.3945.10" will become "7900039450010"
- */
-function versionToComparableVersion(version: string): number {
-    const splitVersion = version.split('.')
-    const paddedSplitVersion = splitVersion.concat(Array(4 - splitVersion.length).fill('0'))
-
-    return parseInt(paddedSplitVersion[0]
-         + paddedSplitVersion[1].padStart(2, '0')
-         + paddedSplitVersion[2].padStart(5, '0')
-         + paddedSplitVersion[3].padStart(4, '0'), 10)
-}
+import { fetchChromiumTags, fetchBranchPosition, fetchChromeUrl, fetchChromeZipFile } from './api'
+import { detectOperatingSystem, versionToComparableVersion } from './utils';
 
 /**
  * Checks the arguments passed to the programm and returns them
@@ -97,13 +52,7 @@ function readConfig(): IConfig {
     }
 }
 
-async function fetchChromiumTags(): Promise<any> {
-    return fetch(CHROMIUM_TAGS_URL)
-    .then(checkStatus)
-    .then(response => response.text())
-}
-
-async function fetchVersions(): Promise<string[]> {
+async function loadVersions(): Promise<string[]> {
     const tags = await fetchChromiumTags()
 
     const parsedTags = parse(tags) as unknown as (HTMLElement & {valid: boolean})
@@ -163,59 +112,9 @@ async function userSelectedVersion(versions: IMappedVersion[], config: IConfig):
     return version
 }
 
-async function fetchBranchPosition(version: string): Promise<string> {
-    logger.start(['Resolving version to branch position...', 'Version resolved!', 'Error resolving version!'])
-    return fetch(`https://omahaproxy.appspot.com/deps.json?version=${version}`)
-        .then(checkStatus)
-        .then(response => response.json())
-        .then(response => response.chromium_base_position)
-        .then(resolvedVersion => {
-            if (resolvedVersion) {
-                logger.success()
-            } else {
-                logger.error()
-            }
-            return resolvedVersion
-        })
-}
-
-async function fetchChromeUrl(branchPosition: string, urlOS: string, filenameOS: string): Promise<string> {
-    const snapshotUrl = `https://www.googleapis.com/storage/v1/b/chromium-browser-snapshots/o?delimiter=/&prefix=${urlOS}/${branchPosition}/&fields=items(kind,mediaLink,metadata,name,size,updated),kind,prefixes,nextPageToken`
-    // TODO: adjust field in request
-    const chromeMetadataResponse: IMetadataResponse = await fetch(snapshotUrl)
-        .then(checkStatus)
-        .then(response => response.json())
-
-        return chromeMetadataResponse.items?.find(item => item.name === `${urlOS}/${branchPosition}/chrome-${filenameOS}.zip`)?.mediaLink
-}
-
-async function fetchChromeZipFile(url: string, filenameOS: string, config: IConfig, version: string): Promise<void> {
-    const filename = `chrome-${filenameOS}-${config.arch}-${version}`
-    logger.start(['Downloading binary...', config.autoUnzip ? `Successfully downloaded and extracted to ${filename}/` : `${filename}.zip successfully downloaded`])
-    return fetch(url)
-        .then(checkStatus)
-        .then(res => {
-            if (config.autoUnzip) {
-                res.body.pipe(
-                    unzipper.Extract({path: filename})
-                )
-                .on('close', () => {
-                    logger.success()
-                })
-            } else {
-                const file = createWriteStream(filename+'.zip')
-                res.body.pipe(file)
-                file.on('close', () => {
-                    logger.success()
-                })
-            }
-
-        })
-}
-
 async function main(): Promise<void> {
     const config = readConfig()
-    const versions = await fetchVersions()
+    const versions = await loadVersions()
     const mappedVersions = mapVersions(versions, config)
 
     const [urlOS, filenameOS] = detectOperatingSystem(config)
@@ -273,7 +172,24 @@ async function main(): Promise<void> {
     } while (!chromeUrl)
     if (chromeUrl) {
         logger.success()
-        await fetchChromeZipFile(chromeUrl, filenameOS, config, selectedVersion)
+        const filename = `chrome-${filenameOS}-${config.arch}-${selectedVersion}`
+
+        await fetchChromeZipFile(chromeUrl, filename, config).then(res => {
+            if (config.autoUnzip) {
+                res.body.pipe(
+                    unzipper.Extract({path: filename})
+                )
+                .on('close', () => {
+                    logger.success()
+                })
+            } else {
+                const file = createWriteStream(filename+'.zip')
+                res.body.pipe(file)
+                file.on('close', () => {
+                    logger.success()
+                })
+            }
+        })
     }
 }
 
