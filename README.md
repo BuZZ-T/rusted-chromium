@@ -2,6 +2,7 @@
 
 <a href="https://www.npmjs.com/package/rusted-chromium"><img src="https://img.shields.io/npm/v/rusted-chromium.svg" alt="NPM Version" /></a>
 <a href="https://www.npmjs.com/package/rusted-chromium"><img src="https://img.shields.io/npm/l/rusted-chromium.svg" alt="Package License" /></a>
+<img src="https://travis-ci.com/BuZZ-T/rusted-chromium.svg?branch=master" alt="Build" />
 
 This cli tool can be used to download old (and therefore unsupported) versions of chromium.
 
