@@ -1,12 +1,18 @@
+export type OS = 'win' | 'linux' | 'mac'
+export type ExtendedOS = OS | 'darwin' | 'win32'
+
+export type Arch = 'x86' | 'x64'
+
 export interface IConfig {
     min: number
     max: number
     results: string
-    os: string
-    arch: 'x86' | 'x64'
+    os: OS
+    arch: Arch
     onFail: 'nothing' | 'increase' | 'decrease'
     autoUnzip: boolean
     interactive: boolean
+    store: boolean
 }
 
 export interface IMappedVersion {
@@ -37,3 +43,10 @@ export interface IMetadataResponse {
  * start / success / error
  */
 export type LoggingConfig = [string, string, string?]
+
+export type Store = {
+    [p in OS]: {
+        x86: string[],
+        x64: string[]
+    }
+}

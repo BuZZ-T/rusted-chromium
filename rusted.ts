@@ -4,10 +4,11 @@ import * as prompts from 'prompts'
 import * as program from 'commander'
 import * as unzipper from 'unzipper'
 
-import { IConfig, IMappedVersion } from './interfaces'
-import { logger } from './loggerSpinner'
+import { detectOperatingSystem, versionToComparableVersion, mapOS } from './utils';
 import { fetchChromiumTags, fetchBranchPosition, fetchChromeUrl, fetchChromeZipFile } from './api'
-import { detectOperatingSystem, versionToComparableVersion } from './utils';
+import { IConfig, IMappedVersion, Store } from './interfaces';
+import { logger } from './loggerSpinner'
+import { storeNegativeHit, loadStore } from './store'
 
 /**
  * Checks the arguments passed to the programm and returns them
@@ -24,12 +25,13 @@ function readConfig(): IConfig {
         .option('-i, --increaseOnFail', 'If a binary does not exist, go to the next higher version number and try again (regarding --min, --max and --max-results), overwrites "--decreaseOnFail" if both set')
         .option('-z, --unzip', 'Directly unzip the downloaded zip-file and delete the .zip afterwards')
         .option('-n, --non-interactive', 'Don\'t show the selection menu. Automatically select the newest version. Only works when -d or -i is also set.', false)
+        .option('-t, --no-store', 'Don\'t store negative hits in the local store file.', true)
         .parse(process.argv)
 
     const min = versionToComparableVersion(program.min)
     const max = versionToComparableVersion(program.max)
 
-    const os = program.os || process.platform
+    const os = mapOS(program.os || process.platform)
 
     if (!program.os && program.arch) {
         logger.warn('Setting "--arch" has no effect, when "--os" is not set!')
@@ -49,6 +51,7 @@ function readConfig(): IConfig {
         arch: is64Bit ? 'x64' : 'x86',
         onFail: program.increaseOnFail ? 'increase' : program.decreaseOnFail ? 'decrease' : 'nothing',
         interactive: !program.nonInteractive,
+        store: program.store,
     }
 }
 
@@ -84,12 +87,12 @@ async function loadVersions(): Promise<string[]> {
     return versions
 }
 
-function mapVersions(versions: string[], config: IConfig): IMappedVersion[] {
+function mapVersions(versions: string[], config: IConfig, store: Set<string>): IMappedVersion[] {
     return versions
         .map(version => ({
             value: version,
             comparable: versionToComparableVersion(version),
-            disabled: false,
+            disabled: store.has(version),
         }))
         .sort((a,b) => b.comparable - a.comparable) // descending
         .filter(version => version.comparable >= config.min && version.comparable <= config.max)
@@ -115,7 +118,9 @@ async function userSelectedVersion(versions: IMappedVersion[], config: IConfig):
 async function main(): Promise<void> {
     const config = readConfig()
     const versions = await loadVersions()
-    const mappedVersions = mapVersions(versions, config)
+    const store = await loadStore()
+    const storeByOs = new Set(store[config.os][config.arch])
+    const mappedVersions = mapVersions(versions, config, storeByOs)
 
     const [urlOS, filenameOS] = detectOperatingSystem(config)
 
@@ -144,6 +149,11 @@ async function main(): Promise<void> {
         if (!chromeUrl) {
             const index = mappedVersions.findIndex(version => version.value === selectedVersion)
             const invalidVersion = mappedVersions[index]
+
+            if (config.store) {
+                await storeNegativeHit(invalidVersion, config.os, config.arch)
+            }
+
             logger.error()
             invalidVersion.disabled = true
 

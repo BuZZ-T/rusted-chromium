@@ -9,3 +9,5 @@ chrome-*.zip
 
 # Extracted zips
 chrome-*/
+
+localstore.json

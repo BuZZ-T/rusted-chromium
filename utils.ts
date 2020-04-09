@@ -1,4 +1,4 @@
-import { IConfig } from './interfaces'
+import { IConfig, ExtendedOS, OS } from './interfaces';
 import { logger } from './loggerSpinner'
 
 export function detectOperatingSystem(config: IConfig): [string, string] {
@@ -8,10 +8,8 @@ export function detectOperatingSystem(config: IConfig): [string, string] {
     switch(config.os) {
         case 'linux':
             return [`Linux${archForUrl}`, 'linux']
-        case 'win32':
         case 'win':
             return [`Win${archForUrl}`, 'win']
-        case 'darwin':
         case 'mac':
             if (config.arch === 'x86') {
                 logger.warn('A mac version is not available for "x86" architecture, using "x64"!')
@@ -36,4 +34,17 @@ export function versionToComparableVersion(version: string): number {
          + paddedSplitVersion[1].padStart(2, '0')
          + paddedSplitVersion[2].padStart(5, '0')
          + paddedSplitVersion[3].padStart(4, '0'), 10)
+}
+
+export function mapOS(extendedOS: ExtendedOS): OS {
+    switch(extendedOS) {
+        case 'linux':
+            return 'linux'
+        case 'win32':
+        case 'win':
+            return 'win'
+        case 'darwin':
+        case 'mac':
+            return 'mac'
+    }
 }
