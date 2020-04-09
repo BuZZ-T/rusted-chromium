@@ -2,7 +2,7 @@
 
 <a href="https://www.npmjs.com/package/rusted-chromium"><img src="https://img.shields.io/npm/v/rusted-chromium.svg" alt="NPM Version" /></a>
 <a href="https://www.npmjs.com/package/rusted-chromium"><img src="https://img.shields.io/npm/l/rusted-chromium.svg" alt="Package License" /></a>
-<img src="https://travis-ci.com/BuZZ-T/rusted-chromium.svg?branch=master" alt="Build" />
+<a href="https://travis-ci.com/github/BuZZ-T/rusted-chromium"><img src="https://travis-ci.com/BuZZ-T/rusted-chromium.svg?branch=master" alt="Build" /></a>
 
 This cli tool can be used to download old (and therefore unsupported) versions of chromium.
 
@@ -103,7 +103,10 @@ rusted-chromium -M 70 -r 30
 ##### Directly download the version without interactive selection
 *NOTE: This supports `--max` `--min` as well!*
 ```bash
+# long version
 rusted-chromium --max-results 1
+# short version
+rusted-chromium -r 1
 ```
 
 ##### Automatically unzip the downloaded archive
@@ -130,25 +133,31 @@ rusted-chromium --max=30 -d
 # long version
 rusted-chromium --max=30 --increaseOnFail
 # short version
-rusted-chromium --max=30 -i
+rusted-chromium -M 30 -i
 ```
 
 ##### Automatically select the newest of 7 results and automatically try the next lower version, if the tried version has no binary
 ```bash
 # long version
-rusted-chromium --max 78 --max 79.0.3909.0 --max-results=7 -d --non-interactive
+rusted-chromium --max 78 --max 79.0.3909.0 --max-results 7 -d --non-interactive
 # short version
-rusted-chromium --max 79.0.3909.0 --max-results=7 -d -n
+rusted-chromium -M 79.0.3909.0 -r 7 -d -n
 ```
 
 ##### Show the help and quit
 ```bash
+# long version
 rusted-chromium --help
+# short version
+rusted-chromium -h
 ```
 
 ##### Show the version and quit
 ```bash
+# long version
 rusted-chromium --version
+# short version
+rusted-chromium -V
 ```
 ## FAQ
 

@@ -22,8 +22,9 @@ describe('utils', () => {
         max: 0,
         min: 0,
         onFail: 'nothing',
-        os: '',
+        os: 'linux',
         results: '',
+        store: false,
     }
 
     describe('detectOperatingSystem', () => {
@@ -78,7 +79,7 @@ describe('utils', () => {
         it('should return mac 64-Bit', () => {
             const [url, file] = detectOperatingSystem({
                 ...defaultConfig,
-                os: 'darwin',
+                os: 'mac',
                 arch: 'x64',
             })
 
@@ -90,7 +91,7 @@ describe('utils', () => {
         it('should return mac 64-bit for 32-bit request and logging warning', () => {
             const [url, file] = detectOperatingSystem({
                 ...defaultConfig,
-                os: 'darwin',
+                os: 'mac',
                 arch: 'x86',
             })
 

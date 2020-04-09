@@ -4,7 +4,7 @@ import * as fetch  from 'node-fetch'
 
 import { logger, LoggerSpinner } from './loggerSpinner'
 import { fetchChromiumTags, fetchBranchPosition, fetchChromeUrl, fetchChromeZipFile } from './api'
-import { IConfig } from './interfaces';
+import { IConfig } from './interfaces'
 
 jest.mock('node-fetch', () => jest.fn())
 jest.mock('./loggerSpinner')
