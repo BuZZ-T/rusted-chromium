@@ -13,6 +13,7 @@ export interface IConfig {
     autoUnzip: boolean
     interactive: boolean
     store: boolean
+    download: boolean
 }
 
 export interface IMappedVersion {
