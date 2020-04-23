@@ -37,7 +37,6 @@ export async function disableByStore(versions: IMappedVersion[], os: OS, arch: A
 }
 
 export async function loadStore(): Promise<Store> {
-    debugger
     const currentStoreJson = await exists(STORE_FILE)
         ? await readFile(STORE_FILE, 'utf8')
         : JSON.stringify(EMPTY_STORE)

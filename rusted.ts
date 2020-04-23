@@ -4,9 +4,9 @@ import * as prompts from 'prompts'
 import * as program from 'commander'
 import * as unzipper from 'unzipper'
 
-import { detectOperatingSystem, versionToComparableVersion, mapOS } from './utils';
+import { detectOperatingSystem, versionToComparableVersion, mapOS } from './utils'
 import { fetchChromiumTags, fetchBranchPosition, fetchChromeUrl, fetchChromeZipFile } from './api'
-import { IConfig, IMappedVersion, Store } from './interfaces';
+import { IConfig, IMappedVersion } from './interfaces'
 import { logger } from './loggerSpinner'
 import { storeNegativeHit, loadStore } from './store'
 
@@ -26,6 +26,7 @@ function readConfig(): IConfig {
         .option('-z, --unzip', 'Directly unzip the downloaded zip-file and delete the .zip afterwards')
         .option('-n, --non-interactive', 'Don\'t show the selection menu. Automatically select the newest version. Only works when -d or -i is also set.', false)
         .option('-t, --no-store', 'Don\'t store negative hits in the local store file.', true)
+        .option('-l, --no-download', 'Don\'t download the binary. It also continues with the next version, if --decreaseOnFail or --increaseOnFail is set. Useful to build up the negative hit store', true)
         .parse(process.argv)
 
     const min = versionToComparableVersion(program.min)
@@ -52,6 +53,7 @@ function readConfig(): IConfig {
         onFail: program.increaseOnFail ? 'increase' : program.decreaseOnFail ? 'decrease' : 'nothing',
         interactive: !program.nonInteractive,
         store: program.store,
+        download: program.download,
     }
 }
 
@@ -138,7 +140,6 @@ async function main(): Promise<void> {
 
     do {
         if (!selectedVersion) {
-            logger.info('quitting...')
             break
         }
         const branchPosition = await fetchBranchPosition(selectedVersion);
@@ -146,41 +147,47 @@ async function main(): Promise<void> {
         logger.start(['Searching for binary...', 'Binary found.', 'No binary found!'])
         chromeUrl = await fetchChromeUrl(branchPosition, urlOS, filenameOS)
         
-        if (!chromeUrl) {
-            const index = mappedVersions.findIndex(version => version.value === selectedVersion)
-            const invalidVersion = mappedVersions[index]
+        if (chromeUrl && config.download) {
+            break
+        }
 
+        const index = mappedVersions.findIndex(version => version.value === selectedVersion)
+
+        if (!chromeUrl) {
+            const invalidVersion = mappedVersions[index]
+            logger.error()
+            invalidVersion.disabled = true
             if (config.store) {
                 await storeNegativeHit(invalidVersion, config.os, config.arch)
             }
-
-            logger.error()
-            invalidVersion.disabled = true
-
-            switch(config.onFail) {
-                case 'increase':
-                    if (index > 0) {
-                        selectedVersion = mappedVersions[index - 1].value
-                        logger.info(`Continue with next higher version "${selectedVersion}"`)
-                    } else {
-                        selectedVersion = null
-                    }
-                    break
-                case 'decrease':
-                    if (index < mappedVersions.length - 1) {
-                        selectedVersion = mappedVersions[index + 1].value
-                        logger.info(`Continue with next lower version "${selectedVersion}"`)
-                    } else {
-                        selectedVersion = null
-                    }
-                    break
-                case 'nothing':
-                    selectedVersion = await userSelectedVersion(mappedVersions, config)
-                    break
-            }
+        } else {
+            logger.warn('Not downloading binary.')
         }
-    } while (!chromeUrl)
-    if (chromeUrl) {
+
+        switch(config.onFail) {
+            case 'increase':
+                if (index > 0) {
+                    selectedVersion = mappedVersions[index - 1].value
+                    logger.info(`Continue with next higher version "${selectedVersion}"`)
+                } else {
+                    selectedVersion = null
+                }
+                break
+            case 'decrease':
+                if (index < mappedVersions.length - 1) {
+                    selectedVersion = mappedVersions[index + 1].value
+                    logger.info(`Continue with next lower version "${selectedVersion}"`)
+                } else {
+                    selectedVersion = null
+                }
+                break
+            case 'nothing':
+                selectedVersion = await userSelectedVersion(mappedVersions, config)
+                break
+            }
+    } while (!chromeUrl || !config.download)
+
+    if (chromeUrl && config.download) {
         logger.success()
         const filename = `chrome-${filenameOS}-${config.arch}-${selectedVersion}`
 
