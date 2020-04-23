@@ -56,17 +56,18 @@ npm start -- --help # the two extra dashes are important to pass arguments to th
 
 | Flag | Short | Default | Description |
 |-|-|-|-
-| `--max`| `-M` | 10000 | Maximum version which should be selectable
-| `--min`| `-m` | 0 | Minimum version which should be selectable
-| `--max-results`| `-r` | 10 | Maximum number of results to select. Directly downloads the binary, if set to 1
+| `--max`| `-M` | 10000 | Maximum version which should be selectable.
+| `--min`| `-m` | 0 | Minimum version which should be selectable.
+| `--max-results`| `-r` | 10 | Maximum number of results to select. Directly downloads the binary, if set to 1.
 | `--os`| `-o` | The operation system on the current system | Set the operation system of the binary. Valid values are "win", "linux" and "mac"/"darwin".
 | `--arch`| `-a` | The architecture on the current system | Set the architecture of the binary. The flag is only regarded, if `--os` is present. Valid values are "x86" and "x64". "x86" is ignored for "mac".
 | `--unzip` | `-z` | false | Directly unzip the downloaded zip-file and delete the .zip afterwards
-| `--decreaseOnFail`| `-d` | false | Automatically try the next lower version, if the selected version has no binary
-| `--increaseOnFail`| `-i` | false | Automatically try the next higher version, if the selected version has no binary
+| `--decreaseOnFail`| `-d` | false | Automatically try the next lower version, if the selected version has no binary.
+| `--increaseOnFail`| `-i` | false | Automatically try the next higher version, if the selected version has no binary.
 |`--non-interactive` | `-n` | false | Don't display the version selection. Automatically select the newest version in the available range (set by `--min`, `--max` and `--max-results`). Only works when `--decreaseOnFail` is set as well.
-| `--version`| `-V` | - | Show current version
-| `--help`| `-h` | - | Display a help with all available flags
+|`--no-download` | `-l` | false | Don't download the binary if it's found.
+| `--version`| `-V` | - | Show current version.
+| `--help`| `-h` | - | Display a help with all available flags.
 
 ## Examples
 
@@ -100,6 +101,15 @@ rusted-chromium --max 70 --max-results 30
 rusted-chromium -M 70 -r 30
 ```
 
+##### Don't download anything, just mark negative hits in the local store
+
+```bash
+# long version
+rusted-chromium --max 80 --decreaseOnFail -non-interactive --no-download
+# short version
+rusted-chromium -M 80 -dnl
+```
+
 ##### Directly download the version without interactive selection
 *NOTE: This supports `--max` `--min` as well!*
 ```bash
@@ -122,16 +132,16 @@ rusted-chromium -z
 *NOTE: This regards `--min`, `--max` and `--max-results`*
 ```bash
 # long version
-rusted-chromium --max=30 --decreaseOnFail
+rusted-chromium --max 30 --decreaseOnFail
 # short version
-rusted-chromium --max=30 -d
+rusted-chromium -M 30 -d
 ```
 
 ##### Automatically try the next higher version, if the selected version has no binary
 *NOTE: This regards `--min`, `--max` and `--max-results`*
 ```bash
 # long version
-rusted-chromium --max=30 --increaseOnFail
+rusted-chromium --max 30 --increaseOnFail
 # short version
 rusted-chromium -M 30 -i
 ```
