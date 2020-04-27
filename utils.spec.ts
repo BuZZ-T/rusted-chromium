@@ -25,6 +25,7 @@ describe('utils', () => {
         os: 'linux',
         results: '',
         store: false,
+        download: true,
     }
 
     describe('detectOperatingSystem', () => {
