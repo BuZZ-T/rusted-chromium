@@ -2,7 +2,7 @@ import * as fs from 'fs'
 import { promisify } from 'util'
 import * as path from 'path'
 
-import { OS, Store, IMappedVersion, ExtendedOS, Arch } from './interfaces';
+import { OS, Store, IMappedVersion, Arch } from './interfaces'
 
 const STORE_FILE = path.join(__dirname, 'localstore.json')
 

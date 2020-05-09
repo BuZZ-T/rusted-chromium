@@ -1,7 +1,7 @@
-import { IConfig, ExtendedOS, OS } from './interfaces';
+import { ExtendedOS, OS, IChromeConfig } from './interfaces'
 import { logger } from './loggerSpinner'
 
-export function detectOperatingSystem(config: IConfig): [string, string] {
+export function detectOperatingSystem(config: IChromeConfig): [string, string] {
 
     const archForUrl = config.arch === 'x64' ? '_x64' : ''
 

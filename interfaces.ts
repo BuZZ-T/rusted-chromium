@@ -3,7 +3,17 @@ export type ExtendedOS = OS | 'darwin' | 'win32'
 
 export type Arch = 'x86' | 'x64'
 
-export interface IConfig {
+export interface IStoreConfigWrapper {
+    action: 'loadStore'
+    config: IStoreConfig
+}
+
+export interface IChromeConfigWrapper {
+    action: 'loadChrome'
+    config: IChromeConfig
+}
+
+export interface IChromeConfig {
     min: number
     max: number
     results: string
@@ -14,7 +24,14 @@ export interface IConfig {
     interactive: boolean
     store: boolean
     download: boolean
+    downloadUrl: string | null
 }
+
+export interface IStoreConfig{
+    url: string
+}
+
+export type ConfigWrapper = IStoreConfigWrapper | IChromeConfigWrapper
 
 export interface IMappedVersion {
     value: string

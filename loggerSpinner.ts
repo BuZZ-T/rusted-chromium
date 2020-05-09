@@ -1,5 +1,6 @@
-import { LoggingConfig } from './interfaces';
 import * as chalk from 'chalk'
+
+import { LoggingConfig } from './interfaces'
 
 export class LoggerSpinner {
 
@@ -12,7 +13,7 @@ export class LoggerSpinner {
     private startText: string
     private successText: string
     private errorText: string
-    private stdio: any // NodeJS.WriteStream
+    private stdio: NodeJS.WriteStream
     private timer: NodeJS.Timeout | null = null
 
     public constructor() {
@@ -21,7 +22,7 @@ export class LoggerSpinner {
 
     private clearLine(): LoggerSpinner {
         try {
-            this.stdio.clearLine()
+            this.stdio.clearLine(0)
             this.stdio.cursorTo(0)
         } catch {
             // this might fail when piping stdout to /dev/null. Just ignore it in this case
@@ -88,10 +89,10 @@ export class LoggerSpinner {
                    .newline()
     }
 
-    public error(): LoggerSpinner {
+    public error(text?: string): LoggerSpinner {
         return this.clearLine()
                    .stop()
-                   .write(this.errorText)
+                   .write(text ? this.ERROR_FN(text) : this.errorText)
                    .newline()
     }
 }

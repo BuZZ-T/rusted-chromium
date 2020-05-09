@@ -2,7 +2,7 @@ import { MaybeMockedDeep } from 'ts-jest/dist/util/testing'
 import { mocked } from 'ts-jest/utils'
 
 import { detectOperatingSystem, versionToComparableVersion } from './utils';
-import { IConfig } from './interfaces'
+import { IChromeConfig } from './interfaces'
 import { logger, LoggerSpinner } from './loggerSpinner'
 
 jest.mock('./loggerSpinner')
@@ -15,7 +15,7 @@ describe('utils', () => {
         loggerMock = mocked(logger, true)
     })
 
-    const defaultConfig: IConfig = {
+    const defaultConfig: IChromeConfig = {
         arch: 'x64',
         autoUnzip: true,
         interactive: true,
@@ -26,6 +26,7 @@ describe('utils', () => {
         results: '',
         store: false,
         download: true,
+        downloadUrl: '',
     }
 
     describe('detectOperatingSystem', () => {
