@@ -6,14 +6,16 @@ import * as unzipper from 'unzipper'
 
 import { detectOperatingSystem, versionToComparableVersion, mapOS } from './utils'
 import { fetchChromiumTags, fetchBranchPosition, fetchChromeUrl, fetchChromeZipFile } from './api'
-import { IConfig, IMappedVersion } from './interfaces'
+import { IMappedVersion, IChromeConfig, ConfigWrapper, IStoreConfig } from './interfaces'
 import { logger } from './loggerSpinner'
 import { storeNegativeHit, loadStore } from './store'
+import { downloadStore } from './load'
+import { LOCAL_STORE_FILE } from './constants'
 
 /**
  * Checks the arguments passed to the programm and returns them
  */
-function readConfig(): IConfig {
+function readConfig(): ConfigWrapper {
     program
         .version(require('./package.json').version)
         .option('-m, --min <version>', 'The minimum version', '0')
@@ -27,6 +29,7 @@ function readConfig(): IConfig {
         .option('-n, --non-interactive', 'Don\'t show the selection menu. Automatically select the newest version. Only works when -d or -i is also set.', false)
         .option('-t, --no-store', 'Don\'t store negative hits in the local store file.', true)
         .option('-l, --no-download', 'Don\'t download the binary. It also continues with the next version, if --decreaseOnFail or --increaseOnFail is set. Useful to build up the negative hit store', true)
+        .option('--load-store <url>', 'Download a localstore.json file from an URL')
         .parse(process.argv)
 
     const min = versionToComparableVersion(program.min)
@@ -43,17 +46,30 @@ function readConfig(): IConfig {
 
     const is64Bit = (program.os && program.arch) ? program.arch === 'x64' : true
 
+    if (program.loadStore) {
+        return {
+            action: 'loadStore',
+            config: {
+                url: program.loadStore,
+            },
+        }
+    }
+
     return {
-        autoUnzip: !!program.unzip,
-        min,
-        max,
-        results: program.maxResults,
-        os,
-        arch: is64Bit ? 'x64' : 'x86',
-        onFail: program.increaseOnFail ? 'increase' : program.decreaseOnFail ? 'decrease' : 'nothing',
-        interactive: !program.nonInteractive,
-        store: program.store,
-        download: program.download,
+        action: 'loadChrome',
+        config: {
+            autoUnzip: !!program.unzip,
+            min,
+            max,
+            results: program.maxResults,
+            os,
+            arch: is64Bit ? 'x64' : 'x86',
+            onFail: program.increaseOnFail ? 'increase' : program.decreaseOnFail ? 'decrease' : 'nothing',
+            interactive: !program.nonInteractive,
+            store: program.store,
+            download: program.download,
+            downloadUrl: program.loadStore,
+        },
     }
 }
 
@@ -89,7 +105,7 @@ async function loadVersions(): Promise<string[]> {
     return versions
 }
 
-function mapVersions(versions: string[], config: IConfig, store: Set<string>): IMappedVersion[] {
+function mapVersions(versions: string[], config: IChromeConfig, store: Set<string>): IMappedVersion[] {
     return versions
         .map(version => ({
             value: version,
@@ -101,7 +117,7 @@ function mapVersions(versions: string[], config: IConfig, store: Set<string>): I
         .slice(0, Number(config.results))
 }
 
-async function userSelectedVersion(versions: IMappedVersion[], config: IConfig): Promise<string> {
+async function userSelectedVersion(versions: IMappedVersion[], config: IChromeConfig): Promise<string> {
     if (config.results === '1') {
         return versions[0].disabled ? null : versions[0].value
     }
@@ -118,7 +134,20 @@ async function userSelectedVersion(versions: IMappedVersion[], config: IConfig):
 }
 
 async function main(): Promise<void> {
-    const config = readConfig()
+    const configWrapper = readConfig()
+
+    if (configWrapper.action === 'loadStore') {
+        const config: IStoreConfig = configWrapper.config
+        await downloadStore(config, LOCAL_STORE_FILE)
+    } else if (configWrapper.action === 'loadChrome') {
+        const config: IChromeConfig = configWrapper.config
+        await downloadChromium(config)
+    } else {
+        logger.error(`Failed to read config: ${configWrapper}`)
+    }
+}
+
+async function downloadChromium(config: IChromeConfig): Promise<void> {
     const versions = await loadVersions()
     const store = await loadStore()
     const storeByOs = new Set(store[config.os][config.arch])

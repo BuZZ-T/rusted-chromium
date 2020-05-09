@@ -3,8 +3,8 @@ import { MaybeMockedDeep } from 'ts-jest/dist/util/testing'
 import * as fetch  from 'node-fetch'
 
 import { logger, LoggerSpinner } from './loggerSpinner'
-import { fetchChromiumTags, fetchBranchPosition, fetchChromeUrl, fetchChromeZipFile } from './api'
-import { IConfig } from './interfaces'
+import { fetchChromiumTags, fetchBranchPosition, fetchChromeUrl, fetchChromeZipFile, fetchLocalStore } from './api'
+import { IChromeConfig } from './interfaces'
 
 jest.mock('node-fetch', () => jest.fn())
 jest.mock('./loggerSpinner')
@@ -16,6 +16,48 @@ describe('api', () => {
     beforeEach(() => {
         mocked(fetch).mockClear()
         loggerMock = mocked(logger, true)
+    })
+
+    describe('fetchLocalStore', () => {
+        it('should return the formatted store file as text', async () => {
+            const url = 'local-store-url'
+
+            mocked(fetch).mockImplementation((): Promise<any> =>
+                Promise.resolve({
+                    ok: true,
+                    json() {
+                        return Promise.resolve({some: "store"})
+                    }
+                })
+            )
+
+            expect(await fetchLocalStore(url)).toEqual(
+`{
+  "some": "store"
+}`)
+            expect(mocked(fetch).mock.calls.length).toBe(1);
+            expect(fetch).toHaveBeenCalledWith(url)
+        })
+
+        it('should throw an error on non-ok http response', async () => {
+            const url = 'local-store-url'
+
+            mocked(fetch).mockImplementation((): Promise<any> =>
+                Promise.resolve({
+                    ok: false,
+                    status: 400,
+                    error: 'some-error-message',
+                })
+            )
+
+            try {
+                await fetchLocalStore(url)
+            } catch (error) {
+                expect(mocked(fetch).mock.calls.length).toBe(1);
+                expect(fetch).toHaveBeenCalledWith(url)
+                expect(error).toEqual(new Error('Status Code: 400 some-error-message'))
+            }
+        })
     })
 
     describe('fetchChromiumTags', () => {
@@ -160,7 +202,7 @@ describe('api', () => {
                 })
             )
 
-            expect((await fetchChromeZipFile(url, filename, {autoUnzip: true} as IConfig)).something).toEqual('something')
+            expect((await fetchChromeZipFile(url, filename, {autoUnzip: true} as IChromeConfig)).something).toEqual('something')
         })
 
         it('should throw an error on non-ok http response', async () => {
@@ -176,7 +218,7 @@ describe('api', () => {
             )
 
             try {
-                await fetchChromeZipFile(url, filename, {autoUnzip: true} as IConfig)
+                await fetchChromeZipFile(url, filename, {autoUnzip: true} as IChromeConfig)
             } catch(error) {
                 expect(error).toEqual(new Error('Status Code: 400 some-error-message'))
             }
