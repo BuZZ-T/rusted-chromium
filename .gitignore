@@ -1,5 +1,5 @@
 .vscode/
-.orig
+*.orig
 
 node_modules/
 out/

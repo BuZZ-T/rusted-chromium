@@ -151,7 +151,7 @@ rusted-chromium -M 30 -i
 ##### Automatically select the newest of 7 results and automatically try the next lower version, if the tried version has no binary
 ```bash
 # long version
-rusted-chromium --max 78 --max 79.0.3909.0 --max-results 7 -d --non-interactive
+rusted-chromium --max 78 --max 79.0.3909.0 --max-results 7 --decreaseOnFail --non-interactive
 # short version
 rusted-chromium -M 79.0.3909.0 -r 7 -d -n
 ```
@@ -174,7 +174,6 @@ rusted-chromium -V
 
 ##### Download a store file
 ```bash
-TODO
 rusted-chromium --load-store https://url/to/localstore.json
 ```
 
@@ -213,3 +212,11 @@ So, this project:
 * has **NO own repository** for chromium sources
 * **does not build** versions of chromium itself
 * **does not store** binaries or archives of chromium
+
+### I'm starting a downloaded version, but it has the same version as my normally installed one...
+
+A session with the newer version was still running. In this case, chrom(e/ium) detects that and launches a window in the same session.
+There are two possible solutions for this:
+
+* Make sure to first close all running instances of chrom(e/ium)!
+* Start your downloaded version of chromium with the flag `--user-data-dir=<folder>`. See [chromium.googlesource.com](https://chromium.googlesource.com/chromium/src.git/+/master/docs/user_data_dir.md#overriding-the-user-data-directory) for more information.
