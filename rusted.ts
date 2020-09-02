@@ -11,13 +11,14 @@ import { logger } from './loggerSpinner'
 import { storeNegativeHit, loadStore } from './store'
 import { downloadStore } from './load'
 import { LOCAL_STORE_FILE } from './constants'
+import * as packageJson from '../package.json'
 
 /**
  * Checks the arguments passed to the programm and returns them
  */
 function readConfig(): ConfigWrapper {
     program
-        .version(require('./package.json').version)
+        .version(packageJson.version)
         .option('-m, --min <version>', 'The minimum version', '0')
         .option('-M, --max <version>', 'The maximum version. Newest version if not specificied', '10000')
         .option('-r, --max-results <results>', 'The maximum amount of results to choose from', 10)

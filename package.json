@@ -6,11 +6,12 @@
   "scripts": {
     "start": "ts-node rusted.ts",
     "start:debug": "node --inspect --inspect-brk node_modules/.bin/ts-node rusted.ts",
+    "clean": "rm *.js *.js.map",
     "test": "jest",
     "test:debug": "node --inspect --inspect-brk node_modules/.bin/jest --runInBand",
-    "build": "tsc -p tsconfig.json && cp -r package.json bin/ out/ && cp README.md out/",
-    "release": "npm run build && cd out/ && npm publish",
-    "release-github": "npm run build && cd out/ && npm publish --registry=https://npm.pkg.github.com/"
+    "build": "tsc -p tsconfig.json",
+    "release": "npm run build && npm publish",
+    "release-github": "npm run build && npm publish --registry=https://npm.pkg.github.com/"
   },
   "bin": {
     "rusted-chromimum": "bin/rusted-chromium.js"

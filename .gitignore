@@ -2,7 +2,8 @@
 *.orig
 
 node_modules/
-out/
+*.js
+*.js.map
 
 # Downloaded binaries
 chrome-*.zip
