@@ -23,6 +23,9 @@ export async function fetchLocalStore(url): Promise<any> {
         .then(json => JSON.stringify(json, null, 2))
 }
 
+/**
+ * Fetch all chromium tags (containing the version) via googlesource url
+ */
 export async function fetchChromiumTags(): Promise<any> {
     return fetch(CHROMIUM_TAGS_URL)
     .then(checkStatus)

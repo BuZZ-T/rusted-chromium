@@ -11,7 +11,7 @@ import { logger } from './loggerSpinner'
 import { storeNegativeHit, loadStore } from './store'
 import { downloadStore } from './load'
 import { LOCAL_STORE_FILE } from './constants'
-import * as packageJson from '../package.json'
+import * as packageJson from './package.json'
 
 /**
  * Checks the arguments passed to the programm and returns them
@@ -21,7 +21,7 @@ function readConfig(): ConfigWrapper {
         .version(packageJson.version)
         .option('-m, --min <version>', 'The minimum version', '0')
         .option('-M, --max <version>', 'The maximum version. Newest version if not specificied', '10000')
-        .option('-r, --max-results <results>', 'The maximum amount of results to choose from', 10)
+        .option('-r, --max-results <results>', 'The maximum amount of results to choose from', NaN)
         .option('-o, --os <os>', 'The operating system for what the binary should be downloaded')
         .option('-a, --arch <arch>', 'The architecture for what the binary should be downloaded. Valid values are "x86" and "x64". Only works when --os is also set')
         .option('-d, --decreaseOnFail', 'If a binary does not exist, go to the next lower version number and try again (regarding --min, --max and --max-results)')
@@ -35,6 +35,9 @@ function readConfig(): ConfigWrapper {
 
     const min = versionToComparableVersion(program.min)
     const max = versionToComparableVersion(program.max)
+
+    const minIsSet = program.min > 0
+    const maxResultsIsSet = !isNaN(program.maxResults)
 
     const os = mapOS(program.os || process.platform)
 
@@ -62,7 +65,7 @@ function readConfig(): ConfigWrapper {
             autoUnzip: !!program.unzip,
             min,
             max,
-            results: program.maxResults,
+            results: minIsSet && !maxResultsIsSet ? Infinity : (program.maxResults || 10),
             os,
             arch: is64Bit ? 'x64' : 'x86',
             onFail: program.increaseOnFail ? 'increase' : program.decreaseOnFail ? 'decrease' : 'nothing',
@@ -74,6 +77,9 @@ function readConfig(): ConfigWrapper {
     }
 }
 
+/**
+ * Parses the chromium tags and returns all chromium versions
+ */
 async function loadVersions(): Promise<string[]> {
     const tags = await fetchChromiumTags()
 
@@ -118,6 +124,10 @@ function mapVersions(versions: string[], config: IChromeConfig, store: Set<strin
         .slice(0, Number(config.results))
 }
 
+/**
+ * Lets the user select a version via CLI prompt and returns it.
+ * If the amount of results in the config is set to 1, the first version is returned
+ */
 async function userSelectedVersion(versions: IMappedVersion[], config: IChromeConfig): Promise<string> {
     if (config.results === '1') {
         return versions[0].disabled ? null : versions[0].value
