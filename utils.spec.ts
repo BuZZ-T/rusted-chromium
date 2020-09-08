@@ -27,6 +27,7 @@ describe('utils', () => {
         store: false,
         download: true,
         downloadUrl: '',
+        hideNegativeHits: false,
     }
 
     describe('detectOperatingSystem', () => {

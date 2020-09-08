@@ -68,6 +68,7 @@ npm start -- --help # the two extra dashes are important to pass arguments to th
 |`--non-interactive` | `-n` | - | - | Don't display the version selection. Automatically select the newest version in the available range (set by `--min`, `--max` and `--max-results`). Only works when `--decreaseOnFail` is set as well.
 |`--no-download` | `-l` | - | - | Don't download the binary if it's found.
 |`--load-store` | -- | URL | - | Download the store file "localstore.json" from a given URL
+|`--hide-negative-hits` | `-H` | - | false | Hide negative hits in the CLI prompt
 | `--version`| `-V` | - | - | Show current version.
 | `--help`| `-h` | - | - | Display a help with all available flags.
 
