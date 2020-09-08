@@ -25,6 +25,7 @@ export interface IChromeConfig {
     store: boolean
     download: boolean
     downloadUrl: string | null
+    hideNegativeHits: boolean
 }
 
 export interface IStoreConfig{

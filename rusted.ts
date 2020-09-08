@@ -31,6 +31,7 @@ function readConfig(): ConfigWrapper {
         .option('-t, --no-store', 'Don\'t store negative hits in the local store file.', true)
         .option('-l, --no-download', 'Don\'t download the binary. It also continues with the next version, if --decreaseOnFail or --increaseOnFail is set. Useful to build up the negative hit store', true)
         .option('--load-store <url>', 'Download a localstore.json file from an URL')
+        .option('-H, --hide-negative-hits', 'Hide negative hits', false)
         .parse(process.argv)
 
     const min = versionToComparableVersion(program.min)
@@ -73,6 +74,7 @@ function readConfig(): ConfigWrapper {
             store: program.store,
             download: program.download,
             downloadUrl: program.loadStore,
+            hideNegativeHits: program.hideNegativeHits,
         },
     }
 }
@@ -121,6 +123,7 @@ function mapVersions(versions: string[], config: IChromeConfig, store: Set<strin
         }))
         .sort((a,b) => b.comparable - a.comparable) // descending
         .filter(version => version.comparable >= config.min && version.comparable <= config.max)
+        .filter(version => !config.hideNegativeHits || !version.disabled)
         .slice(0, Number(config.results))
 }
 
