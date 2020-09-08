@@ -59,7 +59,7 @@ npm start -- --help # the two extra dashes are important to pass arguments to th
 |-|-|-|-|-
 | `--max`| `-M` | integer | 10000 | Maximum version which should be selectable.
 | `--min`| `-m` | integer | 0 | Minimum version which should be selectable.
-| `--max-results`| `-r` | integer | 10 | Maximum number of results to select. Directly downloads the binary, if set to 1.
+| `--max-results`| `-r` | integer | 10 | Maximum number of results to select. Directly downloads the binary, if set to 1. **Important:**  `--max-results` is set to `Infinity`, if `--min` is set and `--max-results` is not set, so the default is overridden!
 | `--os`| `-o` | "win"/"linux"/"mac"/"darwin" | The operation system on the current system | Set the operation system of the binary. Valid values are "win", "linux" and "mac"/"darwin".
 | `--arch`| `-a` |  "x86"/"x64" "x86" is ignored for os "mac" | The architecture on the current system | Set the architecture of the binary. The flag is only regarded, if `--os` is present.
 | `--unzip` | `-z` | - | - | Directly unzip the downloaded zip-file and delete the .zip afterwards
