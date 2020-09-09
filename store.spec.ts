@@ -10,6 +10,8 @@ jest.mock('fs')
 const PROMISIFY_NO_ERROR = false
 const localPath = path.join(__dirname, 'localstore.json')
 
+type PromisifyCallback = (p: boolean, ...args: any[]) => void
+
 describe('store', () => {
     
     describe('disableByStore', () => {
@@ -78,7 +80,7 @@ describe('store', () => {
         })
 
         it('should return an empty story on no store exists', async () => {
-            fsMock.exists.mockImplementation((path, callback) => {
+            fsMock.exists.mockImplementation((path: string, callback: PromisifyCallback) => {
                 callback(PROMISIFY_NO_ERROR, false)
             })
 
@@ -104,11 +106,11 @@ describe('store', () => {
         })
 
         it('should return the store received from the existing file', async () => {
-            fsMock.exists.mockImplementation((path, callback) => {
+            fsMock.exists.mockImplementation((path: string, callback: PromisifyCallback) => {
                 callback(PROMISIFY_NO_ERROR, true)
             })
 
-            fsMock.readFile.mockImplementation((path, encoding, callback) => {
+            fsMock.readFile.mockImplementation((path: string, encoding: string, callback: PromisifyCallback) => {
                 callback(PROMISIFY_NO_ERROR, '{"linux": {"x64": ["1.2.3.4"], "x86": []},"mac": {"x64": [], "x86": []},"win": {"x64": [], "x86": []}}')
             })
 
@@ -135,11 +137,11 @@ describe('store', () => {
         })
 
         it('should return an empty store on unparsable JSON', async () => {
-            fsMock.exists.mockImplementation((path, callback) => {
+            fsMock.exists.mockImplementation((path: string, callback: PromisifyCallback) => {
                 callback(PROMISIFY_NO_ERROR, true)
             })
 
-            fsMock.readFile.mockImplementation((path, encoding, callback) => {
+            fsMock.readFile.mockImplementation((path: string, encoding: string, callback: PromisifyCallback) => {
                 callback(PROMISIFY_NO_ERROR, '{"linux": ["1.2.3.4"],"mac": [],"win": []')
             })
 
@@ -198,7 +200,7 @@ describe('store', () => {
             }
             loadStoreMock.mockReturnValue(Promise.resolve(mockedStore))
 
-            fsMock.writeFile.mockImplementation((path, store, callback) => {
+            fsMock.writeFile.mockImplementation((path: string, store: any, callback: PromisifyCallback) => {
                 callback(PROMISIFY_NO_ERROR)
             })
 
@@ -247,7 +249,7 @@ describe('store', () => {
 
             loadStoreMock.mockReturnValue(existingStore)
     
-            fsMock.writeFile.mockImplementation((path, store, callback) => {
+            fsMock.writeFile.mockImplementation((path: string, store: any, callback: PromisifyCallback) => {
                 callback(PROMISIFY_NO_ERROR)
             })
     

@@ -6,13 +6,13 @@ export class LoggerSpinner {
 
     private readonly DEFAULT_ERROR = 'An error occured'
     private readonly SPINNER_STATES = '⠏⠋⠙⠹⠸⠼⠴⠦⠧⠇'
-    private readonly SUCCESS_FN = msg => chalk.green(`✔ ${msg}`)
-    private readonly ERROR_FN = msg => chalk.red(`✘ ${msg}`)
-    private readonly WARN_FN = msg => chalk.yellow(`! ${msg}`)
+    private readonly SUCCESS_FN = (msg: string) => chalk.green(`✔ ${msg}`)
+    private readonly ERROR_FN = (msg: string) => chalk.red(`✘ ${msg}`)
+    private readonly WARN_FN = (msg: string) => chalk.yellow(`! ${msg}`)
 
-    private startText: string
-    private successText: string
-    private errorText: string
+    private startText: string | undefined
+    private successText: string | undefined
+    private errorText: string | undefined
     private stdio: NodeJS.WriteStream
     private timer: NodeJS.Timeout | null = null
 
@@ -85,14 +85,14 @@ export class LoggerSpinner {
     public success(): LoggerSpinner {
         return this.clearLine()
                    .stop()
-                   .write(this.successText)
+                   .write(this.successText || '')
                    .newline()
     }
 
     public error(text?: string): LoggerSpinner {
         return this.clearLine()
                    .stop()
-                   .write(text ? this.ERROR_FN(text) : this.errorText)
+                   .write(text ? this.ERROR_FN(text) : this.errorText || '')
                    .newline()
     }
 }

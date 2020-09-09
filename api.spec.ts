@@ -1,5 +1,5 @@
 import { mocked } from 'ts-jest/utils'
-import { MaybeMockedDeep } from 'ts-jest/dist/util/testing'
+import { MaybeMockedDeep, MaybeMocked } from 'ts-jest/dist/util/testing'
 import * as fetch  from 'node-fetch'
 
 import { logger, LoggerSpinner } from './loggerSpinner'
@@ -12,9 +12,11 @@ jest.mock('./loggerSpinner')
 describe('api', () => {
 
     let loggerMock: MaybeMockedDeep<LoggerSpinner>
+    let fetchMock: MaybeMocked<any>
 
     beforeEach(() => {
-        mocked(fetch).mockClear()
+        fetchMock = mocked(fetch)
+        mocked<any>(fetch).mockClear()
         loggerMock = mocked(logger, true)
     })
 
@@ -22,7 +24,7 @@ describe('api', () => {
         it('should return the formatted store file as text', async () => {
             const url = 'local-store-url'
 
-            mocked(fetch).mockImplementation((): Promise<any> =>
+            fetchMock.mockImplementation((): Promise<any> =>
                 Promise.resolve({
                     ok: true,
                     json() {
@@ -35,14 +37,14 @@ describe('api', () => {
 `{
   "some": "store"
 }`)
-            expect(mocked(fetch).mock.calls.length).toBe(1);
+            expect(fetchMock.mock.calls.length).toBe(1);
             expect(fetch).toHaveBeenCalledWith(url)
         })
 
         it('should throw an error on non-ok http response', async () => {
             const url = 'local-store-url'
 
-            mocked(fetch).mockImplementation((): Promise<any> =>
+            fetchMock.mockImplementation((): Promise<any> =>
                 Promise.resolve({
                     ok: false,
                     status: 400,
@@ -53,7 +55,7 @@ describe('api', () => {
             try {
                 await fetchLocalStore(url)
             } catch (error) {
-                expect(mocked(fetch).mock.calls.length).toBe(1);
+                expect(fetchMock.mock.calls.length).toBe(1);
                 expect(fetch).toHaveBeenCalledWith(url)
                 expect(error).toEqual(new Error('Status Code: 400 some-error-message'))
             }
@@ -62,7 +64,7 @@ describe('api', () => {
 
     describe('fetchChromiumTags', () => {
         it('should fetch chromium tags as text' , async () => {
-            mocked(fetch).mockImplementation((): Promise<any> => 
+            fetchMock.mockImplementation((): Promise<any> => 
                 Promise.resolve({
                     ok: true,
                     text() {
@@ -73,11 +75,11 @@ describe('api', () => {
 
             expect(await fetchChromiumTags()).toEqual('some-html')
             expect(fetch).toHaveBeenLastCalledWith('https://chromium.googlesource.com/chromium/src/+refs')
-            expect(mocked(fetch).mock.calls.length).toBe(1);
+            expect(fetchMock.mock.calls.length).toBe(1);
         })
 
         it('should throw an error on non-ok http response', async () => {
-            mocked(fetch).mockImplementation((): Promise<any> =>
+            fetchMock.mockImplementation((): Promise<any> =>
                 Promise.resolve({
                     ok: false,
                     status: 400,
@@ -95,7 +97,7 @@ describe('api', () => {
 
     describe('fetchBranchPosition', () => {
         it('should fetch the branch position', async () => {
-            mocked(fetch).mockImplementation((): Promise<any> =>
+            fetchMock.mockImplementation((): Promise<any> =>
                 Promise.resolve({
                     ok: true,
                     json() {
@@ -112,7 +114,7 @@ describe('api', () => {
         })
 
         it('should throw an error on non-ok http response', async () => {
-            mocked(fetch).mockImplementation((): Promise<any> =>
+            fetchMock.mockImplementation((): Promise<any> =>
                 Promise.resolve({
                     ok: false,
                     status: 400,
@@ -128,7 +130,7 @@ describe('api', () => {
         })
 
         it('should log an error on no branch position', async () => {
-            mocked(fetch).mockImplementation((): Promise<any> =>
+            fetchMock.mockImplementation((): Promise<any> =>
                 Promise.resolve({
                     ok: true,
                     json() {
@@ -150,7 +152,7 @@ describe('api', () => {
             const branchPosition = 'branch-position'
             const filenameOS = 'filename-os'
 
-            mocked(fetch).mockImplementation((): Promise<any> =>
+            fetchMock.mockImplementation((): Promise<any> =>
                 Promise.resolve({
                     ok: true,
                     json() {
@@ -174,7 +176,7 @@ describe('api', () => {
         })
 
         it('should throw an error on non-ok http response', async () => {
-            mocked(fetch).mockImplementation((): Promise<any> =>
+            fetchMock.mockImplementation((): Promise<any> =>
                 Promise.resolve({
                     ok: false,
                     status: 400,
@@ -195,7 +197,7 @@ describe('api', () => {
             const url = 'some-url'
             const filename = 'some-filename'
 
-            mocked(fetch).mockImplementation((): Promise<any> =>
+            fetchMock.mockImplementation((): Promise<any> =>
                 Promise.resolve({
                     ok: true,
                     something: 'something'
@@ -209,7 +211,7 @@ describe('api', () => {
             const url = 'some-url'
             const filename = 'some-filename'
 
-            mocked(fetch).mockImplementation((): Promise<any> =>
+            fetchMock.mockImplementation((): Promise<any> =>
                 Promise.resolve({
                     ok: false,
                     status: 400,

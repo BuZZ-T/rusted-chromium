@@ -6,7 +6,6 @@ import { logger, LoggerSpinner } from './loggerSpinner'
 import load from './load'
 import api from './api'
 
-jest.mock('node-fetch', () => jest.fn())
 jest.mock('./loggerSpinner')
 jest.mock('fs')
 
@@ -36,7 +35,7 @@ describe('load', () => {
 
         const LOCAL_STORE_LOCATION = 'my-local-store.json'
 
-        fsMock.writeFile.mockImplementation((path, store, callback) => {
+        fsMock.writeFile.mockImplementation((path: string, store: any, callback: (p: boolean) => void) => {
             callback(PROMISIFY_NO_ERROR)
             expect(path).toEqual(LOCAL_STORE_LOCATION)
         })

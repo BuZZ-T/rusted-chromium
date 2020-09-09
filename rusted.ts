@@ -106,8 +106,8 @@ async function loadVersions(): Promise<string[]> {
         throw new Error('No list of tags found under tags headline')
     }
 
-    const versions = []
-    tagsList.childNodes.forEach(tag => {
+    const versions: string[] = []
+    tagsList.childNodes.forEach((tag: any) => {
         versions.push(tag.text)
     });
 
@@ -131,7 +131,7 @@ function mapVersions(versions: string[], config: IChromeConfig, store: Set<strin
  * Lets the user select a version via CLI prompt and returns it.
  * If the amount of results in the config is set to 1, the first version is returned
  */
-async function userSelectedVersion(versions: IMappedVersion[], config: IChromeConfig): Promise<string> {
+async function userSelectedVersion(versions: IMappedVersion[], config: IChromeConfig): Promise<string | null> {
     if (config.results === '1') {
         return versions[0].disabled ? null : versions[0].value
     }
@@ -169,7 +169,7 @@ async function downloadChromium(config: IChromeConfig): Promise<void> {
 
     const [urlOS, filenameOS] = detectOperatingSystem(config)
 
-    let chromeUrl: string
+    let chromeUrl: string | undefined
 
     const isAutoSearch = !config.interactive && config.onFail === "decrease"
 
