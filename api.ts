@@ -1,26 +1,27 @@
-import * as fetch  from 'node-fetch'
+// import * as fetch from 'node-fetch'
+const fetch = require('node-fetch')
 
 import { logger } from './loggerSpinner'
 import { IMetadataResponse, IChromeConfig } from './interfaces'
 
 const CHROMIUM_TAGS_URL = 'https://chromium.googlesource.com/chromium/src/+refs'
 
-function checkStatus(response) {
+function checkStatus(response: any /* Response */) {
     if (!response.ok) {
         throw new Error(`Status Code: ${response.status} ${response.error}`)
     }
     return response
 }
 
-const toJson = (response): Response => response.json()
+const toJson = (response: Response): Promise<any> => response.json()
 
-const toText = (response): Response => response.text()
+const toText = (response: Response): Promise<string> => response.text()
 
-export async function fetchLocalStore(url): Promise<any> {
+export async function fetchLocalStore(url: string): Promise<any> {
     return fetch(url)
         .then(checkStatus)
         .then(toJson)
-        .then(json => JSON.stringify(json, null, 2))
+        .then((json: any) => JSON.stringify(json, null, 2))
 }
 
 /**
@@ -37,8 +38,8 @@ export async function fetchBranchPosition(version: string): Promise<string> {
     return fetch(`https://omahaproxy.appspot.com/deps.json?version=${version}`)
         .then(checkStatus)
         .then(toJson)
-        .then(response => response.chromium_base_position)
-        .then(resolvedVersion => {
+        .then((response: any) => response.chromium_base_position)
+        .then((resolvedVersion: string | undefined) => {
             if (resolvedVersion) {
                 logger.success()
             } else {
@@ -48,7 +49,7 @@ export async function fetchBranchPosition(version: string): Promise<string> {
         })
 }
 
-export async function fetchChromeUrl(branchPosition: string, urlOS: string, filenameOS: string): Promise<string> {
+export async function fetchChromeUrl(branchPosition: string, urlOS: string, filenameOS: string): Promise<string | undefined> {
     const snapshotUrl = `https://www.googleapis.com/storage/v1/b/chromium-browser-snapshots/o?delimiter=/&prefix=${urlOS}/${branchPosition}/&fields=items(kind,mediaLink,metadata,name,size,updated),kind,prefixes,nextPageToken`
     // TODO: adjust field in request
     const chromeMetadataResponse: IMetadataResponse = await fetch(snapshotUrl)

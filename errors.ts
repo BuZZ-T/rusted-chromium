@@ -15,7 +15,6 @@ export function findAndThrowError(response: Response): never | void {
 
 export class HttpError extends Error {
     public constructor(statusCode: number, status: string, path: string) {
-        // super(`${statusCode} ${status}${message ? ': ' + message : ''}`)
         super(`${statusCode} ${status}${path}`)
         this.name = 'Http Error'
     }
@@ -33,7 +32,7 @@ export class BadRequestError extends HttpError {
 
     public constructor(response: Response) {
         super(BadRequestError.STATUS_CODE, BadRequestError.STATUS, JSON.stringify(response))
-        // this.path = response.url
+        this.path = response.url
     }
 }
 

@@ -8,6 +8,8 @@
         "target": "es2015",
         "module": "commonjs",
         "sourceMap": true,
+        "strict": true,
+        "noImplicitAny": true,
         "resolveJsonModule": true
     },
     "include": [
