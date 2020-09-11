@@ -7,3 +7,9 @@ export const LOAD_CONFIG: LoggingConfig = [
 ]
 
 export const LOCAL_STORE_FILE = 'localstore.json'
+
+export const RESOLVE_VERSION: LoggingConfig = [
+    'Resolving version to branch position...',
+    'Version resolved!',
+    'Error resolving version!'
+]

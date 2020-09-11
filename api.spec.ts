@@ -4,7 +4,6 @@ import * as fetch  from 'node-fetch'
 
 import { logger, LoggerSpinner } from './loggerSpinner'
 import { fetchChromiumTags, fetchBranchPosition, fetchChromeUrl, fetchChromeZipFile, fetchLocalStore } from './api'
-import { IChromeConfig } from './interfaces'
 
 jest.mock('node-fetch', () => jest.fn())
 jest.mock('./loggerSpinner')
@@ -195,7 +194,6 @@ describe('api', () => {
     describe('fetchChromeZipFile', () => {
         it('should load the chrome zip file and return the promise', async () => {
             const url = 'some-url'
-            const filename = 'some-filename'
 
             fetchMock.mockImplementation((): Promise<any> =>
                 Promise.resolve({
@@ -204,7 +202,7 @@ describe('api', () => {
                 })
             )
 
-            expect((await fetchChromeZipFile(url, filename, {autoUnzip: true} as IChromeConfig)).something).toEqual('something')
+            expect((await fetchChromeZipFile(url)).something).toEqual('something')
         })
 
         it('should throw an error on non-ok http response', async () => {
@@ -220,7 +218,7 @@ describe('api', () => {
             )
 
             try {
-                await fetchChromeZipFile(url, filename, {autoUnzip: true} as IChromeConfig)
+                await fetchChromeZipFile(url)
             } catch(error) {
                 expect(error).toEqual(new Error('Status Code: 400 some-error-message'))
             }

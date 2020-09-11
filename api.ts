@@ -2,7 +2,8 @@
 const fetch = require('node-fetch')
 
 import { logger } from './loggerSpinner'
-import { IMetadataResponse, IChromeConfig } from './interfaces'
+import { IMetadataResponse } from './interfaces'
+import { RESOLVE_VERSION } from './constants'
 
 const CHROMIUM_TAGS_URL = 'https://chromium.googlesource.com/chromium/src/+refs'
 
@@ -34,7 +35,8 @@ export async function fetchChromiumTags(): Promise<any> {
 }
 
 export async function fetchBranchPosition(version: string): Promise<string> {
-    logger.start(['Resolving version to branch position...', 'Version resolved!', 'Error resolving version!'])
+    logger.start(RESOLVE_VERSION)
+
     return fetch(`https://omahaproxy.appspot.com/deps.json?version=${version}`)
         .then(checkStatus)
         .then(toJson)
@@ -59,8 +61,7 @@ export async function fetchChromeUrl(branchPosition: string, urlOS: string, file
         return chromeMetadataResponse.items?.find(item => item.name === `${urlOS}/${branchPosition}/chrome-${filenameOS}.zip`)?.mediaLink
 }
 
-export async function fetchChromeZipFile(url: string, filename: string, config: IChromeConfig): Promise<any> {
-    logger.start(['Downloading binary...', config.autoUnzip ? `Successfully downloaded and extracted to ${filename}/` : `${filename}.zip successfully downloaded`])
+export async function fetchChromeZipFile(url: string): Promise<any> {
     return fetch(url)
         .then(checkStatus)
 }

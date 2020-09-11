@@ -1,8 +1,10 @@
-import { createWriteStream } from 'fs'
+import { createWriteStream, existsSync, mkdir as fsMkdir } from 'fs'
 import { parse } from 'node-html-parser'
+import { promisify } from 'util'
 import * as prompts from 'prompts'
 import * as program from 'commander'
 import * as unzipper from 'unzipper'
+import * as path from 'path'
 
 import { detectOperatingSystem, versionToComparableVersion, mapOS } from './utils'
 import { fetchChromiumTags, fetchBranchPosition, fetchChromeUrl, fetchChromeZipFile } from './api'
@@ -12,6 +14,8 @@ import { storeNegativeHit, loadStore } from './store'
 import { downloadStore } from './load'
 import { LOCAL_STORE_FILE } from './constants'
 import * as packageJson from './package.json'
+
+const mkdir = promisify(fsMkdir)
 
 /**
  * Checks the arguments passed to the programm and returns them
@@ -32,6 +36,7 @@ function readConfig(): ConfigWrapper {
         .option('-l, --no-download', 'Don\'t download the binary. It also continues with the next version, if --decreaseOnFail or --increaseOnFail is set. Useful to build up the negative hit store', true)
         .option('--load-store <url>', 'Download a localstore.json file from an URL')
         .option('-H, --hide-negative-hits', 'Hide negative hits', false)
+        .option('-f, --folder <folder>', 'Set the download folder', null)
         .parse(process.argv)
 
     const min = versionToComparableVersion(program.min)
@@ -75,6 +80,7 @@ function readConfig(): ConfigWrapper {
             download: program.download,
             downloadUrl: program.loadStore,
             hideNegativeHits: program.hideNegativeHits,
+            downloadFolder: program.folder,
         },
     }
 }
@@ -85,7 +91,7 @@ function readConfig(): ConfigWrapper {
 async function loadVersions(): Promise<string[]> {
     const tags = await fetchChromiumTags()
 
-    const parsedTags = parse(tags) as unknown as (HTMLElement & {valid: boolean})
+    const parsedTags = parse(tags) as unknown as (HTMLElement & { valid: boolean })
 
     const h3s = parsedTags.querySelectorAll('h3')
 
@@ -121,7 +127,7 @@ function mapVersions(versions: string[], config: IChromeConfig, store: Set<strin
             comparable: versionToComparableVersion(version),
             disabled: store.has(version),
         }))
-        .sort((a,b) => b.comparable - a.comparable) // descending
+        .sort((a, b) => b.comparable - a.comparable) // descending
         .filter(version => version.comparable >= config.min && version.comparable <= config.max)
         .filter(version => !config.hideNegativeHits || !version.disabled)
         .slice(0, Number(config.results))
@@ -186,10 +192,10 @@ async function downloadChromium(config: IChromeConfig): Promise<void> {
             break
         }
         const branchPosition = await fetchBranchPosition(selectedVersion);
-    
+
         logger.start(['Searching for binary...', 'Binary found.', 'No binary found!'])
         chromeUrl = await fetchChromeUrl(branchPosition, urlOS, filenameOS)
-        
+
         if (chromeUrl && config.download) {
             break
         }
@@ -207,7 +213,7 @@ async function downloadChromium(config: IChromeConfig): Promise<void> {
             logger.warn('Not downloading binary.')
         }
 
-        switch(config.onFail) {
+        switch (config.onFail) {
             case 'increase':
                 if (index > 0) {
                     selectedVersion = mappedVersions[index - 1].value
@@ -227,23 +233,33 @@ async function downloadChromium(config: IChromeConfig): Promise<void> {
             case 'nothing':
                 selectedVersion = await userSelectedVersion(mappedVersions, config)
                 break
-            }
+        }
     } while (!chromeUrl || !config.download)
 
     if (chromeUrl && config.download) {
         logger.success()
         const filename = `chrome-${filenameOS}-${config.arch}-${selectedVersion}`
+        const downloadPath = config.downloadFolder
+            ? path.join(config.downloadFolder, filename)
+            : filename
 
-        await fetchChromeZipFile(chromeUrl, filename, config).then(res => {
+        if (!!config.downloadFolder && !existsSync(config.downloadFolder)) {
+            await mkdir(config.downloadFolder, { recursive: true })
+            console.log(config.downloadFolder, ' created')
+        }
+
+        logger.start(['Downloading binary...', config.autoUnzip ? `Successfully downloaded and extracted to ${downloadPath}/` : `${downloadPath}.zip successfully downloaded`])
+
+        await fetchChromeZipFile(chromeUrl).then(res => {
             if (config.autoUnzip) {
                 res.body.pipe(
-                    unzipper.Extract({path: filename})
+                    unzipper.Extract({ path: downloadPath })
                 )
-                .on('close', () => {
-                    logger.success()
-                })
+                    .on('close', () => {
+                        logger.success()
+                    })
             } else {
-                const file = createWriteStream(filename+'.zip')
+                const file = createWriteStream(downloadPath + '.zip')
                 res.body.pipe(file)
                 file.on('close', () => {
                     logger.success()

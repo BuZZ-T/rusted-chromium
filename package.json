@@ -33,7 +33,6 @@
     "node-fetch": "^2.6.0",
     "node-html-parser": "^1.2.5",
     "prompts": "^2.3.1",
-    "typescript": "^3.7.5",
     "unzipper": "^0.10.9"
   },
   "devDependencies": {
@@ -44,6 +43,7 @@
     "@types/unzipper": "^0.10.3",
     "jest": "^25.1.0",
     "ts-jest": "^25.2.1",
-    "ts-node": "^8.6.2"
+    "ts-node": "^8.6.2",
+    "typescript": "^3.7.5"
   }
 }
