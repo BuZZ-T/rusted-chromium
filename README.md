@@ -69,6 +69,7 @@ npm start -- --help # the two extra dashes are important to pass arguments to th
 |`--no-download` | `-l` | - | - | Don't download the binary if it's found.
 |`--load-store` | -- | URL | - | Download the store file "localstore.json" from a given URL
 |`--hide-negative-hits` | `-H` | - | false | Hide negative hits in the CLI prompt
+|`--folder` | `-f` | `path/to/folder` | Current folder executing the command | Set the folder to which the archive of the chromium binary or the extracted folder (if the flag `--unzip` is set)
 | `--version`| `-V` | - | - | Show current version.
 | `--help`| `-h` | - | - | Display a help with all available flags.
 
@@ -157,6 +158,19 @@ rusted-chromium --max 78 --max 79.0.3909.0 --max-results 7 --decreaseOnFail --no
 rusted-chromium -M 79.0.3909.0 -r 7 -d -n
 ```
 
+##### Download to an alternative directory
+```bash
+# long version
+rusted-chromium --folder /tmp/rusted
+# short version
+rusted-chromium -f /tmp/rusted
+```
+
+##### Download a store file
+```bash
+rusted-chromium --load-store https://url/to/localstore.json
+```
+
 ##### Show the help and quit
 ```bash
 # long version
@@ -171,11 +185,6 @@ rusted-chromium -h
 rusted-chromium --version
 # short version
 rusted-chromium -V
-```
-
-##### Download a store file
-```bash
-rusted-chromium --load-store https://url/to/localstore.json
 ```
 
 ## Store file
