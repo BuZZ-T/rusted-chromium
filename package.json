@@ -6,7 +6,7 @@
   "scripts": {
     "start": "ts-node rusted.ts",
     "start:debug": "node --inspect --inspect-brk node_modules/.bin/ts-node rusted.ts",
-    "clean": "rm *.js *.js.map",
+    "clean": "find -maxdepth 1 \\( -iname \"*.js\" -or -iname \"*.js.map\" \\) -and ! -name \"jest.config.js\" -delete",
     "test": "jest",
     "test:debug": "node --inspect --inspect-brk node_modules/.bin/jest --runInBand",
     "build": "tsc -p tsconfig.json",
