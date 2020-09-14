@@ -37,6 +37,7 @@ function readConfig(): ConfigWrapper {
         .option('--load-store <url>', 'Download a localstore.json file from an URL')
         .option('-H, --hide-negative-hits', 'Hide negative hits', false)
         .option('-f, --folder <folder>', 'Set the download folder', null)
+        .option('-O, --only-newest-major', 'Show only the newest major version in user selection', false)
         .parse(process.argv)
 
     const min = versionToComparableVersion(program.min)
@@ -81,6 +82,7 @@ function readConfig(): ConfigWrapper {
             downloadUrl: program.loadStore,
             hideNegativeHits: program.hideNegativeHits,
             downloadFolder: program.folder,
+            onlyNewestMajor: program.onlyNewestMajor,
         },
     }
 }
@@ -121,7 +123,7 @@ async function loadVersions(): Promise<string[]> {
 }
 
 function mapVersions(versions: string[], config: IChromeConfig, store: Set<string>): IMappedVersion[] {
-    return versions
+    const filteredVersions = versions
         .map(version => ({
             value: version,
             comparable: versionToComparableVersion(version),
@@ -130,7 +132,12 @@ function mapVersions(versions: string[], config: IChromeConfig, store: Set<strin
         .sort((a, b) => b.comparable - a.comparable) // descending
         .filter(version => version.comparable >= config.min && version.comparable <= config.max)
         .filter(version => !config.hideNegativeHits || !version.disabled)
-        .slice(0, Number(config.results))
+
+        // Don't reduce the amount of filtered versions when --only-newest-major is set
+        // because the newest available major version might be disabled for the current os 
+        return config.onlyNewestMajor
+            ? filteredVersions
+            : filteredVersions.slice(0, Number(config.results))
 }
 
 /**
@@ -140,6 +147,15 @@ function mapVersions(versions: string[], config: IChromeConfig, store: Set<strin
 async function userSelectedVersion(versions: IMappedVersion[], config: IChromeConfig): Promise<string | null> {
     if (config.results === '1') {
         return versions[0].disabled ? null : versions[0].value
+    }
+
+    if (config.onlyNewestMajor) {
+        versions = versions.filter((version, index, versionArray) => {
+            const previous = versionArray[index - 1]
+            const previousMajor = previous?.value?.split('.')[0]
+            const currentMajor = version?.value?.split('.')[0]
+            return (currentMajor !== previousMajor || previous?.disabled) && !version?.disabled
+        }).slice(0, Number(config.results))
     }
 
     const { version } = await prompts({
