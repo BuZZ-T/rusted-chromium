@@ -29,6 +29,7 @@ describe('utils', () => {
         downloadUrl: '',
         hideNegativeHits: false,
         downloadFolder: null,
+        onlyNewestMajor: false,
     }
 
     describe('detectOperatingSystem', () => {

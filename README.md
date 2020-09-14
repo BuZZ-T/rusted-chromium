@@ -49,7 +49,12 @@ git clone https://github.com/BuZZ-T/rusted-chromium
 cd rusted-chromium
 npm install
 npm test
+
+# using ts-node
 npm start -- --help # the two extra dashes are important to pass arguments to the script!
+# building and running
+npm run build
+./bin/rusted-chromium.js --help
 
 ```
 
@@ -70,6 +75,7 @@ npm start -- --help # the two extra dashes are important to pass arguments to th
 |`--load-store` | -- | URL | - | Download the store file "localstore.json" from a given URL
 |`--hide-negative-hits` | `-H` | - | false | Hide negative hits in the CLI prompt
 |`--folder` | `-f` | `path/to/folder` | Current folder executing the command | Set the folder to which the archive of the chromium binary or the extracted folder (if the flag `--unzip` is set)
+|`--only-newestmajor` | `-O`| - | - | Show only the newest version for every major version in the user selection. If the newest versions are not available for the current os, they are skipped.
 | `--version`| `-V` | - | - | Show current version.
 | `--help`| `-h` | - | - | Display a help with all available flags.
 
