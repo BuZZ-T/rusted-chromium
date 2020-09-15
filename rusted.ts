@@ -1,18 +1,18 @@
 import { createWriteStream, existsSync, mkdir as fsMkdir } from 'fs'
 import { parse } from 'node-html-parser'
 import { promisify } from 'util'
-import * as prompts from 'prompts'
 import * as program from 'commander'
 import * as unzipper from 'unzipper'
 import * as path from 'path'
 
-import { detectOperatingSystem, versionToComparableVersion, mapOS } from './utils'
-import { fetchChromiumTags, fetchBranchPosition, fetchChromeUrl, fetchChromeZipFile } from './api'
+import { versionToComparableVersion, mapOS } from './utils'
+import { fetchChromiumTags, fetchChromeZipFile } from './api'
 import { IMappedVersion, IChromeConfig, ConfigWrapper, IStoreConfig } from './interfaces'
 import { logger } from './loggerSpinner'
-import { storeNegativeHit, loadStore } from './store'
+import { loadStore } from './store'
 import { downloadStore } from './load'
 import { LOCAL_STORE_FILE } from './constants'
+import { getChromeDownloadUrl } from './versions'
 import * as packageJson from './package.json'
 
 const mkdir = promisify(fsMkdir)
@@ -133,40 +133,11 @@ function mapVersions(versions: string[], config: IChromeConfig, store: Set<strin
         .filter(version => version.comparable >= config.min && version.comparable <= config.max)
         .filter(version => !config.hideNegativeHits || !version.disabled)
 
-        // Don't reduce the amount of filtered versions when --only-newest-major is set
-        // because the newest available major version might be disabled for the current os 
-        return config.onlyNewestMajor
-            ? filteredVersions
-            : filteredVersions.slice(0, Number(config.results))
-}
-
-/**
- * Lets the user select a version via CLI prompt and returns it.
- * If the amount of results in the config is set to 1, the first version is returned
- */
-async function userSelectedVersion(versions: IMappedVersion[], config: IChromeConfig): Promise<string | null> {
-    if (config.results === '1') {
-        return versions[0].disabled ? null : versions[0].value
-    }
-
-    if (config.onlyNewestMajor) {
-        versions = versions.filter((version, index, versionArray) => {
-            const previous = versionArray[index - 1]
-            const previousMajor = previous?.value?.split('.')[0]
-            const currentMajor = version?.value?.split('.')[0]
-            return (currentMajor !== previousMajor || previous?.disabled) && !version?.disabled
-        }).slice(0, Number(config.results))
-    }
-
-    const { version } = await prompts({
-        type: 'select',
-        name: 'version',
-        message: 'Select a version',
-        warn: 'This version seems to not have a binary',
-        choices: versions,
-        hint: `for ${config.os} ${config.arch}`
-    } as any)
-    return version
+    // Don't reduce the amount of filtered versions when --only-newest-major is set
+    // because the newest available major version might be disabled for the current os 
+    return config.onlyNewestMajor
+        ? filteredVersions
+        : filteredVersions.slice(0, Number(config.results))
 }
 
 async function main(): Promise<void> {
@@ -189,68 +160,7 @@ async function downloadChromium(config: IChromeConfig): Promise<void> {
     const storeByOs = new Set(store[config.os][config.arch])
     const mappedVersions = mapVersions(versions, config, storeByOs)
 
-    const [urlOS, filenameOS] = detectOperatingSystem(config)
-
-    let chromeUrl: string | undefined
-
-    const isAutoSearch = !config.interactive && config.onFail === "decrease"
-
-    let selectedVersion = isAutoSearch
-        ? mappedVersions[0].value
-        : await userSelectedVersion(mappedVersions, config)
-
-    if (isAutoSearch) {
-        logger.info(`Auto-searching with version ${selectedVersion}`)
-    }
-
-    do {
-        if (!selectedVersion) {
-            break
-        }
-        const branchPosition = await fetchBranchPosition(selectedVersion);
-
-        logger.start(['Searching for binary...', 'Binary found.', 'No binary found!'])
-        chromeUrl = await fetchChromeUrl(branchPosition, urlOS, filenameOS)
-
-        if (chromeUrl && config.download) {
-            break
-        }
-
-        const index = mappedVersions.findIndex(version => version.value === selectedVersion)
-
-        if (!chromeUrl) {
-            const invalidVersion = mappedVersions[index]
-            logger.error()
-            invalidVersion.disabled = true
-            if (config.store) {
-                await storeNegativeHit(invalidVersion, config.os, config.arch)
-            }
-        } else {
-            logger.warn('Not downloading binary.')
-        }
-
-        switch (config.onFail) {
-            case 'increase':
-                if (index > 0) {
-                    selectedVersion = mappedVersions[index - 1].value
-                    logger.info(`Continue with next higher version "${selectedVersion}"`)
-                } else {
-                    selectedVersion = null
-                }
-                break
-            case 'decrease':
-                if (index < mappedVersions.length - 1) {
-                    selectedVersion = mappedVersions[index + 1].value
-                    logger.info(`Continue with next lower version "${selectedVersion}"`)
-                } else {
-                    selectedVersion = null
-                }
-                break
-            case 'nothing':
-                selectedVersion = await userSelectedVersion(mappedVersions, config)
-                break
-        }
-    } while (!chromeUrl || !config.download)
+    const [chromeUrl, selectedVersion, filenameOS] = await getChromeDownloadUrl(config, mappedVersions)
 
     if (chromeUrl && config.download) {
         logger.success()
