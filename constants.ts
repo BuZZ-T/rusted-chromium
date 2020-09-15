@@ -13,3 +13,9 @@ export const RESOLVE_VERSION: LoggingConfig = [
     'Version resolved!',
     'Error resolving version!'
 ]
+
+export const SEARCH_BINARY: LoggingConfig = [
+    'Searching for binary...',
+    'Binary found.',
+    'No binary found!'
+]
