@@ -27,19 +27,22 @@ export async function getChromeDownloadUrl(config: IChromeConfig, mappedVersions
             // no version to check for binary available, exiting...
             break
         }
-        const branchPosition = await fetchBranchPosition(selectedVersion.value);
 
-        logger.start(SEARCH_BINARY)
-        chromeUrl = await fetchChromeUrl(branchPosition, urlOS, filenameOS)
-
-        if (chromeUrl && config.download) {
-            // chrome url found, ending loop
-            break
+        // when using --decreaseOnFail or --increaseOnFail, skip already disabled versions
+        if (!selectedVersion.disabled) {
+            const branchPosition = await fetchBranchPosition(selectedVersion.value);
+            logger.start(SEARCH_BINARY)
+            chromeUrl = await fetchChromeUrl(branchPosition, urlOS, filenameOS)
+    
+            if (chromeUrl && config.download) {
+                // chrome url found, ending loop
+                break
+            }
         }
 
         const index = mappedVersions.findIndex(version => version.value === selectedVersion?.value)
 
-        if (!chromeUrl) {
+        if (!chromeUrl && !selectedVersion.disabled) {
             const invalidVersion = mappedVersions[index]
             logger.error()
             invalidVersion.disabled = true
@@ -47,7 +50,9 @@ export async function getChromeDownloadUrl(config: IChromeConfig, mappedVersions
                 // TODO: remove await?
                 await storeNegativeHit(invalidVersion, config.os, config.arch)
             }
-        } else {
+        }
+        
+        if (chromeUrl && !config.download) {
             logger.warn('Not downloading binary.')
         }
 
@@ -55,7 +60,9 @@ export async function getChromeDownloadUrl(config: IChromeConfig, mappedVersions
             case 'increase':
                 if (index > 0) {
                     selectedVersion = mappedVersions[index - 1]
-                    logger.info(`Continue with next higher version "${selectedVersion}"`)
+                    if (!selectedVersion.disabled) {
+                        logger.info(`Continue with next higher version "${selectedVersion.value}"`)
+                    }
                 } else {
                     selectedVersion = null
                 }
@@ -64,8 +71,9 @@ export async function getChromeDownloadUrl(config: IChromeConfig, mappedVersions
                 if (index < mappedVersions.length - 1) {
                     const nextVersion = mappedVersions[index + 1]
                     selectedVersion = nextVersion
-                    console.log('next is disabled: ', nextVersion.disabled)
-                    logger.info(`Continue with next lower version "${selectedVersion}"`)
+                    if (!selectedVersion.disabled) {
+                        logger.info(`Continue with next lower version "${selectedVersion.value}"`)
+                    }
                 } else {
                     selectedVersion = null
                 }
