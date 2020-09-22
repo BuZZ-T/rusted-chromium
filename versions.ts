@@ -1,23 +1,22 @@
-import * as prompts from 'prompts'
-
 import { fetchBranchPosition, fetchChromeUrl } from './api'
 import { logger } from './loggerSpinner'
 import { IChromeConfig, IMappedVersion } from './interfaces'
 import { storeNegativeHit } from './store'
 import { SEARCH_BINARY } from './constants'
-import { detectOperatingSystem } from './utils'
+import { detectOperatingSystem, versionToComparableVersion } from './utils'
+import { userSelectedVersion } from './select'
 
 export async function getChromeDownloadUrl(config: IChromeConfig, mappedVersions: IMappedVersion[]): Promise<[string | undefined, string | undefined, string]> {
     const [urlOS, filenameOS] = detectOperatingSystem(config)
 
     const isAutoSearch = !config.interactive && config.onFail === "decrease"
-    
+        
     let selectedVersion = isAutoSearch
         ? mappedVersions[0]
         : await userSelectedVersion(mappedVersions, config)
     
     if (isAutoSearch) {
-        logger.info(`Auto-searching with version ${selectedVersion}`)
+        logger.info(`Auto-searching with version ${selectedVersion?.value}`)
     }
 
     let chromeUrl: string | undefined
@@ -36,6 +35,7 @@ export async function getChromeDownloadUrl(config: IChromeConfig, mappedVersions
     
             if (chromeUrl && config.download) {
                 // chrome url found, ending loop
+                logger.success()
                 break
             }
         }
@@ -87,32 +87,20 @@ export async function getChromeDownloadUrl(config: IChromeConfig, mappedVersions
     return [chromeUrl, selectedVersion?.value, filenameOS]
 } 
 
-/**
- * Lets the user select a version via CLI prompt and returns it.
- * If the amount of results in the config is set to 1, the first version is returned
- */
-export async function userSelectedVersion(versions: IMappedVersion[], config: IChromeConfig): Promise<IMappedVersion | null> {
-    if (config.results === '1') {
-        return versions[0].disabled ? null : versions[0]
-    }
+export function mapVersions(versions: string[], config: IChromeConfig, store: Set<string>): IMappedVersion[] {
+    const filteredVersions = versions
+        .map(version => ({
+            value: version,
+            comparable: versionToComparableVersion(version),
+            disabled: store.has(version),
+        }))
+        .sort((a, b) => b.comparable - a.comparable) // descending
+        .filter(version => version.comparable >= config.min && version.comparable <= config.max)
+        .filter(version => !config.hideNegativeHits || !version.disabled)
 
-    if (config.onlyNewestMajor) {
-        versions = versions.filter((version, index, versionArray) => {
-            const previous = versionArray[index - 1]
-            const previousMajor = previous?.value?.split('.')[0]
-            const currentMajor = version?.value?.split('.')[0]
-            return (currentMajor !== previousMajor || previous?.disabled) && !version?.disabled
-        }).slice(0, Number(config.results))
-    }
-
-    const { version } = await prompts({
-        type: 'select',
-        name: 'version',
-        message: 'Select a version',
-        warn: 'This version seems to not have a binary',
-        choices: versions,
-        hint: `for ${config.os} ${config.arch}`
-    } as any)
-
-    return versions.find(v => v.value === version) || null
+    // Don't reduce the amount of filtered versions when --only-newest-major is set
+    // because the newest available major version might be disabled for the current os 
+    return config.onlyNewestMajor
+        ? filteredVersions
+        : filteredVersions.slice(0, Number(config.results))
 }

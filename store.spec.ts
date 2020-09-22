@@ -2,7 +2,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 import { mocked } from 'ts-jest/utils'
 
-import { Store } from './interfaces';
+import { Store } from './interfaces'
 import store from './store'
 
 jest.mock('fs')

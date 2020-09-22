@@ -4,10 +4,11 @@ import { MaybeMockedDeep } from 'ts-jest/dist/util/testing'
 
 import { logger, LoggerSpinner } from './loggerSpinner'
 import load from './load'
-import api from './api'
+import { fetchLocalStore } from './api'
 
-jest.mock('./loggerSpinner')
 jest.mock('fs')
+jest.mock('./loggerSpinner')
+jest.mock('./api')
 
 const PROMISIFY_NO_ERROR = false
 
@@ -17,7 +18,7 @@ describe('load', () => {
     let fsMock: any
 
     beforeEach(() => {
-        fetchLocalStoreMock = jest.spyOn(api, 'fetchLocalStore')
+        fetchLocalStoreMock = mocked(fetchLocalStore)
         fsMock = mocked(fs, true)
         fsMock.writeFile.mockClear()
         loggerMock = mocked(logger, true)

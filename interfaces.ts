@@ -16,7 +16,7 @@ export interface IChromeConfigWrapper {
 export interface IChromeConfig {
     min: number
     max: number
-    results: string
+    results: number
     os: OS
     arch: Arch
     onFail: 'nothing' | 'increase' | 'decrease'

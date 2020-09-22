@@ -1,5 +1,6 @@
 import { ExtendedOS, OS, IChromeConfig } from './interfaces'
 import { logger } from './loggerSpinner'
+import { mapVersions } from './versions';
 
 export function detectOperatingSystem(config: IChromeConfig): [string, string] {
 
