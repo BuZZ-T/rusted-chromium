@@ -1,4 +1,3 @@
-// import * as fetch from 'node-fetch'
 const fetch = require('node-fetch')
 
 import { logger } from './loggerSpinner'
@@ -65,13 +64,3 @@ export async function fetchChromeZipFile(url: string): Promise<any> {
     return fetch(url)
         .then(checkStatus)
 }
-
-const api = {
-    fetchLocalStore,
-    fetchChromiumTags,
-    fetchBranchPosition,
-    fetchChromeUrl,
-    fetchChromeZipFile,
-}
-
-export default api

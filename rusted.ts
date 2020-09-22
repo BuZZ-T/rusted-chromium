@@ -7,12 +7,12 @@ import * as path from 'path'
 
 import { versionToComparableVersion, mapOS } from './utils'
 import { fetchChromiumTags, fetchChromeZipFile } from './api'
-import { IMappedVersion, IChromeConfig, ConfigWrapper, IStoreConfig } from './interfaces'
+import { IChromeConfig, ConfigWrapper, IStoreConfig } from './interfaces'
 import { logger } from './loggerSpinner'
 import { loadStore } from './store'
 import { downloadStore } from './load'
 import { LOCAL_STORE_FILE } from './constants'
-import { getChromeDownloadUrl } from './versions'
+import { getChromeDownloadUrl, mapVersions } from './versions'
 import * as packageJson from './package.json'
 
 const mkdir = promisify(fsMkdir)
@@ -31,7 +31,7 @@ function readConfig(): ConfigWrapper {
         .option('-d, --decreaseOnFail', 'If a binary does not exist, go to the next lower version number and try again (regarding --min, --max and --max-results)')
         .option('-i, --increaseOnFail', 'If a binary does not exist, go to the next higher version number and try again (regarding --min, --max and --max-results), overwrites "--decreaseOnFail" if both set')
         .option('-z, --unzip', 'Directly unzip the downloaded zip-file and delete the .zip afterwards')
-        .option('-n, --non-interactive', 'Don\'t show the selection menu. Automatically select the newest version. Only works when -d or -i is also set.', false)
+        .option('-n, --non-interactive', 'Don\'t show the selection menu. Automatically select the newest version. Only works when --decreaseOnFail is also set.', false)
         .option('-t, --no-store', 'Don\'t store negative hits in the local store file.', true)
         .option('-l, --no-download', 'Don\'t download the binary. It also continues with the next version, if --decreaseOnFail or --increaseOnFail is set. Useful to build up the negative hit store', true)
         .option('--load-store <url>', 'Download a localstore.json file from an URL')
@@ -72,7 +72,7 @@ function readConfig(): ConfigWrapper {
             autoUnzip: !!program.unzip,
             min,
             max,
-            results: minIsSet && !maxResultsIsSet ? Infinity : (program.maxResults || 10),
+            results: minIsSet && !maxResultsIsSet ? Infinity : (parseInt(program.maxResults, 10) || 10),
             os,
             arch: is64Bit ? 'x64' : 'x86',
             onFail: program.increaseOnFail ? 'increase' : program.decreaseOnFail ? 'decrease' : 'nothing',
@@ -120,24 +120,6 @@ async function loadVersions(): Promise<string[]> {
     });
 
     return versions
-}
-
-function mapVersions(versions: string[], config: IChromeConfig, store: Set<string>): IMappedVersion[] {
-    const filteredVersions = versions
-        .map(version => ({
-            value: version,
-            comparable: versionToComparableVersion(version),
-            disabled: store.has(version),
-        }))
-        .sort((a, b) => b.comparable - a.comparable) // descending
-        .filter(version => version.comparable >= config.min && version.comparable <= config.max)
-        .filter(version => !config.hideNegativeHits || !version.disabled)
-
-    // Don't reduce the amount of filtered versions when --only-newest-major is set
-    // because the newest available major version might be disabled for the current os 
-    return config.onlyNewestMajor
-        ? filteredVersions
-        : filteredVersions.slice(0, Number(config.results))
 }
 
 async function main(): Promise<void> {
