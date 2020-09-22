@@ -4,6 +4,7 @@ import { mocked } from 'ts-jest/utils'
 
 import { Store } from './interfaces'
 import store from './store'
+import { createIComparableVersion } from './test.utils'
 
 jest.mock('fs')
 
@@ -13,7 +14,7 @@ const localPath = path.join(__dirname, 'localstore.json')
 type PromisifyCallback = (p: boolean, ...args: any[]) => void
 
 describe('store', () => {
-    
+
     describe('disableByStore', () => {
 
         let loadStoreMock: any
@@ -32,11 +33,11 @@ describe('store', () => {
                     x86: [],
                     x64: ['0.0.0.0', '3.3.3.3'],
                 },
-                mac:  {
+                mac: {
                     x86: [],
                     x64: [],
                 },
-                win:  {
+                win: {
                     x86: [],
                     x64: [],
                 },
@@ -45,23 +46,23 @@ describe('store', () => {
 
             expect(await store.disableByStore([
                 {
-                    comparable: 1234,
+                    comparable: createIComparableVersion(1, 2, 3, 4),
                     disabled: false,
                     value: '1.2.3.4',
                 },
                 {
-                    comparable: 1234,
+                    comparable: createIComparableVersion(1, 2, 3, 4),
                     disabled: false,
                     value: '3.3.3.3',
                 },
             ], 'linux', 'x64')).toEqual([
                 {
-                    comparable: 1234,
+                    comparable: createIComparableVersion(1, 2, 3, 4),
                     disabled: false,
                     value: '1.2.3.4',
                 },
                 {
-                    comparable: 1234,
+                    comparable: createIComparableVersion(1, 2, 3, 4),
                     disabled: true,
                     value: '3.3.3.3',
                 },
@@ -100,7 +101,7 @@ describe('store', () => {
             }
 
             expect(await store.loadStore()).toEqual(expectedStore)
-        
+
             expect(fsMock.exists).toHaveBeenCalledTimes(1)
             expect(fsMock.readFile).toHaveBeenCalledTimes(0)
         })
@@ -116,15 +117,15 @@ describe('store', () => {
 
             const expectedStore: Store = {
                 linux: {
-                    x64:  ['1.2.3.4'],
+                    x64: ['1.2.3.4'],
                     x86: [],
                 },
                 mac: {
-                    x64:  [],
+                    x64: [],
                     x86: [],
                 },
                 win: {
-                    x64:  [],
+                    x64: [],
                     x86: [],
                 },
             }
@@ -169,10 +170,10 @@ describe('store', () => {
     })
 
     describe('storeNegativeHit', () => {
-    
+
         let fsMock: any
         let loadStoreMock: any
-    
+
         beforeEach(() => {
             fsMock = mocked(fs, true)
             fsMock.writeFile.mockClear()
@@ -182,9 +183,9 @@ describe('store', () => {
         afterAll(() => {
             loadStoreMock.mockRestore()
         })
-    
+
         it('should create a store with one entry if it does not exist', async () => {
-            const mockedStore: Store =            {
+            const mockedStore: Store = {
                 linux: {
                     x64: [],
                     x86: [],
@@ -205,11 +206,11 @@ describe('store', () => {
             })
 
             await store.storeNegativeHit({
-                comparable: 0,
+                comparable: createIComparableVersion(1, 2, 3, 4),
                 disabled: true,
                 value: '1.2.3.4',
             }, 'linux', 'x64')
-    
+
             const expectedStore: Store = {
                 linux: {
                     x64: ['1.2.3.4'],
@@ -224,13 +225,13 @@ describe('store', () => {
                     x86: [],
                 },
             }
-    
+
             expect(loadStoreMock).toHaveBeenCalledTimes(1)
-            
+
             expect(fsMock.writeFile).toHaveBeenCalledTimes(1)
             expect(fsMock.writeFile).toHaveBeenCalledWith(localPath, JSON.stringify(expectedStore, null, 4), expect.any(Function))
         })
-    
+
         it('should extend an existing store with one entry', async () => {
             const existingStore: Store = {
                 linux: {
@@ -248,17 +249,17 @@ describe('store', () => {
             }
 
             loadStoreMock.mockReturnValue(existingStore)
-    
+
             fsMock.writeFile.mockImplementation((path: string, store: any, callback: PromisifyCallback) => {
                 callback(PROMISIFY_NO_ERROR)
             })
-    
+
             await store.storeNegativeHit({
-                comparable: 0,
+                comparable: createIComparableVersion(1,2,3,4),
                 disabled: true,
                 value: '1.2.3.4',
             }, 'linux', 'x64')
-    
+
             const expectedStore: Store = {
                 linux: {
                     x86: [],
@@ -273,13 +274,13 @@ describe('store', () => {
                     x86: [],
                 },
             }
-    
+
             expect(loadStoreMock).toHaveBeenCalledTimes(1)
-            
+
             expect(fsMock.writeFile).toHaveBeenCalledTimes(1)
             expect(fsMock.writeFile).toHaveBeenCalledWith(localPath, JSON.stringify(expectedStore, null, 4), expect.any(Function))
         })
-    
+
     })
 
 })

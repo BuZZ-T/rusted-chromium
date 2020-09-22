@@ -1,9 +1,10 @@
 import { MaybeMockedDeep } from 'ts-jest/dist/util/testing'
 import { mocked } from 'ts-jest/utils'
 
-import { detectOperatingSystem, versionToComparableVersion } from './utils'
+import { detectOperatingSystem, versionToComparableVersion, sortIMappedVersions, compareIComparableVersions } from './utils';
 import { logger, LoggerSpinner } from './loggerSpinner'
-import { createChromeConfig } from './test.utils'
+import { createChromeConfig, createIComparableVersion } from './test.utils';
+import { IMappedVersion, Compared } from './interfaces';
 
 jest.mock('./loggerSpinner')
 
@@ -47,7 +48,7 @@ describe('utils', () => {
                 os: 'win',
                 arch: 'x64',
             })
-            
+
             const [url, file] = detectOperatingSystem(config)
 
             expect(url).toEqual('Win_x64')
@@ -94,14 +95,142 @@ describe('utils', () => {
 
     describe('versionToComparableVersion', () => {
         it('should map the versions accordingly', () => {
-            expect(versionToComparableVersion('10.0.0.0')).toEqual(10_00_00000_0000)
-
-            expect(versionToComparableVersion('10.0.0.0')).toEqual(10_00_00000_0000)
-            expect(versionToComparableVersion('10.10.10.10')).toEqual(10_10_00010_0010)
-            expect(versionToComparableVersion('10.0.1000.0')).toEqual(10_00_01000_0000)
-            expect(versionToComparableVersion('10.0.0.100')).toEqual(10_00_00000_0100)
-            expect(versionToComparableVersion('100.0.0.1')).toEqual(100_00_00000_0001)
+            expect(versionToComparableVersion('10.0.0.0')).toEqual({
+                major: 10,
+                minor: 0,
+                branch: 0,
+                patch: 0,
+            })
+            expect(versionToComparableVersion('10.20.30.40')).toEqual({
+                major: 10,
+                minor: 20,
+                branch: 30,
+                patch: 40,
+            })
+            expect(versionToComparableVersion('10.0.1000.2')).toEqual({
+                major: 10,
+                minor: 0,
+                branch: 1000,
+                patch: 2,
+            })
+            expect(versionToComparableVersion('10.0.0.100')).toEqual({
+                major: 10,
+                minor: 0,
+                branch: 0,
+                patch: 100,
+            })
+            expect(versionToComparableVersion('100.0.0.1')).toEqual({
+                major: 100,
+                minor: 0,
+                branch: 0,
+                patch: 1,
+            })
         })
     })
 
+    describe('sortIMappedVersions', () => {
+
+        let versionMajor1: IMappedVersion
+        let versionMajor2: IMappedVersion
+        let versionMinor: IMappedVersion
+        let versionBranch: IMappedVersion
+        let versionPatch: IMappedVersion
+        let versionInfinity: IMappedVersion
+
+        beforeEach(() => {
+            versionMajor1 = {
+                value: '',
+                disabled: false,
+                comparable: createIComparableVersion(10, 0, 0, 0)
+            }
+            versionMajor2 = {
+                value: '',
+                disabled: false,
+                comparable: createIComparableVersion(20, 0, 0, 0)
+            }
+            versionMinor = {
+                value: '',
+                disabled: false,
+                comparable: createIComparableVersion(10, 1, 0, 0)
+            }
+            versionBranch = {
+                value: '',
+                disabled: false,
+                comparable: createIComparableVersion(10, 0, 1, 0)
+            }
+            versionPatch = {
+                value: '',
+                disabled: false,
+                comparable: createIComparableVersion(10, 0, 0, 1)
+            }
+            versionInfinity = {
+                value: '',
+                disabled: false,
+                comparable: createIComparableVersion(Infinity, 0, 0, 0)
+            }
+        })
+
+        it('should sort the IMappedVersion arrays accordingly', () => {
+            expect([versionMajor1, versionMajor2].sort(sortIMappedVersions)).toEqual([versionMajor2, versionMajor1])
+            expect([versionMajor2, versionMajor1].sort(sortIMappedVersions)).toEqual([versionMajor2, versionMajor1])
+
+            expect([versionMajor1, versionMinor].sort(sortIMappedVersions)).toEqual([versionMinor, versionMajor1])
+            expect([versionMajor1, versionBranch].sort(sortIMappedVersions)).toEqual([versionBranch, versionMajor1])
+            expect([versionMajor1, versionPatch].sort(sortIMappedVersions)).toEqual([versionPatch, versionMajor1])
+            expect([versionMajor1, versionInfinity].sort(sortIMappedVersions)).toEqual([versionInfinity, versionMajor1])
+        })
+    })
+
+    describe('compareIComparableVersions', () => {
+        it('should compare major versions', () => {
+            expect(compareIComparableVersions(
+                createIComparableVersion(10, 0, 0, 0),
+                createIComparableVersion(20, 0, 0, 0)
+            )).toEqual(Compared.LESS)
+            expect(compareIComparableVersions(
+                createIComparableVersion(20, 0, 0, 0),
+                createIComparableVersion(10, 0, 0, 0)
+            )).toEqual(Compared.GREATER)
+        })
+
+        it('should compare minor versions', () => {
+            expect(compareIComparableVersions(
+                createIComparableVersion(10, 0, 0, 0),
+                createIComparableVersion(10, 1, 0, 0)
+            )).toEqual(Compared.LESS)
+            expect(compareIComparableVersions(
+                createIComparableVersion(10, 1, 0, 0),
+                createIComparableVersion(10, 0, 0, 0)
+            )).toEqual(Compared.GREATER)
+        })
+
+        it('should compare branch versions', () => {
+            expect(compareIComparableVersions(
+                createIComparableVersion(10, 0, 0, 0),
+                createIComparableVersion(10, 0, 1, 0)
+            )).toEqual(Compared.LESS)
+            expect(compareIComparableVersions(
+                createIComparableVersion(10, 0, 1, 0),
+                createIComparableVersion(10, 0, 0, 0)
+            )).toEqual(Compared.GREATER)
+        })
+
+        it('should compare patch versions', () => {
+            expect(compareIComparableVersions(
+                createIComparableVersion(10, 0, 0, 0),
+                createIComparableVersion(10, 0, 0, 1)
+                )).toEqual(Compared.LESS)
+                expect(compareIComparableVersions(
+                createIComparableVersion(10, 0, 0, 1),
+                createIComparableVersion(10, 0, 0, 0)
+            )).toEqual(Compared.GREATER)
+        })
+
+        it('should compare equal versions', () => {
+            expect(compareIComparableVersions(
+                createIComparableVersion(10, 1, 2, 3),
+                createIComparableVersion(10, 1, 2, 3)
+            )).toEqual(Compared.EQUAL)
+        })
+    })
 })

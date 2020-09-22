@@ -1,9 +1,9 @@
 import { fetchBranchPosition, fetchChromeUrl } from './api'
 import { logger } from './loggerSpinner'
-import { IChromeConfig, IMappedVersion } from './interfaces'
+import { Compared, IChromeConfig, IMappedVersion } from './interfaces'
 import { storeNegativeHit } from './store'
 import { SEARCH_BINARY } from './constants'
-import { detectOperatingSystem, versionToComparableVersion } from './utils'
+import { detectOperatingSystem, versionToComparableVersion, sortIMappedVersions, compareIComparableVersions } from './utils'
 import { userSelectedVersion } from './select'
 
 export async function getChromeDownloadUrl(config: IChromeConfig, mappedVersions: IMappedVersion[]): Promise<[string | undefined, string | undefined, string]> {
@@ -94,8 +94,9 @@ export function mapVersions(versions: string[], config: IChromeConfig, store: Se
             comparable: versionToComparableVersion(version),
             disabled: store.has(version),
         }))
-        .sort((a, b) => b.comparable - a.comparable) // descending
-        .filter(version => version.comparable >= config.min && version.comparable <= config.max)
+        .sort(sortIMappedVersions) // descending
+        .filter(version => compareIComparableVersions(version.comparable, config.min) !== Compared.LESS
+             && compareIComparableVersions(version.comparable, config.max) !== Compared.GREATER)
         .filter(version => !config.hideNegativeHits || !version.disabled)
 
     // Don't reduce the amount of filtered versions when --only-newest-major is set

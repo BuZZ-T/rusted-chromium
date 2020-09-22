@@ -1,6 +1,5 @@
-import { ExtendedOS, OS, IChromeConfig } from './interfaces'
+import { ExtendedOS, OS, IChromeConfig, IComparableVersion, IMappedVersion, Compared } from './interfaces'
 import { logger } from './loggerSpinner'
-import { mapVersions } from './versions';
 
 export function detectOperatingSystem(config: IChromeConfig): [string, string] {
 
@@ -22,19 +21,56 @@ export function detectOperatingSystem(config: IChromeConfig): [string, string] {
     }
 }
 
-/**
- * Pads each version part except major (so minor, branch and patch) with at least one digit more as now necessary
- * so versions can be compared just by < and <= as strings
- * E.g. "79.0.3945.10" will become "7900039450010"
- */
-export function versionToComparableVersion(version: string): number {
+export function versionToComparableVersion(version: string): IComparableVersion {
     const splitVersion = version.split('.')
-    const paddedSplitVersion = splitVersion.concat(Array(4 - splitVersion.length).fill('0'))
 
-    return parseInt(paddedSplitVersion[0]
-         + paddedSplitVersion[1].padStart(2, '0')
-         + paddedSplitVersion[2].padStart(5, '0')
-         + paddedSplitVersion[3].padStart(4, '0'), 10)
+    return {
+        major: parseInt(splitVersion[0], 10) || 0,
+        minor: parseInt(splitVersion[1], 10) || 0,
+        branch: parseInt(splitVersion[2], 10) || 0,
+        patch: parseInt(splitVersion[3], 10) || 0,
+    }
+}
+
+/**
+ * Sort comparator for IComparableVersion
+ */
+export function sortIMappedVersions(a: IMappedVersion, b: IMappedVersion): -1 | 0 | 1 {
+    const compared = compareIComparableVersions(a.comparable, b.comparable)
+
+    if (compared === Compared.LESS) {
+        return 1
+    }
+    if (compared === Compared.GREATER) {
+        return -1
+    }
+
+    return 0
+}
+
+/**
+ * Compares two IComparableVersions with each other.
+ * if version < other, the result is Compared.LESS
+ * if version > other, the result is Compared.GREATER
+ * if version === other, the result is Compared.EQUAL
+ * 
+ * @param version 
+ * @param other 
+ */
+export function compareIComparableVersions(version: IComparableVersion, other: IComparableVersion): Compared {
+    if (version.major > other.major) { return Compared.GREATER }
+    if (version.major < other.major) { return Compared.LESS }
+
+    if (version.minor > other.minor) { return Compared.GREATER }
+    if (version.minor < other.minor) { return Compared.LESS }
+
+    if (version.branch > other.branch) { return Compared.GREATER }
+    if (version.branch < other.branch) { return Compared.LESS }
+
+    if (version.patch > other.patch) { return Compared.GREATER }
+    if (version.patch < other.patch) { return Compared.LESS }
+
+    return Compared.EQUAL
 }
 
 export function mapOS(extendedOS: ExtendedOS): OS {

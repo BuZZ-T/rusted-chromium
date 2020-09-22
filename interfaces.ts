@@ -14,8 +14,8 @@ export interface IChromeConfigWrapper {
 }
 
 export interface IChromeConfig {
-    min: number
-    max: number
+    min: IComparableVersion
+    max: IComparableVersion
     results: number
     os: OS
     arch: Arch
@@ -38,8 +38,21 @@ export type ConfigWrapper = IStoreConfigWrapper | IChromeConfigWrapper
 
 export interface IMappedVersion {
     value: string
-    comparable: number
+    comparable: IComparableVersion
     disabled: boolean
+}
+
+export interface IComparableVersion {
+    major: number
+    minor: number
+    branch: number
+    patch: number
+}
+
+export enum Compared {
+    GREATER,
+    LESS,
+    EQUAL,
 }
 
 export interface IMetadata {

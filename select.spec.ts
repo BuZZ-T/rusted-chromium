@@ -2,7 +2,7 @@ import { mocked } from 'ts-jest/utils'
 import * as prompts from 'prompts'
 
 import { IMappedVersion } from './interfaces'
-import { createChromeConfig } from './test.utils'
+import { createChromeConfig, createIComparableVersion } from './test.utils'
 import { userSelectedVersion } from './select'
 
 jest.mock('prompts')
@@ -17,13 +17,13 @@ describe('userSelectedVersion', () => {
 
     it('should select the vesion received by prompts', async () => {
         const mappedVersion1: IMappedVersion = {
-            comparable: 10_00_00000_0000,
+            comparable: createIComparableVersion(10, 0, 0, 0),
             disabled: false,
             value: '10.0.0.0',
         }
 
         const mappedVersion2: IMappedVersion = {
-            comparable: 60_01_00002_0003,
+            comparable: createIComparableVersion(60, 1, 2, 3),
             disabled: false,
             value: '60.1.2.3',
         }
@@ -47,13 +47,13 @@ describe('userSelectedVersion', () => {
 
     it('should automatically select the first entry on config.results === 1', async () => {
         const mappedVersion1: IMappedVersion = {
-            comparable: 10_00_00000_0000,
+            comparable: createIComparableVersion(10, 0, 0, 0),
             disabled: false,
             value: '10.0.0.0',
         }
 
         const mappedVersion2: IMappedVersion = {
-            comparable: 60_01_00002_0003,
+            comparable: createIComparableVersion(60, 1, 2, 3),
             disabled: false,
             value: '60.1.2.3',
         }
@@ -69,24 +69,24 @@ describe('userSelectedVersion', () => {
 
     it('should filter out not-newest major versions on --only-newest-major', async () => {
         const mappedVersion10: IMappedVersion = {
-            comparable: 10_00_00000_0000,
+            comparable: createIComparableVersion(10, 0, 0, 0),
             disabled: false,
             value: '10.0.0.0',
         }
         const mappedVersion10_2: IMappedVersion = {
-            comparable: 10_00_00000_0001,
+            comparable: createIComparableVersion(10, 0, 0, 1),
             disabled: false,
             value: '10.0.0.1',
         }
 
         const mappedVersion60: IMappedVersion = {
-            comparable: 60_01_00002_0003,
+            comparable: createIComparableVersion(60, 1, 2, 3),
             disabled: false,
             value: '60.1.2.3',
         }
 
         const mappedVersion60_2: IMappedVersion = {
-            comparable: 60_01_00002_0104,
+            comparable: createIComparableVersion(60, 1, 2, 104),
             disabled: false,
             value: '60.1.2.104',
         }
@@ -110,24 +110,24 @@ describe('userSelectedVersion', () => {
 
     it('should strip the amount of versions passed to prompts on --only-newest-major ', async () => {
         const mappedVersion10: IMappedVersion = {
-            comparable: 10_00_00000_0000,
+            comparable: createIComparableVersion(10, 0, 0, 0),
             disabled: false,
             value: '10.0.0.0',
         }
         const mappedVersion20: IMappedVersion = {
-            comparable: 20_00_00000_0001,
+            comparable: createIComparableVersion(20, 0, 0, 1),
             disabled: false,
             value: '20.0.0.1',
         }
 
         const mappedVersion40: IMappedVersion = {
-            comparable: 40_01_00002_0003,
+            comparable: createIComparableVersion(40, 1, 2, 3),
             disabled: false,
             value: '40.1.2.3',
         }
 
         const mappedVersion60: IMappedVersion = {
-            comparable: 60_01_00002_0104,
+            comparable: createIComparableVersion(60, 1, 2, 104),
             disabled: false,
             value: '60.1.2.104',
         }

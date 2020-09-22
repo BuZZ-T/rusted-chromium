@@ -1,5 +1,11 @@
-import { normalize } from 'path'
-import { IChromeConfig } from './interfaces'
+import { IChromeConfig, IComparableVersion } from './interfaces';
+
+export const createIComparableVersion = (major: number, minor: number, branch: number, patch: number): IComparableVersion => ({
+    major,
+    minor,
+    branch,
+    patch,
+})
 
 const DEFAULT_CONFIG: IChromeConfig = {
     arch: "x64",
@@ -9,8 +15,8 @@ const DEFAULT_CONFIG: IChromeConfig = {
     downloadUrl: null,
     hideNegativeHits: false,
     interactive: false,
-    max: Infinity,
-    min: 0,
+    max: createIComparableVersion(Infinity, 0, 0, 0),
+    min: createIComparableVersion(0, 0, 0, 0),
     onFail: 'nothing',
     onlyNewestMajor: false,
     os: "linux",
