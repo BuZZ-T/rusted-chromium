@@ -1,7 +1,7 @@
 import { fetchBranchPosition, fetchChromeUrl } from './api'
 import { logger } from './loggerSpinner'
 import { Compared, IChromeConfig, IMappedVersion } from './interfaces'
-import { storeNegativeHit } from './store'
+import { storeNegativeHit } from './store/store'
 import { SEARCH_BINARY } from './constants'
 import { detectOperatingSystem, versionToComparableVersion, sortIMappedVersions, compareIComparableVersions } from './utils'
 import { userSelectedVersion } from './select'

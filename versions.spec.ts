@@ -8,12 +8,12 @@ import { createChromeConfig, createIComparableVersion } from './test.utils'
 import { userSelectedVersion } from './select'
 import { fetchBranchPosition, fetchChromeUrl } from './api'
 import { detectOperatingSystem } from './utils'
-import { storeNegativeHit } from './store'
+import { storeNegativeHit } from './store/store'
 
 jest.mock('./select')
 jest.mock('./api')
 jest.mock('./loggerSpinner')
-jest.mock('./store')
+jest.mock('./store/store')
 
 // don't mock versionToComparableVersion to test the sort and filtering based on version.comparableVersion
 jest.mock('./utils', () => ({

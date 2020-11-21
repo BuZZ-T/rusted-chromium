@@ -4,7 +4,7 @@ export type ExtendedOS = OS | 'darwin' | 'win32'
 export type Arch = 'x86' | 'x64'
 
 export interface IStoreConfigWrapper {
-    action: 'loadStore'
+    action: 'importStore'
     config: IStoreConfig
 }
 
@@ -83,4 +83,8 @@ export type Store = {
         x86: string[],
         x64: string[]
     }
+}
+
+export type StoreSize = {
+    [p in OS]: number
 }

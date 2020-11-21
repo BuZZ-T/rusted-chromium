@@ -1,4 +1,4 @@
-import { ExtendedOS, OS, IChromeConfig, IComparableVersion, IMappedVersion, Compared } from './interfaces'
+import { ExtendedOS, OS, IChromeConfig, IComparableVersion, IMappedVersion, Compared, Store } from './interfaces';
 import { logger } from './loggerSpinner'
 
 export function detectOperatingSystem(config: IChromeConfig): [string, string] {
@@ -83,5 +83,25 @@ export function mapOS(extendedOS: ExtendedOS): OS {
         case 'darwin':
         case 'mac':
             return 'mac'
+    }
+}
+
+/**
+ * Immutally sorts the entries of the given Store
+ */
+export function sortStoreEntries(store: Store): Store {
+    return {
+        win: {
+            x64: [...store.win.x64].sort(),
+            x86: [...store.win.x86].sort(),
+        },
+        linux: {
+            x64: [...store.linux.x64].sort(),
+            x86: [...store.linux.x86].sort(),
+        },
+        mac: {
+            x64: [...store.mac.x64].sort(),
+            x86: [...store.mac.x86].sort(),
+        },
     }
 }
