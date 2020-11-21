@@ -72,10 +72,10 @@ npm run build
 | `--increaseOnFail`| `-i` | - | - | Automatically try the next higher version, if the selected version has no binary.
 |`--non-interactive` | `-n` | - | - | Don't display the version selection. Automatically select the newest version in the available range (set by `--min`, `--max` and `--max-results`). Only works when `--decreaseOnFail` is set as well.
 |`--no-download` | `-l` | - | - | Don't download the binary if it's found.
-|`--load-store` | -- | URL | - | Download the store file "localstore.json" from a given URL
+|`--import-store` | `-I` | URL/File path | - | Download the store file "localstore.json" from a given URL or load it from a given path of the filesystem. Merges the import with an already existing store.
 |`--hide-negative-hits` | `-H` | - | false | Hide negative hits in the CLI prompt
 |`--folder` | `-f` | `path/to/folder` | Current folder executing the command | Set the folder to which the archive of the chromium binary or the extracted folder (if the flag `--unzip` is set)
-|`--only-newestmajor` | `-O`| - | - | Show only the newest version for every major version in the user selection. If the newest versions are not available for the current os, they are skipped.
+|`--only-newest-major` | `-O`| - | - | Show only the newest version for every major version in the user selection. If the newest versions are not available for the current os, they are skipped.
 | `--version`| `-V` | - | - | Show current version.
 | `--help`| `-h` | - | - | Display a help with all available flags.
 
@@ -172,9 +172,12 @@ rusted-chromium --folder /tmp/rusted
 rusted-chromium -f /tmp/rusted
 ```
 
-##### Download a store file
+##### Import a store file (and merge it with an existing store, if available)
 ```bash
-rusted-chromium --load-store https://url/to/localstore.json
+# URL
+rusted-chromium --import-store https://url/to/localstore.json
+# filesystem
+rusted-chromium --import-store /path/to/file
 ```
 
 ##### Show the help and quit

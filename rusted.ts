@@ -9,10 +9,9 @@ import { versionToComparableVersion, mapOS } from './utils'
 import { fetchChromiumTags, fetchChromeZipFile } from './api'
 import { IChromeConfig, ConfigWrapper, IStoreConfig } from './interfaces'
 import { logger } from './loggerSpinner'
-import { loadStore } from './store'
-import { downloadStore } from './load'
-import { LOCAL_STORE_FILE } from './constants'
 import { getChromeDownloadUrl, mapVersions } from './versions'
+import { importAndMergeLocalstore } from './store/importStore'
+import { loadStore } from './store/store'
 import * as packageJson from './package.json'
 
 const mkdir = promisify(fsMkdir)
@@ -34,7 +33,8 @@ function readConfig(): ConfigWrapper {
         .option('-n, --non-interactive', 'Don\'t show the selection menu. Automatically select the newest version. Only works when --decreaseOnFail is also set.', false)
         .option('-t, --no-store', 'Don\'t store negative hits in the local store file.', true)
         .option('-l, --no-download', 'Don\'t download the binary. It also continues with the next version, if --decreaseOnFail or --increaseOnFail is set. Useful to build up the negative hit store', true)
-        .option('--load-store <url>', 'Download a localstore.json file from an URL')
+        // .option('--load-store <url>', 'Download a localstore.json file from an URL')
+        .option('-I --import-store', 'Imports a localstore.json file either by URL (starting with "http://" or "https://" or by local file')
         .option('-H, --hide-negative-hits', 'Hide negative hits', false)
         .option('-f, --folder <folder>', 'Set the download folder', null)
         .option('-O, --only-newest-major', 'Show only the newest major version in user selection', false)
@@ -57,9 +57,9 @@ function readConfig(): ConfigWrapper {
 
     const is64Bit = (program.os && program.arch) ? program.arch === 'x64' : true
 
-    if (program.loadStore) {
+    if (program.importStore) {
         return {
-            action: 'loadStore',
+            action: 'importStore',
             config: {
                 url: program.loadStore,
             },
@@ -125,9 +125,9 @@ async function loadVersions(): Promise<string[]> {
 async function main(): Promise<void> {
     const configWrapper = readConfig()
 
-    if (configWrapper.action === 'loadStore') {
+    if (configWrapper.action === 'importStore') {
         const config: IStoreConfig = configWrapper.config
-        await downloadStore(config, LOCAL_STORE_FILE)
+        await importAndMergeLocalstore(config)
     } else if (configWrapper.action === 'loadChrome') {
         const config: IChromeConfig = configWrapper.config
         await downloadChromium(config)

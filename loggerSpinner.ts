@@ -14,7 +14,7 @@ export class LoggerSpinner {
     private successText: string | undefined
     private errorText: string | undefined
     private stdio: NodeJS.WriteStream
-    private timer: NodeJS.Timeout | null = null
+    private timer: ReturnType<typeof setTimeout> | null = null
 
     public constructor() {
         this.stdio = process.stdout

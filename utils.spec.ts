@@ -233,4 +233,8 @@ describe('utils', () => {
             )).toEqual(Compared.EQUAL)
         })
     })
+
+    describe('sortStoreEntries', () => {
+        //
+    })
 })

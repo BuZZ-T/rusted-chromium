@@ -2,16 +2,13 @@ import * as fs from 'fs'
 import * as path from 'path'
 import { mocked } from 'ts-jest/utils'
 
-import { Store } from './interfaces'
+import { Store } from '../interfaces'
+import { createIComparableVersion, PromisifyCallback, PROMISIFY_NO_ERROR, createStore } from '../test.utils'
 import store from './store'
-import { createIComparableVersion } from './test.utils'
 
 jest.mock('fs')
 
-const PROMISIFY_NO_ERROR = false
 const localPath = path.join(__dirname, 'localstore.json')
-
-type PromisifyCallback = (p: boolean, ...args: any[]) => void
 
 describe('store', () => {
 
@@ -28,20 +25,8 @@ describe('store', () => {
         })
 
         it('should disable version for current OS, leaving other versions untouched', async () => {
-            const mockedStore: Store = {
-                linux: {
-                    x86: [],
-                    x64: ['0.0.0.0', '3.3.3.3'],
-                },
-                mac: {
-                    x86: [],
-                    x64: [],
-                },
-                win: {
-                    x86: [],
-                    x64: [],
-                },
-            }
+            const mockedStore = createStore({ linux: { x86: [], x64: ['0.0.0.0', '3.3.3.3'] } })
+
             loadStoreMock.mockReturnValue(Promise.resolve(mockedStore))
 
             expect(await store.disableByStore([
@@ -85,20 +70,7 @@ describe('store', () => {
                 callback(PROMISIFY_NO_ERROR, false)
             })
 
-            const expectedStore: Store = {
-                linux: {
-                    x64: [],
-                    x86: [],
-                },
-                mac: {
-                    x64: [],
-                    x86: [],
-                },
-                win: {
-                    x64: [],
-                    x86: [],
-                },
-            }
+            const expectedStore = createStore()
 
             expect(await store.loadStore()).toEqual(expectedStore)
 
@@ -114,21 +86,7 @@ describe('store', () => {
             fsMock.readFile.mockImplementation((path: string, encoding: string, callback: PromisifyCallback) => {
                 callback(PROMISIFY_NO_ERROR, '{"linux": {"x64": ["1.2.3.4"], "x86": []},"mac": {"x64": [], "x86": []},"win": {"x64": [], "x86": []}}')
             })
-
-            const expectedStore: Store = {
-                linux: {
-                    x64: ['1.2.3.4'],
-                    x86: [],
-                },
-                mac: {
-                    x64: [],
-                    x86: [],
-                },
-                win: {
-                    x64: [],
-                    x86: [],
-                },
-            }
+            const expectedStore = createStore({ linux: { x64: ['1.2.3.4'], x86: [] } })
 
             expect(await store.loadStore()).toEqual(expectedStore)
 
@@ -146,20 +104,7 @@ describe('store', () => {
                 callback(PROMISIFY_NO_ERROR, '{"linux": ["1.2.3.4"],"mac": [],"win": []')
             })
 
-            const expectedStore: Store = {
-                linux: {
-                    x86: [],
-                    x64: [],
-                },
-                mac: {
-                    x86: [],
-                    x64: [],
-                },
-                win: {
-                    x86: [],
-                    x64: [],
-                },
-            }
+            const expectedStore = createStore()
 
             expect(await store.loadStore()).toEqual(expectedStore)
 
@@ -185,20 +130,7 @@ describe('store', () => {
         })
 
         it('should create a store with one entry if it does not exist', async () => {
-            const mockedStore: Store = {
-                linux: {
-                    x64: [],
-                    x86: [],
-                },
-                mac: {
-                    x64: [],
-                    x86: [],
-                },
-                win: {
-                    x64: [],
-                    x86: [],
-                },
-            }
+            const mockedStore = createStore()
             loadStoreMock.mockReturnValue(Promise.resolve(mockedStore))
 
             fsMock.writeFile.mockImplementation((path: string, store: any, callback: PromisifyCallback) => {
@@ -211,20 +143,7 @@ describe('store', () => {
                 value: '1.2.3.4',
             }, 'linux', 'x64')
 
-            const expectedStore: Store = {
-                linux: {
-                    x64: ['1.2.3.4'],
-                    x86: [],
-                },
-                mac: {
-                    x64: [],
-                    x86: [],
-                },
-                win: {
-                    x64: [],
-                    x86: [],
-                },
-            }
+            const expectedStore = createStore({ linux: { x64: ['1.2.3.4'], x86: [], } })
 
             expect(loadStoreMock).toHaveBeenCalledTimes(1)
 
@@ -233,20 +152,7 @@ describe('store', () => {
         })
 
         it('should extend an existing store with one entry', async () => {
-            const existingStore: Store = {
-                linux: {
-                    x86: [],
-                    x64: [],
-                },
-                mac: {
-                    x86: [],
-                    x64: [],
-                },
-                win: {
-                    x64: ['10.0.0.0'],
-                    x86: [],
-                },
-            }
+            const existingStore = createStore({ win: { x64: ['10.0.0.0'], x86: [] } })
 
             loadStoreMock.mockReturnValue(existingStore)
 
@@ -255,25 +161,12 @@ describe('store', () => {
             })
 
             await store.storeNegativeHit({
-                comparable: createIComparableVersion(1,2,3,4),
+                comparable: createIComparableVersion(1, 2, 3, 4),
                 disabled: true,
                 value: '1.2.3.4',
             }, 'linux', 'x64')
 
-            const expectedStore: Store = {
-                linux: {
-                    x86: [],
-                    x64: ['1.2.3.4'],
-                },
-                mac: {
-                    x86: [],
-                    x64: [],
-                },
-                win: {
-                    x64: ['10.0.0.0'],
-                    x86: [],
-                },
-            }
+            const expectedStore = createStore({ linux: { x64: ['1.2.3.4'], x86: [] }, win: { x64: ['10.0.0.0'], x86: [], } })
 
             expect(loadStoreMock).toHaveBeenCalledTimes(1)
 
