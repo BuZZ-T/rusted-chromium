@@ -1,4 +1,4 @@
-import { MaybeMockedDeep } from 'ts-jest/dist/util/testing'
+import { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
 import { LoggerSpinner, logger } from './loggerSpinner'
@@ -17,7 +17,7 @@ jest.mock('./store')
 
 // don't mock versionToComparableVersion to test the sort and filtering based on version.comparableVersion
 jest.mock('./utils', () => ({
-    ...jest.requireActual('./utils'),
+    ...jest.requireActual<any>('./utils'),
     detectOperatingSystem: jest.fn(),
 }))
 

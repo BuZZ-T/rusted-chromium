@@ -1,6 +1,6 @@
 import * as fs from 'fs'
 import { mocked } from 'ts-jest/utils'
-import { MaybeMockedDeep } from 'ts-jest/dist/util/testing'
+import { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 
 import { logger, LoggerSpinner } from './loggerSpinner'
 import load from './load'

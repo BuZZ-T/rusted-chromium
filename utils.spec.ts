@@ -1,4 +1,4 @@
-import { MaybeMockedDeep } from 'ts-jest/dist/util/testing'
+import { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
 import { detectOperatingSystem, versionToComparableVersion, sortIMappedVersions, compareIComparableVersions } from './utils';

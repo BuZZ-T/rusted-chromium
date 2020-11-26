@@ -36,14 +36,14 @@
     "unzipper": "^0.10.9"
   },
   "devDependencies": {
-    "@types/jest": "^25.1.4",
+    "@types/jest": "^26.0.15",
     "@types/node": "^13.7.2",
     "@types/node-fetch": "^2.5.7",
     "@types/prompts": "^2.0.3",
     "@types/unzipper": "^0.10.3",
-    "jest": "^25.1.0",
+    "jest": "^26.6.3",
     "ts-jest": "^26.4.4",
     "ts-node": "^8.6.2",
-    "typescript": "^3.7.5"
+    "typescript": "^3.9.7"
   }
 }
