@@ -1,5 +1,5 @@
 import { mocked } from 'ts-jest/utils'
-import { MaybeMockedDeep, MaybeMocked } from 'ts-jest/dist/util/testing'
+import { MaybeMockedDeep, MaybeMocked } from 'ts-jest/dist/utils/testing'
 import * as fetch  from 'node-fetch'
 
 import { logger, LoggerSpinner } from './loggerSpinner'
