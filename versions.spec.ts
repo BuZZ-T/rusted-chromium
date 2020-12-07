@@ -501,5 +501,23 @@ describe('versions', () => {
 
             expect(mapped).toEqual(expectedVersions)
         })
+
+        it('should return the provided version on config.single, even if it\'s marked as disabled in the store', () => {
+            const config = createChromeConfig({
+                single: '10.1.2.3'
+            })
+
+            const mapped = mapVersions(['60.6.7.8', '30.0.0.0', '29.0.2000.4', '10.1.2.4'], config, new Set(['10.1.2.3']))
+
+            const expectedVersions: IMappedVersion[] = [
+                {
+                    comparable: createIComparableVersion(10, 1, 2, 3),
+                    disabled: false,
+                    value: '10.1.2.3',
+                }
+            ]
+
+            expect(mapped).toEqual(expectedVersions)
+        })
     })
 })

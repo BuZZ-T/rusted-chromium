@@ -9,8 +9,8 @@ import { userSelectedVersion } from './select'
 export async function getChromeDownloadUrl(config: IChromeConfig, mappedVersions: IMappedVersion[]): Promise<[string | undefined, string | undefined, string]> {
     const [urlOS, filenameOS] = detectOperatingSystem(config)
 
-    const isAutoSearch = !config.interactive && config.onFail === "decrease"
-        
+    const isAutoSearch = (!config.interactive && config.onFail === "decrease") || !!config.single
+      
     let selectedVersion = isAutoSearch
         ? mappedVersions[0]
         : await userSelectedVersion(mappedVersions, config)
@@ -88,6 +88,14 @@ export async function getChromeDownloadUrl(config: IChromeConfig, mappedVersions
 } 
 
 export function mapVersions(versions: string[], config: IChromeConfig, store: Set<string>): IMappedVersion[] {
+    if (config.single) {
+        return [{
+            comparable: versionToComparableVersion(config.single),
+            disabled: false,
+            value: config.single, 
+        }]
+    }
+    
     const filteredVersions = versions
         .map(version => ({
             value: version,
