@@ -7,7 +7,7 @@ import * as path from 'path'
 
 import { versionToComparableVersion, mapOS } from './utils'
 import { fetchChromiumTags, fetchChromeZipFile } from './api'
-import { IChromeConfig, ConfigWrapper, IStoreConfig } from './interfaces'
+import { IChromeConfig, ConfigWrapper, IStoreConfig, IMappedVersion } from './interfaces'
 import { logger } from './loggerSpinner'
 import { getChromeDownloadUrl, mapVersions } from './versions'
 import { importAndMergeLocalstore } from './store/importStore'
@@ -33,11 +33,11 @@ function readConfig(): ConfigWrapper {
         .option('-n, --non-interactive', 'Don\'t show the selection menu. Automatically select the newest version. Only works when --decreaseOnFail is also set.', false)
         .option('-t, --no-store', 'Don\'t store negative hits in the local store file.', true)
         .option('-l, --no-download', 'Don\'t download the binary. It also continues with the next version, if --decreaseOnFail or --increaseOnFail is set. Useful to build up the negative hit store', true)
-        // .option('--load-store <url>', 'Download a localstore.json file from an URL')
         .option('-I --import-store', 'Imports a localstore.json file either by URL (starting with "http://" or "https://" or by local file')
         .option('-H, --hide-negative-hits', 'Hide negative hits', false)
         .option('-f, --folder <folder>', 'Set the download folder', null)
         .option('-O, --only-newest-major', 'Show only the newest major version in user selection', false)
+        .option('-s, --single <version>', '', undefined)
         .parse(process.argv)
 
     const min = versionToComparableVersion(program.min)
@@ -83,6 +83,7 @@ function readConfig(): ConfigWrapper {
             hideNegativeHits: program.hideNegativeHits,
             downloadFolder: program.folder,
             onlyNewestMajor: program.onlyNewestMajor,
+            single: program.single,
         },
     }
 }

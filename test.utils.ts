@@ -22,6 +22,7 @@ const DEFAULT_CONFIG: IChromeConfig = {
     os: "linux",
     results: Infinity,
     store: false,
+    single: null,
 }
 
 const EMPTY_STORE: Store = {

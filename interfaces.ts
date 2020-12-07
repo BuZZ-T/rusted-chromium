@@ -28,6 +28,7 @@ export interface IChromeConfig {
     hideNegativeHits: boolean
     downloadFolder: string | null
     onlyNewestMajor: boolean
+    single: string | null
 }
 
 export interface IStoreConfig{
