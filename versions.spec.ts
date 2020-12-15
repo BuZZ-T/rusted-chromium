@@ -326,6 +326,39 @@ describe('versions', () => {
             expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION2, URL_OS, FILENAME_OS)
             expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION3, URL_OS, FILENAME_OS)
         })
+
+        it('should return undefined, is config.single and no binary was found', async () => {
+            const singleVersion = '10.11.12.13'
+
+            const mappedSingleVersion: IMappedVersion = {
+                comparable: {
+                    major: 10,
+                    minor: 11,
+                    branch: 12,
+                    patch: 13,
+                },
+                disabled: false,
+                value: singleVersion,
+            }
+            
+            const config = createChromeConfig({
+                single: singleVersion,
+                store: true,
+            })
+            fetchChromeUrlMock.mockResolvedValue(undefined)
+
+            expect(await getChromeDownloadUrl(config, [mappedSingleVersion, version2, version3])).toEqual([undefined, mappedSingleVersion.value, FILENAME_OS])
+
+            expect(storeNegativeHitMock).toHaveBeenCalledTimes(1)
+            expect(storeNegativeHitMock).toHaveBeenCalledWith(mappedSingleVersion, 'linux', 'x64')
+            expect(detectOperatingSystemMock).toHaveBeenCalledTimes(1)
+            expect(detectOperatingSystemMock).toHaveBeenCalledWith(config)
+            expect(userSelectedVersionMock).toHaveBeenCalledTimes(0)
+            expect(fetchBranchPositionMock).toHaveBeenCalledTimes(1)
+            expect(fetchBranchPositionMock).toHaveBeenCalledWith(mappedSingleVersion.value)
+            expect(fetchChromeUrlMock).toHaveBeenCalledTimes(1)
+            expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION, URL_OS, FILENAME_OS)
+        })
     })
 
     describe('mapVersions', () => {

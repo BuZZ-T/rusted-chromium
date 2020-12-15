@@ -176,6 +176,11 @@ async function downloadChromium(config: IChromeConfig): Promise<void> {
             }
         })
     }
+
+    // quit with exit code, if one single version is specified, but no binary is found
+    if (!chromeUrl && config.download && config.single) {
+        process.exit(1)
+    }
 }
 
 main().then(() => {

@@ -17,6 +17,7 @@ In case you found this tool: This is not ready-to-use yet. You might be able to 
 * [All available flags](#all-available-flags)
 * [Examples](#examples)
 * [Store file](#store-file)
+* [Chromium Version Format](#chromium-version-format)
 * [FAQ](#faq)
 
 ## Disclaimer 🔥
@@ -62,6 +63,7 @@ npm run build
 
 | Flag | Short | Parameter | Default | Description |
 |-|-|-|-|-
+|`--single`|`-s`| string | - | Use a specific version. No interactive prompt is displayed. The [Store file](#store-file) is ignored, several other flags have no effect (like `-d`, `-i`, `-n`, `-M`, `-m`, `-r` and `-O`). Exists with an error status code of 1, if no binary exists.
 | `--max`| `-M` | integer | 10000 | Maximum version which should be selectable.
 | `--min`| `-m` | integer | 0 | Minimum version which should be selectable.
 | `--max-results`| `-r` | integer | 10 | Maximum number of results to select. Directly downloads the binary, if set to 1. **Important:**  `--max-results` is set to `Infinity`, if `--min` is set and `--max-results` is not set, so the default is overridden!
@@ -80,6 +82,14 @@ npm run build
 | `--help`| `-h` | - | - | Display a help with all available flags.
 
 ## Examples
+
+##### Download a specific version, exit and fail if it does not exist
+```bash
+# long version
+rusted-chromum --single 70.0.3539.100
+# short version
+rusted-chromium -s 70.0.3539.100
+```
 
 ##### Define a minimum and maximum major version
 ```bash
@@ -216,7 +226,34 @@ The next time a range of versions is requested by `rusted-chromium`, this versio
 You can use `rusted-chromium` to download an existing `localstore.json` file, to setup an initial state of known unexisting binaries.
 This project provides one under https://rusted.buzz-t.eu/localstore.json, but there is no need to use it.
 
+## Chromium Version Format
+
+A chrom(e/ium) version might look like this: "60.0.3112.93". The version can be split in:
+
+* Major version (here: "60")
+* Minor version (here: "0")
+* Branch version (here: "3112")
+* Patch version (here: "93")
+
+The minor version is not used and is always "0".
+
+Contrary to what [semantic versioning](https://semver.org/) would require, the branch version is not reset to zero, when the major version is increased. Instead, the branch version is also increased.
+
+E.g. the latest 60.x version is "60.0.3112.118", the first 61.x version is "61.0.3113.0".
+
+### Partial Chromium Version Format
+
+When declaring the Chromium Version Format in **rusted-chromium**, prefixes can be used.
+E.g.:
+
+* "60" means "any version with major version 60"
+* "60.0.3112" means "version 60.0.3112 with arbatrary patch version"
+
 ## FAQ
+
+### Why do you often write "Chrom(e/ium)"?
+
+The famous browser chrome is based on the free licensed browser chromium. If you use **rusted-chromium**, you are downloading a chromium version. The [versioning](#chromium-version-format) are used for both chrome and chromium so "Chrom(e/ium)" means "the version of chrome and/or chromium"
 
 ### Can i contribute?
 I'm accepting pull requests and feature requests (no guarantee that i will implement this fast or implement this at all, but feel free to ask).
