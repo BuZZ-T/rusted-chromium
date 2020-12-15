@@ -56,6 +56,11 @@ export async function getChromeDownloadUrl(config: IChromeConfig, mappedVersions
             logger.warn('Not downloading binary.')
         }
 
+
+        if (!!config.single) {
+            break
+        }
+
         switch (config.onFail) {
             case 'increase':
                 if (index > 0) {
@@ -82,7 +87,7 @@ export async function getChromeDownloadUrl(config: IChromeConfig, mappedVersions
                 selectedVersion = await userSelectedVersion(mappedVersions, config)
                 break
         }
-    } while (!chromeUrl || !config.download)
+    } while (!config.single && (!chromeUrl || !config.download))
 
     return [chromeUrl, selectedVersion?.value, filenameOS]
 } 
