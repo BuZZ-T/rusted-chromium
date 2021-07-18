@@ -1,11 +1,11 @@
-import { ExtendedOS, OS, IChromeConfig, IComparableVersion, IMappedVersion, Compared, Store } from './interfaces';
+import { ExtendedOS, OS, IChromeConfig, IComparableVersion, IMappedVersion, Compared, Store } from './interfaces'
 import { logger } from './loggerSpinner'
 
 export function detectOperatingSystem(config: IChromeConfig): [string, string] {
 
     const archForUrl = config.arch === 'x64' ? '_x64' : ''
 
-    switch(config.os) {
+    switch (config.os) {
         case 'linux':
             return [`Linux${archForUrl}`, 'linux']
         case 'win':

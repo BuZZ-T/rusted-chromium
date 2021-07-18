@@ -26,7 +26,7 @@ export class BadRequestError extends HttpError {
 
     private path: string
 
-    public static match(response: Response) {
+    public static match(response: Response): boolean {
         return response.status === BadRequestError.STATUS_CODE
     }
 
@@ -39,7 +39,7 @@ export class BadRequestError extends HttpError {
 export class UnauthorizedError extends Error {
     private path: string
     
-    public static match(response: Response) {
+    public static match(response: Response): boolean {
         return response.status === 401
     }
 
@@ -53,7 +53,7 @@ export class UnauthorizedError extends Error {
 export class ForbiddenError extends Error {
     private path: string
     
-    public static match(response: Response) {
+    public static match(response: Response): boolean {
         return response.status === 403
     }
 
@@ -67,7 +67,7 @@ export class ForbiddenError extends Error {
 export class NotFoundError extends Error {
     private path: string
 
-    public static match(response: Response) {
+    public static match(response: Response): boolean {
         return response.status === 404
     }
 

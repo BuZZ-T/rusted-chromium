@@ -50,7 +50,7 @@ export async function loadStore(): Promise<Store> {
 }
 
 export async function storeNegativeHit(version: IMappedVersion, os: OS, arch: Arch): Promise<any> {
-    let currentStore = await store.loadStore()
+    const currentStore = await store.loadStore()
     
     if (!new Set(currentStore[os][arch]).has(version.value)) {
         currentStore[os][arch].push(version.value)

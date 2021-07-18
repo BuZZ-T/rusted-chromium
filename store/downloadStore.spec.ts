@@ -4,8 +4,8 @@ import { MaybeMockedDeep, MaybeMocked } from 'ts-jest/dist/utils/testing'
 import { logger, LoggerSpinner } from '../loggerSpinner'
 import { downloadStore } from './downloadStore'
 import { fetchLocalStore } from '../api'
-import { LOAD_CONFIG } from '../constants';
-import { createStore } from '../test.utils';
+import { LOAD_CONFIG } from '../constants'
+import { createStore } from '../test.utils'
 
 jest.mock('../loggerSpinner')
 jest.mock('../api')
@@ -84,7 +84,6 @@ describe('downloadStore', () => {
     it('should log an error on failing request', async () => {
         const filename = 'myfile.json'
         const url = 'http://some-url.de'
-        const store = createStore()
         fetchLocalStoreMock.mockImplementation((): Promise<any> =>
             Promise.reject()
         )
@@ -104,7 +103,6 @@ describe('downloadStore', () => {
     it('should log an error with message and path on failing request', async () => {
         const filename = 'myfile.json'
         const url = 'http://some-url.de'
-        const store = createStore()
         fetchLocalStoreMock.mockImplementation((): Promise<any> =>
             Promise.reject({message: 'error-msg', path: 'error-path'})
         )

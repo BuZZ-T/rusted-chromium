@@ -27,16 +27,16 @@ describe('api', () => {
                 Promise.resolve({
                     ok: true,
                     json() {
-                        return Promise.resolve({some: "store"})
+                        return Promise.resolve({some: 'store'})
                     }
                 })
             )
 
             expect(await fetchLocalStore(url)).toEqual(
-`{
+                `{
   "some": "store"
 }`)
-            expect(fetchMock.mock.calls.length).toBe(1);
+            expect(fetchMock.mock.calls.length).toBe(1)
             expect(fetch).toHaveBeenCalledWith(url)
         })
 
@@ -54,7 +54,7 @@ describe('api', () => {
             try {
                 await fetchLocalStore(url)
             } catch (error) {
-                expect(fetchMock.mock.calls.length).toBe(1);
+                expect(fetchMock.mock.calls.length).toBe(1)
                 expect(fetch).toHaveBeenCalledWith(url)
                 expect(error).toEqual(new Error('Status Code: 400 some-error-message'))
             }
@@ -74,7 +74,7 @@ describe('api', () => {
 
             expect(await fetchChromiumTags()).toEqual('some-html')
             expect(fetch).toHaveBeenLastCalledWith('https://chromium.googlesource.com/chromium/src/+refs')
-            expect(fetchMock.mock.calls.length).toBe(1);
+            expect(fetchMock.mock.calls.length).toBe(1)
         })
 
         it('should throw an error on non-ok http response', async () => {
@@ -83,7 +83,7 @@ describe('api', () => {
                     ok: false,
                     status: 400,
                     error: 'some-error-message',
-                    })
+                })
             )
 
             try {
@@ -207,7 +207,6 @@ describe('api', () => {
 
         it('should throw an error on non-ok http response', async () => {
             const url = 'some-url'
-            const filename = 'some-filename'
 
             fetchMock.mockImplementation((): Promise<any> =>
                 Promise.resolve({

@@ -31,7 +31,6 @@ describe('readStore', () => {
 
             expect(await readStoreFile(config)).toEqual(expectedStore)
             expect(fsMock.readFile).toHaveBeenCalledTimes(1)
-            debugger
             expect(fsMock.readFile).toHaveBeenCalledWith(url, { encoding: 'utf-8' }, expect.any(Function))
         })
 

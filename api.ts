@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const fetch = require('node-fetch')
 
 import { logger } from './loggerSpinner'
@@ -29,8 +30,8 @@ export async function fetchLocalStore(url: string): Promise<any> {
  */
 export async function fetchChromiumTags(): Promise<any> {
     return fetch(CHROMIUM_TAGS_URL)
-    .then(checkStatus)
-    .then(toText)
+        .then(checkStatus)
+        .then(toText)
 }
 
 export async function fetchBranchPosition(version: string): Promise<string> {
@@ -57,7 +58,7 @@ export async function fetchChromeUrl(branchPosition: string, urlOS: string, file
         .then(checkStatus)
         .then(toJson)
 
-        return chromeMetadataResponse.items?.find(item => item.name === `${urlOS}/${branchPosition}/chrome-${filenameOS}.zip`)?.mediaLink
+    return chromeMetadataResponse.items?.find(item => item.name === `${urlOS}/${branchPosition}/chrome-${filenameOS}.zip`)?.mediaLink
 }
 
 export async function fetchChromeZipFile(url: string): Promise<any> {

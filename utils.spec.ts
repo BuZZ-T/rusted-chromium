@@ -1,10 +1,10 @@
 import { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
-import { detectOperatingSystem, versionToComparableVersion, sortIMappedVersions, compareIComparableVersions } from './utils';
+import { detectOperatingSystem, versionToComparableVersion, sortIMappedVersions, compareIComparableVersions } from './utils'
 import { logger, LoggerSpinner } from './loggerSpinner'
-import { createChromeConfig, createIComparableVersion } from './test.utils';
-import { IMappedVersion, Compared } from './interfaces';
+import { createChromeConfig, createIComparableVersion } from './test.utils'
+import { IMappedVersion, Compared } from './interfaces'
 
 jest.mock('./loggerSpinner')
 
@@ -219,8 +219,8 @@ describe('utils', () => {
             expect(compareIComparableVersions(
                 createIComparableVersion(10, 0, 0, 0),
                 createIComparableVersion(10, 0, 0, 1)
-                )).toEqual(Compared.LESS)
-                expect(compareIComparableVersions(
+            )).toEqual(Compared.LESS)
+            expect(compareIComparableVersions(
                 createIComparableVersion(10, 0, 0, 1),
                 createIComparableVersion(10, 0, 0, 0)
             )).toEqual(Compared.GREATER)

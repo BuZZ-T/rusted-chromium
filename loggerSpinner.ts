@@ -70,30 +70,30 @@ export class LoggerSpinner {
 
     public info(text: string): LoggerSpinner {
         return this.clearLine()
-                   .stop()
-                   .write(text)
-                   .newline()
+            .stop()
+            .write(text)
+            .newline()
     }
 
     public warn(text: string): LoggerSpinner {
         return this.clearLine()
-                   .stop()
-                   .write(this.WARN_FN(text))
-                   .newline()
+            .stop()
+            .write(this.WARN_FN(text))
+            .newline()
     }
 
     public success(): LoggerSpinner {
         return this.clearLine()
-                   .stop()
-                   .write(this.successText || '')
-                   .newline()
+            .stop()
+            .write(this.successText || '')
+            .newline()
     }
 
     public error(text?: string): LoggerSpinner {
         return this.clearLine()
-                   .stop()
-                   .write(text ? this.ERROR_FN(text) : this.errorText || '')
-                   .newline()
+            .stop()
+            .write(text ? this.ERROR_FN(text) : this.errorText || '')
+            .newline()
     }
 }
 

@@ -9,7 +9,7 @@ import { userSelectedVersion } from './select'
 export async function getChromeDownloadUrl(config: IChromeConfig, mappedVersions: IMappedVersion[]): Promise<[string | undefined, string | undefined, string]> {
     const [urlOS, filenameOS] = detectOperatingSystem(config)
 
-    const isAutoSearch = (!config.interactive && config.onFail === "decrease") || !!config.single
+    const isAutoSearch = (!config.interactive && config.onFail === 'decrease') || !!config.single
       
     let selectedVersion = isAutoSearch
         ? mappedVersions[0]
@@ -29,7 +29,7 @@ export async function getChromeDownloadUrl(config: IChromeConfig, mappedVersions
 
         // when using --decrease-on-fail or --increase-on-fail, skip already disabled versions
         if (!selectedVersion.disabled) {
-            const branchPosition = await fetchBranchPosition(selectedVersion.value);
+            const branchPosition = await fetchBranchPosition(selectedVersion.value)
             logger.start(SEARCH_BINARY)
             chromeUrl = await fetchChromeUrl(branchPosition, urlOS, filenameOS)
     
@@ -57,7 +57,7 @@ export async function getChromeDownloadUrl(config: IChromeConfig, mappedVersions
         }
 
 
-        if (!!config.single) {
+        if (config.single) {
             break
         }
 

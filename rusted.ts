@@ -7,7 +7,7 @@ import * as path from 'path'
 
 import { versionToComparableVersion, mapOS } from './utils'
 import { fetchChromiumTags, fetchChromeZipFile } from './api'
-import { IChromeConfig, ConfigWrapper, IStoreConfig, IMappedVersion } from './interfaces'
+import { IChromeConfig, ConfigWrapper, IStoreConfig } from './interfaces'
 import { logger } from './loggerSpinner'
 import { getChromeDownloadUrl, mapVersions } from './versions'
 import { importAndMergeLocalstore } from './store/importStore'
@@ -118,7 +118,7 @@ async function loadVersions(): Promise<string[]> {
     const versions: string[] = []
     tagsList.childNodes.forEach((tag: any) => {
         versions.push(tag.text)
-    });
+    })
 
     return versions
 }
@@ -183,8 +183,6 @@ async function downloadChromium(config: IChromeConfig): Promise<void> {
     }
 }
 
-main().then(() => {
-
-}).catch(error => {
+main().catch(error => {
     console.error(error)
 })

@@ -8,7 +8,7 @@ export const createIComparableVersion = (major: number, minor: number, branch: n
 })
 
 const DEFAULT_CONFIG: IChromeConfig = {
-    arch: "x64",
+    arch: 'x64',
     autoUnzip: false,
     download: false,
     downloadFolder: null,
@@ -19,7 +19,7 @@ const DEFAULT_CONFIG: IChromeConfig = {
     min: createIComparableVersion(0, 0, 0, 0),
     onFail: 'nothing',
     onlyNewestMajor: false,
-    os: "linux",
+    os: 'linux',
     results: Infinity,
     store: false,
     single: null,
@@ -40,12 +40,12 @@ const EMPTY_STORE: Store = {
     },
 }
 
-export const createChromeConfig = (config?: Partial<IChromeConfig>) => ({
+export const createChromeConfig = (config?: Partial<IChromeConfig>): IChromeConfig => ({
     ...DEFAULT_CONFIG,
     ...config,
 })
 
-export const createStore = (store?: Partial<Store>) => ({
+export const createStore = (store?: Partial<Store>): Store => ({
     ...EMPTY_STORE,
     ...store,
 })
