@@ -27,7 +27,7 @@ export async function getChromeDownloadUrl(config: IChromeConfig, mappedVersions
             break
         }
 
-        // when using --decreaseOnFail or --increaseOnFail, skip already disabled versions
+        // when using --decrease-on-fail or --increase-on-fail, skip already disabled versions
         if (!selectedVersion.disabled) {
             const branchPosition = await fetchBranchPosition(selectedVersion.value);
             logger.start(SEARCH_BINARY)

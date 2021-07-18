@@ -27,12 +27,12 @@ function readConfig(): ConfigWrapper {
         .option('-r, --max-results <results>', 'The maximum amount of results to choose from', NaN)
         .option('-o, --os <os>', 'The operating system for what the binary should be downloaded')
         .option('-a, --arch <arch>', 'The architecture for what the binary should be downloaded. Valid values are "x86" and "x64". Only works when --os is also set')
-        .option('-d, --decreaseOnFail', 'If a binary does not exist, go to the next lower version number and try again (regarding --min, --max and --max-results)')
-        .option('-i, --increaseOnFail', 'If a binary does not exist, go to the next higher version number and try again (regarding --min, --max and --max-results), overwrites "--decreaseOnFail" if both set')
+        .option('-d, --decrease-on-fail', 'If a binary does not exist, go to the next lower version number and try again (regarding --min, --max and --max-results)')
+        .option('-i, --increase-on-fail', 'If a binary does not exist, go to the next higher version number and try again (regarding --min, --max and --max-results), overwrites "--decrease-on-fail" if both set')
         .option('-z, --unzip', 'Directly unzip the downloaded zip-file and delete the .zip afterwards')
-        .option('-n, --non-interactive', 'Don\'t show the selection menu. Automatically select the newest version. Only works when --decreaseOnFail is also set.', false)
+        .option('-n, --non-interactive', 'Don\'t show the selection menu. Automatically select the newest version. Only works when --decrease-on-fail is also set.', false)
         .option('-t, --no-store', 'Don\'t store negative hits in the local store file.', true)
-        .option('-l, --no-download', 'Don\'t download the binary. It also continues with the next version, if --decreaseOnFail or --increaseOnFail is set. Useful to build up the negative hit store', true)
+        .option('-l, --no-download', 'Don\'t download the binary. It also continues with the next version, if --decrease-on-fail or --increase-on-fail is set. Useful to build up the negative hit store', true)
         .option('-I --import-store', 'Imports a localstore.json file either by URL (starting with "http://" or "https://" or by local file')
         .option('-H, --hide-negative-hits', 'Hide negative hits', false)
         .option('-f, --folder <folder>', 'Set the download folder', null)
@@ -52,7 +52,7 @@ function readConfig(): ConfigWrapper {
         logger.warn('Setting "--arch" has no effect, when "--os" is not set!')
     }
     if (program.nonInteractive && !program.decreaseOnFail) {
-        logger.warn('Setting "--non-interactive" has no effect, when "--decreaseOnFail" is not set!')
+        logger.warn('Setting "--non-interactive" has no effect, when "--decrease-on-fail" is not set!')
     }
 
     const is64Bit = (program.os && program.arch) ? program.arch === 'x64' : true

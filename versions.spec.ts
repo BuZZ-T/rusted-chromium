@@ -187,7 +187,7 @@ describe('versions', () => {
             expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION, URL_OS, FILENAME_OS)
         })
 
-        it('should skip a already disabled version on --decreaseOnFail when selecting a disabled version', async () => {
+        it('should skip a already disabled version on --decrease-on-fail when selecting a disabled version', async () => {
             const config = createChromeConfig({
                 interactive: true,
                 onFail: 'decrease',
@@ -248,7 +248,7 @@ describe('versions', () => {
             expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION, URL_OS, FILENAME_OS)
         })
 
-        it('should return null, if --decreaseOnFail reaces the end of versions on only disabled versions', async () => {
+        it('should return null, if --decrease-on-fail reaces the end of versions on only disabled versions', async () => {
             const config = createChromeConfig({
                 interactive: false,
                 onFail: 'decrease',
@@ -264,7 +264,7 @@ describe('versions', () => {
             expect(fetchChromeUrlMock).toHaveBeenCalledTimes(0)
         })
 
-        it('should return null, if --decreaseOnFail reaces the end of versions on versions without binary', async () => {
+        it('should return null, if --decrease-on-fail reaces the end of versions on versions without binary', async () => {
             const config = createChromeConfig({
                 interactive: false,
                 onFail: 'decrease',
@@ -296,7 +296,7 @@ describe('versions', () => {
             expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION3, URL_OS, FILENAME_OS)
         })
 
-        it('should do nothing if --decreaseOnFail reaces the end of version on --no-download and all versions with binary', async () => {
+        it('should do nothing if --decrease-on-fail reaces the end of version on --no-download and all versions with binary', async () => {
             const config = createChromeConfig({
                 interactive: false,
                 onFail: 'decrease',

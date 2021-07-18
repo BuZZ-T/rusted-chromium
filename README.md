@@ -70,9 +70,9 @@ npm run build
 | `--os`| `-o` | "win"/"linux"/"mac"/"darwin" | The operation system on the current system | Set the operation system of the binary. Valid values are "win", "linux" and "mac"/"darwin".
 | `--arch`| `-a` |  "x86"/"x64" "x86" is ignored for os "mac" | The architecture on the current system | Set the architecture of the binary. The flag is only regarded, if `--os` is present.
 | `--unzip` | `-z` | - | - | Directly unzip the downloaded zip-file and delete the .zip afterwards
-| `--decreaseOnFail`| `-d` | - | - | Automatically try the next lower version, if the selected version has no binary.
-| `--increaseOnFail`| `-i` | - | - | Automatically try the next higher version, if the selected version has no binary.
-|`--non-interactive` | `-n` | - | - | Don't display the version selection. Automatically select the newest version in the available range (set by `--min`, `--max` and `--max-results`). Only works when `--decreaseOnFail` is set as well.
+| `--decrease-on-fail`| `-d` | - | - | Automatically try the next lower version, if the selected version has no binary.
+| `--increase-on-fail`| `-i` | - | - | Automatically try the next higher version, if the selected version has no binary.
+|`--non-interactive` | `-n` | - | - | Don't display the version selection. Automatically select the newest version in the available range (set by `--min`, `--max` and `--max-results`). Only works when `--decrease-on-fail` is set as well.
 |`--no-download` | `-l` | - | - | Don't download the binary if it's found.
 |`--import-store` | `-I` | URL/File path | - | Download the store file "localstore.json" from a given URL or load it from a given path of the filesystem. Merges the import with an already existing store.
 |`--hide-negative-hits` | `-H` | - | false | Hide negative hits in the CLI prompt
@@ -125,7 +125,7 @@ rusted-chromium -M 70 -r 30
 
 ```bash
 # long version
-rusted-chromium --max 80 --decreaseOnFail -non-interactive --no-download
+rusted-chromium --max 80 --decrease-on-fail -non-interactive --no-download
 # short version
 rusted-chromium -M 80 -dnl
 ```
@@ -152,7 +152,7 @@ rusted-chromium -z
 *NOTE: This regards `--min`, `--max` and `--max-results`*
 ```bash
 # long version
-rusted-chromium --max 30 --decreaseOnFail
+rusted-chromium --max 30 --decrease-on-fail
 # short version
 rusted-chromium -M 30 -d
 ```
@@ -161,7 +161,7 @@ rusted-chromium -M 30 -d
 *NOTE: This regards `--min`, `--max` and `--max-results`*
 ```bash
 # long version
-rusted-chromium --max 30 --increaseOnFail
+rusted-chromium --max 30 --increase-on-fail
 # short version
 rusted-chromium -M 30 -i
 ```
@@ -169,7 +169,7 @@ rusted-chromium -M 30 -i
 ##### Automatically select the newest of 7 results and automatically try the next lower version, if the tried version has no binary
 ```bash
 # long version
-rusted-chromium --max 78 --max 79.0.3909.0 --max-results 7 --decreaseOnFail --non-interactive
+rusted-chromium --max 78 --max 79.0.3909.0 --max-results 7 --decrease-on-fail --non-interactive
 # short version
 rusted-chromium -M 79.0.3909.0 -r 7 -d -n
 ```
