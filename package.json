@@ -11,6 +11,7 @@
     "test": "jest",
     "test:debug": "node --inspect --inspect-brk node_modules/.bin/jest --runInBand",
     "build": "tsc -p tsconfig.json",
+    "build:silent": "npm run build -- --noEmit",
     "release": "npm run build && npm publish",
     "release-github": "npm run build && npm publish --registry=https://npm.pkg.github.com/"
   },
