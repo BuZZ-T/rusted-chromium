@@ -1,8 +1,6 @@
 # rusted chromium
 
-<a href="https://www.npmjs.com/package/rusted-chromium"><img src="https://img.shields.io/npm/v/rusted-chromium.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/package/rusted-chromium"><img src="https://img.shields.io/npm/l/rusted-chromium.svg" alt="Package License" /></a>
-<a href="https://travis-ci.com/github/BuZZ-T/rusted-chromium"><img src="https://travis-ci.com/BuZZ-T/rusted-chromium.svg?branch=master" alt="Build" /></a>
+[![NPM Version](https://img.shields.io/npm/v/rusted-chromium.svg)](https://www.npmjs.com/package/rusted-chromium) [![Package License](https://img.shields.io/npm/l/rusted-chromium.svg)](https://www.npmjs.com/package/rusted-chromium) [![Build Status](https://travis-ci.com/BuZZ-T/rusted-chromium.svg?branch=master)](https://travis-ci.com/github/BuZZ-T/rusted-chromium) [![Coverage Status](https://coveralls.io/repos/github/BuZZ-T/rusted-chromium/badge.svg?branch=master)](https://coveralls.io/github/BuZZ-T/rusted-chromium?branch=master)
 
 This cli tool can be used to download old (and therefore unsupported) versions of chromium.
 
