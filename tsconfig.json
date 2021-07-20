@@ -10,7 +10,9 @@
         "sourceMap": true,
         "strict": true,
         "noImplicitAny": true,
-        "resolveJsonModule": true
+        "resolveJsonModule": true,
+        "noImplicitReturns": true,
+        "forceConsistentCasingInFileNames": true
     },
     "include": [
         "**.ts", "store/store.spec.ts"

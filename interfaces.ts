@@ -29,6 +29,7 @@ export interface IChromeConfig {
     downloadFolder: string | null
     onlyNewestMajor: boolean
     single: string | null
+    inverse: boolean
 }
 
 export interface IStoreConfig{

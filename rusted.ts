@@ -37,6 +37,7 @@ function readConfig(): ConfigWrapper {
         .option('-H, --hide-negative-hits', 'Hide negative hits', false)
         .option('-f, --folder <folder>', 'Set the download folder', null)
         .option('-O, --only-newest-major', 'Show only the newest major version in user selection', false)
+        .option('-v, --inverse', 'Sort the selectable versions ascending', false)
         .option('-s, --single <version>', 'Download a specific version in non-interactive mode, even if the file is listed in the localstore.json. Several other flags have no effect.', undefined)
         .parse(process.argv)
 
@@ -84,6 +85,7 @@ function readConfig(): ConfigWrapper {
             downloadFolder: program.folder,
             onlyNewestMajor: program.onlyNewestMajor,
             single: program.single,
+            inverse: program.inverse,
         },
     }
 }

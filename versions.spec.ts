@@ -264,7 +264,7 @@ describe('versions', () => {
             expect(fetchChromeUrlMock).toHaveBeenCalledTimes(0)
         })
 
-        it('should return null, if --decrease-on-fail reaces the end of versions on versions without binary', async () => {
+        it('should return null, if --decrease-on-fail reaches the end of versions on versions without binary', async () => {
             const config = createChromeConfig({
                 interactive: false,
                 onFail: 'decrease',
@@ -548,6 +548,71 @@ describe('versions', () => {
                     disabled: false,
                     value: '10.1.2.3',
                 }
+            ]
+
+            expect(mapped).toEqual(expectedVersions)
+        })
+
+        it('should return an ascending list on --inverse', () => {
+            const config = createChromeConfig({
+                inverse: true,
+            })
+            const mapped = mapVersions(['60.6.7.8', '30.0.0.0', '29.0.2000.4', '10.1.2.4'], config, new Set([]))
+
+            const expectedVersions: IMappedVersion[] = [
+                {
+                    comparable: createIComparableVersion(10, 1, 2, 4),
+                    disabled: false,
+                    value: '10.1.2.4',
+                },
+                {
+                    comparable: createIComparableVersion(29, 0, 2000, 4),
+                    disabled: false,
+                    value: '29.0.2000.4',
+                },
+                {
+                    comparable: createIComparableVersion(30, 0, 0, 0),
+                    disabled: false,
+                    value: '30.0.0.0',
+                },
+                {
+                    comparable: createIComparableVersion(60, 6, 7, 8),
+                    disabled: false,
+                    value: '60.6.7.8',
+                },
+            ]
+
+            expect(mapped).toEqual(expectedVersions)
+        })
+
+        it('should first limit and then sort the results on --inverse and --max-results', () => {
+            const config = createChromeConfig({
+                inverse: true,
+                results: 2,
+            })
+            const mapped = mapVersions(['60.6.7.8', '30.0.0.0', '29.0.2000.4', '10.1.2.4'], config, new Set([]))
+
+            const expectedVersions: IMappedVersion[] = [
+            //     {
+            //         comparable: createIComparableVersion(10, 1, 2, 4),
+            //         disabled: false,
+            //         value: '10.1.2.4',
+            //     },
+            //     {
+            //         comparable: createIComparableVersion(29, 0, 2000, 4),
+            //         disabled: false,
+            //         value: '29.0.2000.4',
+            //     },
+                {
+                    comparable: createIComparableVersion(30, 0, 0, 0),
+                    disabled: false,
+                    value: '30.0.0.0',
+                },
+                {
+                    comparable: createIComparableVersion(60, 6, 7, 8),
+                    disabled: false,
+                    value: '60.6.7.8',
+                },
             ]
 
             expect(mapped).toEqual(expectedVersions)

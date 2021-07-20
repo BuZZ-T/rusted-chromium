@@ -23,6 +23,7 @@ const DEFAULT_CONFIG: IChromeConfig = {
     results: Infinity,
     store: false,
     single: null,
+    inverse: false,
 }
 
 const EMPTY_STORE: Store = {
