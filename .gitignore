@@ -1,6 +1,8 @@
 .vscode/
 *.orig
 
+coverage/
+
 node_modules/
 *.js
 *.js.map
