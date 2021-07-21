@@ -7,7 +7,7 @@ import store from './store'
 
 jest.mock('fs')
 
-const localPath = path.join(__dirname, 'localstore.json')
+const localPath = path.join(__dirname, '..', 'localstore.json')
 
 describe('store', () => {
 

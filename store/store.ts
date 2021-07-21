@@ -3,8 +3,9 @@ import { promisify } from 'util'
 import * as path from 'path'
 
 import { OS, Store, IMappedVersion, Arch } from '../interfaces'
+import { LOCAL_STORE_FILE } from '../constants'
 
-const STORE_FILE = path.join(__dirname, 'localstore.json')
+const STORE_FILE = path.join(__dirname, '..', LOCAL_STORE_FILE)
 
 const exists = promisify(fs.exists)
 const readFile = promisify(fs.readFile)

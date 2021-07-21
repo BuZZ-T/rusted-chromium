@@ -30,6 +30,7 @@ export async function importAndMergeLocalstore(config: IStoreConfig): Promise<St
 
     logger.success()
 
+    // TODO: check which path are we using here?
     if (fs.existsSync(LOCAL_STORE_FILE)) {
         const localStore = await readFilePromise(LOCAL_STORE_FILE, {encoding: 'utf-8'})
         const sortedStore = sortStoreEntries(mergeStores(JSON.parse(localStore), store))
