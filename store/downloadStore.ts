@@ -8,7 +8,7 @@ import { IStoreConfig, Store } from '../interfaces'
  * Adds "localstore.json" to the URL if it's not present
  * @param url 
  */
-export async function downloadStore(config: IStoreConfig, destinationPath: string): Promise<Store | undefined> {
+export async function downloadStore(config: IStoreConfig, destinationPath: string): Promise<Store> {
     let url = config.url
     
     if (!url.endsWith(destinationPath)) {

@@ -5,33 +5,26 @@ import { join } from 'path'
 import { IStoreConfig, Store, StoreSize } from '../interfaces'
 import { downloadStore } from './downloadStore'
 import { readStoreFile } from './readStore'
-import { LOCAL_STORE_FILE, LOAD_CONFIG, READ_CONFIG } from '../constants'
+import { LOCAL_STORE_FILE } from '../constants'
 import { sortStoreEntries } from '../utils'
-import { logger } from '../loggerSpinner'
 
 const writeFilePromise = promisify(fs.writeFile)
 const readFilePromise = promisify(fs.readFile)
 
+const localStoreFilePath = join(__dirname, '..', LOCAL_STORE_FILE)
+
 export async function importAndMergeLocalstore(config: IStoreConfig): Promise<StoreSize> {
     const isURL = config.url.startsWith('http://') || config.url.startsWith('https://')
-
-    const logTexts = isURL ? LOAD_CONFIG : READ_CONFIG
-
-    logger.start(logTexts)
 
     const store = isURL
         ? await downloadStore(config, LOCAL_STORE_FILE)
         : await readStoreFile(config)
 
     if (!store) {
-        logger.error()
         return Promise.reject()
     }
 
-    logger.success()
-
-    // TODO: check which path are we using here?
-    if (fs.existsSync(LOCAL_STORE_FILE)) {
+    if (fs.existsSync(localStoreFilePath)) {
         const localStore = await readFilePromise(LOCAL_STORE_FILE, {encoding: 'utf-8'})
         const sortedStore = sortStoreEntries(mergeStores(JSON.parse(localStore), store))
         await storeStoreFile(sortedStore)
@@ -89,6 +82,5 @@ function mergeStores(localStore: Store, newStore: Store): Store {
 }
 
 async function storeStoreFile(store: Store): Promise<void> {
-    const filename = join(__dirname, '..', LOCAL_STORE_FILE)
-    return writeFilePromise(filename, JSON.stringify(store, null, 2))
+    return writeFilePromise(localStoreFilePath, JSON.stringify(store, null, 2))
 }

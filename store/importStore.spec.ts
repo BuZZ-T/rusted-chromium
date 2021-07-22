@@ -19,19 +19,15 @@ describe('importStore', () => {
     describe('importAndMergeLocalstore', () => {
 
         let fsMock: any
-        let loggerSpinnerMock: any
         let downloadStoreMock: any
         let readStoreFileMock: any
 
         beforeEach(() => {
             downloadStoreMock = mocked(downloadStore)
             readStoreFileMock = mocked(readStoreFile)
-            loggerSpinnerMock = mocked(logger, true)
 
             downloadStoreMock.mockReset()
             readStoreFileMock.mockReset()
-            loggerSpinnerMock.start.mockReset()
-            loggerSpinnerMock.success.mockReset()
 
             fsMock = mocked(fs, true)
             fsMock.existsSync.mockClear()
@@ -59,10 +55,6 @@ describe('importStore', () => {
 
             expect(fsMock.readFile).toHaveBeenCalledTimes(0)
 
-            expect(loggerSpinnerMock.start).toHaveBeenCalledTimes(1)
-            expect(loggerSpinnerMock.start).toHaveBeenCalledWith(LOAD_CONFIG)
-            expect(loggerSpinnerMock.success).toHaveBeenCalledTimes(1)
-
             expect(fsMock.writeFile).toHaveBeenCalledTimes(1)
             expect(fsMock.writeFile).toHaveBeenCalledWith(path.join(__dirname, '..', LOCAL_STORE_FILE), JSON.stringify(anyStore, null, 2), expect.any(Function))
         })
@@ -85,10 +77,6 @@ describe('importStore', () => {
             expect(downloadStoreMock).toHaveBeenCalledTimes(0)
 
             expect(fsMock.readFile).toHaveBeenCalledTimes(0)
-
-            expect(loggerSpinnerMock.start).toHaveBeenCalledTimes(1)
-            expect(loggerSpinnerMock.start).toHaveBeenCalledWith(READ_CONFIG)
-            expect(loggerSpinnerMock.success).toHaveBeenCalledTimes(1)
 
             expect(fsMock.writeFile).toHaveBeenCalledTimes(1)
             expect(fsMock.writeFile).toHaveBeenCalledWith(path.join(__dirname, '..', LOCAL_STORE_FILE), JSON.stringify(anyStore, null, 2), expect.any(Function))

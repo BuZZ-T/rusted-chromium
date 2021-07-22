@@ -49,7 +49,7 @@ describe('readStore', () => {
                 await readStoreFile(config)
                 fail()
             } catch (e) {
-                expect(e).toBe(undefined)
+                expect(e).toEqual(new Error('File does not exist!'))
                 expect(fsMock.readFile).toHaveBeenCalledTimes(0)
             }
         })

@@ -33,7 +33,7 @@ function readConfig(): ConfigWrapper {
         .option('-n, --non-interactive', 'Don\'t show the selection menu. Automatically select the newest version. Only works when --decrease-on-fail is also set.', false)
         .option('-t, --no-store', 'Don\'t store negative hits in the local store file.', true)
         .option('-l, --no-download', 'Don\'t download the binary. It also continues with the next version, if --decrease-on-fail or --increase-on-fail is set. Useful to build up the negative hit store', true)
-        .option('-I --import-store', 'Imports a localstore.json file either by URL (starting with "http://" or "https://" or by local file')
+        .option('-I --import-store <url>', 'Imports a localstore.json file either by URL (starting with "http://" or "https://" or by local file')
         .option('-H, --hide-negative-hits', 'Hide negative hits', false)
         .option('-f, --folder <folder>', 'Set the download folder', null)
         .option('-O, --only-newest-major', 'Show only the newest major version in user selection', false)
@@ -62,7 +62,7 @@ function readConfig(): ConfigWrapper {
         return {
             action: 'importStore',
             config: {
-                url: program.loadStore,
+                url: program.importStore,
             },
         }
     }
