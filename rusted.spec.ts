@@ -1,0 +1,5 @@
+describe('rusted', () => {
+    it('should', () => {
+        //
+    })
+})

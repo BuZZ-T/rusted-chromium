@@ -6,7 +6,7 @@ import { logger } from '../loggerSpinner'
 import { importAndMergeLocalstore } from './importStore'
 import { downloadStore } from './downloadStore'
 import { readStoreFile } from './readStore'
-import { LOCAL_STORE_FILE, LOAD_CONFIG, READ_CONFIG } from '../constants'
+import { LOCAL_STORE_FILE } from '../constants'
 import { PromisifyCallback, PROMISIFY_NO_ERROR, createStore } from '../test.utils'
 import { IStoreConfig } from '../interfaces'
 
@@ -24,9 +24,9 @@ describe('importStore', () => {
 
         beforeEach(() => {
             downloadStoreMock = mocked(downloadStore)
-            readStoreFileMock = mocked(readStoreFile)
-
             downloadStoreMock.mockReset()
+
+            readStoreFileMock = mocked(readStoreFile)
             readStoreFileMock.mockReset()
 
             fsMock = mocked(fs, true)

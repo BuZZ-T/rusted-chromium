@@ -14,17 +14,17 @@ describe('readStore', () => {
 
     describe('readStoreFile', () => {
 
-        let fsMock: MaybeMockedDeep<any>
-        let loggerSpinnerMock: MaybeMockedDeep<LoggerSpinner>
+        let fsMock: any
+        let loggerMock: MaybeMockedDeep<LoggerSpinner>
 
         beforeEach(() => {
             fsMock = mocked(fs, true)
             fsMock.readFile.mockReset()
 
-            loggerSpinnerMock = mocked(logger, true)
-            loggerSpinnerMock.start.mockClear()
-            loggerSpinnerMock.success.mockClear()
-            loggerSpinnerMock.error.mockClear()
+            loggerMock = mocked(logger, true)
+            loggerMock.start.mockClear()
+            loggerMock.success.mockClear()
+            loggerMock.error.mockClear()
         })
 
         it('should return the parsed store received from the file system', async () => {

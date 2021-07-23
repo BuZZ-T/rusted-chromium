@@ -1,94 +1,18 @@
 import { createWriteStream, existsSync, mkdir as fsMkdir } from 'fs'
 import { parse } from 'node-html-parser'
 import { promisify } from 'util'
-import * as program from 'commander'
 import * as unzipper from 'unzipper'
 import * as path from 'path'
 
-import { versionToComparableVersion, mapOS } from './utils'
 import { fetchChromiumTags, fetchChromeZipFile } from './api'
-import { IChromeConfig, ConfigWrapper, IStoreConfig } from './interfaces'
+import { IChromeConfig, IStoreConfig } from './interfaces'
 import { logger } from './loggerSpinner'
 import { getChromeDownloadUrl, mapVersions } from './versions'
 import { importAndMergeLocalstore } from './store/importStore'
 import { loadStore } from './store/store'
-import * as packageJson from './package.json'
+import { readConfig } from './config/config'
 
 const mkdir = promisify(fsMkdir)
-
-/**
- * Checks the arguments passed to the programm and returns them
- */
-function readConfig(): ConfigWrapper {
-    program
-        .version(packageJson.version)
-        .option('-m, --min <version>', 'The minimum version', '0')
-        .option('-M, --max <version>', 'The maximum version. Newest version if not specificied', '10000')
-        .option('-r, --max-results <results>', 'The maximum amount of results to choose from', NaN)
-        .option('-o, --os <os>', 'The operating system for what the binary should be downloaded')
-        .option('-a, --arch <arch>', 'The architecture for what the binary should be downloaded. Valid values are "x86" and "x64". Only works when --os is also set')
-        .option('-d, --decrease-on-fail', 'If a binary does not exist, go to the next lower version number and try again (regarding --min, --max and --max-results)')
-        .option('-i, --increase-on-fail', 'If a binary does not exist, go to the next higher version number and try again (regarding --min, --max and --max-results), overwrites "--decrease-on-fail" if both set')
-        .option('-z, --unzip', 'Directly unzip the downloaded zip-file and delete the .zip afterwards')
-        .option('-n, --non-interactive', 'Don\'t show the selection menu. Automatically select the newest version. Only works when --decrease-on-fail is also set.', false)
-        .option('-t, --no-store', 'Don\'t store negative hits in the local store file.', true)
-        .option('-l, --no-download', 'Don\'t download the binary. It also continues with the next version, if --decrease-on-fail or --increase-on-fail is set. Useful to build up the negative hit store', true)
-        .option('-I --import-store <url>', 'Imports a localstore.json file either by URL (starting with "http://" or "https://" or by local file')
-        .option('-H, --hide-negative-hits', 'Hide negative hits', false)
-        .option('-f, --folder <folder>', 'Set the download folder', null)
-        .option('-O, --only-newest-major', 'Show only the newest major version in user selection', false)
-        .option('-v, --inverse', 'Sort the selectable versions ascending', false)
-        .option('-s, --single <version>', 'Download a specific version in non-interactive mode, even if the file is listed in the localstore.json. Several other flags have no effect.', undefined)
-        .parse(process.argv)
-
-    const min = versionToComparableVersion(program.min)
-    const max = versionToComparableVersion(program.max)
-
-    const minIsSet = program.min > 0
-    const maxResultsIsSet = !isNaN(program.maxResults)
-
-    const os = mapOS(program.os || process.platform)
-
-    if (!program.os && program.arch) {
-        logger.warn('Setting "--arch" has no effect, when "--os" is not set!')
-    }
-    if (program.nonInteractive && !program.decreaseOnFail) {
-        logger.warn('Setting "--non-interactive" has no effect, when "--decrease-on-fail" is not set!')
-    }
-
-    const is64Bit = (program.os && program.arch) ? program.arch === 'x64' : true
-
-    if (program.importStore) {
-        return {
-            action: 'importStore',
-            config: {
-                url: program.importStore,
-            },
-        }
-    }
-
-    return {
-        action: 'loadChrome',
-        config: {
-            autoUnzip: !!program.unzip,
-            min,
-            max,
-            results: minIsSet && !maxResultsIsSet ? Infinity : (parseInt(program.maxResults, 10) || 10),
-            os,
-            arch: is64Bit ? 'x64' : 'x86',
-            onFail: program.increaseOnFail ? 'increase' : program.decreaseOnFail ? 'decrease' : 'nothing',
-            interactive: !program.nonInteractive,
-            store: program.store,
-            download: program.download,
-            downloadUrl: program.loadStore,
-            hideNegativeHits: program.hideNegativeHits,
-            downloadFolder: program.folder,
-            onlyNewestMajor: program.onlyNewestMajor,
-            single: program.single,
-            inverse: program.inverse,
-        },
-    }
-}
 
 /**
  * Parses the chromium tags and returns all chromium versions
@@ -126,7 +50,7 @@ async function loadVersions(): Promise<string[]> {
 }
 
 async function main(): Promise<void> {
-    const configWrapper = readConfig()
+    const configWrapper = readConfig(process.argv, process.platform)
 
     if (configWrapper.action === 'importStore') {
         const config: IStoreConfig = configWrapper.config

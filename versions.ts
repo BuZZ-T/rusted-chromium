@@ -56,7 +56,6 @@ export async function getChromeDownloadUrl(config: IChromeConfig, mappedVersions
             logger.warn('Not downloading binary.')
         }
 
-
         if (config.single) {
             break
         }

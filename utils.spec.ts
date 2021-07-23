@@ -14,6 +14,7 @@ describe('utils', () => {
 
     beforeEach(() => {
         loggerMock = mocked(logger, true)
+        loggerMock.warn.mockClear()
     })
 
     describe('detectOperatingSystem', () => {

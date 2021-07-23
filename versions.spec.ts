@@ -75,6 +75,11 @@ describe('versions', () => {
             }
 
             loggerMock = mocked(logger, true)
+            loggerMock.start.mockClear()
+            loggerMock.info.mockClear()
+            loggerMock.success.mockClear()
+            loggerMock.error.mockClear()
+            loggerMock.warn.mockClear()
 
             detectOperatingSystemMock = mocked(detectOperatingSystem)
             fetchBranchPositionMock = mocked(fetchBranchPosition)

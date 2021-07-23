@@ -24,7 +24,6 @@ export interface IChromeConfig {
     interactive: boolean
     store: boolean
     download: boolean
-    downloadUrl: string | null
     hideNegativeHits: boolean
     downloadFolder: string | null
     onlyNewestMajor: boolean

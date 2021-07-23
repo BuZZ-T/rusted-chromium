@@ -73,8 +73,8 @@ export function compareIComparableVersions(version: IComparableVersion, other: I
     return Compared.EQUAL
 }
 
-export function mapOS(extendedOS: ExtendedOS): OS {
-    switch(extendedOS) {
+export function mapOS(extendedOS: string): OS {
+    switch(extendedOS as ExtendedOS) {
         case 'linux':
             return 'linux'
         case 'win32':
@@ -84,6 +84,8 @@ export function mapOS(extendedOS: ExtendedOS): OS {
         case 'mac':
             return 'mac'
     }
+
+    throw new Error(`unknown OS: ${extendedOS}`)
 }
 
 /**

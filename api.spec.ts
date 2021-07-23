@@ -17,6 +17,9 @@ describe('api', () => {
         fetchMock = mocked(fetch)
         mocked<any>(fetch).mockClear()
         loggerMock = mocked(logger, true)
+        loggerMock.start.mockClear()
+        loggerMock.success.mockClear()
+        loggerMock.error.mockClear()
     })
 
     describe('fetchLocalStore', () => {
@@ -140,7 +143,7 @@ describe('api', () => {
 
             expect(await fetchBranchPosition('any-version')).toEqual(undefined)
             expect(loggerMock.error).toHaveBeenCalledTimes(1)
-            expect(loggerMock.success).toHaveBeenCalledTimes(1)
+            expect(loggerMock.success).toHaveBeenCalledTimes(0)
         })
     })
 

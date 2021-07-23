@@ -5,7 +5,7 @@ import { join } from 'path'
 import { IStoreConfig, Store, StoreSize } from '../interfaces'
 import { downloadStore } from './downloadStore'
 import { readStoreFile } from './readStore'
-import { LOCAL_STORE_FILE } from '../constants'
+import { LOCAL_STORE_FILE, LOAD_CONFIG, READ_CONFIG } from '../constants'
 import { sortStoreEntries } from '../utils'
 
 const writeFilePromise = promisify(fs.writeFile)

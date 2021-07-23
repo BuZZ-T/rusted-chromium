@@ -1,4 +1,6 @@
+import { IConfigOptions } from './config/config.interfaces'
 import { IChromeConfig, IComparableVersion, Store } from './interfaces'
+import { DEFAULT_OPTIONS } from './config/config'
 
 export const createIComparableVersion = (major: number, minor: number, branch: number, patch: number): IComparableVersion => ({
     major,
@@ -12,7 +14,6 @@ export const createChromeConfig = (config?: Partial<IChromeConfig>): IChromeConf
     autoUnzip: false,
     download: true,
     downloadFolder: null,
-    downloadUrl: null,
     hideNegativeHits: false,
     interactive: true,
     max: createIComparableVersion(10000, 0, 0, 0),
@@ -45,3 +46,8 @@ export const createStore = (store?: Partial<Store>): Store => ({
 
 export const PROMISIFY_NO_ERROR = false
 export type PromisifyCallback = (p: boolean, ...args: any[]) => void
+
+export const createChromeOptions = (config?: Partial<IConfigOptions>): IConfigOptions => ({
+    ...DEFAULT_OPTIONS,
+    ...config,
+})
