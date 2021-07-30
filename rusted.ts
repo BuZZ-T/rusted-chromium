@@ -159,7 +159,11 @@ async function downloadChromium(config: IChromeConfig): Promise<void> {
             console.log(config.downloadFolder, ' created')
         }
 
-        logger.start(['Downloading binary...', config.autoUnzip ? `Successfully downloaded and extracted to ${downloadPath}/` : `${downloadPath}.zip successfully downloaded`])
+        logger.start({
+            start: 'Downloading binary...',
+            success: config.autoUnzip ? `Successfully downloaded and extracted to ${downloadPath}/` : `${downloadPath}.zip successfully downloaded`,
+            fail: 'Failed to download binary',
+        })
 
         await fetchChromeZipFile(chromeUrl).then(res => {
             if (config.autoUnzip) {

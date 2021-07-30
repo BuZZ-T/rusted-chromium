@@ -1,27 +1,27 @@
-import { LoggingConfig } from './interfaces'
+import { LoggerConfig } from './interfaces'
 
-export const LOAD_CONFIG: LoggingConfig = [
-    'Downloading local storage file',
-    'localstore.json file downloaded successfully!',
-    'Error downloading localstore.json!',
-]
+export const LOAD_CONFIG: LoggerConfig = {
+    start: 'Downloading local storage file',
+    success: 'localstore.json file downloaded successfully!',
+    fail: 'Error downloading localstore.json',
+}
 
-export const READ_CONFIG: LoggingConfig = [
-    'Reading local storage file from filesystem',
-    'Successfully loaded localstore.json from filesystem',
-    'Error loading localstore.json from filesystem',
-]
+export const READ_CONFIG: LoggerConfig = {
+    start: 'Reading local storage file from filesystem',
+    success: 'Successfully loaded localstore.json from filesystem',
+    fail: 'Error loading localstore.json from filesystem',
+}
 
 export const LOCAL_STORE_FILE = 'localstore.json'
 
-export const RESOLVE_VERSION: LoggingConfig = [
-    'Resolving version to branch position...',
-    'Version resolved!',
-    'Error resolving version!',
-]
+export const RESOLVE_VERSION: LoggerConfig = {
+    start: 'Resolving version to branch position...',
+    success: 'Version resolved!',
+    fail: 'Error resolving version!',
+}
 
-export const SEARCH_BINARY: LoggingConfig = [
-    'Searching for binary...',
-    'Binary found.',
-    'No binary found!',
-]
+export const SEARCH_BINARY: LoggerConfig = {
+    start: 'Searching for binary...',
+    success: 'Binary found.',
+    fail: 'No binary found!',
+}

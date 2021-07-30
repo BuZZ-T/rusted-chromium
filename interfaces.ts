@@ -75,10 +75,11 @@ export interface IMetadataResponse {
     items: IMetadata[]
 }
 
-/**
- * start / success / error
- */
-export type LoggingConfig = [string, string, string?]
+export interface LoggerConfig {
+    start: string
+    success: string
+    fail: string
+}
 
 export type Store = {
     [p in OS]: {

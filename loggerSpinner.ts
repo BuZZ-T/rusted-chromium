@@ -1,6 +1,6 @@
 import * as chalk from 'chalk'
 
-import { LoggingConfig } from './interfaces'
+import { LoggerConfig } from './interfaces'
 
 export class LoggerSpinner {
 
@@ -48,17 +48,17 @@ export class LoggerSpinner {
         return this
     }
 
-    public start(loggingConfig: LoggingConfig): LoggerSpinner {
-        const [start, success, error] = loggingConfig
+    public start(loggingConfig: LoggerConfig): LoggerSpinner {
+        const { start, success, fail } = loggingConfig
         this.startText = start
         this.successText = this.SUCCESS_FN(success)
-        this.errorText = this.ERROR_FN(error || this.DEFAULT_ERROR)
+        this.errorText = this.ERROR_FN(fail || this.DEFAULT_ERROR)
 
         this.stop()
         let count = 0
         this.timer = setInterval(() => {
             this.clearLine()
-            
+
             count = (count + 1) % (this.SPINNER_STATES.length - 1)
             this.stdio.write(`${this.SPINNER_STATES[count]} ${this.startText}`)
         }, 100)
