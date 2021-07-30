@@ -25,7 +25,7 @@ export class LoggerSpinner {
         try {
             this.stdio.clearLine(0)
             this.stdio.cursorTo(0)
-        } catch(e) {
+        } catch {
             // this might fail when piping stdout to /dev/null. Just ignore it in this case
         }
         return this

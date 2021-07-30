@@ -82,6 +82,13 @@ export interface LoggerConfig {
     fail: string | TextFunction
 }
 
+export interface ProgressConfig extends LoggerConfig {
+    showNumeric?: boolean
+    barLength?: number
+    steps?: number
+    unit?: string
+}
+
 export type Store = {
     [p in OS]: {
         x86: string[],

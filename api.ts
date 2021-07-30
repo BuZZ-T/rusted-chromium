@@ -1,9 +1,12 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+/* eslint-disable @typescript-eslint/no-var-requires */
 const fetch = require('node-fetch')
+const Progress = require('node-fetch-progress')
+/* eslint-enable @typescript-eslint/no-var-requires */
 
 import { logger } from './loggerSpinner'
 import { IMetadataResponse } from './interfaces'
 import { RESOLVE_VERSION } from './constants'
+import { progress } from './log/progress'
 
 const CHROMIUM_TAGS_URL = 'https://chromium.googlesource.com/chromium/src/+refs'
 
@@ -62,6 +65,28 @@ export async function fetchChromeUrl(branchPosition: string, urlOS: string, file
 }
 
 export async function fetchChromeZipFile(url: string): Promise<any> {
-    return fetch(url)
-        .then(checkStatus)
+
+
+    const response = await fetch(url)
+
+    let isFirstProgress = true
+
+    new Progress(response, { throttle: 100 }).on('progress', (p: any) => {
+        if (isFirstProgress) {
+            progress.start({
+                barLength: 40,
+                steps: Math.round(p.total / 1024 / 1024),
+                unit: 'MB',
+                showNumeric: true,
+                start: 'Downloading binary...',
+                success: 'zip successfully downloaded',
+                fail: 'error'
+            })
+            isFirstProgress = false
+        } else {
+            progress.fraction(p.progress)
+        }
+    })
+
+    return checkStatus(response)
 }
