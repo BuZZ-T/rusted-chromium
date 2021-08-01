@@ -2,7 +2,7 @@
     "compilerOptions": {
         "moduleResolution": "node",
         "lib": [
-            "es2017",
+            "es2020",
             "dom"
         ],
         "target": "es2015",

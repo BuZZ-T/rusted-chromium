@@ -2,7 +2,6 @@ import * as fs from 'fs'
 import * as path from 'path'
 import { mocked } from 'ts-jest/utils'
 
-import { logger } from '../loggerSpinner'
 import { importAndMergeLocalstore } from './importStore'
 import { downloadStore } from './downloadStore'
 import { readStoreFile } from './readStore'

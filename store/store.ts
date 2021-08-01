@@ -4,6 +4,7 @@ import * as path from 'path'
 
 import { OS, Store, IMappedVersion, Arch } from '../interfaces'
 import { LOCAL_STORE_FILE } from '../constants'
+import { sortStoreEntries } from '../utils'
 
 const STORE_FILE = path.join(__dirname, '..', LOCAL_STORE_FILE)
 
@@ -55,9 +56,10 @@ export async function storeNegativeHit(version: IMappedVersion, os: OS, arch: Ar
     
     if (!new Set(currentStore[os][arch]).has(version.value)) {
         currentStore[os][arch].push(version.value)
-    }
 
-    await writeFile(STORE_FILE, JSON.stringify(currentStore, null, 4))
+        const sortedStore = sortStoreEntries(currentStore)
+        await writeFile(STORE_FILE, JSON.stringify(sortedStore, null, 4))
+    }
 }
 
 const store = {

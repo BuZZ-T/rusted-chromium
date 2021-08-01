@@ -130,7 +130,8 @@ describe('store', () => {
 
         it('should create a store with one entry if it does not exist', async () => {
             const mockedStore = createStore()
-            loadStoreMock.mockReturnValue(Promise.resolve(mockedStore))
+
+            loadStoreMock.mockResolvedValue(mockedStore)
 
             fsMock.writeFile.mockImplementation((path: string, store: any, callback: PromisifyCallback) => {
                 callback(PROMISIFY_NO_ERROR)
@@ -166,6 +167,29 @@ describe('store', () => {
             }, 'linux', 'x64')
 
             const expectedStore = createStore({ linux: { x64: ['1.2.3.4'], x86: [] }, win: { x64: ['10.0.0.0'], x86: [], } })
+
+            expect(loadStoreMock).toHaveBeenCalledTimes(1)
+
+            expect(fsMock.writeFile).toHaveBeenCalledTimes(1)
+            expect(fsMock.writeFile).toHaveBeenCalledWith(localPath, JSON.stringify(expectedStore, null, 4), expect.any(Function))
+        })
+
+        it('should sort an unsorted store on writing', async () => {
+            const existingStore = createStore({ win: { x64: ['11.0.0.0', '10.0.0.0', '12.0.0.0'], x86: [] } })
+
+            loadStoreMock.mockReturnValue(existingStore)
+
+            fsMock.writeFile.mockImplementation((path: string, store: any, callback: PromisifyCallback) => {
+                callback(PROMISIFY_NO_ERROR)
+            })
+
+            await store.storeNegativeHit({
+                comparable: createIComparableVersion(1, 2, 3, 4),
+                disabled: true,
+                value: '1.2.3.4',
+            }, 'linux', 'x64')
+
+            const expectedStore = createStore({ linux: { x64: ['1.2.3.4'], x86: [] }, win: { x64: ['10.0.0.0', '11.0.0.0', '12.0.0.0'], x86: [], } })
 
             expect(loadStoreMock).toHaveBeenCalledTimes(1)
 

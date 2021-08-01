@@ -33,7 +33,7 @@ export function versionToComparableVersion(version: string): IComparableVersion 
 }
 
 /**
- * Sort comparator for IComparableVersion
+ * Descending sort comparator for IComparableVersion
  */
 export function sortIMappedVersions(a: IMappedVersion, b: IMappedVersion): -1 | 0 | 1 {
     const compared = compareIComparableVersions(a.comparable, b.comparable)
@@ -42,6 +42,22 @@ export function sortIMappedVersions(a: IMappedVersion, b: IMappedVersion): -1 | 
         return 1
     }
     if (compared === Compared.GREATER) {
+        return -1
+    }
+
+    return 0
+}
+
+/**
+ * Ascending sort comparator for IComparableVersion
+ */
+export function sortReverseIMappedVersions(a: IMappedVersion, b: IMappedVersion): -1 | 0 | 1 {
+    const compared = compareIComparableVersions(a.comparable, b.comparable)
+
+    if (compared === Compared.GREATER) {
+        return 1
+    }
+    if (compared === Compared.LESS) {
         return -1
     }
 
@@ -74,7 +90,7 @@ export function compareIComparableVersions(version: IComparableVersion, other: I
 }
 
 export function mapOS(extendedOS: string): OS {
-    switch(extendedOS as ExtendedOS) {
+    switch (extendedOS as ExtendedOS) {
         case 'linux':
             return 'linux'
         case 'win32':
@@ -106,4 +122,11 @@ export function sortStoreEntries(store: Store): Store {
             x86: [...store.mac.x86].sort(),
         },
     }
+}
+
+export function sortStoreEntries_(store: Store): Store {
+    const entries = Object.entries(store).map(([operationSystem, arches]) =>
+        [operationSystem, Object.fromEntries(Object.entries(arches).map(([arch, list]) => [arch, list.sort()]))]
+    )
+    return Object.fromEntries(entries)
 }
