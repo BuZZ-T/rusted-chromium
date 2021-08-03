@@ -1,21 +1,30 @@
 import * as fs from 'fs'
 import { mocked } from 'ts-jest/utils'
+import { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 
 import { readStoreFile } from './readStore'
 import { IStoreConfig } from '../interfaces'
 import { createStore, PromisifyCallback, PROMISIFY_NO_ERROR } from '../test.utils'
+import { LoggerSpinner, logger } from '../loggerSpinner'
 
 jest.mock('fs')
+jest.mock('../loggerSpinner')
 
 describe('readStore', () => {
 
     describe('readStoreFile', () => {
 
-        let fsMock: any
+        let fsMock: MaybeMockedDeep<any>
+        let loggerSpinnerMock: MaybeMockedDeep<LoggerSpinner>
 
         beforeEach(() => {
             fsMock = mocked(fs, true)
             fsMock.readFile.mockReset()
+
+            loggerSpinnerMock = mocked(logger, true)
+            loggerSpinnerMock.start.mockClear()
+            loggerSpinnerMock.success.mockClear()
+            loggerSpinnerMock.error.mockClear()
         })
 
         it('should return the parsed store received from the file system', async () => {
