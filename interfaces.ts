@@ -1,3 +1,5 @@
+import { ComparableVersion } from './commons/ComparableVersion'
+
 export type OS = 'win' | 'linux' | 'mac'
 export type ExtendedOS = OS | 'darwin' | 'win32'
 
@@ -14,8 +16,8 @@ export interface IChromeConfigWrapper {
 }
 
 export interface IChromeConfig {
-    min: IComparableVersion
-    max: IComparableVersion
+    min: ComparableVersion
+    max: ComparableVersion
     results: number
     os: OS
     arch: Arch
@@ -31,7 +33,7 @@ export interface IChromeConfig {
     inverse: boolean
 }
 
-export interface IStoreConfig{
+export interface IStoreConfig {
     url: string
 }
 
@@ -39,7 +41,7 @@ export type ConfigWrapper = IStoreConfigWrapper | IChromeConfigWrapper
 
 export interface IMappedVersion {
     value: string
-    comparable: IComparableVersion
+    comparable: ComparableVersion
     disabled: boolean
 }
 

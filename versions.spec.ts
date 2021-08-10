@@ -4,18 +4,19 @@ import { mocked } from 'ts-jest/utils'
 import { LoggerSpinner, logger } from './loggerSpinner'
 import { mapVersions, getChromeDownloadUrl } from './versions'
 import { IMappedVersion } from './interfaces'
-import { createChromeConfig, createIComparableVersion } from './test.utils'
+import { createChromeConfig } from './test.utils'
 import { userSelectedVersion } from './select'
 import { fetchBranchPosition, fetchChromeUrl } from './api'
 import { detectOperatingSystem } from './utils'
 import { storeNegativeHit } from './store/store'
+import { ComparableVersion } from './commons/ComparableVersion'
 
 jest.mock('./select')
 jest.mock('./api')
 jest.mock('./loggerSpinner')
 jest.mock('./store/store')
 
-// don't mock versionToComparableVersion to test the sort and filtering based on version.comparableVersion
+// don't mock compareComparableVersions to test the sort and filtering based on version.comparableVersion
 jest.mock('./utils', () => ({
     ...jest.requireActual<any>('./utils'),
     detectOperatingSystem: jest.fn(),
@@ -44,32 +45,32 @@ describe('versions', () => {
 
         beforeEach(() => {
             version1 = {
-                comparable: createIComparableVersion(10, 0, 0, 0),
+                comparable: new ComparableVersion(10, 0, 0, 0),
                 disabled: false,
                 value: '10.0.0.0',
             }
             version2 = {
-                comparable: createIComparableVersion(20, 0, 0, 0),
+                comparable: new ComparableVersion(20, 0, 0, 0),
                 disabled: false,
                 value: '20.0.0.0',
             }
             version3 = {
-                comparable: createIComparableVersion(30, 0, 0, 0),
+                comparable: new ComparableVersion(30, 0, 0, 0),
                 disabled: false,
                 value: '30.0.0.0',
             }
             versionDisabled = {
-                comparable: createIComparableVersion(40, 0, 0, 0),
+                comparable: new ComparableVersion(40, 0, 0, 0),
                 disabled: true,
                 value: '40.0.0.0',
             }
             versionDisabled2 = {
-                comparable: createIComparableVersion(40, 1, 0, 0),
+                comparable: new ComparableVersion(40, 1, 0, 0),
                 disabled: true,
                 value: '40.1.0.0',
             }
             versionDisabled3 = {
-                comparable: createIComparableVersion(40, 2, 0, 0),
+                comparable: new ComparableVersion(40, 2, 0, 0),
                 disabled: true,
                 value: '40.2.0.0',
             }
@@ -336,12 +337,12 @@ describe('versions', () => {
             const singleVersion = '10.11.12.13'
 
             const mappedSingleVersion: IMappedVersion = {
-                comparable: {
+                comparable: new ComparableVersion({
                     major: 10,
                     minor: 11,
                     branch: 12,
                     patch: 13,
-                },
+                }),
                 disabled: false,
                 value: singleVersion,
             }
@@ -366,7 +367,7 @@ describe('versions', () => {
         })
     })
 
-    describe('mapVersions', () => {
+    fdescribe('mapVersions', () => {
         it('should sort the versions', () => {
             const config = createChromeConfig()
 
@@ -374,12 +375,12 @@ describe('versions', () => {
 
             const expectedVersions: IMappedVersion[] = [
                 {
-                    comparable: createIComparableVersion(20, 0, 0, 0),
+                    comparable: new ComparableVersion(20, 0, 0, 0),
                     disabled: false,
                     value: '20.0.0.0',
                 },
                 {
-                    comparable: createIComparableVersion(10, 1, 2, 3),
+                    comparable: new ComparableVersion(10, 1, 2, 3),
                     disabled: false,
                     value: '10.1.2.3',
                 },
@@ -395,12 +396,12 @@ describe('versions', () => {
 
             const expectedVersions: IMappedVersion[] = [
                 {
-                    comparable: createIComparableVersion(10, 1, 2, 4),
+                    comparable: new ComparableVersion(10, 1, 2, 4),
                     disabled: true,
                     value: '10.1.2.4',
                 },
                 {
-                    comparable: createIComparableVersion(10, 1, 2, 3),
+                    comparable: new ComparableVersion(10, 1, 2, 3),
                     disabled: false,
                     value: '10.1.2.3',
                 },
@@ -418,7 +419,7 @@ describe('versions', () => {
 
             const expectedVersions: IMappedVersion[] = [
                 {
-                    comparable: createIComparableVersion(10, 1, 2, 3),
+                    comparable: new ComparableVersion(10, 1, 2, 3),
                     disabled: false,
                     value: '10.1.2.3',
                 },
@@ -429,19 +430,19 @@ describe('versions', () => {
 
         it('should filter out versions less than config.min', () => {
             const config = createChromeConfig({
-                min: createIComparableVersion(30, 0, 0, 0)
+                min: new ComparableVersion(30, 0, 0, 0)
             })
 
             const mapped = mapVersions(['60.6.7.8', '30.0.0.0', '29.0.2000.4', '10.1.2.4'], config, new Set([]))
 
             const expectedVersions: IMappedVersion[] = [
                 {
-                    comparable: createIComparableVersion(60, 6, 7, 8),
+                    comparable: new ComparableVersion(60, 6, 7, 8),
                     disabled: false,
                     value: '60.6.7.8',
                 },
                 {
-                    comparable: createIComparableVersion(30, 0, 0, 0),
+                    comparable: new ComparableVersion(30, 0, 0, 0),
                     disabled: false,
                     value: '30.0.0.0',
                 },
@@ -452,24 +453,24 @@ describe('versions', () => {
 
         it('should filter out versions greater than config.max', () => {
             const config = createChromeConfig({
-                max: createIComparableVersion(30, 0, 0, 0),
+                max: new ComparableVersion(30, 0, 0, 0),
             })
 
             const mapped = mapVersions(['60.6.7.8', '30.0.0.0', '30.0.0.1', '29.0.2000.4', '10.1.2.4'], config, new Set([]))
 
             const expectedVersions: IMappedVersion[] = [
                 {
-                    comparable: createIComparableVersion(30, 0, 0, 0),
+                    comparable: new ComparableVersion(30, 0, 0, 0),
                     disabled: false,
                     value: '30.0.0.0',
                 },
                 {
-                    comparable: createIComparableVersion(29, 0, 2000, 4),
+                    comparable: new ComparableVersion(29, 0, 2000, 4),
                     disabled: false,
                     value: '29.0.2000.4',
                 },
                 {
-                    comparable: createIComparableVersion(10, 1, 2, 4),
+                    comparable: new ComparableVersion(10, 1, 2, 4),
                     disabled: false,
                     value: '10.1.2.4',
                 },
@@ -487,17 +488,17 @@ describe('versions', () => {
 
             const expectedVersions: IMappedVersion[] = [
                 {
-                    comparable: createIComparableVersion(60, 6, 7, 8),
+                    comparable: new ComparableVersion(60, 6, 7, 8),
                     disabled: false,
                     value: '60.6.7.8',
                 },
                 {
-                    comparable: createIComparableVersion(30, 0, 0, 0),
+                    comparable: new ComparableVersion(30, 0, 0, 0),
                     disabled: false,
                     value: '30.0.0.0',
                 },
                 {
-                    comparable: createIComparableVersion(29, 0, 2000, 4),
+                    comparable: new ComparableVersion(29, 0, 2000, 4),
                     disabled: false,
                     value: '29.0.2000.4',
                 },
@@ -516,22 +517,22 @@ describe('versions', () => {
 
             const expectedVersions: IMappedVersion[] = [
                 {
-                    comparable: createIComparableVersion(60, 6, 7, 8),
+                    comparable: new ComparableVersion(60, 6, 7, 8),
                     disabled: false,
                     value: '60.6.7.8',
                 },
                 {
-                    comparable: createIComparableVersion(30, 0, 0, 0),
+                    comparable: new ComparableVersion(30, 0, 0, 0),
                     disabled: false,
                     value: '30.0.0.0',
                 },
                 {
-                    comparable: createIComparableVersion(29, 0, 2000, 4),
+                    comparable: new ComparableVersion(29, 0, 2000, 4),
                     disabled: false,
                     value: '29.0.2000.4',
                 },
                 {
-                    comparable: createIComparableVersion(10, 1, 2, 4),
+                    comparable: new ComparableVersion(10, 1, 2, 4),
                     disabled: false,
                     value: '10.1.2.4',
                 },
@@ -549,7 +550,7 @@ describe('versions', () => {
 
             const expectedVersions: IMappedVersion[] = [
                 {
-                    comparable: createIComparableVersion(10, 1, 2, 3),
+                    comparable: new ComparableVersion(10, 1, 2, 3),
                     disabled: false,
                     value: '10.1.2.3',
                 }
@@ -566,22 +567,22 @@ describe('versions', () => {
 
             const expectedVersions: IMappedVersion[] = [
                 {
-                    comparable: createIComparableVersion(10, 1, 2, 4),
+                    comparable: new ComparableVersion(10, 1, 2, 4),
                     disabled: false,
                     value: '10.1.2.4',
                 },
                 {
-                    comparable: createIComparableVersion(29, 0, 2000, 4),
+                    comparable: new ComparableVersion(29, 0, 2000, 4),
                     disabled: false,
                     value: '29.0.2000.4',
                 },
                 {
-                    comparable: createIComparableVersion(30, 0, 0, 0),
+                    comparable: new ComparableVersion(30, 0, 0, 0),
                     disabled: false,
                     value: '30.0.0.0',
                 },
                 {
-                    comparable: createIComparableVersion(60, 6, 7, 8),
+                    comparable: new ComparableVersion(60, 6, 7, 8),
                     disabled: false,
                     value: '60.6.7.8',
                 },
@@ -598,23 +599,13 @@ describe('versions', () => {
             const mapped = mapVersions(['60.6.7.8', '30.0.0.0', '29.0.2000.4', '10.1.2.4'], config, new Set([]))
 
             const expectedVersions: IMappedVersion[] = [
-            //     {
-            //         comparable: createIComparableVersion(10, 1, 2, 4),
-            //         disabled: false,
-            //         value: '10.1.2.4',
-            //     },
-            //     {
-            //         comparable: createIComparableVersion(29, 0, 2000, 4),
-            //         disabled: false,
-            //         value: '29.0.2000.4',
-            //     },
                 {
-                    comparable: createIComparableVersion(30, 0, 0, 0),
+                    comparable: new ComparableVersion(30, 0, 0, 0),
                     disabled: false,
                     value: '30.0.0.0',
                 },
                 {
-                    comparable: createIComparableVersion(60, 6, 7, 8),
+                    comparable: new ComparableVersion(60, 6, 7, 8),
                     disabled: false,
                     value: '60.6.7.8',
                 },

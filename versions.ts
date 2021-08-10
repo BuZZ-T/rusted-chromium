@@ -3,8 +3,9 @@ import { logger } from './loggerSpinner'
 import { Compared, IChromeConfig, IMappedVersion } from './interfaces'
 import { storeNegativeHit } from './store/store'
 import { SEARCH_BINARY } from './constants'
-import { detectOperatingSystem, versionToComparableVersion, sortIMappedVersions, compareIComparableVersions } from './utils'
+import { detectOperatingSystem, sortDescendingIMappedVersions, compareComparableVersions } from './utils'
 import { userSelectedVersion } from './select'
+import { ComparableVersion } from './commons/ComparableVersion'
 
 export async function getChromeDownloadUrl(config: IChromeConfig, mappedVersions: IMappedVersion[]): Promise<[string | undefined, string | undefined, string]> {
     const [urlOS, filenameOS] = detectOperatingSystem(config)
@@ -94,7 +95,7 @@ export async function getChromeDownloadUrl(config: IChromeConfig, mappedVersions
 export function mapVersions(versions: string[], config: IChromeConfig, store: Set<string>): IMappedVersion[] {
     if (config.single) {
         return [{
-            comparable: versionToComparableVersion(config.single),
+            comparable: new ComparableVersion(config.single),
             disabled: false,
             value: config.single, 
         }]
@@ -102,13 +103,13 @@ export function mapVersions(versions: string[], config: IChromeConfig, store: Se
     
     const filteredVersions = versions
         .map(version => ({
-            value: version,
-            comparable: versionToComparableVersion(version),
+            comparable: new ComparableVersion(version),
             disabled: store.has(version),
+            value: version,
         }))
-        .sort(sortIMappedVersions) // descending
-        .filter(version => compareIComparableVersions(version.comparable, config.min) !== Compared.LESS
-             && compareIComparableVersions(version.comparable, config.max) !== Compared.GREATER)
+        .sort(sortDescendingIMappedVersions)
+        .filter(version => compareComparableVersions(version.comparable, config.min) !== Compared.LESS
+             && compareComparableVersions(version.comparable, config.max) !== Compared.GREATER)
         .filter(version => !config.hideNegativeHits || !version.disabled)
 
     // Don't reduce the amount of filtered versions when --only-newest-major is set

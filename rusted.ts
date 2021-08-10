@@ -10,7 +10,7 @@ import { logger } from './loggerSpinner'
 import { getChromeDownloadUrl, mapVersions } from './versions'
 import { importAndMergeLocalstore } from './store/importStore'
 import { readConfig } from './config/config'
-import { loadStore } from './store/loadStore'
+import { loadStore } from './store/store'
 
 const mkdir = promisify(fsMkdir)
 

@@ -2,8 +2,9 @@ import * as fs from 'fs'
 import * as path from 'path'
 import { mocked } from 'ts-jest/utils'
 
-import { createIComparableVersion, PromisifyCallback, PROMISIFY_NO_ERROR, createStore } from '../test.utils'
+import { PromisifyCallback, PROMISIFY_NO_ERROR, createStore } from '../test.utils'
 import store from './store'
+import { ComparableVersion } from '../commons/ComparableVersion'
 
 jest.mock('fs')
 
@@ -30,23 +31,23 @@ describe('store', () => {
 
             expect(await store.disableByStore([
                 {
-                    comparable: createIComparableVersion(1, 2, 3, 4),
+                    comparable: new ComparableVersion(1, 2, 3, 4),
                     disabled: false,
                     value: '1.2.3.4',
                 },
                 {
-                    comparable: createIComparableVersion(1, 2, 3, 4),
+                    comparable: new ComparableVersion(1, 2, 3, 4),
                     disabled: false,
                     value: '3.3.3.3',
                 },
             ], 'linux', 'x64')).toEqual([
                 {
-                    comparable: createIComparableVersion(1, 2, 3, 4),
+                    comparable: new ComparableVersion(1, 2, 3, 4),
                     disabled: false,
                     value: '1.2.3.4',
                 },
                 {
-                    comparable: createIComparableVersion(1, 2, 3, 4),
+                    comparable: new ComparableVersion(1, 2, 3, 4),
                     disabled: true,
                     value: '3.3.3.3',
                 },
@@ -138,7 +139,7 @@ describe('store', () => {
             })
 
             await store.storeNegativeHit({
-                comparable: createIComparableVersion(1, 2, 3, 4),
+                comparable: new ComparableVersion(1, 2, 3, 4),
                 disabled: true,
                 value: '1.2.3.4',
             }, 'linux', 'x64')
@@ -161,7 +162,7 @@ describe('store', () => {
             })
 
             await store.storeNegativeHit({
-                comparable: createIComparableVersion(1, 2, 3, 4),
+                comparable: new ComparableVersion(1, 2, 3, 4),
                 disabled: true,
                 value: '1.2.3.4',
             }, 'linux', 'x64')
@@ -184,7 +185,7 @@ describe('store', () => {
             })
 
             await store.storeNegativeHit({
-                comparable: createIComparableVersion(1, 2, 3, 4),
+                comparable: new ComparableVersion(1, 2, 3, 4),
                 disabled: true,
                 value: '1.2.3.4',
             }, 'linux', 'x64')

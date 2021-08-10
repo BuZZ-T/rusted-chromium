@@ -4,9 +4,10 @@ import * as program from 'commander'
 import { ConfigWrapper } from '../interfaces'
 
 import * as packageJson from '../package.json'
-import { versionToComparableVersion, mapOS } from '../utils'
+import { mapOS } from '../utils'
 import { logger } from '../loggerSpinner'
 import { IConfigOptions } from './config.interfaces'
+import { ComparableVersion } from '../commons/ComparableVersion'
 
 export const DEFAULT_OPTIONS: IConfigOptions = {
     min: '0',
@@ -50,8 +51,8 @@ export function readConfig(args: string[], platform: NodeJS.Platform): ConfigWra
 
     const options = program.opts() as IConfigOptions
 
-    const min = versionToComparableVersion(options.min)
-    const max = versionToComparableVersion(options.max)
+    const min = new ComparableVersion(options.min)
+    const max = new ComparableVersion(options.max)
 
     const minIsSet = +options.min > 0
     const maxResultsIsSet = !!options.maxResults

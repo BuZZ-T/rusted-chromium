@@ -1,13 +1,7 @@
 import { IConfigOptions } from './config/config.interfaces'
-import { IChromeConfig, IComparableVersion, Store } from './interfaces'
+import { IChromeConfig, Store } from './interfaces'
 import { DEFAULT_OPTIONS } from './config/config'
-
-export const createIComparableVersion = (major: number, minor: number, branch: number, patch: number): IComparableVersion => ({
-    major,
-    minor,
-    branch,
-    patch,
-})
+import { ComparableVersion } from './commons/ComparableVersion'
 
 export const createChromeConfig = (config?: Partial<IChromeConfig>): IChromeConfig => ({
     arch: 'x64',
@@ -16,8 +10,8 @@ export const createChromeConfig = (config?: Partial<IChromeConfig>): IChromeConf
     downloadFolder: null,
     hideNegativeHits: false,
     interactive: true,
-    max: createIComparableVersion(10000, 0, 0, 0),
-    min: createIComparableVersion(0, 0, 0, 0),
+    max: new ComparableVersion(10000, 0, 0, 0),
+    min: new ComparableVersion(0, 0, 0, 0),
     onFail: 'nothing',
     onlyNewestMajor: false,
     os: 'linux',

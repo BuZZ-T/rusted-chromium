@@ -6,6 +6,7 @@ import { DEFAULT_OPTIONS, readConfig } from './config'
 import { IChromeConfigWrapper, OS, IStoreConfigWrapper } from '../interfaces'
 import { createChromeConfig, createChromeOptions } from '../test.utils'
 import { LoggerSpinner, logger } from '../loggerSpinner'
+import { ComparableVersion } from '../commons/ComparableVersion'
 
 jest.mock('commander')
 jest.mock('../loggerSpinner')
@@ -51,12 +52,12 @@ describe('config', () => {
             const expectedConfig: IChromeConfigWrapper = {
                 action: 'loadChrome',
                 config: createChromeConfig({
-                    min: {
+                    min: new ComparableVersion({
                         branch: 0,
                         major: 20,
                         minor: 0,
                         patch: 0,
-                    },
+                    }),
                     results: Infinity,
                 })
             }
@@ -74,12 +75,12 @@ describe('config', () => {
             const expectedConfig: IChromeConfigWrapper = {
                 action: 'loadChrome',
                 config: createChromeConfig({
-                    max: {
+                    max: new ComparableVersion({
                         branch: 1234,
                         major: 30,
                         minor: 0,
                         patch: 33,
-                    },
+                    }),
                 })
             }
 
@@ -205,7 +206,7 @@ describe('config', () => {
 
             expect(loggerMock.warn).toBeCalledTimes(1)
             expect(loggerMock.warn).toHaveBeenCalledWith('Setting "--non-interactive" has no effect, when "--decrease-on-fail" is not set!')
-            
+
             expect(config).toEqual(expectedConfig)
         })
 
@@ -263,7 +264,7 @@ describe('config', () => {
 
                 expect(loggerMock.warn).toBeCalledTimes(1)
                 expect(loggerMock.warn).toHaveBeenLastCalledWith('Setting "--arch" has no effect, when "--os" is not set!')
-                
+
                 expect(config).toEqual(expectedConfig)
             })
 

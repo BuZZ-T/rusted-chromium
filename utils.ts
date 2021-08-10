@@ -1,5 +1,6 @@
-import { ExtendedOS, OS, IChromeConfig, IComparableVersion, IMappedVersion, Compared, Store } from './interfaces'
+import { ExtendedOS, OS, IChromeConfig, IMappedVersion, Compared, Store } from './interfaces'
 import { logger } from './loggerSpinner'
+import { ComparableVersion } from './commons/ComparableVersion'
 
 export function detectOperatingSystem(config: IChromeConfig): [string, string] {
 
@@ -21,22 +22,11 @@ export function detectOperatingSystem(config: IChromeConfig): [string, string] {
     }
 }
 
-export function versionToComparableVersion(version: string): IComparableVersion {
-    const splitVersion = version.split('.')
-
-    return {
-        major: parseInt(splitVersion[0], 10) || 0,
-        minor: parseInt(splitVersion[1], 10) || 0,
-        branch: parseInt(splitVersion[2], 10) || 0,
-        patch: parseInt(splitVersion[3], 10) || 0,
-    }
-}
-
 /**
- * Descending sort comparator for IComparableVersion
+ * Descending sort comparator for IMappedVersion
  */
-export function sortIMappedVersions(a: IMappedVersion, b: IMappedVersion): -1 | 0 | 1 {
-    const compared = compareIComparableVersions(a.comparable, b.comparable)
+export function sortDescendingIMappedVersions(a: IMappedVersion, b: IMappedVersion): -1 | 0 | 1 {
+    const compared = compareComparableVersions(a.comparable, b.comparable)
 
     if (compared === Compared.LESS) {
         return 1
@@ -49,10 +39,15 @@ export function sortIMappedVersions(a: IMappedVersion, b: IMappedVersion): -1 | 
 }
 
 /**
- * Ascending sort comparator for IComparableVersion
+ * Ascending sort comparator for IMappedVersion
  */
-export function sortReverseIMappedVersions(a: IMappedVersion, b: IMappedVersion): -1 | 0 | 1 {
-    const compared = compareIComparableVersions(a.comparable, b.comparable)
+export const sortAscendingIMappedVersions = (a: IMappedVersion, b: IMappedVersion): -1 | 0 | 1 => sortAscendingComparableVersions(a.comparable, b.comparable)
+
+/**
+ * Ascending sort comparator for ComparableVersion 
+ */
+export function sortAscendingComparableVersions(a: ComparableVersion, b: ComparableVersion): -1 | 0 | 1 {
+    const compared = compareComparableVersions(a, b)
 
     if (compared === Compared.GREATER) {
         return 1
@@ -65,7 +60,7 @@ export function sortReverseIMappedVersions(a: IMappedVersion, b: IMappedVersion)
 }
 
 /**
- * Compares two IComparableVersions with each other.
+ * Compares two ComparableVersions with each other.
  * if version < other, the result is Compared.LESS
  * if version > other, the result is Compared.GREATER
  * if version === other, the result is Compared.EQUAL
@@ -73,7 +68,7 @@ export function sortReverseIMappedVersions(a: IMappedVersion, b: IMappedVersion)
  * @param version 
  * @param other 
  */
-export function compareIComparableVersions(version: IComparableVersion, other: IComparableVersion): Compared {
+export function compareComparableVersions(version: ComparableVersion, other: ComparableVersion): Compared {
     if (version.major > other.major) { return Compared.GREATER }
     if (version.major < other.major) { return Compared.LESS }
 
@@ -110,23 +105,16 @@ export function mapOS(extendedOS: string): OS {
 export function sortStoreEntries(store: Store): Store {
     return {
         win: {
-            x64: [...store.win.x64].sort(),
-            x86: [...store.win.x86].sort(),
+            x64: [...store.win.x64].map(v => new ComparableVersion(v)).sort(sortAscendingComparableVersions).map(c => c.toString()),
+            x86: [...store.win.x86].map(v => new ComparableVersion(v)).sort(sortAscendingComparableVersions).map(c => c.toString()),
         },
         linux: {
-            x64: [...store.linux.x64].sort(),
-            x86: [...store.linux.x86].sort(),
+            x64: [...store.linux.x64].map(v => new ComparableVersion(v)).sort(sortAscendingComparableVersions).map(c => c.toString()),
+            x86: [...store.linux.x86].map(v => new ComparableVersion(v)).sort(sortAscendingComparableVersions).map(c => c.toString()),
         },
         mac: {
-            x64: [...store.mac.x64].sort(),
-            x86: [...store.mac.x86].sort(),
+            x64: [...store.mac.x64].map(v => new ComparableVersion(v)).sort(sortAscendingComparableVersions).map(c => c.toString()),
+            x86: [...store.mac.x86].map(v => new ComparableVersion(v)).sort(sortAscendingComparableVersions).map(c => c.toString()),
         },
     }
-}
-
-export function sortStoreEntries_(store: Store): Store {
-    const entries = Object.entries(store).map(([operationSystem, arches]) =>
-        [operationSystem, Object.fromEntries(Object.entries(arches).map(([arch, list]) => [arch, list.sort()]))]
-    )
-    return Object.fromEntries(entries)
 }
