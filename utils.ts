@@ -1,4 +1,4 @@
-import { ExtendedOS, OS, IChromeConfig, IMappedVersion, Compared, Store } from './interfaces'
+import { ExtendedOS, OS, IChromeConfig, IMappedVersion, Compared, Store, TextFunction } from './interfaces'
 import { logger } from './loggerSpinner'
 import { ComparableVersion } from './commons/ComparableVersion'
 
@@ -117,4 +117,8 @@ export function sortStoreEntries(store: Store): Store {
             x86: [...store.mac.x86].map(v => new ComparableVersion(v)).sort(sortAscendingComparableVersions).map(c => c.toString()),
         },
     }
+}
+
+export function isTextFunction(value: string | TextFunction | undefined): value is TextFunction {
+    return typeof value === 'function'
 }

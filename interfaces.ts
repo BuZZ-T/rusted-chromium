@@ -78,8 +78,8 @@ export interface IMetadataResponse {
 
 export interface LoggerConfig {
     start: string
-    success: string
-    fail: string
+    success: string | TextFunction
+    fail: string | TextFunction
 }
 
 export type Store = {
@@ -92,3 +92,5 @@ export type Store = {
 export type StoreSize = {
     [p in OS]: number
 }
+
+export type TextFunction = (key: string) => string

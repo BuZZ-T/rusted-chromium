@@ -9,7 +9,7 @@ export const LOAD_CONFIG: LoggerConfig = {
 export const READ_CONFIG: LoggerConfig = {
     start: 'Reading local storage file from filesystem',
     success: 'Successfully loaded localstore.json from filesystem',
-    fail: 'Error loading localstore.json from filesystem',
+    fail: reason => `Error loading localstore.json from filesystem: ${reason}`,
 }
 
 export const LOCAL_STORE_FILE = 'localstore.json'

@@ -1,6 +1,7 @@
 import * as chalk from 'chalk'
 
-import { LoggerConfig } from './interfaces'
+import { LoggerConfig, TextFunction } from './interfaces'
+import { isTextFunction } from './utils'
 
 export class LoggerSpinner {
 
@@ -11,20 +12,20 @@ export class LoggerSpinner {
     private readonly WARN_FN = (msg: string) => chalk.yellow(`! ${msg}`)
 
     private startText: string | undefined
-    private successText: string | undefined
-    private errorText: string | undefined
+    private successText: string | undefined | TextFunction
+    private errorText: string | undefined | TextFunction
     private stdio: NodeJS.WriteStream
     private timer: ReturnType<typeof setTimeout> | null = null
 
-    public constructor() {
-        this.stdio = process.stdout
+    public constructor(stdio: NodeJS.WriteStream) {
+        this.stdio = stdio
     }
 
     private clearLine(): LoggerSpinner {
         try {
             this.stdio.clearLine(0)
             this.stdio.cursorTo(0)
-        } catch {
+        } catch(e) {
             // this might fail when piping stdout to /dev/null. Just ignore it in this case
         }
         return this
@@ -51,8 +52,12 @@ export class LoggerSpinner {
     public start(loggingConfig: LoggerConfig): LoggerSpinner {
         const { start, success, fail } = loggingConfig
         this.startText = start
-        this.successText = this.SUCCESS_FN(success)
-        this.errorText = this.ERROR_FN(fail || this.DEFAULT_ERROR)
+        this.successText = isTextFunction(success)
+            ? (text: string) => this.SUCCESS_FN(success(text))
+            : this.SUCCESS_FN(success)
+        this.errorText = isTextFunction(fail)
+            ? (text: string) => this.ERROR_FN(fail(text))
+            : this.ERROR_FN(fail)
 
         this.stop()
         let count = 0
@@ -82,19 +87,23 @@ export class LoggerSpinner {
             .newline()
     }
 
-    public success(): LoggerSpinner {
+    public success(text?: string): LoggerSpinner {
         return this.clearLine()
             .stop()
-            .write(this.successText || '')
+            .write(isTextFunction(this.successText)
+                ? this.successText(text || '')
+                : this.successText || '')
             .newline()
     }
 
     public error(text?: string): LoggerSpinner {
         return this.clearLine()
             .stop()
-            .write(text ? this.ERROR_FN(text) : this.errorText || '')
+            .write(isTextFunction(this.errorText)
+                ? this.errorText(text || '')
+                : this.errorText || '')
             .newline()
     }
 }
 
-export const logger = new LoggerSpinner()
+export const logger = new LoggerSpinner(process.stdout)

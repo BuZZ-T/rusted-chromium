@@ -1,7 +1,7 @@
 import { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
-import { detectOperatingSystem, sortDescendingIMappedVersions, compareComparableVersions, sortAscendingIMappedVersions, sortStoreEntries } from './utils'
+import { detectOperatingSystem, sortDescendingIMappedVersions, compareComparableVersions, sortAscendingIMappedVersions, sortStoreEntries, isTextFunction } from './utils'
 import { logger, LoggerSpinner } from './loggerSpinner'
 import { createChromeConfig, createStore } from './test.utils'
 import { IMappedVersion, Compared } from './interfaces'
@@ -311,6 +311,20 @@ describe('utils', () => {
             })
 
             expect(sortStoreEntries(unsortedAll)).toEqual(sortedAll)
+        })
+    })
+
+    describe('isTextFunction', () => {
+        it('should correctly identify a string', () => {
+            expect(isTextFunction('foo')).toBe(false)
+        })
+
+        it('should correctly a TextFunction', () => {
+            expect(isTextFunction(text => `text is: ${text}`)).toBe(true)
+        })
+
+        it('should correctly identify undefined', () => {
+            expect(isTextFunction(undefined)).toBe(false)
         })
     })
 })

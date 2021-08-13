@@ -13,8 +13,9 @@ const readFilePromise = promisify(readFile)
 export async function readStoreFile(config: IStoreConfig): Promise<Store> {
     logger.start(READ_CONFIG)
     if (!existsSync(config.url)) {
-        logger.error()
-        throw new Error('File does not exist!')
+        const reason = 'File does not exist'
+        logger.error(reason)
+        throw new Error(reason)
     }
 
     try {
@@ -22,7 +23,11 @@ export async function readStoreFile(config: IStoreConfig): Promise<Store> {
         logger.success()
         return JSON.parse(store)
     } catch(e) {
-        logger.error()
+        if (e instanceof SyntaxError) {
+            logger.error('Unable to parse JSON file')
+        } else {
+            logger.error(e.toString())
+        }
         throw e
     }
 }
