@@ -1,7 +1,9 @@
 import * as chalk from 'chalk'
 import { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
-import { LoggerSpinner } from '../loggerSpinner'
+
+import { Spinner } from './spinner'
+import { PartialStdio } from '../test.utils'
 
 jest.mock('chalk', () => ({
     green: (text: string) => `green: ${text}`,
@@ -9,15 +11,9 @@ jest.mock('chalk', () => ({
 
 }))
 
-interface PartialStdio {
-    write: () => boolean
-    clearLine: () => boolean
-    cursorTo: () => boolean
-}
-
 describe('loggerSpinner', () => {
 
-    let logger: LoggerSpinner
+    let spinner: Spinner
     let stdioMock: MaybeMockedDeep<PartialStdio>
 
     beforeAll(() => {
@@ -27,7 +23,7 @@ describe('loggerSpinner', () => {
             cursorTo: jest.fn(),
         }
 
-        logger = new LoggerSpinner(stdioMock as unknown as NodeJS.WriteStream)
+        spinner = new Spinner(stdioMock as unknown as NodeJS.WriteStream)
     })
 
     beforeEach(() => {
@@ -49,7 +45,7 @@ describe('loggerSpinner', () => {
         it('should write the initial spinner including text', () => {
             expect(stdioMock.write).toHaveBeenCalledTimes(0)
 
-            logger.start({
+            spinner.start({
                 start: 'start_text',
                 fail: 'fail_text',
                 success: 'success_text',
@@ -64,7 +60,7 @@ describe('loggerSpinner', () => {
         it('should write the spinner after one tick', () => {
             expect(stdioMock.write).toHaveBeenCalledTimes(0)
 
-            logger.start({
+            spinner.start({
                 start: 'start_text',
                 fail: 'fail_text',
                 success: 'success_text',
@@ -88,7 +84,7 @@ describe('loggerSpinner', () => {
                 throw new Error()
             })
 
-            logger.start({
+            spinner.start({
                 start: 'start_text',
                 fail: 'fail_text',
                 success: 'success_text',
@@ -110,7 +106,7 @@ describe('loggerSpinner', () => {
                 throw new Error()
             })
 
-            logger.start({
+            spinner.start({
                 start: 'start_text',
                 fail: 'fail_text',
                 success: 'success_text',
@@ -130,7 +126,7 @@ describe('loggerSpinner', () => {
 
     describe('success', () => {
         it('should write the success text', () => {
-            logger.start({
+            spinner.start({
                 start: 'start_text',
                 fail: 'fail_text',
                 success: 'success_text',
@@ -138,7 +134,7 @@ describe('loggerSpinner', () => {
 
             expect(stdioMock.write).toHaveBeenCalledTimes(1)
 
-            logger.success()
+            spinner.success()
 
             expect(stdioMock.write).toHaveBeenCalledTimes(3)
             expect(stdioMock.write.mock.calls).toEqual([
@@ -153,7 +149,7 @@ describe('loggerSpinner', () => {
         })
 
         it('should write the success text with dynamic text', () => {
-            logger.start({
+            spinner.start({
                 start: 'start_text',
                 fail: 'fail_text',
                 success: text => `success_text (${text})`,
@@ -161,7 +157,7 @@ describe('loggerSpinner', () => {
 
             expect(stdioMock.write).toHaveBeenCalledTimes(1)
 
-            logger.success('foo')
+            spinner.success('foo')
 
             expect(stdioMock.write).toHaveBeenCalledTimes(3)
             expect(stdioMock.write.mock.calls).toEqual([
@@ -176,7 +172,7 @@ describe('loggerSpinner', () => {
         })
 
         it('should ignore the dynamic text on no TextFunction passed', () => {
-            logger.start({
+            spinner.start({
                 start: 'start_text',
                 fail: 'fail_text',
                 success: 'success_text',
@@ -184,7 +180,7 @@ describe('loggerSpinner', () => {
 
             expect(stdioMock.write).toHaveBeenCalledTimes(1)
 
-            logger.success('foo')
+            spinner.success('foo')
 
             expect(stdioMock.write).toHaveBeenCalledTimes(3)
             expect(stdioMock.write.mock.calls).toEqual([
@@ -199,7 +195,7 @@ describe('loggerSpinner', () => {
         })
 
         it('should print the success text without dynamic text', () => {
-            logger.start({
+            spinner.start({
                 start: 'start_text',
                 fail: 'fail_text',
                 success: text => `success_text (${text})`,
@@ -207,7 +203,7 @@ describe('loggerSpinner', () => {
 
             expect(stdioMock.write).toHaveBeenCalledTimes(1)
 
-            logger.success()
+            spinner.success()
 
             expect(stdioMock.write).toHaveBeenCalledTimes(3)
             expect(stdioMock.write.mock.calls).toEqual([
@@ -224,7 +220,7 @@ describe('loggerSpinner', () => {
 
     describe('error', () => {
         it('should write the fail text', () => {
-            logger.start({
+            spinner.start({
                 start: 'start_text',
                 fail: 'fail_text',
                 success: 'success_text',
@@ -232,7 +228,7 @@ describe('loggerSpinner', () => {
 
             expect(stdioMock.write).toHaveBeenCalledTimes(1)
 
-            logger.error()
+            spinner.error()
 
             expect(stdioMock.write).toHaveBeenCalledTimes(3)
             expect(stdioMock.write.mock.calls).toEqual([
@@ -247,7 +243,7 @@ describe('loggerSpinner', () => {
         })
 
         it('should write the fail text with dynamic text', () => {
-            logger.start({
+            spinner.start({
                 start: 'start_text',
                 fail: text => `fail_text (${text})`,
                 success: 'success_text',
@@ -255,7 +251,7 @@ describe('loggerSpinner', () => {
 
             expect(stdioMock.write).toHaveBeenCalledTimes(1)
 
-            logger.error('foo')
+            spinner.error('foo')
 
             expect(stdioMock.write).toHaveBeenCalledTimes(3)
             expect(stdioMock.write.mock.calls).toEqual([
@@ -270,7 +266,7 @@ describe('loggerSpinner', () => {
         })
 
         it('should ignore the dynamic text on no TextFunction passed', () => {
-            logger.start({
+            spinner.start({
                 start: 'start_text',
                 fail: 'fail_text',
                 success: 'success_text',
@@ -278,7 +274,7 @@ describe('loggerSpinner', () => {
 
             expect(stdioMock.write).toHaveBeenCalledTimes(1)
 
-            logger.error('foo')
+            spinner.error('foo')
 
             expect(stdioMock.write).toHaveBeenCalledTimes(3)
             expect(stdioMock.write.mock.calls).toEqual([
@@ -293,7 +289,7 @@ describe('loggerSpinner', () => {
         })
 
         it('should print the fail text without dynamic text', () => {
-            logger.start({
+            spinner.start({
                 start: 'start_text',
                 fail: text => `fail_text (${text})`,
                 success: 'success_text',
@@ -301,7 +297,7 @@ describe('loggerSpinner', () => {
 
             expect(stdioMock.write).toHaveBeenCalledTimes(1)
 
-            logger.error()
+            spinner.error()
 
             expect(stdioMock.write).toHaveBeenCalledTimes(3)
             expect(stdioMock.write.mock.calls).toEqual([

@@ -5,7 +5,7 @@ import { ConfigWrapper } from '../interfaces'
 
 import * as packageJson from '../package.json'
 import { mapOS } from '../utils'
-import { logger } from '../loggerSpinner'
+import { logger } from '../log/spinner'
 import { IConfigOptions } from './config.interfaces'
 import { ComparableVersion } from '../commons/ComparableVersion'
 

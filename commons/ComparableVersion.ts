@@ -5,19 +5,19 @@ export class ComparableVersion {
     private _branch: number
     private _patch: number
 
-    public get major() {
+    public get major(): number {
         return this._major
     }
 
-    public get minor() {
+    public get minor(): number {
         return this._minor
     }
 
-    public get branch() {
+    public get branch(): number {
         return this._branch
     }
 
-    public get patch() {
+    public get patch(): number {
         return this._patch
     }
 
@@ -45,7 +45,7 @@ export class ComparableVersion {
         }
     }
 
-    public toString() {
+    public toString(): string {
         return `${this.major}.${this.minor}.${this.branch}.${this.patch}`
     }
 }

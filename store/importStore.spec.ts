@@ -10,7 +10,7 @@ import { PromisifyCallback, PROMISIFY_NO_ERROR, createStore } from '../test.util
 import { IStoreConfig } from '../interfaces'
 
 jest.mock('fs')
-jest.mock('../loggerSpinner')
+jest.mock('../log/spinner')
 jest.mock('./downloadStore')
 jest.mock('./readStore')
 

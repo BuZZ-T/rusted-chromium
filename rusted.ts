@@ -6,7 +6,7 @@ import * as path from 'path'
 
 import { fetchChromiumTags, fetchChromeZipFile } from './api'
 import { IChromeConfig, IStoreConfig } from './interfaces'
-import { logger } from './loggerSpinner'
+import { logger } from './log/spinner'
 import { getChromeDownloadUrl, mapVersions } from './versions'
 import { importAndMergeLocalstore } from './store/importStore'
 import { readConfig } from './config/config'

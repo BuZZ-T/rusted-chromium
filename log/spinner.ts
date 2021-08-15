@@ -1,15 +1,17 @@
-import { LoggerConfig } from '../interfaces'
+import { LoggerConfig, TextFunction } from '../interfaces'
 import { Printer } from './printer'
+
+// import { LoggerConfig, TextFunction } from './interfaces'
+import { isTextFunction } from '../utils'
 
 export class Spinner extends Printer<Spinner> {
 
     private readonly DEFAULT_ERROR = 'An error occured'
     private readonly SPINNER_STATES = '⠏⠋⠙⠹⠸⠼⠴⠦⠧⠇'
 
-
     private startText: string | undefined
-    private successText: string | undefined
-    private errorText: string | undefined
+    private successText: string | undefined | TextFunction
+    private errorText: string | undefined | TextFunction
     private timer: ReturnType<typeof setTimeout> | null = null
 
     public constructor(stdio: NodeJS.WriteStream) {
@@ -28,11 +30,15 @@ export class Spinner extends Printer<Spinner> {
         return this
     }
 
-    public start(loggerConfig: LoggerConfig): Spinner {
-        const { start, success, fail } = loggerConfig
+    public start(loggingConfig: LoggerConfig): Spinner {
+        const { start, success, fail } = loggingConfig
         this.startText = start
-        this.successText = this.SUCCESS_FN(success)
-        this.errorText = this.ERROR_FN(fail || this.DEFAULT_ERROR)
+        this.successText = isTextFunction(success)
+            ? (text: string) => this.SUCCESS_FN(success(text))
+            : this.SUCCESS_FN(success)
+        this.errorText = isTextFunction(fail)
+            ? (text: string) => this.ERROR_FN(fail(text))
+            : this.ERROR_FN(fail)
 
         this.stop()
         let count = 0
@@ -48,17 +54,21 @@ export class Spinner extends Printer<Spinner> {
         return this
     }
 
-    public success(): Spinner {
+    public success(text?: string): Spinner {
         return this.clearLine()
             .stop()
-            .write(this.successText || '')
+            .write(isTextFunction(this.successText)
+                ? this.successText(text || '')
+                : this.successText || '')
             .newline()
     }
 
     public error(text?: string): Spinner {
         return this.clearLine()
             .stop()
-            .write(text ? this.ERROR_FN(text) : this.errorText || '')
+            .write(isTextFunction(this.errorText)
+                ? this.errorText(text || '')
+                : this.errorText || '')
             .newline()
     }
 }

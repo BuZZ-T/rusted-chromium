@@ -1,7 +1,7 @@
 import { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
-import { LoggerSpinner, logger } from './loggerSpinner'
+import { Spinner, logger } from './log/spinner'
 import { mapVersions, getChromeDownloadUrl } from './versions'
 import { IMappedVersion } from './interfaces'
 import { createChromeConfig } from './test.utils'
@@ -13,7 +13,7 @@ import { ComparableVersion } from './commons/ComparableVersion'
 
 jest.mock('./select')
 jest.mock('./api')
-jest.mock('./loggerSpinner')
+jest.mock('./log/spinner')
 jest.mock('./store/store')
 
 // don't mock compareComparableVersions to test the sort and filtering based on version.comparableVersion
@@ -24,7 +24,7 @@ jest.mock('./utils', () => ({
 
 describe('versions', () => {
     describe('getChromeDownloadUrl', () => {
-        let loggerMock: MaybeMockedDeep<LoggerSpinner>
+        let loggerMock: MaybeMockedDeep<Spinner>
         let detectOperatingSystemMock: any
         let fetchBranchPositionMock: any
         let fetchChromeUrlMock: any
@@ -367,7 +367,7 @@ describe('versions', () => {
         })
     })
 
-    fdescribe('mapVersions', () => {
+    describe('mapVersions', () => {
         it('should sort the versions', () => {
             const config = createChromeConfig()
 

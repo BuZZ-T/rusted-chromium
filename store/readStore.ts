@@ -1,7 +1,7 @@
 import { IStoreConfig, Store } from '../interfaces'
 import { existsSync, readFile } from 'fs'
 import { promisify } from 'util'
-import { logger } from '../loggerSpinner'
+import { logger } from '../log/spinner'
 import { READ_CONFIG } from '../constants'
 
 const readFilePromise = promisify(readFile)

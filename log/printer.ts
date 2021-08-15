@@ -1,9 +1,9 @@
-import * as chalk from 'chalk';
+import * as chalk from 'chalk'
 export abstract class Printer<T extends Printer<T>> {
 
-    protected readonly SUCCESS_FN = (msg: string) => chalk.green(`✔ ${msg}`)
-    protected readonly ERROR_FN = (msg: string) => chalk.red(`✘ ${msg}`)
-    protected readonly WARN_FN = (msg: string) => chalk.yellow(`! ${msg}`)
+    protected readonly SUCCESS_FN = (msg: string): string => chalk.green(`✔ ${msg}`)
+    protected readonly ERROR_FN = (msg: string): string => chalk.red(`✘ ${msg}`)
+    protected readonly WARN_FN = (msg: string): string => chalk.yellow(`! ${msg}`)
 
     protected constructor(private stdio: NodeJS.WriteStream) {
     }

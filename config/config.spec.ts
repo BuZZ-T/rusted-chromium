@@ -5,16 +5,16 @@ import { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 import { DEFAULT_OPTIONS, readConfig } from './config'
 import { IChromeConfigWrapper, OS, IStoreConfigWrapper } from '../interfaces'
 import { createChromeConfig, createChromeOptions } from '../test.utils'
-import { LoggerSpinner, logger } from '../loggerSpinner'
+import { Spinner, logger } from '../log/spinner'
 import { ComparableVersion } from '../commons/ComparableVersion'
 
 jest.mock('commander')
-jest.mock('../loggerSpinner')
+jest.mock('../log/spinner')
 
 describe('config', () => {
 
     let programMock: MaybeMockedDeep<any>
-    let loggerMock: MaybeMockedDeep<LoggerSpinner>
+    let loggerMock: MaybeMockedDeep<Spinner>
 
     describe('readConfig', () => {
 

@@ -1,22 +1,45 @@
 import { mocked } from 'ts-jest/utils'
 import { MaybeMockedDeep, MaybeMocked } from 'ts-jest/dist/utils/testing'
 import * as fetch  from 'node-fetch'
+/* eslint-disable-next-line @typescript-eslint/no-var-requires */
+const Progress = require('node-fetch-progress')
 
-import { logger, LoggerSpinner } from './loggerSpinner'
+import { logger, Spinner } from './log/spinner'
 import { fetchChromiumTags, fetchBranchPosition, fetchChromeUrl, fetchChromeZipFile, fetchLocalStore } from './api'
+import { progress } from './log/progress'
+
+const onMock = jest.fn()
 
 jest.mock('node-fetch', () => jest.fn())
-jest.mock('./loggerSpinner')
+jest.mock('node-fetch-progress', () => jest.fn(() => ({
+    on: onMock,
+})))
+jest.mock('./log/spinner')
+jest.mock('./log/progress')
 
 describe('api', () => {
 
-    let loggerMock: MaybeMockedDeep<LoggerSpinner>
+    let loggerMock: MaybeMockedDeep<Spinner>
     let fetchMock: MaybeMocked<any>
+    let progressConstructorMock: MaybeMockedDeep<any>
+    let progressMock: MaybeMockedDeep<any>
+
+    beforeAll(() => {
+        fetchMock = mocked(fetch)
+        progressConstructorMock = mocked(Progress)
+        progressMock = mocked(progress, true)
+        loggerMock = mocked(logger, true)
+    })
 
     beforeEach(() => {
-        fetchMock = mocked(fetch)
-        mocked<any>(fetch).mockClear()
-        loggerMock = mocked(logger, true)
+        onMock.mockReset()
+        fetchMock.mockClear()
+
+        progressConstructorMock.mockClear()
+
+        progressMock.start.mockClear()
+        progressMock.fraction.mockClear()
+        
         loggerMock.start.mockClear()
         loggerMock.success.mockClear()
         loggerMock.error.mockClear()
@@ -224,6 +247,77 @@ describe('api', () => {
             } catch(error) {
                 expect(error).toEqual(new Error('Status Code: 400 some-error-message'))
             }
+        })
+
+        describe('Progress', () => {
+            it('should start the progress', async () => {
+                const url = 'some-url'
+    
+                fetchMock.mockImplementation((): Promise<any> =>
+                    Promise.resolve({
+                        ok: true,
+                        something: 'something'
+                    })
+                )
+    
+                await fetchChromeZipFile(url)
+    
+                expect(onMock).toHaveBeenCalledTimes(1)
+                expect(onMock).toHaveBeenCalledWith('progress', expect.any(Function))
+    
+                const callback = onMock.mock.calls[0][1]
+    
+                callback({
+                    total: 3 * 1024 * 1024,
+                    progress: 0.1,
+                })
+
+                callback({
+                    total: 3 * 1024 * 1024,
+
+                })
+    
+                expect(progressMock.start).toHaveBeenCalledWith({
+                    barLength: 40,
+                    steps: 3,
+                    unit: 'MB',
+                    showNumeric: true,
+                    start: 'Downloading binary...',
+                    success: 'zip successfully downloaded',
+                    fail: 'error'
+                })
+            })
+
+            it('should continue a progress', async () => {
+                const url = 'some-url'
+    
+                fetchMock.mockImplementation((): Promise<any> =>
+                    Promise.resolve({
+                        ok: true,
+                        something: 'something'
+                    })
+                )
+    
+                await fetchChromeZipFile(url)
+    
+                expect(onMock).toHaveBeenCalledTimes(1)
+                expect(onMock).toHaveBeenCalledWith('progress', expect.any(Function))
+    
+                const callback = onMock.mock.calls[0][1]
+    
+                callback({
+                    total: 3 * 1024 * 1024,
+                    progress: 0.1,
+                })
+
+                callback({
+                    total: 3 * 1024 * 1024,
+                    progress: 0.3,
+                })
+
+                expect(progressMock.fraction).toHaveBeenCalledWith(0.3)
+            })
+
         })
     })
 })

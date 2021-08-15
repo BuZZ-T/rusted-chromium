@@ -82,7 +82,10 @@ export interface LoggerConfig {
     fail: string | TextFunction
 }
 
-export interface ProgressConfig extends LoggerConfig {
+export interface ProgressConfig {
+    start: string
+    success: string
+    fail: string
     showNumeric?: boolean
     barLength?: number
     steps?: number

@@ -3,7 +3,7 @@ const fetch = require('node-fetch')
 const Progress = require('node-fetch-progress')
 /* eslint-enable @typescript-eslint/no-var-requires */
 
-import { logger } from './loggerSpinner'
+import { logger } from './log/spinner'
 import { IMetadataResponse } from './interfaces'
 import { RESOLVE_VERSION } from './constants'
 import { progress } from './log/progress'
@@ -65,7 +65,6 @@ export async function fetchChromeUrl(branchPosition: string, urlOS: string, file
 }
 
 export async function fetchChromeZipFile(url: string): Promise<any> {
-
 
     const response = await fetch(url)
 

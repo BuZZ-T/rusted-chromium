@@ -5,17 +5,17 @@ import { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 import { readStoreFile } from './readStore'
 import { IStoreConfig } from '../interfaces'
 import { createStore, PromisifyCallback, PROMISIFY_NO_ERROR } from '../test.utils'
-import { LoggerSpinner, logger } from '../loggerSpinner'
+import { Spinner, logger } from '../log/spinner'
 
 jest.mock('fs')
-jest.mock('../loggerSpinner')
+jest.mock('../log/spinner')
 
 describe('readStore', () => {
 
     describe('readStoreFile', () => {
 
         let fsMock: any
-        let loggerMock: MaybeMockedDeep<LoggerSpinner>
+        let loggerMock: MaybeMockedDeep<Spinner>
 
         beforeEach(() => {
             fsMock = mocked(fs, true)

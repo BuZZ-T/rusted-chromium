@@ -1,9 +1,9 @@
 import * as chalk from 'chalk'
 
 import { Printer } from './printer'
-import { ProgressConfig } from '../interfaces';
+import { ProgressConfig } from '../interfaces'
 
-class ProgressBar extends Printer<ProgressBar> {
+export class ProgressBar extends Printer<ProgressBar> {
 
     private DEFAULT_CONFIG: Partial<ProgressConfig> = {
         barLength: 100,
@@ -22,10 +22,10 @@ class ProgressBar extends Printer<ProgressBar> {
         return this
     }
 
-    private calcNumeric(percent: number): string {
-        const steps: number = this.config!.steps as number
+    private static calcNumeric(config: ProgressConfig, percent: number): string {
+        const steps: number = config.steps as number
         const fracture = Math.round(percent * steps).toString().padStart(steps.toString().length, ' ')
-        return `(${fracture}/${steps}${this.config?.unit ? (' ' + this.config?.unit) : ''})`
+        return `(${fracture}/${steps}${config.unit ? (' ' + config.unit) : ''})`
     }
 
     private setConfig(config: ProgressConfig): ProgressBar {
@@ -39,7 +39,7 @@ class ProgressBar extends Printer<ProgressBar> {
     private checkForComplete(percent: number): ProgressBar {
         return percent === 1
             ? this.clearLine()
-                .write(this.config?.success)
+                .write(this.config!.success)
                 .stop()
                 .newline()
             : this
@@ -51,10 +51,10 @@ class ProgressBar extends Printer<ProgressBar> {
 
     public start(config: ProgressConfig): ProgressBar {
         return this.stop()
-                .setConfig(config)
-                .write(config.start)
-                .newline()
-                .fraction(0)
+            .setConfig(config)
+            .write(config.start)
+            .newline()
+            .fraction(0)
     }
 
     public fraction(fraction: number): ProgressBar {
@@ -66,7 +66,7 @@ class ProgressBar extends Printer<ProgressBar> {
         const restAmount = barLength - doneAmount
 
         return this.clearLine()
-            .write(`[${chalk.bgWhite(' ').repeat(doneAmount)}${chalk.grey('.').repeat(restAmount)}]${this.config?.showNumeric ? this.calcNumeric(fraction) : ''}`)
+            .write(`[${chalk.bgWhite(' ').repeat(doneAmount)}${chalk.grey('.').repeat(restAmount)}]${this.config.showNumeric ? ProgressBar.calcNumeric(this.config, fraction) : ''}`)
             .checkForComplete(fraction)
     }
 }

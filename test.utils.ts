@@ -3,6 +3,12 @@ import { IChromeConfig, Store } from './interfaces'
 import { DEFAULT_OPTIONS } from './config/config'
 import { ComparableVersion } from './commons/ComparableVersion'
 
+export interface PartialStdio {
+    write: () => boolean
+    clearLine: () => boolean
+    cursorTo: () => boolean
+}
+
 export const createChromeConfig = (config?: Partial<IChromeConfig>): IChromeConfig => ({
     arch: 'x64',
     autoUnzip: false,

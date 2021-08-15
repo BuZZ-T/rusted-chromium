@@ -2,16 +2,16 @@ import { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
 import { detectOperatingSystem, sortDescendingIMappedVersions, compareComparableVersions, sortAscendingIMappedVersions, sortStoreEntries, isTextFunction } from './utils'
-import { logger, LoggerSpinner } from './loggerSpinner'
+import { logger, Spinner } from './log/spinner'
 import { createChromeConfig, createStore } from './test.utils'
 import { IMappedVersion, Compared } from './interfaces'
 import { ComparableVersion } from './commons/ComparableVersion'
 
-jest.mock('./loggerSpinner')
+jest.mock('./log/spinner')
 
 describe('utils', () => {
 
-    let loggerMock: MaybeMockedDeep<LoggerSpinner>
+    let loggerMock: MaybeMockedDeep<Spinner>
 
     beforeEach(() => {
         loggerMock = mocked(logger, true)

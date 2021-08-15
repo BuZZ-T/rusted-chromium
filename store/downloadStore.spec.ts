@@ -1,17 +1,17 @@
 import { mocked } from 'ts-jest/utils'
 import { MaybeMockedDeep, MaybeMocked } from 'ts-jest/dist/utils/testing'
 
-import { logger, LoggerSpinner } from '../loggerSpinner'
+import { logger, Spinner } from '../log/spinner'
 import { downloadStore } from './downloadStore'
 import { fetchLocalStore } from '../api'
 import { LOAD_CONFIG } from '../constants'
 import { createStore } from '../test.utils'
 
-jest.mock('../loggerSpinner')
+jest.mock('../log/spinner')
 jest.mock('../api')
 
 describe('downloadStore', () => {
-    let loggerMock: MaybeMockedDeep<LoggerSpinner>
+    let loggerMock: MaybeMockedDeep<Spinner>
     let fetchLocalStoreMock: MaybeMocked<typeof fetchLocalStore>
 
     beforeEach(() => {
