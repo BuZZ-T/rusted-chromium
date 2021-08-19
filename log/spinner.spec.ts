@@ -2,8 +2,8 @@ import * as chalk from 'chalk'
 import { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
-import { Spinner } from './spinner'
 import { PartialStdio } from '../test.utils'
+import { Spinner } from './spinner'
 
 jest.mock('chalk', () => ({
     green: (text: string) => `green: ${text}`,

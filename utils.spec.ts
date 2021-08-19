@@ -1,11 +1,11 @@
 import { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
-import { detectOperatingSystem, sortDescendingIMappedVersions, compareComparableVersions, sortAscendingIMappedVersions, sortStoreEntries, isTextFunction } from './utils'
+import { ComparableVersion } from './commons/ComparableVersion'
+import { IMappedVersion, Compared } from './interfaces'
 import { logger, Spinner } from './log/spinner'
 import { createChromeConfig, createStore } from './test.utils'
-import { IMappedVersion, Compared } from './interfaces'
-import { ComparableVersion } from './commons/ComparableVersion'
+import { detectOperatingSystem, sortDescendingIMappedVersions, compareComparableVersions, sortAscendingIMappedVersions, sortStoreEntries, isTextFunction } from './utils'
 
 jest.mock('./log/spinner')
 

@@ -1,13 +1,12 @@
 
 import * as program from 'commander'
 
+import { ComparableVersion } from '../commons/ComparableVersion'
 import { ConfigWrapper } from '../interfaces'
-
+import { logger } from '../log/spinner'
 import * as packageJson from '../package.json'
 import { mapOS } from '../utils'
-import { logger } from '../log/spinner'
 import { IConfigOptions } from './config.interfaces'
-import { ComparableVersion } from '../commons/ComparableVersion'
 
 export const DEFAULT_OPTIONS: IConfigOptions = {
     min: '0',

@@ -1,16 +1,16 @@
 import { createWriteStream, existsSync, mkdir as fsMkdir } from 'fs'
 import { parse } from 'node-html-parser'
-import { promisify } from 'util'
-import * as unzipper from 'unzipper'
 import * as path from 'path'
+import * as unzipper from 'unzipper'
+import { promisify } from 'util'
 
 import { fetchChromiumTags, fetchChromeZipFile } from './api'
+import { readConfig } from './config/config'
 import { IChromeConfig, IStoreConfig } from './interfaces'
 import { logger } from './log/spinner'
-import { getChromeDownloadUrl, mapVersions } from './versions'
 import { importAndMergeLocalstore } from './store/importStore'
-import { readConfig } from './config/config'
 import { loadStore } from './store/store'
+import { getChromeDownloadUrl, mapVersions } from './versions'
 
 const mkdir = promisify(fsMkdir)
 

@@ -1,7 +1,7 @@
 import { fetchLocalStore } from '../api'
 import { LOAD_CONFIG } from '../constants'
-import { logger } from '../log/spinner'
 import { IStoreConfig, Store } from '../interfaces'
+import { logger } from '../log/spinner'
 
 /**
  * Downloads the localstore.json file an places it in the work directory of rusted chromium.

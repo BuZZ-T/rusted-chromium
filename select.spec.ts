@@ -1,10 +1,10 @@
-import { mocked } from 'ts-jest/utils'
 import * as prompts from 'prompts'
+import { mocked } from 'ts-jest/utils'
 
-import { IMappedVersion } from './interfaces'
-import { createChromeConfig } from './test.utils'
-import { userSelectedVersion } from './select'
 import { ComparableVersion } from './commons/ComparableVersion'
+import { IMappedVersion } from './interfaces'
+import { userSelectedVersion } from './select'
+import { createChromeConfig } from './test.utils'
 
 jest.mock('prompts')
 

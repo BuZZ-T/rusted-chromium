@@ -1,6 +1,7 @@
-import { Printer } from './printer'
-import { PartialStdio } from '../test.utils'
 import { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
+
+import { PartialStdio } from '../test.utils'
+import { Printer } from './printer'
 
 jest.mock('chalk', () => ({
     yellow: (text: string) => `yellow: ${text}`,

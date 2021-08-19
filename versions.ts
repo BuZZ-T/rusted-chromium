@@ -1,11 +1,11 @@
 import { fetchBranchPosition, fetchChromeUrl } from './api'
-import { logger } from './log/spinner'
-import { Compared, IChromeConfig, IMappedVersion } from './interfaces'
-import { storeNegativeHit } from './store/store'
-import { SEARCH_BINARY } from './constants'
-import { detectOperatingSystem, sortDescendingIMappedVersions, compareComparableVersions } from './utils'
-import { userSelectedVersion } from './select'
 import { ComparableVersion } from './commons/ComparableVersion'
+import { SEARCH_BINARY } from './constants'
+import { Compared, IChromeConfig, IMappedVersion } from './interfaces'
+import { logger } from './log/spinner'
+import { userSelectedVersion } from './select'
+import { storeNegativeHit } from './store/store'
+import { detectOperatingSystem, sortDescendingIMappedVersions, compareComparableVersions } from './utils'
 
 export async function getChromeDownloadUrl(config: IChromeConfig, mappedVersions: IMappedVersion[]): Promise<[string | undefined, string | undefined, string]> {
     const [urlOS, filenameOS] = detectOperatingSystem(config)

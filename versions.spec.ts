@@ -1,15 +1,15 @@
 import { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
-import { Spinner, logger } from './log/spinner'
-import { mapVersions, getChromeDownloadUrl } from './versions'
-import { IMappedVersion } from './interfaces'
-import { createChromeConfig } from './test.utils'
-import { userSelectedVersion } from './select'
 import { fetchBranchPosition, fetchChromeUrl } from './api'
-import { detectOperatingSystem } from './utils'
-import { storeNegativeHit } from './store/store'
 import { ComparableVersion } from './commons/ComparableVersion'
+import { IMappedVersion } from './interfaces'
+import { Spinner, logger } from './log/spinner'
+import { userSelectedVersion } from './select'
+import { storeNegativeHit } from './store/store'
+import { createChromeConfig } from './test.utils'
+import { detectOperatingSystem } from './utils'
+import { mapVersions, getChromeDownloadUrl } from './versions'
 
 jest.mock('./select')
 jest.mock('./api')

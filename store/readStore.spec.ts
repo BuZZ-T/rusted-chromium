@@ -1,11 +1,11 @@
 import * as fs from 'fs'
-import { mocked } from 'ts-jest/utils'
 import { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
+import { mocked } from 'ts-jest/utils'
 
-import { readStoreFile } from './readStore'
 import { IStoreConfig } from '../interfaces'
-import { createStore, PromisifyCallback, PROMISIFY_NO_ERROR } from '../test.utils'
 import { Spinner, logger } from '../log/spinner'
+import { createStore, PromisifyCallback, PROMISIFY_NO_ERROR } from '../test.utils'
+import { readStoreFile } from './readStore'
 
 jest.mock('fs')
 jest.mock('../log/spinner')

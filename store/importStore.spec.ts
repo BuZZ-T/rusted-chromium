@@ -2,12 +2,12 @@ import * as fs from 'fs'
 import * as path from 'path'
 import { mocked } from 'ts-jest/utils'
 
-import { importAndMergeLocalstore } from './importStore'
-import { downloadStore } from './downloadStore'
-import { readStoreFile } from './readStore'
 import { LOCAL_STORE_FILE } from '../constants'
-import { PromisifyCallback, PROMISIFY_NO_ERROR, createStore } from '../test.utils'
 import { IStoreConfig } from '../interfaces'
+import { PromisifyCallback, PROMISIFY_NO_ERROR, createStore } from '../test.utils'
+import { downloadStore } from './downloadStore'
+import { importAndMergeLocalstore } from './importStore'
+import { readStoreFile } from './readStore'
 
 jest.mock('fs')
 jest.mock('../log/spinner')

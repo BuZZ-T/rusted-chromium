@@ -1,7 +1,7 @@
 import { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 
-import { ProgressBar } from './progress'
 import { PartialStdio } from '../test.utils'
+import { ProgressBar } from './progress'
 
 jest.mock('chalk', () => ({
     bgWhite: (text: string) => `bgWhite: ${text}`,

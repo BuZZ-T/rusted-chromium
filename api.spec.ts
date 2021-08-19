@@ -1,12 +1,13 @@
-import { mocked } from 'ts-jest/utils'
-import { MaybeMockedDeep, MaybeMocked } from 'ts-jest/dist/utils/testing'
 import * as fetch  from 'node-fetch'
-/* eslint-disable-next-line @typescript-eslint/no-var-requires */
-const Progress = require('node-fetch-progress')
+import { MaybeMockedDeep, MaybeMocked } from 'ts-jest/dist/utils/testing'
+import { mocked } from 'ts-jest/utils'
 
-import { logger, Spinner } from './log/spinner'
 import { fetchChromiumTags, fetchBranchPosition, fetchChromeUrl, fetchChromeZipFile, fetchLocalStore } from './api'
 import { progress } from './log/progress'
+import { logger, Spinner } from './log/spinner'
+
+/* eslint-disable-next-line @typescript-eslint/no-var-requires */
+const Progress = require('node-fetch-progress')
 
 const onMock = jest.fn()
 

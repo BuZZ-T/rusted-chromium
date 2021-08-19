@@ -1,12 +1,12 @@
 import * as program from 'commander'
-import { mocked } from 'ts-jest/utils'
 import { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
+import { mocked } from 'ts-jest/utils'
 
-import { DEFAULT_OPTIONS, readConfig } from './config'
-import { IChromeConfigWrapper, OS, IStoreConfigWrapper } from '../interfaces'
-import { createChromeConfig, createChromeOptions } from '../test.utils'
-import { Spinner, logger } from '../log/spinner'
 import { ComparableVersion } from '../commons/ComparableVersion'
+import { IChromeConfigWrapper, OS, IStoreConfigWrapper } from '../interfaces'
+import { Spinner, logger } from '../log/spinner'
+import { createChromeConfig, createChromeOptions } from '../test.utils'
+import { DEFAULT_OPTIONS, readConfig } from './config'
 
 jest.mock('commander')
 jest.mock('../log/spinner')

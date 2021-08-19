@@ -1,9 +1,9 @@
 import * as fs from 'fs'
-import { promisify } from 'util'
 import * as path from 'path'
+import { promisify } from 'util'
 
-import { OS, Store, IMappedVersion, Arch } from '../interfaces'
 import { LOCAL_STORE_FILE } from '../constants'
+import { OS, Store, IMappedVersion, Arch } from '../interfaces'
 import { sortStoreEntries } from '../utils'
 
 const STORE_FILE = path.join(__dirname, '..', LOCAL_STORE_FILE)

@@ -1,8 +1,6 @@
 import { LoggerConfig, TextFunction } from '../interfaces'
-import { Printer } from './printer'
-
-// import { LoggerConfig, TextFunction } from './interfaces'
 import { isTextFunction } from '../utils'
+import { Printer } from './printer'
 
 export class Spinner extends Printer<Spinner> {
 

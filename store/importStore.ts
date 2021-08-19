@@ -1,12 +1,12 @@
 import * as fs from 'fs'
-import { promisify } from 'util'
 import { join } from 'path'
+import { promisify } from 'util'
 
+import { LOCAL_STORE_FILE } from '../constants'
 import { IStoreConfig, Store, StoreSize } from '../interfaces'
+import { sortStoreEntries } from '../utils'
 import { downloadStore } from './downloadStore'
 import { readStoreFile } from './readStore'
-import { LOCAL_STORE_FILE } from '../constants'
-import { sortStoreEntries } from '../utils'
 
 const writeFilePromise = promisify(fs.writeFile)
 const readFilePromise = promisify(fs.readFile)

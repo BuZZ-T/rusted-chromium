@@ -1,11 +1,11 @@
-import { mocked } from 'ts-jest/utils'
 import { MaybeMockedDeep, MaybeMocked } from 'ts-jest/dist/utils/testing'
+import { mocked } from 'ts-jest/utils'
 
-import { logger, Spinner } from '../log/spinner'
-import { downloadStore } from './downloadStore'
 import { fetchLocalStore } from '../api'
 import { LOAD_CONFIG } from '../constants'
+import { logger, Spinner } from '../log/spinner'
 import { createStore } from '../test.utils'
+import { downloadStore } from './downloadStore'
 
 jest.mock('../log/spinner')
 jest.mock('../api')

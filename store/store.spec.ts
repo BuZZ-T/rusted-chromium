@@ -2,9 +2,9 @@ import * as fs from 'fs'
 import * as path from 'path'
 import { mocked } from 'ts-jest/utils'
 
+import { ComparableVersion } from '../commons/ComparableVersion'
 import { PromisifyCallback, PROMISIFY_NO_ERROR, createStore } from '../test.utils'
 import store from './store'
-import { ComparableVersion } from '../commons/ComparableVersion'
 
 jest.mock('fs')
 

@@ -1,12 +1,13 @@
+
+import { RESOLVE_VERSION } from './constants'
+import { IMetadataResponse } from './interfaces'
+import { progress } from './log/progress'
+import { logger } from './log/spinner'
+
 /* eslint-disable @typescript-eslint/no-var-requires */
 const fetch = require('node-fetch')
 const Progress = require('node-fetch-progress')
 /* eslint-enable @typescript-eslint/no-var-requires */
-
-import { logger } from './log/spinner'
-import { IMetadataResponse } from './interfaces'
-import { RESOLVE_VERSION } from './constants'
-import { progress } from './log/progress'
 
 const CHROMIUM_TAGS_URL = 'https://chromium.googlesource.com/chromium/src/+refs'
 

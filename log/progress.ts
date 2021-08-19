@@ -1,7 +1,7 @@
 import * as chalk from 'chalk'
 
-import { Printer } from './printer'
 import { ProgressConfig } from '../interfaces'
+import { Printer } from './printer'
 
 export class ProgressBar extends Printer<ProgressBar> {
 

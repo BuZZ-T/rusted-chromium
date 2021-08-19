@@ -1,7 +1,7 @@
+import { ComparableVersion } from './commons/ComparableVersion'
+import { DEFAULT_OPTIONS } from './config/config'
 import { IConfigOptions } from './config/config.interfaces'
 import { IChromeConfig, Store } from './interfaces'
-import { DEFAULT_OPTIONS } from './config/config'
-import { ComparableVersion } from './commons/ComparableVersion'
 
 export interface PartialStdio {
     write: () => boolean
