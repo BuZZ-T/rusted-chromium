@@ -80,7 +80,7 @@ async function downloadChromium(config: IChromeConfig): Promise<void> {
 
         if (!!config.downloadFolder && !existsSync(config.downloadFolder)) {
             await mkdir(config.downloadFolder, { recursive: true })
-            console.log(config.downloadFolder, ' created')
+            logger.info(`${config.downloadFolder} created'`)
         }
 
         // logger.start({
@@ -114,5 +114,6 @@ async function downloadChromium(config: IChromeConfig): Promise<void> {
 }
 
 main().catch(error => {
+    /*eslint-disable-next-line no-console */
     console.error(error)
 })
