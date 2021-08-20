@@ -54,13 +54,8 @@ describe('readStore', () => {
                 callback(PROMISIFY_NO_ERROR, Promise.resolve(JSON.stringify(expectedStore, null, 2)))
             })
 
-            try {
-                await readStoreFile(config)
-                fail()
-            } catch (e) {
-                expect(e).toEqual(new Error('File does not exist'))
-                expect(fsMock.readFile).toHaveBeenCalledTimes(0)
-            }
+            await expect(() => readStoreFile(config)).rejects.toThrow(new Error('File does not exist'))
+            expect(fsMock.readFile).toHaveBeenCalledTimes(0)
         })
     })
 })

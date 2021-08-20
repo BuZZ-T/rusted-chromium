@@ -1,4 +1,4 @@
-import * as fetch  from 'node-fetch'
+import * as fetch from 'node-fetch'
 import { MaybeMockedDeep, MaybeMocked } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
@@ -40,7 +40,7 @@ describe('api', () => {
 
         progressMock.start.mockClear()
         progressMock.fraction.mockClear()
-        
+
         loggerMock.start.mockClear()
         loggerMock.success.mockClear()
         loggerMock.error.mockClear()
@@ -54,7 +54,7 @@ describe('api', () => {
                 Promise.resolve({
                     ok: true,
                     json() {
-                        return Promise.resolve({some: 'store'})
+                        return Promise.resolve({ some: 'store' })
                     }
                 })
             )
@@ -78,19 +78,16 @@ describe('api', () => {
                 })
             )
 
-            try {
-                await fetchLocalStore(url)
-            } catch (error) {
-                expect(fetchMock.mock.calls.length).toBe(1)
-                expect(fetch).toHaveBeenCalledWith(url)
-                expect(error).toEqual(new Error('Status Code: 400 some-error-message'))
-            }
+            await expect(() => fetchLocalStore(url)).rejects.toThrow(new Error('Status Code: 400 some-error-message'))
+
+            expect(fetchMock.mock.calls.length).toBe(1)
+            expect(fetch).toHaveBeenCalledWith(url)
         })
     })
 
     describe('fetchChromiumTags', () => {
-        it('should fetch chromium tags as text' , async () => {
-            fetchMock.mockImplementation((): Promise<any> => 
+        it('should fetch chromium tags as text', async () => {
+            fetchMock.mockImplementation((): Promise<any> =>
                 Promise.resolve({
                     ok: true,
                     text() {
@@ -113,11 +110,7 @@ describe('api', () => {
                 })
             )
 
-            try {
-                await fetchChromiumTags()
-            } catch(error) {
-                expect(error).toEqual(new Error('Status Code: 400 some-error-message'))
-            }
+            await expect(() => fetchChromiumTags()).rejects.toThrow(new Error('Status Code: 400 some-error-message'))
         })
     })
 
@@ -127,7 +120,7 @@ describe('api', () => {
                 Promise.resolve({
                     ok: true,
                     json() {
-                        return Promise.resolve({chromium_base_position: 3})
+                        return Promise.resolve({ chromium_base_position: 3 })
                     }
                 })
             )
@@ -148,11 +141,7 @@ describe('api', () => {
                 })
             )
 
-            try {
-                await fetchChromiumTags()
-            } catch(error) {
-                expect(error).toEqual(new Error('Status Code: 400 some-error-message'))
-            }
+            await expect(() => fetchChromiumTags()).rejects.toThrow(new Error('Status Code: 400 some-error-message'))
         })
 
         it('should log an error on no branch position', async () => {
@@ -210,11 +199,7 @@ describe('api', () => {
                 })
             )
 
-            try {
-                await fetchChromeUrl('', '', '')
-            } catch (error) {
-                expect(error).toEqual(new Error('Status Code: 400 some-error-message'))
-            }
+            await expect(() => fetchChromeUrl('', '', '')).rejects.toThrow(new Error('Status Code: 400 some-error-message'))
         })
     })
 
@@ -243,31 +228,27 @@ describe('api', () => {
                 })
             )
 
-            try {
-                await fetchChromeZipFile(url)
-            } catch(error) {
-                expect(error).toEqual(new Error('Status Code: 400 some-error-message'))
-            }
+            await expect(() => fetchChromeZipFile(url)).rejects.toThrow(new Error('Status Code: 400 some-error-message'))
         })
 
         describe('Progress', () => {
             it('should start the progress', async () => {
                 const url = 'some-url'
-    
+
                 fetchMock.mockImplementation((): Promise<any> =>
                     Promise.resolve({
                         ok: true,
                         something: 'something'
                     })
                 )
-    
+
                 await fetchChromeZipFile(url)
-    
+
                 expect(onMock).toHaveBeenCalledTimes(1)
                 expect(onMock).toHaveBeenCalledWith('progress', expect.any(Function))
-    
+
                 const callback = onMock.mock.calls[0][1]
-    
+
                 callback({
                     total: 3 * 1024 * 1024,
                     progress: 0.1,
@@ -277,7 +258,7 @@ describe('api', () => {
                     total: 3 * 1024 * 1024,
 
                 })
-    
+
                 expect(progressMock.start).toHaveBeenCalledWith({
                     barLength: 40,
                     steps: 3,
@@ -291,21 +272,21 @@ describe('api', () => {
 
             it('should continue a progress', async () => {
                 const url = 'some-url'
-    
+
                 fetchMock.mockImplementation((): Promise<any> =>
                     Promise.resolve({
                         ok: true,
                         something: 'something'
                     })
                 )
-    
+
                 await fetchChromeZipFile(url)
-    
+
                 expect(onMock).toHaveBeenCalledTimes(1)
                 expect(onMock).toHaveBeenCalledWith('progress', expect.any(Function))
-    
+
                 const callback = onMock.mock.calls[0][1]
-    
+
                 callback({
                     total: 3 * 1024 * 1024,
                     progress: 0.1,

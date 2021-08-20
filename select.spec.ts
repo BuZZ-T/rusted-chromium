@@ -109,7 +109,7 @@ describe('userSelectedVersion', () => {
         })
     })
 
-    it('should strip the amount of versions passed to prompts on --only-newest-major ', async () => {
+    it('should strip the amount of versions passed to prompts on --only-newest-major', async () => {
         const mappedVersion10: IMappedVersion = {
             comparable: new ComparableVersion(10, 0, 0, 0),
             disabled: false,

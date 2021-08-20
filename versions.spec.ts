@@ -410,7 +410,7 @@ describe('versions', () => {
             expect(mapped).toEqual(expectedVersions)
         })
 
-        it('should remove disabled versions on hideNegativeHits set in config ', () => {
+        it('should remove disabled versions on hideNegativeHits set in config', () => {
             const config = createChromeConfig({
                 hideNegativeHits: true,
             })

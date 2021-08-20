@@ -339,23 +339,6 @@ describe('config', () => {
                 expect(config).toEqual(expectedConfig)
             })
 
-            it('should set os mac', () => {
-                programMock.opts.mockReturnValue(createChromeOptions({
-                    os: 'mac'
-                }))
-
-                const config = readConfig([''], 'linux')
-
-                const expectedConfig: IChromeConfigWrapper = {
-                    action: 'loadChrome',
-                    config: createChromeConfig({
-                        os: 'mac'
-                    })
-                }
-
-                expect(config).toEqual(expectedConfig)
-            })
-
             it('should set os mac with node.js string', () => {
                 programMock.opts.mockReturnValue(createChromeOptions({
                     os: 'darwin'

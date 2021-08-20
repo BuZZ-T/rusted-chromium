@@ -90,12 +90,7 @@ describe('importStore', () => {
 
             const config: IStoreConfig = { url: '/some/path/to/file' }
 
-            try {
-                await importAndMergeLocalstore(config)
-                fail()
-            } catch(e) {
-                expect(e).toBe(undefined)
-            }
+            await expect(() => importAndMergeLocalstore(config)).rejects.toBe(undefined)
 
             expect(readStoreFileMock).toHaveBeenCalledTimes(1)
             expect(readStoreFileMock).toHaveBeenCalledWith(config)
@@ -115,13 +110,8 @@ describe('importStore', () => {
 
             const config: IStoreConfig = { url: 'https://some.url.de' }
 
-            try {
-                await importAndMergeLocalstore(config)
-                fail()
-            } catch(e) {
-                expect(e).toBe(undefined)
-            }
-
+            await expect(() => importAndMergeLocalstore(config)).rejects.toBe(undefined)
+            
             expect(readStoreFileMock).toHaveBeenCalledTimes(0)
             expect(downloadStoreMock).toHaveBeenCalledTimes(1)
             expect(downloadStoreMock).toHaveBeenCalledWith(config, LOCAL_STORE_FILE)
