@@ -67,6 +67,7 @@
         ],
         "@typescript-eslint/no-unused-vars": "error",
         "@typescript-eslint/explicit-module-boundary-types": "error",
-        "no-console": "error"
+        "no-console": "error",
+        "jest/expect-expect": "error"
     }
 }

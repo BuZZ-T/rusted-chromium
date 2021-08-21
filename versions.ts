@@ -1,6 +1,8 @@
-import { fetchBranchPosition, fetchChromeUrl } from './api'
+import { parse } from 'node-html-parser'
+
+import { fetchBranchPosition, fetchChromeUrl, fetchChromiumTags } from './api'
 import { ComparableVersion } from './commons/ComparableVersion'
-import { SEARCH_BINARY } from './constants'
+import { SEARCH_BINARY } from './commons/constants'
 import { Compared, IChromeConfig, IMappedVersion } from './interfaces'
 import { logger } from './log/spinner'
 import { userSelectedVersion } from './select'
@@ -41,7 +43,8 @@ export async function getChromeDownloadUrl(config: IChromeConfig, mappedVersions
             }
         }
 
-        const index = mappedVersions.findIndex(version => version.value === selectedVersion?.value)
+        const sVersion: IMappedVersion = selectedVersion
+        const index = mappedVersions.findIndex(version => version.value === sVersion.value)
 
         if (!chromeUrl && !selectedVersion.disabled) {
             const invalidVersion = mappedVersions[index]
@@ -90,7 +93,42 @@ export async function getChromeDownloadUrl(config: IChromeConfig, mappedVersions
     } while (!config.single && (!chromeUrl || !config.download))
 
     return [chromeUrl, selectedVersion?.value, filenameOS]
-} 
+}
+
+/**
+ * Parses the chromium tags and returns all chromium versions
+ */
+export async function loadVersions(): Promise<string[]> {
+    const tags = await fetchChromiumTags()
+
+    const parsedTags = parse(tags) as unknown as (HTMLElement & { valid: boolean })
+
+    const h3s = parsedTags.querySelectorAll('h3')
+
+    let tagsHeadline: HTMLHeadingElement | undefined
+    h3s.forEach((h3: HTMLHeadingElement) => {
+        if (h3.innerHTML === 'Tags') {
+            tagsHeadline = h3
+        }
+    })
+
+    if (!tagsHeadline) {
+        throw new Error('Tags headline not found in HTML')
+    }
+
+    const tagsList = tagsHeadline.parentNode?.childNodes?.[1]
+
+    if (!tagsList) {
+        throw new Error('No list of tags found under tags headline')
+    }
+
+    const versions: string[] = []
+    tagsList.childNodes.forEach((tag: any) => {
+        versions.push(tag.text)
+    })
+
+    return versions
+}
 
 export function mapVersions(versions: string[], config: IChromeConfig, store: Set<string>): IMappedVersion[] {
     if (config.single) {

@@ -1,16 +1,18 @@
-import { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
+import { parse } from 'node-html-parser'
+import { MaybeMockedDeep, MaybeMocked } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
-import { fetchBranchPosition, fetchChromeUrl } from './api'
+import { fetchBranchPosition, fetchChromeUrl, fetchChromiumTags } from './api'
 import { ComparableVersion } from './commons/ComparableVersion'
 import { IMappedVersion } from './interfaces'
 import { Spinner, logger } from './log/spinner'
 import { userSelectedVersion } from './select'
 import { storeNegativeHit } from './store/store'
-import { createChromeConfig } from './test.utils'
+import { createChromeConfig, createChildNodeWithChildren } from './test.utils'
 import { detectOperatingSystem } from './utils'
-import { mapVersions, getChromeDownloadUrl } from './versions'
+import { mapVersions, getChromeDownloadUrl, loadVersions } from './versions'
 
+jest.mock('node-html-parser')
 jest.mock('./select')
 jest.mock('./api')
 jest.mock('./log/spinner')
@@ -120,7 +122,7 @@ describe('versions', () => {
             expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION, URL_OS, FILENAME_OS)
         })
 
-        it('should return the chrome url for the automatically selected first mapped version', async () => {
+        it('should return the chrome url for the automatically selected first mapped version on decrease', async () => {
             const config = createChromeConfig({
                 interactive: false,
                 onFail: 'decrease',
@@ -135,6 +137,79 @@ describe('versions', () => {
             expect(detectOperatingSystemMock).toHaveBeenCalledTimes(1)
             expect(detectOperatingSystemMock).toHaveBeenCalledWith(config)
             expect(userSelectedVersionMock).toHaveBeenCalledTimes(0)
+            expect(fetchBranchPositionMock).toHaveBeenCalledTimes(1)
+            expect(fetchBranchPositionMock).toHaveBeenCalledWith(version1.value)
+            expect(fetchChromeUrlMock).toHaveBeenCalledTimes(1)
+            expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION, URL_OS, FILENAME_OS)
+        })
+
+        it('should automatically continue with the next available higher version on increase-on-fail', async () => {
+            const config = createChromeConfig({
+                interactive: true,
+                onFail: 'increase',
+                download: true,
+            })
+
+            userSelectedVersionMock.mockReturnValue(versionDisabled)
+
+            expect(await getChromeDownloadUrl(config, [version1, versionDisabled])).toEqual([CHROME_URL, version1.value, FILENAME_OS])
+
+            expect(loggerMock.info).toHaveBeenCalledWith('Continue with next higher version "10.0.0.0"')
+
+            expect(storeNegativeHitMock).toHaveBeenCalledTimes(0)
+            expect(detectOperatingSystemMock).toHaveBeenCalledTimes(1)
+            expect(detectOperatingSystemMock).toHaveBeenCalledWith(config)
+            expect(userSelectedVersionMock).toHaveBeenCalledTimes(1)
+            expect(userSelectedVersionMock).toHaveBeenCalledWith([version1, versionDisabled], config)
+
+            expect(fetchBranchPositionMock).toHaveBeenCalledTimes(1)
+            expect(fetchBranchPositionMock).toHaveBeenCalledWith(version1.value)
+            expect(fetchChromeUrlMock).toHaveBeenCalledTimes(1)
+            expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION, URL_OS, FILENAME_OS)
+        })
+
+        it('should break on no version left on increase-on-fail', async () => {
+            const config = createChromeConfig({
+                interactive: true,
+                onFail: 'increase',
+                download: true,
+            })
+
+            userSelectedVersionMock.mockReturnValue(versionDisabled)
+
+            expect(await getChromeDownloadUrl(config, [versionDisabled])).toEqual([undefined, undefined, FILENAME_OS])
+
+            expect(loggerMock.info).toHaveBeenCalledTimes(0)
+
+            expect(storeNegativeHitMock).toHaveBeenCalledTimes(0)
+            expect(detectOperatingSystemMock).toHaveBeenCalledTimes(1)
+            expect(detectOperatingSystemMock).toHaveBeenCalledWith(config)
+            expect(userSelectedVersionMock).toHaveBeenCalledTimes(1)
+            expect(userSelectedVersionMock).toHaveBeenCalledWith([versionDisabled], config)
+
+            expect(fetchBranchPositionMock).toHaveBeenCalledTimes(0)
+            expect(fetchChromeUrlMock).toHaveBeenCalledTimes(0)
+        })
+
+        it('should automatically continue with the next available lower version on decrease-on-fail', async () => {
+            const config = createChromeConfig({
+                interactive: true,
+                onFail: 'decrease',
+                download: true,
+            })
+
+            userSelectedVersionMock.mockReturnValue(versionDisabled)
+
+            expect(await getChromeDownloadUrl(config, [versionDisabled, version1])).toEqual([CHROME_URL, version1.value, FILENAME_OS])
+
+            expect(loggerMock.info).toHaveBeenCalledWith('Continue with next lower version "10.0.0.0"')
+
+            expect(storeNegativeHitMock).toHaveBeenCalledTimes(0)
+            expect(detectOperatingSystemMock).toHaveBeenCalledTimes(1)
+            expect(detectOperatingSystemMock).toHaveBeenCalledWith(config)
+            expect(userSelectedVersionMock).toHaveBeenCalledTimes(1)
+            expect(userSelectedVersionMock).toHaveBeenCalledWith([versionDisabled, version1], config)
+
             expect(fetchBranchPositionMock).toHaveBeenCalledTimes(1)
             expect(fetchBranchPositionMock).toHaveBeenCalledWith(version1.value)
             expect(fetchChromeUrlMock).toHaveBeenCalledTimes(1)
@@ -207,7 +282,7 @@ describe('versions', () => {
             userSelectedVersionMock.mockResolvedValue(version1)
 
             fetchBranchPositionMock.mockResolvedValueOnce('branch-position2')
-            
+
             fetchChromeUrlMock.mockResolvedValueOnce(undefined)
 
             expect(await getChromeDownloadUrl(config, [version1, versionDisabled, version3])).toEqual([CHROME_URL, version3.value, FILENAME_OS])
@@ -346,7 +421,7 @@ describe('versions', () => {
                 disabled: false,
                 value: singleVersion,
             }
-            
+
             const config = createChromeConfig({
                 single: singleVersion,
                 store: true,
@@ -364,6 +439,187 @@ describe('versions', () => {
             expect(fetchBranchPositionMock).toHaveBeenCalledWith(mappedSingleVersion.value)
             expect(fetchChromeUrlMock).toHaveBeenCalledTimes(1)
             expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION, URL_OS, FILENAME_OS)
+        })
+    })
+
+    describe('loadVersions', () => {
+
+        const childNodeWithoutVersions = createChildNodeWithChildren()
+
+        const childNodeWithOneVerions = createChildNodeWithChildren({
+            text: '10.0.0.0',
+        } as unknown as ChildNode)
+
+        const childNodeWithThreeVerions = createChildNodeWithChildren(
+            { text: '10.0.0.0' } as unknown as ChildNode,
+            { text: '10.0.0.1' } as unknown as ChildNode,
+            { text: '10.0.0.3' } as unknown as ChildNode)
+
+        let fetchChromiumTagsMock: MaybeMocked<typeof fetchChromiumTags>
+        let parseMock: MaybeMocked<typeof parse>
+        let querySelectorMock: jest.Mock
+
+        const someHTML = '<html><body><h1>some html</h1></body></html>'
+
+        beforeAll(() => {
+            fetchChromiumTagsMock = mocked(fetchChromiumTags)
+            parseMock = mocked(parse)
+            querySelectorMock = jest.fn()
+        })
+
+        beforeEach(() => {
+            fetchChromiumTagsMock.mockClear()
+            parseMock.mockClear()
+        })
+
+        it('should return an empty versions list', async () => {
+            fetchChromiumTagsMock.mockResolvedValue(someHTML)
+            querySelectorMock.mockReturnValue({
+                forEach: (callback: (e: HTMLHeadingElement) => void) => {
+                    callback({
+                        innerHTML: 'Tags',
+                        parentNode: {
+                            childNodes: [null, childNodeWithoutVersions] as unknown as NodeListOf<ChildNode>
+                        }
+                    } as HTMLHeadingElement)
+                }
+            })
+            parseMock.mockReturnValue({ querySelectorAll: querySelectorMock } as any)
+
+            const versions = await loadVersions()
+
+            expect(parseMock).toHaveBeenCalledTimes(1)
+            expect(parseMock).toHaveBeenCalledWith(someHTML)
+
+            expect(versions).toEqual([])
+        })
+
+        it('should return one version', async () => {
+            fetchChromiumTagsMock.mockResolvedValue(someHTML)
+            querySelectorMock.mockReturnValue({
+                forEach: (callback: (e: HTMLHeadingElement) => void) => {
+                    callback({
+                        innerHTML: 'Tags',
+                        parentNode: {
+                            childNodes: [null, childNodeWithOneVerions] as unknown as NodeListOf<ChildNode>
+                        } as unknown as Node & ParentNode
+                    } as HTMLHeadingElement)
+                }
+            })
+            parseMock.mockReturnValue({ querySelectorAll: querySelectorMock } as any)
+
+            const versions = await loadVersions()
+
+            expect(parseMock).toHaveBeenCalledTimes(1)
+            expect(parseMock).toHaveBeenCalledWith(someHTML)
+
+            expect(versions).toEqual(['10.0.0.0'])
+        })
+
+        it('should return three versions', async () => {
+            fetchChromiumTagsMock.mockResolvedValue(someHTML)
+            querySelectorMock.mockReturnValue({
+                forEach: (callback: (e: HTMLHeadingElement) => void) => {
+                    callback({
+                        innerHTML: 'Tags',
+                        parentNode: {
+                            childNodes: [null, childNodeWithThreeVerions] as unknown as NodeListOf<ChildNode>
+                        } as unknown as Node & ParentNode
+                    } as HTMLHeadingElement)
+                }
+            })
+            parseMock.mockReturnValue({ querySelectorAll: querySelectorMock } as any)
+
+            const versions = await loadVersions()
+
+            expect(parseMock).toHaveBeenCalledTimes(1)
+            expect(parseMock).toHaveBeenCalledWith(someHTML)
+
+            expect(versions).toEqual(['10.0.0.0', '10.0.0.1', '10.0.0.3'])
+        })
+
+        it('should ignore other headlines than "tags"', async () => {
+            fetchChromiumTagsMock.mockResolvedValue(someHTML)
+            querySelectorMock.mockReturnValue({
+                forEach: (callback: (e: HTMLHeadingElement) => void) => {
+                    callback({
+                        innerHTML: 'Branches',
+                        parentNode: {
+                            childNodes: [null, childNodeWithThreeVerions] as unknown as NodeListOf<ChildNode>
+                        } as unknown as Node & ParentNode
+                    } as HTMLHeadingElement)
+                    callback({
+                        innerHTML: 'Tags',
+                        parentNode: {
+                            childNodes: [null, childNodeWithOneVerions] as unknown as NodeListOf<ChildNode>
+                        } as unknown as Node & ParentNode
+                    } as HTMLHeadingElement,
+                    )
+                }
+            })
+            parseMock.mockReturnValue({ querySelectorAll: querySelectorMock } as any)
+
+            const versions = await loadVersions()
+
+            expect(parseMock).toHaveBeenCalledTimes(1)
+            expect(parseMock).toHaveBeenCalledWith(someHTML)
+
+            expect(versions).toEqual(['10.0.0.0'])
+        })
+
+        it('should reject with an error on no headline found', async () => {
+            fetchChromiumTagsMock.mockResolvedValue(someHTML)
+            querySelectorMock.mockReturnValue({
+                forEach: (callback: (e: HTMLHeadingElement) => void) => {
+                    callback({
+                        innerHTML: 'Branches',
+                        parentNode: {
+                            childNodes: [null, childNodeWithThreeVerions] as unknown as NodeListOf<ChildNode>
+                        } as unknown as Node & ParentNode
+                    } as HTMLHeadingElement)
+                }
+            })
+            parseMock.mockReturnValue({ querySelectorAll: querySelectorMock } as any)
+
+            await expect(() => loadVersions()).rejects.toEqual(new Error('Tags headline not found in HTML'))
+
+            expect(parseMock).toHaveBeenCalledTimes(1)
+            expect(parseMock).toHaveBeenCalledWith(someHTML)
+        })
+
+        it('should reject with an error on no parentNodes found', async () => {
+            fetchChromiumTagsMock.mockResolvedValue(someHTML)
+            querySelectorMock.mockReturnValue({
+                forEach: (callback: (e: HTMLHeadingElement) => void) => {
+                    callback({
+                        innerHTML: 'Tags',
+                    } as HTMLHeadingElement)
+                }
+            })
+            parseMock.mockReturnValue({ querySelectorAll: querySelectorMock } as any)
+
+            await expect(() => loadVersions()).rejects.toEqual(new Error('No list of tags found under tags headline'))
+
+            expect(parseMock).toHaveBeenCalledTimes(1)
+            expect(parseMock).toHaveBeenCalledWith(someHTML)
+        })
+
+        it('should reject with an error on no childNodes found', async () => {
+            fetchChromiumTagsMock.mockResolvedValue(someHTML)
+            querySelectorMock.mockReturnValue({
+                forEach: (callback: (e: HTMLHeadingElement) => void) => {
+                    callback({
+                        innerHTML: 'Tags',
+                        parentNode: {} as unknown as Node & ParentNode
+                    } as HTMLHeadingElement)
+                }
+            })
+            parseMock.mockReturnValue({ querySelectorAll: querySelectorMock } as any)
+
+            await expect(() => loadVersions()).rejects.toEqual(new Error('No list of tags found under tags headline'))
+
+            expect(parseMock).toHaveBeenCalledTimes(1)
+            expect(parseMock).toHaveBeenCalledWith(someHTML)
         })
     })
 

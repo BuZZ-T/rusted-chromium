@@ -1,8 +1,25 @@
-export enum RestError {
-    BadRequest = 'BadRequest',
-    Unauthorized = 'Unauthorized',
-    Forbidden = 'Forbidden',
-    NotFound = 'NotFound'
+interface ErrorStatus {
+    status: string
+    statusCode: number
+}
+
+export const errors = {
+    BadRequest: {
+        status: 'BadRequest',
+        statusCode: 400,
+    },
+    Unauthorized: {
+        status: 'Unauthorized',
+        statusCode: 401,
+    },
+    Forbidden: {
+        status: 'Forbidden',
+        statusCode: 403,
+    },
+    NotFound: {
+        status: 'NotFound',
+        statusCode: 404,
+    },
 }
 
 export function findAndThrowError(response: Response): never | void {
@@ -14,66 +31,67 @@ export function findAndThrowError(response: Response): never | void {
 }
 
 export class HttpError extends Error {
-    public constructor(statusCode: number, status: string, path: string) {
-        super(`${statusCode} ${status}${path}`)
+
+    protected static statusCode: number
+    
+    public constructor(errorStatus: ErrorStatus) {
+        super(`${errorStatus.statusCode} ${errorStatus.status}`)
         this.name = 'Http Error'
     }
 }
 
 export class BadRequestError extends HttpError {
-    private static STATUS_CODE = 400
-    private static STATUS = 'Bad Request'
-
+    
     private path: string
 
-    public static match(response: Response): boolean {
-        return response.status === BadRequestError.STATUS_CODE
+    public constructor(response: Response) {
+        super(errors.BadRequest)
+        this.path = response.url
     }
 
-    public constructor(response: Response) {
-        super(BadRequestError.STATUS_CODE, BadRequestError.STATUS, JSON.stringify(response))
-        this.path = response.url
+    public static match(response: Response): boolean {
+        return response.status === errors.BadRequest.statusCode
     }
 }
 
-export class UnauthorizedError extends Error {
+export class UnauthorizedError extends HttpError {
     private path: string
     
-    public static match(response: Response): boolean {
-        return response.status === 401
+    public constructor(response: Response) {
+        super(errors.Unauthorized)
+        this.name = errors.Unauthorized.status
+        this.path = response.url
     }
 
-    public constructor(response: Response) {
-        super('Unauthorized')
-        this.name = RestError.Unauthorized
-        this.path = response.url
+    public static match(response: Response): boolean {
+        return response.status === errors.Unauthorized.statusCode
     }
 }
 
-export class ForbiddenError extends Error {
+export class ForbiddenError extends HttpError {
     private path: string
     
-    public static match(response: Response): boolean {
-        return response.status === 403
+    public constructor(response: Response) {
+        super(errors.Forbidden)
+        this.name = errors.Forbidden.status
+        this.path = response.url
     }
 
-    public constructor(response: Response) {
-        super('Forbidden')
-        this.name = RestError.Forbidden
-        this.path = response.url
+    public static match(response: Response): boolean {
+        return response.status === errors.Forbidden.statusCode
     }
 }
 
-export class NotFoundError extends Error {
+export class NotFoundError extends HttpError {
     private path: string
 
-    public static match(response: Response): boolean {
-        return response.status === 404
+    public constructor(response: Response) {
+        super(errors.NotFound)
+        this.name = errors.NotFound.status
+        this.path = response.url
     }
 
-    public constructor(response: Response) {
-        super('Path not found')
-        this.name = RestError.NotFound
-        this.path = response.url
+    public static match(response: Response): boolean {
+        return response.status === errors.NotFound.statusCode
     }
 }

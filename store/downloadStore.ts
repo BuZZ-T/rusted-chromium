@@ -1,5 +1,5 @@
 import { fetchLocalStore } from '../api'
-import { LOAD_CONFIG } from '../constants'
+import { LOAD_CONFIG } from '../commons/constants'
 import { IStoreConfig, Store } from '../interfaces'
 import { logger } from '../log/spinner'
 

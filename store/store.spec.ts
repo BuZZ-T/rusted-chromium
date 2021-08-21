@@ -175,6 +175,26 @@ describe('store', () => {
             expect(fsMock.writeFile).toHaveBeenCalledWith(localPath, JSON.stringify(expectedStore, null, 4), expect.any(Function))
         })
 
+        it('should do nothing, if entry already exists', async () => {
+            const existingStore = createStore({ win: { x64: ['10.0.0.0'], x86: [] }, linux: { x64: ['1.0.0.0'], x86: []} })
+
+            loadStoreMock.mockReturnValue(existingStore)
+
+            fsMock.writeFile.mockImplementation((path: string, store: any, callback: PromisifyCallback) => {
+                callback(PROMISIFY_NO_ERROR)
+            })
+
+            await store.storeNegativeHit({
+                comparable: new ComparableVersion(1, 2, 3, 4),
+                disabled: true,
+                value: '1.0.0.0',
+            }, 'linux', 'x64')
+
+            expect(loadStoreMock).toHaveBeenCalledTimes(1)
+
+            expect(fsMock.writeFile).toHaveBeenCalledTimes(0)
+        })
+
         it('should sort an unsorted store on writing', async () => {
             const existingStore = createStore({ win: { x64: ['11.0.0.0', '10.0.0.0', '12.0.0.0'], x86: [] } })
 
@@ -197,7 +217,6 @@ describe('store', () => {
             expect(fsMock.writeFile).toHaveBeenCalledTimes(1)
             expect(fsMock.writeFile).toHaveBeenCalledWith(localPath, JSON.stringify(expectedStore, null, 4), expect.any(Function))
         })
-
     })
 
 })

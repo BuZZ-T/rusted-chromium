@@ -1,53 +1,17 @@
 import { createWriteStream, existsSync, mkdir as fsMkdir } from 'fs'
-import { parse } from 'node-html-parser'
 import * as path from 'path'
 import * as unzipper from 'unzipper'
 import { promisify } from 'util'
 
-import { fetchChromiumTags, fetchChromeZipFile } from './api'
+import { fetchChromeZipFile } from './api'
 import { readConfig } from './config/config'
 import { IChromeConfig, IStoreConfig } from './interfaces'
 import { logger } from './log/spinner'
 import { importAndMergeLocalstore } from './store/importStore'
 import { loadStore } from './store/store'
-import { getChromeDownloadUrl, mapVersions } from './versions'
+import { getChromeDownloadUrl, loadVersions, mapVersions } from './versions'
 
 const mkdir = promisify(fsMkdir)
-
-/**
- * Parses the chromium tags and returns all chromium versions
- */
-async function loadVersions(): Promise<string[]> {
-    const tags = await fetchChromiumTags()
-
-    const parsedTags = parse(tags) as unknown as (HTMLElement & { valid: boolean })
-
-    const h3s = parsedTags.querySelectorAll('h3')
-
-    let tagsHeadline: any
-    h3s.forEach((h3: any) => {
-        if (h3.text === 'Tags') {
-            tagsHeadline = h3
-        }
-    })
-
-    if (!tagsHeadline) {
-        throw new Error('Tags headline not found in HTML')
-    }
-
-    const tagsList = tagsHeadline.parentNode.childNodes[1]
-
-    if (!tagsList) {
-        throw new Error('No list of tags found under tags headline')
-    }
-
-    const versions: string[] = []
-    tagsList.childNodes.forEach((tag: any) => {
-        versions.push(tag.text)
-    })
-
-    return versions
-}
 
 async function main(): Promise<void> {
     const configWrapper = readConfig(process.argv, process.platform)
@@ -67,7 +31,7 @@ async function downloadChromium(config: IChromeConfig): Promise<void> {
     const versions = await loadVersions()
     const store = await loadStore()
     const storeByOs = new Set(store[config.os][config.arch])
-    const mappedVersions = mapVersions(versions, config, storeByOs)
+    const mappedVersions = mapVersions(versions, config, storeByOs as any)
 
     const [chromeUrl, selectedVersion, filenameOS] = await getChromeDownloadUrl(config, mappedVersions)
 

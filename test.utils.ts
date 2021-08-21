@@ -46,8 +46,15 @@ export const createStore = (store?: Partial<Store>): Store => ({
 
 export const PROMISIFY_NO_ERROR = false
 export type PromisifyCallback = (p: boolean, ...args: any[]) => void
+export type PromisifyErrorCallback = (p: Error, ...args: any[]) => void
 
 export const createChromeOptions = (config?: Partial<IConfigOptions>): IConfigOptions => ({
     ...DEFAULT_OPTIONS,
     ...config,
 })
+
+export const createChildNodeWithChildren = (...children: Array<Partial<ChildNode>>): ChildNode => ({
+    childNodes: [
+        ...children,
+    ] as unknown as NodeListOf<ChildNode>
+} as ChildNode)

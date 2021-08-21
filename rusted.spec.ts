@@ -1,5 +1,0 @@
-describe('rusted', () => {
-    it('should', () => {
-        //
-    })
-})

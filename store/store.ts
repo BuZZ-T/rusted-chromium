@@ -2,7 +2,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 import { promisify } from 'util'
 
-import { LOCAL_STORE_FILE } from '../constants'
+import { LOCAL_STORE_FILE } from '../commons/constants'
 import { OS, Store, IMappedVersion, Arch } from '../interfaces'
 import { sortStoreEntries } from '../utils'
 

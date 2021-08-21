@@ -2,7 +2,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 import { mocked } from 'ts-jest/utils'
 
-import { LOCAL_STORE_FILE } from '../constants'
+import { LOCAL_STORE_FILE } from '../commons/constants'
 import { IStoreConfig } from '../interfaces'
 import { PromisifyCallback, PROMISIFY_NO_ERROR, createStore } from '../test.utils'
 import { downloadStore } from './downloadStore'

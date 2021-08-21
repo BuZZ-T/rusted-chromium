@@ -93,6 +93,15 @@ describe('utils', () => {
             expect(file).toEqual('mac')
             expect(loggerMock.warn).toHaveBeenCalledTimes(1)
         })
+
+        it('should throw an error on unknown os received', () => {
+            const config = createChromeConfig({
+                os: 'foo' as any,
+            })
+            expect(() => {
+                detectOperatingSystem(config)
+            }).toThrow(new Error('Unsupported operation system: foo'))
+        })
     })
 
     describe('sortDescendingIMappedVersions', () => {

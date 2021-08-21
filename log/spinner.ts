@@ -57,7 +57,7 @@ export class Spinner extends Printer<Spinner> {
             .stop()
             .write(isTextFunction(this.successText)
                 ? this.successText(text || '')
-                : this.successText || '')
+                : this.successText)
             .newline()
     }
 
@@ -66,7 +66,7 @@ export class Spinner extends Printer<Spinner> {
             .stop()
             .write(isTextFunction(this.errorText)
                 ? this.errorText(text || '')
-                : this.errorText || '')
+                : this.errorText)
             .newline()
     }
 }

@@ -1,5 +1,5 @@
 
-import { RESOLVE_VERSION } from './constants'
+import { RESOLVE_VERSION } from './commons/constants'
 import { IMetadataResponse } from './interfaces'
 import { progress } from './log/progress'
 import { logger } from './log/spinner'

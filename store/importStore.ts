@@ -2,7 +2,7 @@ import * as fs from 'fs'
 import { join } from 'path'
 import { promisify } from 'util'
 
-import { LOCAL_STORE_FILE } from '../constants'
+import { LOCAL_STORE_FILE } from '../commons/constants'
 import { IStoreConfig, Store, StoreSize } from '../interfaces'
 import { sortStoreEntries } from '../utils'
 import { downloadStore } from './downloadStore'
