@@ -1,19 +1,18 @@
+import { Response as NodeFetchResponse } from 'node-fetch'
 
 import { RESOLVE_VERSION } from './commons/constants'
 import { IMetadataResponse } from './interfaces'
-import { progress } from './log/progress'
 import { logger } from './log/spinner'
 
-/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable-next-line @typescript-eslint/no-var-requires */
 const fetch = require('node-fetch')
-const Progress = require('node-fetch-progress')
-/* eslint-enable @typescript-eslint/no-var-requires */
 
 const CHROMIUM_TAGS_URL = 'https://chromium.googlesource.com/chromium/src/+refs'
 
-function checkStatus(response: any /* Response */) {
+function checkStatus(response: NodeFetchResponse) {
     if (!response.ok) {
-        throw new Error(`Status Code: ${response.status} ${response.error}`)
+        // TOOD: check of response.error is correct
+        throw new Error(`Status Code: ${response.status} ${(response as any).error}`)
     }
     return response
 }
@@ -65,28 +64,7 @@ export async function fetchChromeUrl(branchPosition: string, urlOS: string, file
     return chromeMetadataResponse.items?.find(item => item.name === `${urlOS}/${branchPosition}/chrome-${filenameOS}.zip`)?.mediaLink
 }
 
-export async function fetchChromeZipFile(url: string): Promise<any> {
-
+export async function fetchChromeZipFile(url: string): Promise<NodeFetchResponse> {
     const response = await fetch(url)
-
-    let isFirstProgress = true
-
-    new Progress(response, { throttle: 100 }).on('progress', (p: any) => {
-        if (isFirstProgress) {
-            progress.start({
-                barLength: 40,
-                steps: Math.round(p.total / 1024 / 1024),
-                unit: 'MB',
-                showNumeric: true,
-                start: 'Downloading binary...',
-                success: 'zip successfully downloaded',
-                fail: 'error'
-            })
-            isFirstProgress = false
-        } else {
-            progress.fraction(p.progress)
-        }
-    })
-
     return checkStatus(response)
 }

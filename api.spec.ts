@@ -3,11 +3,7 @@ import { MaybeMockedDeep, MaybeMocked } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
 import { fetchChromiumTags, fetchBranchPosition, fetchChromeUrl, fetchChromeZipFile, fetchLocalStore } from './api'
-import { progress } from './log/progress'
 import { logger, Spinner } from './log/spinner'
-
-/* eslint-disable-next-line @typescript-eslint/no-var-requires */
-const Progress = require('node-fetch-progress')
 
 const onMock = jest.fn()
 
@@ -22,24 +18,15 @@ describe('api', () => {
 
     let loggerMock: MaybeMockedDeep<Spinner>
     let fetchMock: MaybeMocked<any>
-    let progressConstructorMock: MaybeMockedDeep<any>
-    let progressMock: MaybeMockedDeep<any>
 
     beforeAll(() => {
         fetchMock = mocked(fetch)
-        progressConstructorMock = mocked(Progress)
-        progressMock = mocked(progress, true)
         loggerMock = mocked(logger, true)
     })
 
     beforeEach(() => {
         onMock.mockReset()
         fetchMock.mockClear()
-
-        progressConstructorMock.mockClear()
-
-        progressMock.start.mockClear()
-        progressMock.fraction.mockClear()
 
         loggerMock.start.mockClear()
         loggerMock.success.mockClear()
@@ -210,11 +197,10 @@ describe('api', () => {
             fetchMock.mockImplementation((): Promise<any> =>
                 Promise.resolve({
                     ok: true,
-                    something: 'something'
                 })
             )
 
-            expect((await fetchChromeZipFile(url)).something).toEqual('something')
+            expect((fetchChromeZipFile(url))).resolves.toEqual({ ok: true })
         })
 
         it('should throw an error on non-ok http response', async () => {
@@ -229,77 +215,6 @@ describe('api', () => {
             )
 
             await expect(() => fetchChromeZipFile(url)).rejects.toThrow(new Error('Status Code: 400 some-error-message'))
-        })
-
-        describe('Progress', () => {
-            it('should start the progress', async () => {
-                const url = 'some-url'
-
-                fetchMock.mockImplementation((): Promise<any> =>
-                    Promise.resolve({
-                        ok: true,
-                        something: 'something'
-                    })
-                )
-
-                await fetchChromeZipFile(url)
-
-                expect(onMock).toHaveBeenCalledTimes(1)
-                expect(onMock).toHaveBeenCalledWith('progress', expect.any(Function))
-
-                const callback = onMock.mock.calls[0][1]
-
-                callback({
-                    total: 3 * 1024 * 1024,
-                    progress: 0.1,
-                })
-
-                callback({
-                    total: 3 * 1024 * 1024,
-
-                })
-
-                expect(progressMock.start).toHaveBeenCalledWith({
-                    barLength: 40,
-                    steps: 3,
-                    unit: 'MB',
-                    showNumeric: true,
-                    start: 'Downloading binary...',
-                    success: 'zip successfully downloaded',
-                    fail: 'error'
-                })
-            })
-
-            it('should continue a progress', async () => {
-                const url = 'some-url'
-
-                fetchMock.mockImplementation((): Promise<any> =>
-                    Promise.resolve({
-                        ok: true,
-                        something: 'something'
-                    })
-                )
-
-                await fetchChromeZipFile(url)
-
-                expect(onMock).toHaveBeenCalledTimes(1)
-                expect(onMock).toHaveBeenCalledWith('progress', expect.any(Function))
-
-                const callback = onMock.mock.calls[0][1]
-
-                callback({
-                    total: 3 * 1024 * 1024,
-                    progress: 0.1,
-                })
-
-                callback({
-                    total: 3 * 1024 * 1024,
-                    progress: 0.3,
-                })
-
-                expect(progressMock.fraction).toHaveBeenCalledWith(0.3)
-            })
-
         })
     })
 })

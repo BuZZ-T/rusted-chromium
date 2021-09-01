@@ -4,7 +4,6 @@ import { Printer } from './printer'
 
 export class Spinner extends Printer<Spinner> {
 
-    private readonly DEFAULT_ERROR = 'An error occured'
     private readonly SPINNER_STATES = '⠏⠋⠙⠹⠸⠼⠴⠦⠧⠇'
 
     private startText: string | undefined

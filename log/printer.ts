@@ -39,6 +39,12 @@ export abstract class Printer<T extends Printer<T>> {
         return this.self()
     }
 
+    protected deleteLastLine(): T {
+        this.stdio.moveCursor(0, -1)
+        this.clearLine()
+        return this.self()
+    }
+
     public info(text: string): T {
         return this.clearLine()
             .stop()

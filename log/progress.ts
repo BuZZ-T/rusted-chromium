@@ -39,7 +39,8 @@ export class ProgressBar extends Printer<ProgressBar> {
     private checkForComplete(percent: number): ProgressBar {
         return percent === 1
             ? this.clearLine()
-                .write(this.config!.success)
+                .deleteLastLine()
+                .write(this.SUCCESS_FN(this.config!.success))
                 .stop()
                 .newline()
             : this
