@@ -1,12 +1,13 @@
 import { ComparableVersion } from './commons/ComparableVersion'
 import { DEFAULT_OPTIONS } from './config/config'
 import { IConfigOptions } from './config/config.interfaces'
-import { IChromeConfig, IDownloadSettings, Store } from './interfaces';
+import { IChromeConfig, IDownloadSettings, Store } from './interfaces'
 
 export interface PartialStdio {
     write: () => boolean
     clearLine: () => boolean
     cursorTo: () => boolean
+    moveCursor: () => boolean
 }
 
 export const createChromeConfig = (config?: Partial<IChromeConfig>): IChromeConfig => ({

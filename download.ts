@@ -4,6 +4,7 @@ import * as unzipper from 'unzipper'
 import { promisify } from 'util'
 
 import { fetchChromeZipFile } from './api'
+import { NoChromiumDownloadError } from './errors'
 import { IChromeConfig } from './interfaces'
 import { progress } from './log/progress'
 import { logger } from './log/spinner'
@@ -65,8 +66,7 @@ export async function downloadChromium(config: IChromeConfig): Promise<void> {
         }
     }
 
-    // quit with exit code, if one single version is specified, but no binary is found
     if (!chromeUrl && config.download && config.single) {
-        process.exit(1)
+        throw new NoChromiumDownloadError()
     }
 }

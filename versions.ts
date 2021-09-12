@@ -3,7 +3,7 @@ import { parse } from 'node-html-parser'
 import { fetchBranchPosition, fetchChromeUrl, fetchChromiumTags } from './api'
 import { ComparableVersion } from './commons/ComparableVersion'
 import { SEARCH_BINARY } from './commons/constants'
-import { Compared, IChromeConfig, IMappedVersion, IDownloadSettings } from './interfaces';
+import { Compared, IChromeConfig, IMappedVersion, IDownloadSettings } from './interfaces'
 import { logger } from './log/spinner'
 import { userSelectedVersion } from './select'
 import { storeNegativeHit } from './store/store'

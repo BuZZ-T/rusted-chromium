@@ -95,3 +95,12 @@ export class NotFoundError extends HttpError {
         return response.status === errors.NotFound.statusCode
     }
 }
+
+/**
+ * Is thrown if --single is specified, but no binary was found
+ */
+export class NoChromiumDownloadError extends Error {
+    public constructor() {
+        super('Single version is specified, but no binary is found')
+    }
+}

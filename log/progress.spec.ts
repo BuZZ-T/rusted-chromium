@@ -6,6 +6,7 @@ import { ProgressBar } from './progress'
 jest.mock('chalk', () => ({
     bgWhite: (text: string) => `bgWhite: ${text}`,
     grey: (text: string) => `grey: ${text}`,
+    green: (text: string) => `green: ${text}`,
 }))
 
 describe('ProgressBar', () => {
@@ -18,6 +19,7 @@ describe('ProgressBar', () => {
             write: jest.fn(),
             clearLine: jest.fn(),
             cursorTo: jest.fn(),
+            moveCursor: jest.fn(),
         }
 
         progress = new ProgressBar(stdioMock as unknown as NodeJS.WriteStream)
@@ -173,18 +175,20 @@ describe('ProgressBar', () => {
             ['[grey: .grey: .grey: .grey: .grey: .grey: .grey: .grey: .grey: .grey: .grey: .grey: .grey: .grey: .grey: .grey: .grey: .grey: .grey: .grey: .]'],
             ['[bgWhite:  bgWhite:  grey: .grey: .grey: .grey: .grey: .grey: .grey: .grey: .grey: .grey: .grey: .grey: .grey: .grey: .grey: .grey: .grey: .grey: .]'],
             ['[bgWhite:  bgWhite:  bgWhite:  bgWhite:  bgWhite:  bgWhite:  bgWhite:  bgWhite:  bgWhite:  bgWhite:  bgWhite:  bgWhite:  bgWhite:  bgWhite:  bgWhite:  bgWhite:  bgWhite:  bgWhite:  bgWhite:  bgWhite:  ]'],
-            ['success_text'],
+            ['green: ✔ success_text'],
             ['\n']
         ])
-        expect(stdioMock.clearLine).toHaveBeenCalledTimes(4)
+        expect(stdioMock.clearLine).toHaveBeenCalledTimes(5)
         expect(stdioMock.clearLine.mock.calls).toEqual([
             [0],
             [0],
             [0],
             [0],
+            [0],
         ])
-        expect(stdioMock.cursorTo).toHaveBeenCalledTimes(4)
+        expect(stdioMock.cursorTo).toHaveBeenCalledTimes(5)
         expect(stdioMock.cursorTo.mock.calls).toEqual([
+            [0],
             [0],
             [0],
             [0],

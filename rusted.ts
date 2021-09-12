@@ -3,6 +3,7 @@ import { downloadChromium } from './download'
 import { IChromeConfig, IStoreConfig } from './interfaces'
 import { logger } from './log/spinner'
 import { importAndMergeLocalstore } from './store/importStore'
+import { NoChromiumDownloadError } from './errors';
 
 async function main(): Promise<void> {
     const configWrapper = readConfig(process.argv, process.platform)
@@ -12,7 +13,16 @@ async function main(): Promise<void> {
         await importAndMergeLocalstore(config)
     } else if (configWrapper.action === 'loadChrome') {
         const config: IChromeConfig = configWrapper.config
-        await downloadChromium(config)
+        try {
+            await downloadChromium(config)
+        } catch (e) {
+            debugger
+            if (e instanceof NoChromiumDownloadError) {
+                process.exit(1)
+            } else {
+                throw e
+            }
+        }
     } else {
         logger.error(`Failed to read config: ${configWrapper}`)
     }

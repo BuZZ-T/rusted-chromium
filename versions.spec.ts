@@ -4,7 +4,7 @@ import { mocked } from 'ts-jest/utils'
 
 import { fetchBranchPosition, fetchChromeUrl, fetchChromiumTags } from './api'
 import { ComparableVersion } from './commons/ComparableVersion'
-import { IMappedVersion, IDownloadSettings } from './interfaces';
+import { IMappedVersion, IDownloadSettings } from './interfaces'
 import { Spinner, logger } from './log/spinner'
 import { userSelectedVersion } from './select'
 import { storeNegativeHit } from './store/store'
