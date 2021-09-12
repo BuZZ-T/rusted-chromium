@@ -104,3 +104,9 @@ export type StoreSize = {
 }
 
 export type TextFunction = (key: string) => string
+
+export interface IDownloadSettings {
+    chromeUrl: string | undefined
+    selectedVersion: string | undefined
+    filenameOS: string
+}

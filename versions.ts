@@ -3,21 +3,21 @@ import { parse } from 'node-html-parser'
 import { fetchBranchPosition, fetchChromeUrl, fetchChromiumTags } from './api'
 import { ComparableVersion } from './commons/ComparableVersion'
 import { SEARCH_BINARY } from './commons/constants'
-import { Compared, IChromeConfig, IMappedVersion } from './interfaces'
+import { Compared, IChromeConfig, IMappedVersion, IDownloadSettings } from './interfaces';
 import { logger } from './log/spinner'
 import { userSelectedVersion } from './select'
 import { storeNegativeHit } from './store/store'
 import { detectOperatingSystem, sortDescendingIMappedVersions, compareComparableVersions } from './utils'
 
-export async function getChromeDownloadUrl(config: IChromeConfig, mappedVersions: IMappedVersion[]): Promise<[string | undefined, string | undefined, string]> {
+export async function getChromeDownloadUrl(config: IChromeConfig, mappedVersions: IMappedVersion[]): Promise<IDownloadSettings> {
     const [urlOS, filenameOS] = detectOperatingSystem(config)
 
     const isAutoSearch = (!config.interactive && config.onFail === 'decrease') || !!config.single
-      
+
     let selectedVersion = isAutoSearch
         ? mappedVersions[0]
         : await userSelectedVersion(mappedVersions, config)
-    
+
     if (isAutoSearch) {
         logger.info(`Auto-searching with version ${selectedVersion?.value}`)
     }
@@ -35,7 +35,7 @@ export async function getChromeDownloadUrl(config: IChromeConfig, mappedVersions
             const branchPosition = await fetchBranchPosition(selectedVersion.value)
             logger.start(SEARCH_BINARY)
             chromeUrl = await fetchChromeUrl(branchPosition, urlOS, filenameOS)
-    
+
             if (chromeUrl && config.download) {
                 // chrome url found, ending loop
                 logger.success()
@@ -55,7 +55,7 @@ export async function getChromeDownloadUrl(config: IChromeConfig, mappedVersions
                 await storeNegativeHit(invalidVersion, config.os, config.arch)
             }
         }
-        
+
         if (chromeUrl && !config.download) {
             logger.warn('Not downloading binary.')
         }
@@ -92,7 +92,7 @@ export async function getChromeDownloadUrl(config: IChromeConfig, mappedVersions
         }
     } while (!config.single && (!chromeUrl || !config.download))
 
-    return [chromeUrl, selectedVersion?.value, filenameOS]
+    return { chromeUrl, selectedVersion: selectedVersion?.value, filenameOS }
 }
 
 /**
@@ -135,10 +135,10 @@ export function mapVersions(versions: string[], config: IChromeConfig, store: Se
         return [{
             comparable: new ComparableVersion(config.single),
             disabled: false,
-            value: config.single, 
+            value: config.single,
         }]
     }
-    
+
     const filteredVersions = versions
         .map(version => ({
             comparable: new ComparableVersion(version),
@@ -147,7 +147,7 @@ export function mapVersions(versions: string[], config: IChromeConfig, store: Se
         }))
         .sort(sortDescendingIMappedVersions)
         .filter(version => compareComparableVersions(version.comparable, config.min) !== Compared.LESS
-             && compareComparableVersions(version.comparable, config.max) !== Compared.GREATER)
+            && compareComparableVersions(version.comparable, config.max) !== Compared.GREATER)
         .filter(version => !config.hideNegativeHits || !version.disabled)
 
     // Don't reduce the amount of filtered versions when --only-newest-major is set

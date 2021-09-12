@@ -1,7 +1,7 @@
 import { ComparableVersion } from './commons/ComparableVersion'
 import { DEFAULT_OPTIONS } from './config/config'
 import { IConfigOptions } from './config/config.interfaces'
-import { IChromeConfig, Store } from './interfaces'
+import { IChromeConfig, IDownloadSettings, Store } from './interfaces';
 
 export interface PartialStdio {
     write: () => boolean
@@ -58,3 +58,10 @@ export const createChildNodeWithChildren = (...children: Array<Partial<ChildNode
         ...children,
     ] as unknown as NodeListOf<ChildNode>
 } as ChildNode)
+
+export const createDownloadSettings = (settings?: Partial<IDownloadSettings>): IDownloadSettings => ({
+    chromeUrl: 'chromeUrl',
+    selectedVersion: 'selectedVersion',
+    filenameOS: 'filenameOS',
+    ...settings,
+})

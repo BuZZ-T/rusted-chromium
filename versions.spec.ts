@@ -4,7 +4,7 @@ import { mocked } from 'ts-jest/utils'
 
 import { fetchBranchPosition, fetchChromeUrl, fetchChromiumTags } from './api'
 import { ComparableVersion } from './commons/ComparableVersion'
-import { IMappedVersion } from './interfaces'
+import { IMappedVersion, IDownloadSettings } from './interfaces';
 import { Spinner, logger } from './log/spinner'
 import { userSelectedVersion } from './select'
 import { storeNegativeHit } from './store/store'
@@ -108,8 +108,13 @@ describe('versions', () => {
                 onFail: 'nothing',
                 download: true,
             })
+            const expectedSettings: IDownloadSettings = {
+                chromeUrl: CHROME_URL,
+                selectedVersion: version1.value,
+                filenameOS: FILENAME_OS,
+            }
 
-            expect(await getChromeDownloadUrl(config, [version1, version2])).toEqual([CHROME_URL, version1.value, FILENAME_OS])
+            expect(await getChromeDownloadUrl(config, [version1, version2])).toEqual(expectedSettings)
 
             expect(storeNegativeHitMock).toHaveBeenCalledTimes(0)
             expect(detectOperatingSystemMock).toHaveBeenCalledTimes(1)
@@ -128,8 +133,13 @@ describe('versions', () => {
                 onFail: 'decrease',
                 download: true,
             })
+            const expectedSettings: IDownloadSettings = {
+                chromeUrl: CHROME_URL,
+                selectedVersion: version1.value,
+                filenameOS: FILENAME_OS,
+            }
 
-            expect(await getChromeDownloadUrl(config, [version1, version2])).toEqual([CHROME_URL, version1.value, FILENAME_OS])
+            expect(await getChromeDownloadUrl(config, [version1, version2])).toEqual(expectedSettings)
 
             expect(loggerMock.info).toHaveBeenCalledWith('Auto-searching with version 10.0.0.0')
 
@@ -149,10 +159,15 @@ describe('versions', () => {
                 onFail: 'increase',
                 download: true,
             })
+            const expectedSettings: IDownloadSettings = {
+                chromeUrl: CHROME_URL,
+                selectedVersion: version1.value,
+                filenameOS: FILENAME_OS,
+            }
 
             userSelectedVersionMock.mockReturnValue(versionDisabled)
 
-            expect(await getChromeDownloadUrl(config, [version1, versionDisabled])).toEqual([CHROME_URL, version1.value, FILENAME_OS])
+            expect(await getChromeDownloadUrl(config, [version1, versionDisabled])).toEqual(expectedSettings)
 
             expect(loggerMock.info).toHaveBeenCalledWith('Continue with next higher version "10.0.0.0"')
 
@@ -174,10 +189,15 @@ describe('versions', () => {
                 onFail: 'increase',
                 download: true,
             })
+            const expectedSettings: IDownloadSettings = {
+                chromeUrl: undefined,
+                selectedVersion: undefined,
+                filenameOS: FILENAME_OS,
+            }
 
             userSelectedVersionMock.mockReturnValue(versionDisabled)
 
-            expect(await getChromeDownloadUrl(config, [versionDisabled])).toEqual([undefined, undefined, FILENAME_OS])
+            expect(await getChromeDownloadUrl(config, [versionDisabled])).toEqual(expectedSettings)
 
             expect(loggerMock.info).toHaveBeenCalledTimes(0)
 
@@ -197,10 +217,15 @@ describe('versions', () => {
                 onFail: 'decrease',
                 download: true,
             })
+            const expectedSettings: IDownloadSettings = {
+                chromeUrl: CHROME_URL,
+                selectedVersion: version1.value,
+                filenameOS: FILENAME_OS,
+            }
 
             userSelectedVersionMock.mockReturnValue(versionDisabled)
 
-            expect(await getChromeDownloadUrl(config, [versionDisabled, version1])).toEqual([CHROME_URL, version1.value, FILENAME_OS])
+            expect(await getChromeDownloadUrl(config, [versionDisabled, version1])).toEqual(expectedSettings)
 
             expect(loggerMock.info).toHaveBeenCalledWith('Continue with next lower version "10.0.0.0"')
 
@@ -222,10 +247,15 @@ describe('versions', () => {
                 onFail: 'nothing',
                 download: true,
             })
+            const expectedSettings: IDownloadSettings = {
+                chromeUrl: CHROME_URL,
+                selectedVersion: version1.value,
+                filenameOS: FILENAME_OS,
+            }
 
             userSelectedVersionMock.mockReturnValueOnce(versionDisabled)
 
-            expect(await getChromeDownloadUrl(config, [version1, version2])).toEqual([CHROME_URL, version1.value, FILENAME_OS])
+            expect(await getChromeDownloadUrl(config, [version1, version2])).toEqual(expectedSettings)
 
             expect(storeNegativeHitMock).toHaveBeenCalledTimes(0)
             expect(detectOperatingSystemMock).toHaveBeenCalledTimes(1)
@@ -247,12 +277,17 @@ describe('versions', () => {
                 arch: 'x64',
                 store: true,
             })
+            const expectedSettings: IDownloadSettings = {
+                chromeUrl: CHROME_URL,
+                selectedVersion: version1.value,
+                filenameOS: FILENAME_OS,
+            }
 
             userSelectedVersionMock.mockResolvedValueOnce(version2)
             fetchBranchPositionMock.mockResolvedValueOnce('branch-position2')
             fetchChromeUrlMock.mockResolvedValueOnce(undefined)
 
-            expect(await getChromeDownloadUrl(config, [version1, version2])).toEqual([CHROME_URL, version1.value, FILENAME_OS])
+            expect(await getChromeDownloadUrl(config, [version1, version2])).toEqual(expectedSettings)
 
             expect(storeNegativeHitMock).toHaveBeenCalledTimes(1)
             expect(storeNegativeHitMock).toHaveBeenCalledWith(version2, 'linux', 'x64')
@@ -277,6 +312,11 @@ describe('versions', () => {
                 arch: 'x64',
                 store: false,
             })
+            const expectedSettings: IDownloadSettings = {
+                chromeUrl: CHROME_URL,
+                selectedVersion: version3.value,
+                filenameOS: FILENAME_OS,
+            }
 
             userSelectedVersionMock.mockReset()
             userSelectedVersionMock.mockResolvedValue(version1)
@@ -285,7 +325,7 @@ describe('versions', () => {
 
             fetchChromeUrlMock.mockResolvedValueOnce(undefined)
 
-            expect(await getChromeDownloadUrl(config, [version1, versionDisabled, version3])).toEqual([CHROME_URL, version3.value, FILENAME_OS])
+            expect(await getChromeDownloadUrl(config, [version1, versionDisabled, version3])).toEqual(expectedSettings)
 
             expect(storeNegativeHitMock).toHaveBeenCalledTimes(0)
             expect(detectOperatingSystemMock).toHaveBeenCalledTimes(1)
@@ -309,12 +349,17 @@ describe('versions', () => {
                 arch: 'x64',
                 store: false,
             })
+            const expectedSettings: IDownloadSettings = {
+                chromeUrl: CHROME_URL,
+                selectedVersion: version1.value,
+                filenameOS: FILENAME_OS,
+            }
 
             userSelectedVersionMock.mockResolvedValueOnce(version2)
             fetchBranchPositionMock.mockResolvedValueOnce('branch-position2')
             fetchChromeUrlMock.mockResolvedValueOnce(undefined)
 
-            expect(await getChromeDownloadUrl(config, [version1, version2])).toEqual([CHROME_URL, version1.value, FILENAME_OS])
+            expect(await getChromeDownloadUrl(config, [version1, version2])).toEqual(expectedSettings)
 
             expect(storeNegativeHitMock).toHaveBeenCalledTimes(0)
             expect(detectOperatingSystemMock).toHaveBeenCalledTimes(1)
@@ -334,8 +379,13 @@ describe('versions', () => {
                 interactive: false,
                 onFail: 'decrease',
             })
+            const expectedSettings: IDownloadSettings = {
+                chromeUrl: undefined,
+                selectedVersion: undefined,
+                filenameOS: FILENAME_OS,
+            }
 
-            expect(await getChromeDownloadUrl(config, [versionDisabled, versionDisabled2, versionDisabled3])).toEqual([undefined, undefined, FILENAME_OS])
+            expect(await getChromeDownloadUrl(config, [versionDisabled, versionDisabled2, versionDisabled3])).toEqual(expectedSettings)
 
             expect(storeNegativeHitMock).toHaveBeenCalledTimes(0)
             expect(detectOperatingSystemMock).toHaveBeenCalledTimes(1)
@@ -351,6 +401,11 @@ describe('versions', () => {
                 onFail: 'decrease',
                 store: false,
             })
+            const expectedSettings: IDownloadSettings = {
+                chromeUrl: undefined,
+                selectedVersion: undefined,
+                filenameOS: FILENAME_OS,
+            }
             const BRANCH_POSITION2 = 'branch-position2'
             const BRANCH_POSITION3 = 'branch-position3'
 
@@ -361,7 +416,8 @@ describe('versions', () => {
             fetchBranchPositionMock.mockResolvedValueOnce(BRANCH_POSITION2)
             fetchBranchPositionMock.mockResolvedValueOnce(BRANCH_POSITION3)
 
-            expect(await getChromeDownloadUrl(config, [version1, version2, version3])).toEqual([undefined, undefined, FILENAME_OS])
+            expect(await getChromeDownloadUrl(config, [version1, version2, version3])).toEqual(expectedSettings)
+            // .toEqual([undefined, undefined, FILENAME_OS])
 
             expect(storeNegativeHitMock).toHaveBeenCalledTimes(0)
             expect(detectOperatingSystemMock).toHaveBeenCalledTimes(1)
@@ -384,6 +440,11 @@ describe('versions', () => {
                 store: false,
                 download: false,
             })
+            const expectedSettings: IDownloadSettings = {
+                chromeUrl: CHROME_URL,
+                selectedVersion: undefined,
+                filenameOS: FILENAME_OS,
+            }
             const BRANCH_POSITION2 = 'branch-position2'
             const BRANCH_POSITION3 = 'branch-position3'
 
@@ -392,7 +453,8 @@ describe('versions', () => {
             fetchBranchPositionMock.mockResolvedValueOnce(BRANCH_POSITION2)
             fetchBranchPositionMock.mockResolvedValueOnce(BRANCH_POSITION3)
 
-            expect(await getChromeDownloadUrl(config, [version1, version2, version3])).toEqual([CHROME_URL, undefined, FILENAME_OS])
+            expect(await getChromeDownloadUrl(config, [version1, version2, version3])).toEqual(expectedSettings)
+            // .toEqual([CHROME_URL, undefined, FILENAME_OS])
 
             expect(storeNegativeHitMock).toHaveBeenCalledTimes(0)
             expect(detectOperatingSystemMock).toHaveBeenCalledTimes(1)
@@ -421,14 +483,19 @@ describe('versions', () => {
                 disabled: false,
                 value: singleVersion,
             }
-
             const config = createChromeConfig({
                 single: singleVersion,
                 store: true,
             })
+            const expectedSettings: IDownloadSettings = {
+                chromeUrl: undefined,
+                selectedVersion: mappedSingleVersion.value,
+                filenameOS: FILENAME_OS,
+            }
+
             fetchChromeUrlMock.mockResolvedValue(undefined)
 
-            expect(await getChromeDownloadUrl(config, [mappedSingleVersion, version2, version3])).toEqual([undefined, mappedSingleVersion.value, FILENAME_OS])
+            expect(await getChromeDownloadUrl(config, [mappedSingleVersion, version2, version3])).toEqual(expectedSettings)
 
             expect(storeNegativeHitMock).toHaveBeenCalledTimes(1)
             expect(storeNegativeHitMock).toHaveBeenCalledWith(mappedSingleVersion, 'linux', 'x64')

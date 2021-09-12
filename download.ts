@@ -21,7 +21,7 @@ export async function downloadChromium(config: IChromeConfig): Promise<void> {
     const storeByOs = new Set(store[config.os][config.arch])
     const mappedVersions = mapVersions(versions, config, storeByOs as any)
 
-    const [chromeUrl, selectedVersion, filenameOS] = await getChromeDownloadUrl(config, mappedVersions)
+    const { chromeUrl, selectedVersion, filenameOS } = await getChromeDownloadUrl(config, mappedVersions)
 
     if (chromeUrl && config.download) {
         const filename = `chrome-${filenameOS}-${config.arch}-${selectedVersion}`
@@ -46,7 +46,7 @@ export async function downloadChromium(config: IChromeConfig): Promise<void> {
                     unit: 'MB',
                     showNumeric: true,
                     start: 'Downloading binary...',
-                    success: `Successfully downloaded ${config.autoUnzip ? 'and extracted ' : ''}to "${downloadPath}${config.autoUnzip ? '': '.zip'}"`,
+                    success: `Successfully downloaded ${config.autoUnzip ? 'and extracted ' : ''}to "${downloadPath}${config.autoUnzip ? '' : '.zip'}"`,
                     fail: 'Failed to download binary',
                 })
                 isFirstProgress = false
