@@ -1,2 +1,4 @@
 #!/usr/bin/env node
-require('../rusted.js')
+const { rusted } = require('../rusted.js')
+
+rusted(process.argv, process.platform)

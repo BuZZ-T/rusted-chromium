@@ -4,8 +4,8 @@
   "description": "Download legacy versions of chromium with a command-line tool",
   "main": "rusted.ts",
   "scripts": {
-    "start": "ts-node rusted.ts",
-    "start:debug": "node --inspect --inspect-brk node_modules/.bin/ts-node rusted.ts",
+    "start": "ts-node start-local.ts",
+    "start:debug": "node --inspect --inspect-brk node_modules/.bin/ts-node start-local.ts",
     "clean": "find -maxdepth 2 \\( -iname \"*.js\" -or -iname \"*.js.map\" \\) -and ! -name \"jest.config.js\" -and ! -path \"./bin/*\" -and ! -path \"./node_modules/*\" -delete",
     "lint": "eslint **/*.ts *.ts",
     "test": "jest",

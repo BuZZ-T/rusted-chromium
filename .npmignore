@@ -1,2 +1,4 @@
 *.ts
 localstore.json
+test.utils.js
+test.utils.js.map

@@ -35,6 +35,7 @@ describe('Printer', () => {
             write: jest.fn(),
             clearLine: jest.fn(),
             cursorTo: jest.fn(),
+            moveCursor: jest.fn(),
         }
 
         testPrinter = new TestPrinter(stdioMock as unknown as NodeJS.WriteStream)

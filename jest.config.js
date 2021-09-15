@@ -4,6 +4,7 @@ module.exports = {
   collectCoverageFrom: [
     "*.ts",
     "**/*.ts",
-    "!<rootDir>/node_modules/"
+    "!<rootDir>/node_modules/",
+    "!<rootDir>/start-local.ts",
   ],
 }

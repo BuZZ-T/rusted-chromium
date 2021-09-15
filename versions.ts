@@ -124,6 +124,8 @@ export async function loadVersions(): Promise<string[]> {
 
     const versions: string[] = []
     tagsList.childNodes.forEach((tag: any) => {
+        
+        debugger
         versions.push(tag.text)
     })
 

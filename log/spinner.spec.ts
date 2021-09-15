@@ -21,6 +21,7 @@ describe('loggerSpinner', () => {
             write: jest.fn(),
             clearLine: jest.fn(),
             cursorTo: jest.fn(),
+            moveCursor: jest.fn(),
         }
 
         spinner = new Spinner(stdioMock as unknown as NodeJS.WriteStream)
