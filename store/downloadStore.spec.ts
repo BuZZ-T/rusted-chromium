@@ -28,7 +28,7 @@ describe('downloadStore', () => {
         const filename = 'myfile.json'
         const url = `http://some-url.de/${filename}`
         const store = createStore()
-        fetchLocalStoreMock.mockImplementation((): Promise<any> =>
+        fetchLocalStoreMock.mockImplementation(() =>
             Promise.resolve(JSON.stringify(store, null, 2))
         )
 
@@ -47,7 +47,7 @@ describe('downloadStore', () => {
         const filename = 'myfile.json'
         const url = 'http://some-url.de/'
         const store = createStore()
-        fetchLocalStoreMock.mockImplementation((): Promise<any> =>
+        fetchLocalStoreMock.mockImplementation(() =>
             Promise.resolve(JSON.stringify(store, null, 2))
         )
 
@@ -66,7 +66,7 @@ describe('downloadStore', () => {
         const filename = 'myfile.json'
         const url = 'http://some-url.de'
         const store = createStore()
-        fetchLocalStoreMock.mockImplementation((): Promise<any> =>
+        fetchLocalStoreMock.mockImplementation(() =>
             Promise.resolve(JSON.stringify(store, null, 2))
         )
 
@@ -84,7 +84,7 @@ describe('downloadStore', () => {
     it('should log an error on failing request', async () => {
         const filename = 'myfile.json'
         const url = 'http://some-url.de'
-        fetchLocalStoreMock.mockImplementation((): Promise<any> =>
+        fetchLocalStoreMock.mockImplementation(() =>
             Promise.reject()
         )
         
@@ -103,7 +103,7 @@ describe('downloadStore', () => {
     it('should log an error with message and path on failing request', async () => {
         const filename = 'myfile.json'
         const url = 'http://some-url.de'
-        fetchLocalStoreMock.mockImplementation((): Promise<any> =>
+        fetchLocalStoreMock.mockImplementation(() =>
             Promise.reject({message: 'error-msg', path: 'error-path'})
         )
         

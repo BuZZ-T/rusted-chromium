@@ -37,10 +37,14 @@ export class ProgressBar extends Printer<ProgressBar> {
     }
 
     private checkForComplete(percent: number): ProgressBar {
+        if (!this.config) {
+            return this
+        }
+        
         return percent === 1
             ? this.clearLine()
                 .deleteLastLine()
-                .write(this.SUCCESS_FN(this.config!.success))
+                .write(this.SUCCESS_FN(this.config.success))
                 .stop()
                 .newline()
             : this
@@ -62,7 +66,7 @@ export class ProgressBar extends Printer<ProgressBar> {
         if (!this.config) {
             return this
         }
-        const barLength: number = this.config!.barLength as number
+        const barLength: number = this.config.barLength as number
         const doneAmount = Math.floor(barLength * fraction)
         const restAmount = barLength - doneAmount
 

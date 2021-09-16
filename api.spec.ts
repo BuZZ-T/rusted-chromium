@@ -1,9 +1,11 @@
-import * as fetch from 'node-fetch'
-import { MaybeMockedDeep, MaybeMocked } from 'ts-jest/dist/utils/testing'
+import { MaybeMocked, MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
 import { fetchChromiumTags, fetchBranchPosition, fetchChromeUrl, fetchChromeZipFile, fetchLocalStore } from './api'
 import { logger, Spinner } from './log/spinner'
+
+/* eslint-disable-next-line @typescript-eslint/no-var-requires */
+const fetch = require('node-fetch')
 
 const onMock = jest.fn()
 
@@ -17,7 +19,7 @@ jest.mock('./log/progress')
 describe('api', () => {
 
     let loggerMock: MaybeMockedDeep<Spinner>
-    let fetchMock: MaybeMocked<any>
+    let fetchMock: MaybeMocked<typeof fetch>
 
     beforeAll(() => {
         fetchMock = mocked(fetch)
@@ -37,7 +39,7 @@ describe('api', () => {
         it('should return the formatted store file as text', async () => {
             const url = 'local-store-url'
 
-            fetchMock.mockImplementation((): Promise<any> =>
+            fetchMock.mockImplementation(() =>
                 Promise.resolve({
                     ok: true,
                     json() {
@@ -57,7 +59,7 @@ describe('api', () => {
         it('should throw an error on non-ok http response', async () => {
             const url = 'local-store-url'
 
-            fetchMock.mockImplementation((): Promise<any> =>
+            fetchMock.mockImplementation(() =>
                 Promise.resolve({
                     ok: false,
                     status: 400,
@@ -74,7 +76,7 @@ describe('api', () => {
 
     describe('fetchChromiumTags', () => {
         it('should fetch chromium tags as text', async () => {
-            fetchMock.mockImplementation((): Promise<any> =>
+            fetchMock.mockImplementation(() =>
                 Promise.resolve({
                     ok: true,
                     text() {
@@ -89,7 +91,7 @@ describe('api', () => {
         })
 
         it('should throw an error on non-ok http response', async () => {
-            fetchMock.mockImplementation((): Promise<any> =>
+            fetchMock.mockImplementation(() =>
                 Promise.resolve({
                     ok: false,
                     status: 400,
@@ -103,7 +105,7 @@ describe('api', () => {
 
     describe('fetchBranchPosition', () => {
         it('should fetch the branch position', async () => {
-            fetchMock.mockImplementation((): Promise<any> =>
+            fetchMock.mockImplementation(() =>
                 Promise.resolve({
                     ok: true,
                     json() {
@@ -120,7 +122,7 @@ describe('api', () => {
         })
 
         it('should throw an error on non-ok http response', async () => {
-            fetchMock.mockImplementation((): Promise<any> =>
+            fetchMock.mockImplementation(() =>
                 Promise.resolve({
                     ok: false,
                     status: 400,
@@ -132,7 +134,7 @@ describe('api', () => {
         })
 
         it('should log an error on no branch position', async () => {
-            fetchMock.mockImplementation((): Promise<any> =>
+            fetchMock.mockImplementation(() =>
                 Promise.resolve({
                     ok: true,
                     json() {
@@ -154,7 +156,7 @@ describe('api', () => {
             const branchPosition = 'branch-position'
             const filenameOS = 'filename-os'
 
-            fetchMock.mockImplementation((): Promise<any> =>
+            fetchMock.mockImplementation(() =>
                 Promise.resolve({
                     ok: true,
                     json() {
@@ -178,7 +180,7 @@ describe('api', () => {
         })
 
         it('should throw an error on non-ok http response', async () => {
-            fetchMock.mockImplementation((): Promise<any> =>
+            fetchMock.mockImplementation(() =>
                 Promise.resolve({
                     ok: false,
                     status: 400,
@@ -194,19 +196,19 @@ describe('api', () => {
         it('should load the chrome zip file and return the promise', async () => {
             const url = 'some-url'
 
-            fetchMock.mockImplementation((): Promise<any> =>
+            fetchMock.mockImplementation(() =>
                 Promise.resolve({
                     ok: true,
                 })
             )
 
-            expect((fetchChromeZipFile(url))).resolves.toEqual({ ok: true })
+            await expect((fetchChromeZipFile(url))).resolves.toEqual({ ok: true })
         })
 
         it('should throw an error on non-ok http response', async () => {
             const url = 'some-url'
 
-            fetchMock.mockImplementation((): Promise<any> =>
+            fetchMock.mockImplementation(() =>
                 Promise.resolve({
                     ok: false,
                     status: 400,

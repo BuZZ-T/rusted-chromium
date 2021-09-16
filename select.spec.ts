@@ -1,4 +1,5 @@
 import * as prompts from 'prompts'
+import { MaybeMocked } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
 import { ComparableVersion } from './commons/ComparableVersion'
@@ -9,7 +10,7 @@ import { createChromeConfig } from './test.utils'
 jest.mock('prompts')
 
 describe('userSelectedVersion', () => {
-    let promptsMock: any
+    let promptsMock: MaybeMocked<any>
 
     beforeEach(() => {
         promptsMock = mocked(prompts)

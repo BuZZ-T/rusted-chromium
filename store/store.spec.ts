@@ -1,9 +1,11 @@
-import * as fs from 'fs'
+import { existsSync, readFile, writeFile } from 'fs'
 import * as path from 'path'
+import { MaybeMocked } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
 import { ComparableVersion } from '../commons/ComparableVersion'
-import { PromisifyCallback, PROMISIFY_NO_ERROR, createStore } from '../test.utils'
+import { Store } from '../interfaces'
+import { createStore, ReadFileWithOptions } from '../test.utils'
 import store from './store'
 
 jest.mock('fs')
@@ -14,7 +16,7 @@ describe('store', () => {
 
     describe('disableByStore', () => {
 
-        let loadStoreMock: any
+        let loadStoreMock: jest.SpyInstance<Promise<Store>, []>
 
         beforeEach(() => {
             loadStoreMock = jest.spyOn(store, 'loadStore')
@@ -57,71 +59,74 @@ describe('store', () => {
 
     describe('loadStore', () => {
 
-        let fsMock: any
+        let existsSyncMock: MaybeMocked<typeof existsSync>
+        let readFileMock: MaybeMocked<ReadFileWithOptions>
 
+        beforeAll(() => {
+            existsSyncMock = mocked(existsSync)
+            readFileMock = mocked(readFile as ReadFileWithOptions)
+        })
+        
         beforeEach(() => {
-            fsMock = mocked(fs, true)
-            fsMock.exists.mockClear()
-            fsMock.readFile.mockClear()
+            existsSyncMock.mockClear()
+            readFileMock.mockClear()
         })
 
         it('should return an empty story on no store exists', async () => {
-            fsMock.exists.mockImplementation((path: string, callback: PromisifyCallback) => {
-                callback(PROMISIFY_NO_ERROR, false)
-            })
+            existsSyncMock.mockReturnValue(false)
 
             const expectedStore = createStore()
 
             expect(await store.loadStore()).toEqual(expectedStore)
 
-            expect(fsMock.exists).toHaveBeenCalledTimes(1)
-            expect(fsMock.readFile).toHaveBeenCalledTimes(0)
+            expect(existsSyncMock).toHaveBeenCalledTimes(1)
+            expect(readFileMock).toHaveBeenCalledTimes(0)
         })
 
         it('should return the store received from the existing file', async () => {
-            fsMock.exists.mockImplementation((path: string, callback: PromisifyCallback) => {
-                callback(PROMISIFY_NO_ERROR, true)
-            })
+            existsSyncMock.mockReturnValue(true)
 
-            fsMock.readFile.mockImplementation((path: string, encoding: string, callback: PromisifyCallback) => {
-                callback(PROMISIFY_NO_ERROR, '{"linux": {"x64": ["1.2.3.4"], "x86": []},"mac": {"x64": [], "x86": []},"win": {"x64": [], "x86": []}}')
+            readFileMock.mockImplementation((path, encoding, callback) => {
+                callback(null, '{"linux": {"x64": ["1.2.3.4"], "x86": []},"mac": {"x64": [], "x86": []},"win": {"x64": [], "x86": []}}')
             })
             const expectedStore = createStore({ linux: { x64: ['1.2.3.4'], x86: [] } })
 
             expect(await store.loadStore()).toEqual(expectedStore)
 
-            expect(fsMock.exists).toHaveBeenCalledTimes(1)
-            expect(fsMock.readFile).toHaveBeenCalledTimes(1)
-            expect(fsMock.readFile).toHaveBeenCalledWith(localPath, 'utf8', expect.any(Function))
+            expect(existsSyncMock).toHaveBeenCalledTimes(1)
+            expect(readFileMock).toHaveBeenCalledTimes(1)
+            expect(readFileMock).toHaveBeenCalledWith(localPath, 'utf8', expect.any(Function))
         })
 
         it('should return an empty store on unparsable JSON', async () => {
-            fsMock.exists.mockImplementation((path: string, callback: PromisifyCallback) => {
-                callback(PROMISIFY_NO_ERROR, true)
-            })
+            existsSyncMock.mockReturnValue(true)
 
-            fsMock.readFile.mockImplementation((path: string, encoding: string, callback: PromisifyCallback) => {
-                callback(PROMISIFY_NO_ERROR, '{"linux": ["1.2.3.4"],"mac": [],"win": []')
+            readFileMock.mockImplementation((path, encoding, callback) => {
+                callback(null, '{"linux": ["1.2.3.4"],"mac": [],"win": []')
             })
 
             const expectedStore = createStore()
 
             expect(await store.loadStore()).toEqual(expectedStore)
 
-            expect(fsMock.exists).toHaveBeenCalledTimes(1)
-            expect(fsMock.readFile).toHaveBeenCalledTimes(1)
-            expect(fsMock.readFile).toHaveBeenCalledWith(localPath, 'utf8', expect.any(Function))
+            expect(existsSyncMock).toHaveBeenCalledTimes(1)
+            expect(readFileMock).toHaveBeenCalledTimes(1)
+            expect(readFileMock).toHaveBeenCalledWith(localPath, 'utf8', expect.any(Function))
         })
     })
 
     describe('storeNegativeHit', () => {
 
-        let fsMock: any
-        let loadStoreMock: any
+        let writeFileMock: MaybeMocked<typeof writeFile>
+        let loadStoreMock: jest.SpyInstance<Promise<Store>, []>
+
+        beforeAll(() => {
+            writeFileMock = mocked(writeFile)
+        })
 
         beforeEach(() => {
-            fsMock = mocked(fs, true)
-            fsMock.writeFile.mockClear()
+            writeFileMock.mockClear()
+
             loadStoreMock = jest.spyOn(store, 'loadStore').mockClear()
         })
 
@@ -134,8 +139,8 @@ describe('store', () => {
 
             loadStoreMock.mockResolvedValue(mockedStore)
 
-            fsMock.writeFile.mockImplementation((path: string, store: any, callback: PromisifyCallback) => {
-                callback(PROMISIFY_NO_ERROR)
+            writeFileMock.mockImplementation((path, store, callback) => {
+                callback(null)
             })
 
             await store.storeNegativeHit({
@@ -148,17 +153,17 @@ describe('store', () => {
 
             expect(loadStoreMock).toHaveBeenCalledTimes(1)
 
-            expect(fsMock.writeFile).toHaveBeenCalledTimes(1)
-            expect(fsMock.writeFile).toHaveBeenCalledWith(localPath, JSON.stringify(expectedStore, null, 4), expect.any(Function))
+            expect(writeFileMock).toHaveBeenCalledTimes(1)
+            expect(writeFileMock).toHaveBeenCalledWith(localPath, JSON.stringify(expectedStore, null, 4), expect.any(Function))
         })
 
         it('should extend an existing store with one entry', async () => {
             const existingStore = createStore({ win: { x64: ['10.0.0.0'], x86: [] } })
 
-            loadStoreMock.mockReturnValue(existingStore)
+            loadStoreMock.mockResolvedValue(existingStore)
 
-            fsMock.writeFile.mockImplementation((path: string, store: any, callback: PromisifyCallback) => {
-                callback(PROMISIFY_NO_ERROR)
+            writeFileMock.mockImplementation((path, store, callback) => {
+                callback(null)
             })
 
             await store.storeNegativeHit({
@@ -171,17 +176,17 @@ describe('store', () => {
 
             expect(loadStoreMock).toHaveBeenCalledTimes(1)
 
-            expect(fsMock.writeFile).toHaveBeenCalledTimes(1)
-            expect(fsMock.writeFile).toHaveBeenCalledWith(localPath, JSON.stringify(expectedStore, null, 4), expect.any(Function))
+            expect(writeFileMock).toHaveBeenCalledTimes(1)
+            expect(writeFileMock).toHaveBeenCalledWith(localPath, JSON.stringify(expectedStore, null, 4), expect.any(Function))
         })
 
         it('should do nothing, if entry already exists', async () => {
             const existingStore = createStore({ win: { x64: ['10.0.0.0'], x86: [] }, linux: { x64: ['1.0.0.0'], x86: []} })
 
-            loadStoreMock.mockReturnValue(existingStore)
+            loadStoreMock.mockResolvedValue(existingStore)
 
-            fsMock.writeFile.mockImplementation((path: string, store: any, callback: PromisifyCallback) => {
-                callback(PROMISIFY_NO_ERROR)
+            writeFileMock.mockImplementation((path, store, callback) => {
+                callback(null)
             })
 
             await store.storeNegativeHit({
@@ -192,16 +197,16 @@ describe('store', () => {
 
             expect(loadStoreMock).toHaveBeenCalledTimes(1)
 
-            expect(fsMock.writeFile).toHaveBeenCalledTimes(0)
+            expect(writeFileMock).toHaveBeenCalledTimes(0)
         })
 
         it('should sort an unsorted store on writing', async () => {
             const existingStore = createStore({ win: { x64: ['11.0.0.0', '10.0.0.0', '12.0.0.0'], x86: [] } })
 
-            loadStoreMock.mockReturnValue(existingStore)
+            loadStoreMock.mockResolvedValue(existingStore)
 
-            fsMock.writeFile.mockImplementation((path: string, store: any, callback: PromisifyCallback) => {
-                callback(PROMISIFY_NO_ERROR)
+            writeFileMock.mockImplementation((path, store, callback) => {
+                callback(null)
             })
 
             await store.storeNegativeHit({
@@ -214,9 +219,8 @@ describe('store', () => {
 
             expect(loadStoreMock).toHaveBeenCalledTimes(1)
 
-            expect(fsMock.writeFile).toHaveBeenCalledTimes(1)
-            expect(fsMock.writeFile).toHaveBeenCalledWith(localPath, JSON.stringify(expectedStore, null, 4), expect.any(Function))
+            expect(writeFileMock).toHaveBeenCalledTimes(1)
+            expect(writeFileMock).toHaveBeenCalledWith(localPath, JSON.stringify(expectedStore, null, 4), expect.any(Function))
         })
     })
-
 })

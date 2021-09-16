@@ -2,7 +2,7 @@ import { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
 import { ComparableVersion } from './commons/ComparableVersion'
-import { IMappedVersion, Compared } from './interfaces'
+import { IMappedVersion, Compared, OS } from './interfaces'
 import { logger, Spinner } from './log/spinner'
 import { createChromeConfig, createStore } from './test.utils'
 import { detectOperatingSystem, sortDescendingIMappedVersions, compareComparableVersions, sortAscendingIMappedVersions, sortStoreEntries, isTextFunction } from './utils'
@@ -96,7 +96,7 @@ describe('utils', () => {
 
         it('should throw an error on unknown os received', () => {
             const config = createChromeConfig({
-                os: 'foo' as any,
+                os: 'foo' as unknown as OS,
             })
             expect(() => {
                 detectOperatingSystem(config)

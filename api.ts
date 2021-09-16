@@ -11,27 +11,27 @@ const CHROMIUM_TAGS_URL = 'https://chromium.googlesource.com/chromium/src/+refs'
 
 function checkStatus(response: NodeFetchResponse) {
     if (!response.ok) {
-        // TOOD: check of response.error is correct
-        throw new Error(`Status Code: ${response.status} ${(response as any).error}`)
+        // TODO: check of response.error is correct
+        throw new Error(`Status Code: ${response.status} ${(response as (NodeFetchResponse & { error: string })).error}`)
     }
     return response
 }
 
-const toJson = (response: Response): Promise<any> => response.json()
+const toJson = (response: Response): Promise<unknown> => response.json()
 
 const toText = (response: Response): Promise<string> => response.text()
 
-export async function fetchLocalStore(url: string): Promise<any> {
+export async function fetchLocalStore(url: string): Promise<string> {
     return fetch(url)
         .then(checkStatus)
         .then(toJson)
-        .then((json: any) => JSON.stringify(json, null, 2))
+        .then((json: unknown) => JSON.stringify(json, null, 2))
 }
 
 /**
  * Fetch all chromium tags (containing the version) via googlesource url
  */
-export async function fetchChromiumTags(): Promise<any> {
+export async function fetchChromiumTags(): Promise<string> {
     return fetch(CHROMIUM_TAGS_URL)
         .then(checkStatus)
         .then(toText)
@@ -43,7 +43,7 @@ export async function fetchBranchPosition(version: string): Promise<string> {
     return fetch(`https://omahaproxy.appspot.com/deps.json?version=${version}`)
         .then(checkStatus)
         .then(toJson)
-        .then((response: any) => response.chromium_base_position)
+        .then((response: { chromium_base_position?: string }) => response.chromium_base_position)
         .then((resolvedVersion: string | undefined) => {
             if (resolvedVersion) {
                 logger.success()

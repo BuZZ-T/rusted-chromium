@@ -1,4 +1,5 @@
 import * as fs from 'fs'
+import { existsSync } from 'fs'
 import * as path from 'path'
 import { promisify } from 'util'
 
@@ -8,7 +9,6 @@ import { sortStoreEntries } from '../utils'
 
 const STORE_FILE = path.join(__dirname, '..', LOCAL_STORE_FILE)
 
-const exists = promisify(fs.exists)
 const readFile = promisify(fs.readFile)
 const writeFile = promisify(fs.writeFile)
 
@@ -39,7 +39,8 @@ export async function disableByStore(versions: IMappedVersion[], os: OS, arch: A
 }
 
 export async function loadStore(): Promise<Store> {
-    const currentStoreJson = await exists(STORE_FILE)
+    // FIXME: exists is deprecated, use existsSync
+    const currentStoreJson = existsSync(STORE_FILE)
         ? await readFile(STORE_FILE, 'utf8')
         : JSON.stringify(EMPTY_STORE)
     let currentStore: Store
@@ -51,7 +52,7 @@ export async function loadStore(): Promise<Store> {
     return currentStore
 }
 
-export async function storeNegativeHit(version: IMappedVersion, os: OS, arch: Arch): Promise<any> {
+export async function storeNegativeHit(version: IMappedVersion, os: OS, arch: Arch): Promise<void> {
     const currentStore = await store.loadStore()
     
     if (!new Set(currentStore[os][arch]).has(version.value)) {

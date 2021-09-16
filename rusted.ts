@@ -1,9 +1,9 @@
 import { readConfig } from './config/config'
 import { downloadChromium } from './download'
+import { NoChromiumDownloadError } from './errors'
 import { IChromeConfig, IStoreConfig } from './interfaces'
 import { logger } from './log/spinner'
 import { importAndMergeLocalstore } from './store/importStore'
-import { NoChromiumDownloadError } from './errors';
 
 async function main(): Promise<void> {
     const configWrapper = readConfig(process.argv, process.platform)
@@ -16,7 +16,6 @@ async function main(): Promise<void> {
         try {
             await downloadChromium(config)
         } catch (e) {
-            debugger
             if (e instanceof NoChromiumDownloadError) {
                 process.exit(1)
             } else {

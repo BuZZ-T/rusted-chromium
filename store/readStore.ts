@@ -24,11 +24,13 @@ export async function readStoreFile(config: IStoreConfig): Promise<Store> {
         const parsedStore = JSON.parse(store)
         logger.success()
         return parsedStore
-    } catch(e) {
+    } catch (e) {
         if (e instanceof SyntaxError) {
             logger.error('Unable to parse JSON file')
-        } else {
+        } else if (e && typeof e === 'object') {
             logger.error(e.toString())
+        } else {
+            logger.error(e as string)
         }
         throw e
     }

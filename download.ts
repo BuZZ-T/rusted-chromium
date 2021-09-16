@@ -20,7 +20,7 @@ export async function downloadChromium(config: IChromeConfig): Promise<void> {
     const versions = await loadVersions()
     const store = await loadStore()
     const storeByOs = new Set(store[config.os][config.arch])
-    const mappedVersions = mapVersions(versions, config, storeByOs as any)
+    const mappedVersions = mapVersions(versions, config, storeByOs)
 
     const { chromeUrl, selectedVersion, filenameOS } = await getChromeDownloadUrl(config, mappedVersions)
 
@@ -32,6 +32,7 @@ export async function downloadChromium(config: IChromeConfig): Promise<void> {
 
         if (!!config.downloadFolder && !existsSync(config.downloadFolder)) {
             await mkdir(config.downloadFolder, { recursive: true })
+            // fsMkdir(config.downloadFolder, )
             logger.info(`${config.downloadFolder} created'`)
         }
 
@@ -39,7 +40,7 @@ export async function downloadChromium(config: IChromeConfig): Promise<void> {
 
         let isFirstProgress = true
 
-        new Progress(zipFileResponse, { throttle: 100 }).on('progress', (p: any) => {
+        new Progress(zipFileResponse, { throttle: 100 }).on('progress', (p: { progress: number, total: number }) => {
             if (isFirstProgress) {
                 progress.start({
                     barLength: 40,

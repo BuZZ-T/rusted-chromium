@@ -27,10 +27,11 @@ export async function userSelectedVersion(versions: IMappedVersion[], config: IC
         type: 'select',
         name: 'version',
         message: 'Select a version',
+        // FIXME: Check missing warn field in PromptObject
         warn: 'This version seems to not have a binary',
-        choices: versions,
+        choices: versions as unknown as prompts.Choice[],
         hint: `for ${config.os} ${config.arch}`
-    } as any)
+    } as unknown as prompts.PromptObject)
 
     return versions.find(v => v.value === version) || null
 }

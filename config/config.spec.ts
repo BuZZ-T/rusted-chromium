@@ -1,4 +1,3 @@
-import * as program from 'commander'
 import { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
@@ -8,12 +7,15 @@ import { Spinner, logger } from '../log/spinner'
 import { createChromeConfig, createChromeOptions } from '../test.utils'
 import { DEFAULT_OPTIONS, readConfig } from './config'
 
+/* eslint-disable-next-line @typescript-eslint/no-var-requires */
+const program = require('commander')
+
 jest.mock('commander')
 jest.mock('../log/spinner')
 
 describe('config', () => {
 
-    let programMock: MaybeMockedDeep<any>
+    let programMock: MaybeMockedDeep<typeof program>
     let loggerMock: MaybeMockedDeep<Spinner>
 
     describe('readConfig', () => {

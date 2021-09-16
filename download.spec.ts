@@ -1,19 +1,17 @@
-import * as fs from 'fs'
-import { mkdir as fsMkdir, existsSync } from 'fs'
-import fetch, { Response as NodeFetchResponse } from 'node-fetch'
+import { createWriteStream, existsSync, mkdir } from 'fs'
+import { Response as NodeFetchResponse } from 'node-fetch'
 import { MaybeMocked, MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
-import { createConditional } from 'typescript'
 import * as unzipper from 'unzipper'
 
 import { fetchChromeZipFile } from './api'
 import { downloadChromium } from './download'
+import { NoChromiumDownloadError } from './errors'
 import { progress } from './log/progress'
 import { logger } from './log/spinner'
 import { loadStore } from './store/store'
-import { createChromeConfig, createStore, createDownloadSettings, PromisifyCallback, PROMISIFY_NO_ERROR, PromisifyErrorCallback } from './test.utils'
+import { createChromeConfig, createStore, createDownloadSettings, MkdirWithOptions } from './test.utils'
 import { getChromeDownloadUrl, loadVersions, mapVersions } from './versions'
-import { NoChromiumDownloadError } from './errors';
 
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */
 const Progress = require('node-fetch-progress')
@@ -39,6 +37,7 @@ describe('download', () => {
         let loadStoreMock: MaybeMocked<typeof loadStore>
         let mapVersionsMock: MaybeMocked<typeof mapVersions>
         let getChromeDownloadUrlMock: MaybeMocked<typeof getChromeDownloadUrl>
+
         let fetchChromeZipFileMock: MaybeMocked<typeof fetchChromeZipFile>
 
         let progressConstructorMock: MaybeMocked<typeof Progress>
@@ -47,7 +46,9 @@ describe('download', () => {
 
         let unzipperMock: MaybeMockedDeep<typeof unzipper>
 
-        let fsMock: any // MaybeMockedDeep<typeof fs>
+        let existsSyncMock: MaybeMocked<typeof existsSync>
+        let createWriteStreamMock: MaybeMockedDeep<typeof createWriteStream>
+        let mkdirMock: MaybeMocked<MkdirWithOptions>
 
         let pipeMock: jest.Mock
         let zipFileResource: NodeFetchResponse
@@ -65,7 +66,9 @@ describe('download', () => {
 
             unzipperMock = mocked(unzipper, true)
 
-            fsMock = mocked(fs, true)
+            existsSyncMock = mocked(existsSync)
+            createWriteStreamMock = mocked(createWriteStream)
+            mkdirMock = mocked(mkdir as MkdirWithOptions)
 
             pipeMock = jest.fn()
             zipFileResource = {
@@ -93,9 +96,9 @@ describe('download', () => {
 
             unzipperMock.Extract.mockClear()
 
-            fsMock.existsSync.mockClear()
-            fsMock.createWriteStream.mockClear()
-            fsMock.mkdir.mockClear()
+            existsSyncMock.mockClear()
+            createWriteStreamMock.mockClear()
+            mkdirMock.mockClear()
 
             pipeMock.mockClear()
             onMock.mockClear()
@@ -105,9 +108,10 @@ describe('download', () => {
             getChromeDownloadUrlMock.mockResolvedValue(createDownloadSettings())
 
             fetchChromeZipFileMock.mockResolvedValue(zipFileResource)
-            fsMock.existsSync.mockReturnValue(false)
-            fsMock.mkdir.mockImplementation((path: any, options: any, callback: PromisifyCallback) => {
-                callback(PROMISIFY_NO_ERROR)
+            existsSyncMock.mockReturnValue(false)
+
+            mkdirMock.mockImplementation((path, options, callback) => {
+                callback(null)
             })
 
             // Act
@@ -117,9 +121,9 @@ describe('download', () => {
             })
             await downloadChromium(config)
 
-            expect(fsMock.existsSync).toHaveBeenCalledTimes(1)
-            expect(fsMock.existsSync).toHaveBeenCalledWith('down_folder')
-            expect(fsMock.mkdir).toHaveBeenCalledTimes(1)
+            expect(existsSyncMock).toHaveBeenCalledTimes(1)
+            expect(existsSyncMock).toHaveBeenCalledWith('down_folder')
+            expect(mkdirMock).toHaveBeenCalledTimes(1)
 
             expect(progressConstructorMock).toHaveBeenCalledTimes(1)
             expect(progressConstructorMock).toHaveBeenCalledWith(zipFileResource, { throttle: 100 })
@@ -136,7 +140,7 @@ describe('download', () => {
 
             fetchChromeZipFileMock.mockResolvedValue(zipFileResource)
 
-            fsMock.existsSync.mockReturnValue(true)
+            existsSyncMock.mockReturnValue(true)
 
             // Act
             const config = createChromeConfig({
@@ -145,10 +149,10 @@ describe('download', () => {
             })
             await downloadChromium(config)
 
-            expect(fsMock.mkdir).toHaveBeenCalledTimes(0)
+            expect(mkdirMock).toHaveBeenCalledTimes(0)
 
-            expect(fsMock.existsSync).toHaveBeenCalledTimes(1)
-            expect(fsMock.existsSync).toHaveBeenCalledWith('down_folder')
+            expect(existsSyncMock).toHaveBeenCalledTimes(1)
+            expect(existsSyncMock).toHaveBeenCalledWith('down_folder')
 
             expect(progressConstructorMock).toHaveBeenCalledTimes(1)
             expect(progressConstructorMock).toHaveBeenCalledWith(zipFileResource, { throttle: 100 })
@@ -267,8 +271,6 @@ describe('download', () => {
                 autoUnzip: true,
             })
             await downloadChromium(config)
-
-            debugger
 
             expect(onMock).toHaveBeenCalledTimes(1)
             expect(onMock).toHaveBeenCalledWith('progress', expect.any(Function))

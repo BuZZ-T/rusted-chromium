@@ -1,3 +1,5 @@
+import { NoParamCallback, PathLike } from 'fs'
+
 import { ComparableVersion } from './commons/ComparableVersion'
 import { DEFAULT_OPTIONS } from './config/config'
 import { IConfigOptions } from './config/config.interfaces'
@@ -45,10 +47,6 @@ export const createStore = (store?: Partial<Store>): Store => ({
     ...store,
 })
 
-export const PROMISIFY_NO_ERROR = false
-export type PromisifyCallback = (p: boolean, ...args: any[]) => void
-export type PromisifyErrorCallback = (p: Error, ...args: any[]) => void
-
 export const createChromeOptions = (config?: Partial<IConfigOptions>): IConfigOptions => ({
     ...DEFAULT_OPTIONS,
     ...config,
@@ -66,3 +64,10 @@ export const createDownloadSettings = (settings?: Partial<IDownloadSettings>): I
     filenameOS: 'filenameOS',
     ...settings,
 })
+
+/**
+ * (Re-) defines one overload method of fs.mkdir. Used to nail down this overloading to jest's mockImplementation
+ */
+export type MkdirWithOptions = (path: PathLike, options: unknown, callback: NoParamCallback) => void
+
+export type ReadFileWithOptions = (path: PathLike, options: unknown, callback: (err: NodeJS.ErrnoException | null, data: string) => void) => void

@@ -1,10 +1,11 @@
-import * as fs from 'fs'
+import { existsSync, readFile, writeFile } from 'fs'
 import * as path from 'path'
+import { MaybeMocked } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
 import { LOCAL_STORE_FILE } from '../commons/constants'
-import { IStoreConfig } from '../interfaces'
-import { PromisifyCallback, PROMISIFY_NO_ERROR, createStore } from '../test.utils'
+import { IStoreConfig, Store } from '../interfaces'
+import { createStore, ReadFileWithOptions } from '../test.utils'
 import { downloadStore } from './downloadStore'
 import { importAndMergeLocalstore } from './importStore'
 import { readStoreFile } from './readStore'
@@ -17,31 +18,38 @@ jest.mock('./readStore')
 describe('importStore', () => {
     describe('importAndMergeLocalstore', () => {
 
-        let fsMock: any
-        let downloadStoreMock: any
-        let readStoreFileMock: any
+        let existsSyncMock: MaybeMocked<typeof existsSync>
+        let writeFileMock: MaybeMocked<typeof writeFile>
+        let readFileMock: MaybeMocked<ReadFileWithOptions>
+        
+        let downloadStoreMock: MaybeMocked<typeof downloadStore>
+        let readStoreFileMock: MaybeMocked<typeof readStoreFile>
+
+        beforeAll(() => {
+            downloadStoreMock = mocked(downloadStore)
+            readStoreFileMock = mocked(readStoreFile)
+
+            existsSyncMock = mocked(existsSync)
+            writeFileMock = mocked(writeFile)
+            readFileMock = mocked(readFile as ReadFileWithOptions)
+        })
 
         beforeEach(() => {
-            downloadStoreMock = mocked(downloadStore)
             downloadStoreMock.mockReset()
-
-            readStoreFileMock = mocked(readStoreFile)
             readStoreFileMock.mockReset()
 
-            fsMock = mocked(fs, true)
-            fsMock.existsSync.mockClear()
-            fsMock.writeFile.mockClear()
-            fsMock.readFile.mockClear()
-
+            existsSyncMock.mockClear()
+            writeFileMock.mockClear()
+            readFileMock.mockClear()
         })
 
         it('should download a store via URL and store it without existing store', async () => {
             const anyStore = createStore({ linux: { x64: ['10.11.12.13'], x86: [] } })
 
-            fsMock.existsSync.mockReturnValue(false)
+            existsSyncMock.mockReturnValue(false)
             downloadStoreMock.mockReturnValue(Promise.resolve(anyStore))
-            fsMock.writeFile.mockImplementation((path: string, store: any, callback: PromisifyCallback) => {
-                callback(PROMISIFY_NO_ERROR)
+            writeFileMock.mockImplementation((path, store, callback) => {
+                callback(null)
             })
 
             const config: IStoreConfig = { url: 'https://some.url.de' }
@@ -52,19 +60,19 @@ describe('importStore', () => {
             expect(downloadStoreMock).toHaveBeenCalledTimes(1)
             expect(downloadStoreMock).toHaveBeenCalledWith(config, LOCAL_STORE_FILE)
 
-            expect(fsMock.readFile).toHaveBeenCalledTimes(0)
+            expect(readFileMock).toHaveBeenCalledTimes(0)
 
-            expect(fsMock.writeFile).toHaveBeenCalledTimes(1)
-            expect(fsMock.writeFile).toHaveBeenCalledWith(path.join(__dirname, '..', LOCAL_STORE_FILE), JSON.stringify(anyStore, null, 2), expect.any(Function))
+            expect(writeFileMock).toHaveBeenCalledTimes(1)
+            expect(writeFileMock).toHaveBeenCalledWith(path.join(__dirname, '..', LOCAL_STORE_FILE), JSON.stringify(anyStore, null, 2), expect.any(Function))
         })
 
         it('should download a store via local file and store it without existing store', async () => {
             const anyStore = createStore({ linux: { x64: ['10.11.12.13'], x86: [] } })
 
-            fsMock.existsSync.mockReturnValue(false)
+            existsSyncMock.mockReturnValue(false)
             readStoreFileMock.mockReturnValue(Promise.resolve(anyStore))
-            fsMock.writeFile.mockImplementation((path: string, store: any, callback: PromisifyCallback) => {
-                callback(PROMISIFY_NO_ERROR)
+            writeFileMock.mockImplementation((path, store, callback) => {
+                callback(null)
             })
 
             const config: IStoreConfig = { url: '/some/path/to/file' }
@@ -75,17 +83,17 @@ describe('importStore', () => {
             expect(readStoreFileMock).toHaveBeenCalledWith(config)
             expect(downloadStoreMock).toHaveBeenCalledTimes(0)
 
-            expect(fsMock.readFile).toHaveBeenCalledTimes(0)
+            expect(readFileMock).toHaveBeenCalledTimes(0)
 
-            expect(fsMock.writeFile).toHaveBeenCalledTimes(1)
-            expect(fsMock.writeFile).toHaveBeenCalledWith(path.join(__dirname, '..', LOCAL_STORE_FILE), JSON.stringify(anyStore, null, 2), expect.any(Function))
+            expect(writeFileMock).toHaveBeenCalledTimes(1)
+            expect(writeFileMock).toHaveBeenCalledWith(path.join(__dirname, '..', LOCAL_STORE_FILE), JSON.stringify(anyStore, null, 2), expect.any(Function))
         })
 
         it('should do nothing, if no store is downloaded', async () => {
-            fsMock.existsSync.mockReturnValue(false)
-            readStoreFileMock.mockReturnValue(Promise.resolve(null))
-            fsMock.writeFile.mockImplementation((path: string, store: any, callback: PromisifyCallback) => {
-                callback(PROMISIFY_NO_ERROR)
+            existsSyncMock.mockReturnValue(false)
+            readStoreFileMock.mockReturnValue(Promise.resolve(null as unknown as Store))
+            writeFileMock.mockImplementation((path, store, callback) => {
+                callback(null)
             })
 
             const config: IStoreConfig = { url: '/some/path/to/file' }
@@ -96,29 +104,29 @@ describe('importStore', () => {
             expect(readStoreFileMock).toHaveBeenCalledWith(config)
             expect(downloadStoreMock).toHaveBeenCalledTimes(0)
 
-            expect(fsMock.readFile).toHaveBeenCalledTimes(0)
+            expect(readFileMock).toHaveBeenCalledTimes(0)
 
-            expect(fsMock.writeFile).toHaveBeenCalledTimes(0)
+            expect(writeFileMock).toHaveBeenCalledTimes(0)
         })
 
         it('should do nothing, if no store file is loaded from file system', async () => {
-            fsMock.existsSync.mockReturnValue(false)
-            readStoreFileMock.mockReturnValue(Promise.resolve(null))
-            fsMock.writeFile.mockImplementation((path: string, store: any, callback: PromisifyCallback) => {
-                callback(PROMISIFY_NO_ERROR)
+            existsSyncMock.mockReturnValue(false)
+            readStoreFileMock.mockReturnValue(Promise.resolve(null as unknown as Store))
+            writeFileMock.mockImplementation((path, store, callback) => {
+                callback(null)
             })
 
             const config: IStoreConfig = { url: 'https://some.url.de' }
 
             await expect(() => importAndMergeLocalstore(config)).rejects.toBe(undefined)
-            
+
             expect(readStoreFileMock).toHaveBeenCalledTimes(0)
             expect(downloadStoreMock).toHaveBeenCalledTimes(1)
             expect(downloadStoreMock).toHaveBeenCalledWith(config, LOCAL_STORE_FILE)
 
-            expect(fsMock.readFile).toHaveBeenCalledTimes(0)
+            expect(readFileMock).toHaveBeenCalledTimes(0)
 
-            expect(fsMock.writeFile).toHaveBeenCalledTimes(0)
+            expect(writeFileMock).toHaveBeenCalledTimes(0)
         })
 
         it('should merge the existing file with the file downloaded by URL', async () => {
@@ -135,13 +143,13 @@ describe('importStore', () => {
                 }
             })
 
-            fsMock.existsSync.mockReturnValue(true)
-            fsMock.readFile.mockImplementation((file: any, options: any, callback: PromisifyCallback) => {
-                callback(PROMISIFY_NO_ERROR, JSON.stringify(existingStore, null, 2))
+            existsSyncMock.mockReturnValue(true)
+            readFileMock.mockImplementation((file, options, callback) => {
+                callback(null, JSON.stringify(existingStore, null, 2))
             })
             downloadStoreMock.mockReturnValue(Promise.resolve(anyStore))
-            fsMock.writeFile.mockImplementation((path: string, store: any, callback: PromisifyCallback) => {
-                callback(PROMISIFY_NO_ERROR)
+            writeFileMock.mockImplementation((path, store, callback) => {
+                callback(null)
             })
 
             const config: IStoreConfig = { url: 'https://some.url.de' }
@@ -152,10 +160,10 @@ describe('importStore', () => {
             expect(downloadStoreMock).toHaveBeenCalledTimes(1)
             expect(downloadStoreMock).toHaveBeenCalledWith(config, LOCAL_STORE_FILE)
 
-            expect(fsMock.readFile).toHaveBeenCalledTimes(1)
+            expect(readFileMock).toHaveBeenCalledTimes(1)
 
-            expect(fsMock.writeFile).toHaveBeenCalledTimes(1)
-            expect(fsMock.writeFile).toHaveBeenCalledWith(path.join(__dirname, '..', LOCAL_STORE_FILE), JSON.stringify(mergedStore, null, 2), expect.any(Function))
+            expect(writeFileMock).toHaveBeenCalledTimes(1)
+            expect(writeFileMock).toHaveBeenCalledWith(path.join(__dirname, '..', LOCAL_STORE_FILE), JSON.stringify(mergedStore, null, 2), expect.any(Function))
         })
 
         it('should merge the existing file with the file downloaded by local file', async () => {
@@ -172,13 +180,13 @@ describe('importStore', () => {
                 }
             })
 
-            fsMock.existsSync.mockReturnValue(true)
-            fsMock.readFile.mockImplementation((file: any, options: any, callback: PromisifyCallback) => {
-                callback(PROMISIFY_NO_ERROR, JSON.stringify(existingStore, null, 2))
+            existsSyncMock.mockReturnValue(true)
+            readFileMock.mockImplementation((file, options, callback) => {
+                callback(null, JSON.stringify(existingStore, null, 2))
             })
             readStoreFileMock.mockReturnValue(Promise.resolve(anyStore))
-            fsMock.writeFile.mockImplementation((path: string, store: any, callback: PromisifyCallback) => {
-                callback(PROMISIFY_NO_ERROR)
+            writeFileMock.mockImplementation((path, store, callback) => {
+                callback(null)
             })
 
             const config: IStoreConfig = { url: '/some/path/to/file' }
@@ -189,11 +197,10 @@ describe('importStore', () => {
             expect(readStoreFileMock).toHaveBeenCalledWith(config)
             expect(downloadStoreMock).toHaveBeenCalledTimes(0)
 
-            expect(fsMock.readFile).toHaveBeenCalledTimes(1)
+            expect(readFileMock).toHaveBeenCalledTimes(1)
 
-            expect(fsMock.writeFile).toHaveBeenCalledTimes(1)
-            expect(fsMock.writeFile).toHaveBeenCalledWith(path.join(__dirname, '..', LOCAL_STORE_FILE), JSON.stringify(mergedStore, null, 2), expect.any(Function))
-    
+            expect(writeFileMock).toHaveBeenCalledTimes(1)
+            expect(writeFileMock).toHaveBeenCalledWith(path.join(__dirname, '..', LOCAL_STORE_FILE), JSON.stringify(mergedStore, null, 2), expect.any(Function))
         })
     })
 })
