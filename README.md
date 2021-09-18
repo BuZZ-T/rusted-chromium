@@ -4,10 +4,6 @@
 
 This cli tool can be used to download old (and therefore unsupported) versions of chromium.
 
-## Caution
-
-In case you found this tool: This is not ready-to-use yet. You might be able to use it, but the documentation is incomplete and some features are not implemented yet. Contact me for more information: <a href="mailto:buzz-t@buzz-t.eu">buzz-t@buzz-t.eu</a>
-
 ## Table of contents
 
 * [Disclaimer](#disclaimer-)
