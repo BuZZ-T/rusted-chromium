@@ -1,4 +1,5 @@
 import { NoParamCallback, PathLike } from 'fs'
+import { HTMLElement as NodeParserHTMLElement, Node as NodeParserNode } from 'node-html-parser'
 
 import { ComparableVersion } from './commons/ComparableVersion'
 import { DEFAULT_OPTIONS } from './config/config'
@@ -58,6 +59,12 @@ export const createChildNodeWithChildren = (...children: Array<Partial<ChildNode
     ] as unknown as NodeListOf<ChildNode>
 } as ChildNode)
 
+export const createNodeWithChildren = (...children: Array<Partial<NodeParserNode>>): NodeParserNode => ({
+    childNodes: [
+        ...children,
+    ],
+} as NodeParserNode)
+
 export const createDownloadSettings = (settings?: Partial<IDownloadSettings>): IDownloadSettings => ({
     chromeUrl: 'chromeUrl',
     selectedVersion: 'selectedVersion',
@@ -71,3 +78,13 @@ export const createDownloadSettings = (settings?: Partial<IDownloadSettings>): I
 export type MkdirWithOptions = (path: PathLike, options: unknown, callback: NoParamCallback) => void
 
 export type ReadFileWithOptions = (path: PathLike, options: unknown, callback: (err: NodeJS.ErrnoException | null, data: string) => void) => void
+
+export const createNodeParserHTMLElement = (querySelectorAllMock?: jest.Mock<any, any>): NodeParserHTMLElement & { valid: boolean } => {
+    const element = new NodeParserHTMLElement('html', {}) as NodeParserHTMLElement & { valid: boolean }
+    element.valid = true
+    if (querySelectorAllMock) {
+        element.querySelectorAll = querySelectorAllMock
+    }
+
+    return element
+}

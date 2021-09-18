@@ -1,4 +1,3 @@
-import * as prompts from 'prompts'
 import { MaybeMocked } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
@@ -7,10 +6,13 @@ import { IMappedVersion } from './interfaces'
 import { userSelectedVersion } from './select'
 import { createChromeConfig } from './test.utils'
 
+/* eslint-disable-next-line @typescript-eslint/no-var-requires */
+const prompts = require('prompts')
+
 jest.mock('prompts')
 
 describe('userSelectedVersion', () => {
-    let promptsMock: MaybeMocked<any>
+    let promptsMock: MaybeMocked<typeof prompts>
 
     beforeEach(() => {
         promptsMock = mocked(prompts)

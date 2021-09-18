@@ -1,4 +1,4 @@
-import { parse } from 'node-html-parser'
+import { HTMLElement as NodeParserHTMLElement, parse, Node as NodeParserNode } from 'node-html-parser'
 import { MaybeMockedDeep, MaybeMocked } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
@@ -8,7 +8,7 @@ import { IMappedVersion, IDownloadSettings } from './interfaces'
 import { Spinner, logger } from './log/spinner'
 import { userSelectedVersion } from './select'
 import { storeNegativeHit } from './store/store'
-import { createChromeConfig, createChildNodeWithChildren } from './test.utils'
+import { createChromeConfig, createNodeParserHTMLElement, createNodeWithChildren } from './test.utils'
 import { detectOperatingSystem } from './utils'
 import { mapVersions, getChromeDownloadUrl, loadVersions } from './versions'
 
@@ -27,11 +27,11 @@ jest.mock('./utils', () => ({
 describe('versions', () => {
     describe('getChromeDownloadUrl', () => {
         let loggerMock: MaybeMockedDeep<Spinner>
-        let detectOperatingSystemMock: any
-        let fetchBranchPositionMock: any
-        let fetchChromeUrlMock: any
-        let userSelectedVersionMock: any
-        let storeNegativeHitMock: any
+        let detectOperatingSystemMock: MaybeMocked<typeof detectOperatingSystem>
+        let fetchBranchPositionMock: MaybeMocked<typeof fetchBranchPosition>
+        let fetchChromeUrlMock: MaybeMocked<typeof fetchChromeUrl>
+        let userSelectedVersionMock: MaybeMocked<typeof userSelectedVersion>
+        let storeNegativeHitMock: MaybeMocked<typeof storeNegativeHit>
 
         let version1: IMappedVersion
         let version2: IMappedVersion
@@ -165,7 +165,7 @@ describe('versions', () => {
                 filenameOS: FILENAME_OS,
             }
 
-            userSelectedVersionMock.mockReturnValue(versionDisabled)
+            userSelectedVersionMock.mockResolvedValue(versionDisabled)
 
             expect(await getChromeDownloadUrl(config, [version1, versionDisabled])).toEqual(expectedSettings)
 
@@ -195,7 +195,7 @@ describe('versions', () => {
                 filenameOS: FILENAME_OS,
             }
 
-            userSelectedVersionMock.mockReturnValue(versionDisabled)
+            userSelectedVersionMock.mockResolvedValue(versionDisabled)
 
             expect(await getChromeDownloadUrl(config, [versionDisabled])).toEqual(expectedSettings)
 
@@ -223,7 +223,7 @@ describe('versions', () => {
                 filenameOS: FILENAME_OS,
             }
 
-            userSelectedVersionMock.mockReturnValue(versionDisabled)
+            userSelectedVersionMock.mockResolvedValue(versionDisabled)
 
             expect(await getChromeDownloadUrl(config, [versionDisabled, version1])).toEqual(expectedSettings)
 
@@ -253,7 +253,7 @@ describe('versions', () => {
                 filenameOS: FILENAME_OS,
             }
 
-            userSelectedVersionMock.mockReturnValueOnce(versionDisabled)
+            userSelectedVersionMock.mockResolvedValueOnce(versionDisabled)
 
             expect(await getChromeDownloadUrl(config, [version1, version2])).toEqual(expectedSettings)
 
@@ -410,7 +410,7 @@ describe('versions', () => {
             const BRANCH_POSITION3 = 'branch-position3'
 
             fetchChromeUrlMock.mockReset()
-            fetchChromeUrlMock.mockReturnValue(undefined)
+            fetchChromeUrlMock.mockResolvedValue(undefined)
             fetchBranchPositionMock.mockReset()
             fetchBranchPositionMock.mockResolvedValueOnce(BRANCH_POSITION)
             fetchBranchPositionMock.mockResolvedValueOnce(BRANCH_POSITION2)
@@ -511,16 +511,16 @@ describe('versions', () => {
 
     describe('loadVersions', () => {
 
-        const childNodeWithoutVersions = createChildNodeWithChildren()
+        const childNodeWithoutVersions = createNodeWithChildren()
 
-        const childNodeWithOneVerions = createChildNodeWithChildren({
+        const childNodeWithOneVerions = createNodeWithChildren({
             text: '10.0.0.0',
-        } as unknown as ChildNode)
+        })
 
-        const childNodeWithThreeVerions = createChildNodeWithChildren(
-            { text: '10.0.0.0' } as unknown as ChildNode,
-            { text: '10.0.0.1' } as unknown as ChildNode,
-            { text: '10.0.0.3' } as unknown as ChildNode)
+        const childNodeWithThreeVerions = createNodeWithChildren(
+            { text: '10.0.0.0' },
+            { text: '10.0.0.1' },
+            { text: '10.0.0.3' })
 
         let fetchChromiumTagsMock: MaybeMocked<typeof fetchChromiumTags>
         let parseMock: MaybeMocked<typeof parse>
@@ -542,16 +542,17 @@ describe('versions', () => {
         it('should return an empty versions list', async () => {
             fetchChromiumTagsMock.mockResolvedValue(someHTML)
             querySelectorMock.mockReturnValue({
-                forEach: (callback: (e: HTMLHeadingElement) => void) => {
+                forEach: (callback: (e: NodeParserHTMLElement) => void) => {
                     callback({
                         innerHTML: 'Tags',
                         parentNode: {
-                            childNodes: [null, childNodeWithoutVersions] as unknown as NodeListOf<ChildNode>
-                        }
-                    } as HTMLHeadingElement)
+                            childNodes: [null, childNodeWithoutVersions],
+                        } as NodeParserNode
+                    } as NodeParserHTMLElement)
                 }
             })
-            parseMock.mockReturnValue({ querySelectorAll: querySelectorMock } as any)
+
+            parseMock.mockReturnValue(createNodeParserHTMLElement(querySelectorMock))
 
             const versions = await loadVersions()
 
@@ -564,16 +565,16 @@ describe('versions', () => {
         it('should return one version', async () => {
             fetchChromiumTagsMock.mockResolvedValue(someHTML)
             querySelectorMock.mockReturnValue({
-                forEach: (callback: (e: HTMLHeadingElement) => void) => {
+                forEach: (callback: (e: NodeParserHTMLElement) => void) => {
                     callback({
                         innerHTML: 'Tags',
                         parentNode: {
-                            childNodes: [null, childNodeWithOneVerions] as unknown as NodeListOf<ChildNode>
-                        } as unknown as Node & ParentNode
-                    } as HTMLHeadingElement)
+                            childNodes: [null, childNodeWithOneVerions],
+                        } as NodeParserNode,
+                    } as NodeParserHTMLElement)
                 }
             })
-            parseMock.mockReturnValue({ querySelectorAll: querySelectorMock } as any)
+            parseMock.mockReturnValue(createNodeParserHTMLElement(querySelectorMock))
 
             const versions = await loadVersions()
 
@@ -586,16 +587,16 @@ describe('versions', () => {
         it('should return three versions', async () => {
             fetchChromiumTagsMock.mockResolvedValue(someHTML)
             querySelectorMock.mockReturnValue({
-                forEach: (callback: (e: HTMLHeadingElement) => void) => {
+                forEach: (callback: (e: NodeParserHTMLElement) => void) => {
                     callback({
                         innerHTML: 'Tags',
                         parentNode: {
-                            childNodes: [null, childNodeWithThreeVerions] as unknown as NodeListOf<ChildNode>
-                        } as unknown as Node & ParentNode
-                    } as HTMLHeadingElement)
+                            childNodes: [null, childNodeWithThreeVerions],
+                        } as NodeParserNode,
+                    } as NodeParserHTMLElement)
                 }
             })
-            parseMock.mockReturnValue({ querySelectorAll: querySelectorMock } as any)
+            parseMock.mockReturnValue(createNodeParserHTMLElement(querySelectorMock))
 
             const versions = await loadVersions()
 
@@ -608,23 +609,24 @@ describe('versions', () => {
         it('should ignore other headlines than "tags"', async () => {
             fetchChromiumTagsMock.mockResolvedValue(someHTML)
             querySelectorMock.mockReturnValue({
-                forEach: (callback: (e: HTMLHeadingElement) => void) => {
+
+                forEach: (callback: (e: NodeParserHTMLElement) => void) => {
                     callback({
                         innerHTML: 'Branches',
                         parentNode: {
-                            childNodes: [null, childNodeWithThreeVerions] as unknown as NodeListOf<ChildNode>
-                        } as unknown as Node & ParentNode
-                    } as HTMLHeadingElement)
+                            childNodes: [null, childNodeWithThreeVerions]
+                        } as NodeParserNode
+                    } as NodeParserHTMLElement)
                     callback({
                         innerHTML: 'Tags',
                         parentNode: {
-                            childNodes: [null, childNodeWithOneVerions] as unknown as NodeListOf<ChildNode>
-                        } as unknown as Node & ParentNode
-                    } as HTMLHeadingElement,
+                            childNodes: [null, childNodeWithOneVerions]
+                        } as NodeParserNode
+                    } as NodeParserHTMLElement,
                     )
                 }
             })
-            parseMock.mockReturnValue({ querySelectorAll: querySelectorMock } as any)
+            parseMock.mockReturnValue(createNodeParserHTMLElement(querySelectorMock))
 
             const versions = await loadVersions()
 
@@ -637,16 +639,16 @@ describe('versions', () => {
         it('should reject with an error on no headline found', async () => {
             fetchChromiumTagsMock.mockResolvedValue(someHTML)
             querySelectorMock.mockReturnValue({
-                forEach: (callback: (e: HTMLHeadingElement) => void) => {
+                forEach: (callback: (e: NodeParserHTMLElement) => void) => {
                     callback({
                         innerHTML: 'Branches',
                         parentNode: {
-                            childNodes: [null, childNodeWithThreeVerions] as unknown as NodeListOf<ChildNode>
-                        } as unknown as Node & ParentNode
-                    } as HTMLHeadingElement)
+                            childNodes: [null, childNodeWithThreeVerions]
+                        } as NodeParserNode
+                    } as NodeParserHTMLElement)
                 }
             })
-            parseMock.mockReturnValue({ querySelectorAll: querySelectorMock } as any)
+            parseMock.mockReturnValue(createNodeParserHTMLElement(querySelectorMock))
 
             await expect(() => loadVersions()).rejects.toEqual(new Error('Tags headline not found in HTML'))
 
@@ -657,13 +659,13 @@ describe('versions', () => {
         it('should reject with an error on no parentNodes found', async () => {
             fetchChromiumTagsMock.mockResolvedValue(someHTML)
             querySelectorMock.mockReturnValue({
-                forEach: (callback: (e: HTMLHeadingElement) => void) => {
+                forEach: (callback: (e: NodeParserHTMLElement) => void) => {
                     callback({
                         innerHTML: 'Tags',
-                    } as HTMLHeadingElement)
+                    } as NodeParserHTMLElement)
                 }
             })
-            parseMock.mockReturnValue({ querySelectorAll: querySelectorMock } as any)
+            parseMock.mockReturnValue(createNodeParserHTMLElement(querySelectorMock))
 
             await expect(() => loadVersions()).rejects.toEqual(new Error('No list of tags found under tags headline'))
 
@@ -674,14 +676,14 @@ describe('versions', () => {
         it('should reject with an error on no childNodes found', async () => {
             fetchChromiumTagsMock.mockResolvedValue(someHTML)
             querySelectorMock.mockReturnValue({
-                forEach: (callback: (e: HTMLHeadingElement) => void) => {
+                forEach: (callback: (e: NodeParserHTMLElement) => void) => {
                     callback({
                         innerHTML: 'Tags',
-                        parentNode: {} as unknown as Node & ParentNode
-                    } as HTMLHeadingElement)
+                        parentNode: {},
+                    } as NodeParserHTMLElement)
                 }
             })
-            parseMock.mockReturnValue({ querySelectorAll: querySelectorMock } as any)
+            parseMock.mockReturnValue(createNodeParserHTMLElement(querySelectorMock))
 
             await expect(() => loadVersions()).rejects.toEqual(new Error('No list of tags found under tags headline'))
 

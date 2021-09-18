@@ -1,4 +1,4 @@
-import { parse } from 'node-html-parser'
+import { parse, HTMLElement as NodeParserHTMLElement } from 'node-html-parser'
 
 import { fetchBranchPosition, fetchChromeUrl, fetchChromiumTags } from './api'
 import { ComparableVersion } from './commons/ComparableVersion'
@@ -101,12 +101,12 @@ export async function getChromeDownloadUrl(config: IChromeConfig, mappedVersions
 export async function loadVersions(): Promise<string[]> {
     const tags = await fetchChromiumTags()
 
-    const parsedTags = parse(tags) as unknown as (HTMLElement & { valid: boolean })
+    const parsedTags = parse(tags) as (NodeParserHTMLElement & { valid: boolean })
 
     const h3s = parsedTags.querySelectorAll('h3')
 
-    let tagsHeadline: HTMLHeadingElement | undefined
-    h3s.forEach((h3: HTMLHeadingElement) => {
+    let tagsHeadline: NodeParserHTMLElement | undefined
+    h3s.forEach((h3: NodeParserHTMLElement) => {
         if (h3.innerHTML === 'Tags') {
             tagsHeadline = h3
         }
@@ -123,9 +123,7 @@ export async function loadVersions(): Promise<string[]> {
     }
 
     const versions: string[] = []
-    tagsList.childNodes.forEach((tag: any) => {
-        
-        debugger
+    tagsList.childNodes.forEach(tag => {
         versions.push(tag.text)
     })
 
