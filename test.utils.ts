@@ -1,4 +1,4 @@
-import { NoParamCallback, PathLike } from 'fs'
+import { NoParamCallback, PathLike, Stats } from 'fs'
 import { HTMLElement as NodeParserHTMLElement, Node as NodeParserNode } from 'node-html-parser'
 
 import { ComparableVersion } from './commons/ComparableVersion'
@@ -53,12 +53,6 @@ export const createChromeOptions = (config?: Partial<IConfigOptions>): IConfigOp
     ...config,
 })
 
-export const createChildNodeWithChildren = (...children: Array<Partial<ChildNode>>): ChildNode => ({
-    childNodes: [
-        ...children,
-    ] as unknown as NodeListOf<ChildNode>
-} as ChildNode)
-
 export const createNodeWithChildren = (...children: Array<Partial<NodeParserNode>>): NodeParserNode => ({
     childNodes: [
         ...children,
@@ -79,12 +73,12 @@ export type MkdirWithOptions = (path: PathLike, options: unknown, callback: NoPa
 
 export type ReadFileWithOptions = (path: PathLike, options: unknown, callback: (err: NodeJS.ErrnoException | null, data: string) => void) => void
 
-export const createNodeParserHTMLElement = (querySelectorAllMock?: jest.Mock<any, any>): NodeParserHTMLElement & { valid: boolean } => {
+export type StatsWithoutOptions = (path: PathLike, callback: (err: NodeJS.ErrnoException | null, stats: Stats) => void) => void
+
+export const createNodeParserHTMLElement = (querySelectorAllMock: jest.Mock<any, any>): NodeParserHTMLElement & { valid: boolean } => {
     const element = new NodeParserHTMLElement('html', {}) as NodeParserHTMLElement & { valid: boolean }
     element.valid = true
-    if (querySelectorAllMock) {
-        element.querySelectorAll = querySelectorAllMock
-    }
+    element.querySelectorAll = querySelectorAllMock
 
     return element
 }

@@ -2,10 +2,11 @@ import { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
 import { ComparableVersion } from './commons/ComparableVersion'
-import { IMappedVersion, Compared, OS } from './interfaces'
+import { MappedVersion } from './commons/MappedVersion'
+import { Compared, OS } from './interfaces'
 import { logger, Spinner } from './log/spinner'
 import { createChromeConfig, createStore } from './test.utils'
-import { detectOperatingSystem, sortDescendingIMappedVersions, compareComparableVersions, sortAscendingIMappedVersions, sortStoreEntries, isTextFunction } from './utils'
+import { detectOperatingSystem, sortDescendingMappedVersions, compareComparableVersions, sortAscendingMappedVersions, sortStoreEntries, isTextFunction } from './utils'
 
 jest.mock('./log/spinner')
 
@@ -104,113 +105,137 @@ describe('utils', () => {
         })
     })
 
-    describe('sortDescendingIMappedVersions', () => {
+    describe('sortDescendingMappedVersions', () => {
 
-        let versionMajor1: IMappedVersion
-        let versionMajor2: IMappedVersion
-        let versionMinor: IMappedVersion
-        let versionBranch: IMappedVersion
-        let versionPatch: IMappedVersion
-        let versionInfinity: IMappedVersion
+        let versionMajor1: MappedVersion
+        let versionMajor2: MappedVersion
+        let versionMinor: MappedVersion
+        let versionBranch: MappedVersion
+        let versionPatch: MappedVersion
+        let versionInfinity: MappedVersion
 
         beforeEach(() => {
-            versionMajor1 = {
-                value: '',
-                disabled: false,
-                comparable: new ComparableVersion(10, 0, 0, 0)
-            }
-            versionMajor2 = {
-                value: '',
-                disabled: false,
-                comparable: new ComparableVersion(20, 0, 0, 0)
-            }
-            versionMinor = {
-                value: '',
-                disabled: false,
-                comparable: new ComparableVersion(10, 1, 0, 0)
-            }
-            versionBranch = {
-                value: '',
-                disabled: false,
-                comparable: new ComparableVersion(10, 0, 1, 0)
-            }
-            versionPatch = {
-                value: '',
-                disabled: false,
-                comparable: new ComparableVersion(10, 0, 0, 1)
-            }
-            versionInfinity = {
-                value: '',
-                disabled: false,
-                comparable: new ComparableVersion(Infinity, 0, 0, 0)
-            }
+            versionMajor1 = new MappedVersion({
+                major: 10,
+                minor: 0,
+                branch: 0,
+                patch: 0,
+                disabled: false
+            })
+            versionMajor2 = new MappedVersion({
+                major: 20,
+                minor: 0,
+                branch: 0,
+                patch: 0,
+                disabled: false
+            })
+            versionMinor = new MappedVersion({
+                major: 10,
+                minor: 1,
+                branch: 0,
+                patch: 0,
+                disabled: false
+            })
+            versionBranch = new MappedVersion({
+                major: 10,
+                minor: 0,
+                branch: 1,
+                patch: 0,
+                disabled: false
+            })
+            versionPatch = new MappedVersion({
+                major: 10,
+                minor: 0,
+                branch: 0,
+                patch: 1,
+                disabled: false
+            })
+            versionInfinity = new MappedVersion({
+                major: Infinity,
+                minor: 0,
+                branch: 0,
+                patch: 0,
+                disabled: false
+            })
         })
 
-        it('should sort the IMappedVersion arrays accordingly', () => {
-            expect([versionMajor1, versionMajor2].sort(sortDescendingIMappedVersions)).toEqual([versionMajor2, versionMajor1])
-            expect([versionMajor2, versionMajor1].sort(sortDescendingIMappedVersions)).toEqual([versionMajor2, versionMajor1])
+        it('should sort the MappedVersion arrays accordingly', () => {
+            expect([versionMajor1, versionMajor2].sort(sortDescendingMappedVersions)).toEqual([versionMajor2, versionMajor1])
+            expect([versionMajor2, versionMajor1].sort(sortDescendingMappedVersions)).toEqual([versionMajor2, versionMajor1])
 
-            expect([versionMajor1, versionMajor1].sort(sortDescendingIMappedVersions)).toEqual([versionMajor1, versionMajor1])
+            expect([versionMajor1, versionMajor1].sort(sortDescendingMappedVersions)).toEqual([versionMajor1, versionMajor1])
 
-            expect([versionMajor1, versionMinor].sort(sortDescendingIMappedVersions)).toEqual([versionMinor, versionMajor1])
-            expect([versionMajor1, versionBranch].sort(sortDescendingIMappedVersions)).toEqual([versionBranch, versionMajor1])
-            expect([versionMajor1, versionPatch].sort(sortDescendingIMappedVersions)).toEqual([versionPatch, versionMajor1])
-            expect([versionMajor1, versionInfinity].sort(sortDescendingIMappedVersions)).toEqual([versionInfinity, versionMajor1])
+            expect([versionMajor1, versionMinor].sort(sortDescendingMappedVersions)).toEqual([versionMinor, versionMajor1])
+            expect([versionMajor1, versionBranch].sort(sortDescendingMappedVersions)).toEqual([versionBranch, versionMajor1])
+            expect([versionMajor1, versionPatch].sort(sortDescendingMappedVersions)).toEqual([versionPatch, versionMajor1])
+            expect([versionMajor1, versionInfinity].sort(sortDescendingMappedVersions)).toEqual([versionInfinity, versionMajor1])
         })
     })
 
-    describe('sortAscendingIMappedVersions', () => {
+    describe('sortAscendingMappedVersions', () => {
 
-        let versionMajor1: IMappedVersion
-        let versionMajor2: IMappedVersion
-        let versionMinor: IMappedVersion
-        let versionBranch: IMappedVersion
-        let versionPatch: IMappedVersion
-        let versionInfinity: IMappedVersion
+        let versionMajor1: MappedVersion
+        let versionMajor2: MappedVersion
+        let versionMinor: MappedVersion
+        let versionBranch: MappedVersion
+        let versionPatch: MappedVersion
+        let versionInfinity: MappedVersion
 
         beforeEach(() => {
-            versionMajor1 = {
-                value: '',
-                disabled: false,
-                comparable: new ComparableVersion(10, 0, 0, 0)
-            }
-            versionMajor2 = {
-                value: '',
-                disabled: false,
-                comparable: new ComparableVersion(20, 0, 0, 0)
-            }
-            versionMinor = {
-                value: '',
-                disabled: false,
-                comparable: new ComparableVersion(10, 1, 0, 0)
-            }
-            versionBranch = {
-                value: '',
-                disabled: false,
-                comparable: new ComparableVersion(10, 0, 1, 0)
-            }
-            versionPatch = {
-                value: '',
-                disabled: false,
-                comparable: new ComparableVersion(10, 0, 0, 1)
-            }
-            versionInfinity = {
-                value: '',
-                disabled: false,
-                comparable: new ComparableVersion(Infinity, 0, 0, 0)
-            }
+            versionMajor1 = new MappedVersion({
+                major: 10,
+                minor: 0,
+                branch: 0,
+                patch: 0,
+                disabled: false
+            })
+            versionMajor2 = new MappedVersion({
+                major: 20,
+                minor: 0,
+                branch: 0,
+                patch: 0,
+                disabled: false
+            })
+            versionMinor = new MappedVersion({
+                major: 10,
+                minor: 1,
+                branch: 0,
+                patch: 0,
+                disabled: false
+            })
+            versionBranch = new MappedVersion({
+                major: 10,
+                minor: 0,
+                branch: 1,
+                patch: 0,
+                disabled: false
+            })
+            versionPatch = new MappedVersion({
+                major: 10,
+                minor: 0,
+                branch: 0,
+                patch: 1,
+                disabled: false
+            })
+            versionInfinity = new MappedVersion({
+                major: Infinity,
+                minor: 0,
+                branch: 0,
+                patch: 0,
+                disabled: false
+            })
         })
 
-        it('should sort the IMappedVersion arrays accordingly reverse', () => {
-            expect([versionMajor1, versionMajor2].sort(sortAscendingIMappedVersions)).toEqual([versionMajor1, versionMajor2])
-            expect([versionMajor2, versionMajor1].sort(sortAscendingIMappedVersions)).toEqual([versionMajor1, versionMajor2])
+        it('should sort the MappedVersion arrays accordingly reverse', () => {
+            expect([versionMajor1, versionMajor2].sort(sortAscendingMappedVersions)).toEqual([versionMajor1, versionMajor2])
+            expect([versionMajor2, versionMajor1].sort(sortAscendingMappedVersions)).toEqual([versionMajor1, versionMajor2])
 
-            expect([versionMajor1, versionMajor1].sort(sortAscendingIMappedVersions)).toEqual([versionMajor1, versionMajor1])
+            expect([versionMajor1, versionMajor1].sort(sortAscendingMappedVersions)).toEqual([versionMajor1, versionMajor1])
 
-            expect([versionMajor1, versionMinor].sort(sortAscendingIMappedVersions)).toEqual([versionMajor1, versionMinor])
-            expect([versionMajor1, versionBranch].sort(sortAscendingIMappedVersions)).toEqual([versionMajor1, versionBranch])
-            expect([versionMajor1, versionPatch].sort(sortAscendingIMappedVersions)).toEqual([versionMajor1, versionPatch])
-            expect([versionMajor1, versionInfinity].sort(sortAscendingIMappedVersions)).toEqual([versionMajor1, versionInfinity])
+            expect([versionMajor1, versionMinor].sort(sortAscendingMappedVersions)).toEqual([versionMajor1, versionMinor])
+            expect([versionMajor1, versionBranch].sort(sortAscendingMappedVersions)).toEqual([versionMajor1, versionBranch])
+            expect([versionMajor1, versionPatch].sort(sortAscendingMappedVersions)).toEqual([versionMajor1, versionPatch])
+            expect([versionMajor1, versionInfinity].sort(sortAscendingMappedVersions)).toEqual([versionMajor1, versionInfinity])
         })
     })
 
@@ -279,8 +304,8 @@ describe('utils', () => {
                     x86: ['10.0.0.1', '10.0.0.0']
                 }
             })
-    
-            const sortedWin= createStore({
+
+            const sortedWin = createStore({
                 win: {
                     x64: ['9.0.0.0', '10.0.0.0'],
                     x86: ['10.0.0.0', '10.0.0.1']

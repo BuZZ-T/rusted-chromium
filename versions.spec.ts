@@ -4,7 +4,8 @@ import { mocked } from 'ts-jest/utils'
 
 import { fetchBranchPosition, fetchChromeUrl, fetchChromiumTags } from './api'
 import { ComparableVersion } from './commons/ComparableVersion'
-import { IMappedVersion, IDownloadSettings } from './interfaces'
+import { MappedVersion } from './commons/MappedVersion'
+import { IDownloadSettings } from './interfaces'
 import { Spinner, logger } from './log/spinner'
 import { userSelectedVersion } from './select'
 import { storeNegativeHit } from './store/store'
@@ -33,12 +34,13 @@ describe('versions', () => {
         let userSelectedVersionMock: MaybeMocked<typeof userSelectedVersion>
         let storeNegativeHitMock: MaybeMocked<typeof storeNegativeHit>
 
-        let version1: IMappedVersion
-        let version2: IMappedVersion
-        let version3: IMappedVersion
-        let versionDisabled: IMappedVersion
-        let versionDisabled2: IMappedVersion
-        let versionDisabled3: IMappedVersion
+        let version1: MappedVersion
+        let version2: MappedVersion
+        let version3: MappedVersion
+        let version4: MappedVersion
+        let versionDisabled: MappedVersion
+        let versionDisabled2: MappedVersion
+        let versionDisabled3: MappedVersion
 
         const CHROME_URL = 'chrome-url'
         const URL_OS = 'url-os'
@@ -46,36 +48,13 @@ describe('versions', () => {
         const BRANCH_POSITION = 'branch-position'
 
         beforeEach(() => {
-            version1 = {
-                comparable: new ComparableVersion(10, 0, 0, 0),
-                disabled: false,
-                value: '10.0.0.0',
-            }
-            version2 = {
-                comparable: new ComparableVersion(20, 0, 0, 0),
-                disabled: false,
-                value: '20.0.0.0',
-            }
-            version3 = {
-                comparable: new ComparableVersion(30, 0, 0, 0),
-                disabled: false,
-                value: '30.0.0.0',
-            }
-            versionDisabled = {
-                comparable: new ComparableVersion(40, 0, 0, 0),
-                disabled: true,
-                value: '40.0.0.0',
-            }
-            versionDisabled2 = {
-                comparable: new ComparableVersion(40, 1, 0, 0),
-                disabled: true,
-                value: '40.1.0.0',
-            }
-            versionDisabled3 = {
-                comparable: new ComparableVersion(40, 2, 0, 0),
-                disabled: true,
-                value: '40.2.0.0',
-            }
+            version1 = new MappedVersion(10, 0, 0, 0, false)
+            version2 = new MappedVersion(20, 0, 0, 0, false)
+            version3 = new MappedVersion(30, 0, 0, 0, false)
+            version4 = new MappedVersion(40, 2, 0, 0, false)
+            versionDisabled = new MappedVersion(40, 0, 0, 0, true)
+            versionDisabled2 = new MappedVersion(40, 1, 0, 0, true)
+            versionDisabled3 = new MappedVersion(40, 2, 0, 0, true)
 
             loggerMock = mocked(logger, true)
             loggerMock.start.mockClear()
@@ -153,7 +132,7 @@ describe('versions', () => {
             expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION, URL_OS, FILENAME_OS)
         })
 
-        it('should automatically continue with the next available higher version on increase-on-fail', async () => {
+        it('should automatically continue with the next available higher version on --increase-on-fail', async () => {
             const config = createChromeConfig({
                 interactive: true,
                 onFail: 'increase',
@@ -169,6 +148,7 @@ describe('versions', () => {
 
             expect(await getChromeDownloadUrl(config, [version1, versionDisabled])).toEqual(expectedSettings)
 
+            expect(loggerMock.info).toHaveBeenCalledTimes(1)
             expect(loggerMock.info).toHaveBeenCalledWith('Continue with next higher version "10.0.0.0"')
 
             expect(storeNegativeHitMock).toHaveBeenCalledTimes(0)
@@ -183,7 +163,7 @@ describe('versions', () => {
             expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION, URL_OS, FILENAME_OS)
         })
 
-        it('should break on no version left on increase-on-fail', async () => {
+        it('should break on no version left on --increase-on-fail', async () => {
             const config = createChromeConfig({
                 interactive: true,
                 onFail: 'increase',
@@ -211,7 +191,38 @@ describe('versions', () => {
             expect(fetchChromeUrlMock).toHaveBeenCalledTimes(0)
         })
 
-        it('should automatically continue with the next available lower version on decrease-on-fail', async () => {
+        it('should skip the next available higher version, if it\'s disabled on --increase-on-fail', async () => {
+            const config = createChromeConfig({
+                interactive: true,
+                onFail: 'increase',
+                download: true,
+            })
+            const expectedSettings: IDownloadSettings = {
+                chromeUrl: 'chrome-url',
+                selectedVersion: version4.value,
+                filenameOS: FILENAME_OS,
+            }
+
+            userSelectedVersionMock.mockResolvedValue(versionDisabled)
+
+            expect(await getChromeDownloadUrl(config, [version4, versionDisabled2, versionDisabled])).toEqual(expectedSettings)
+
+            expect(loggerMock.info).toHaveBeenCalledTimes(1)
+            expect(loggerMock.info).toHaveBeenCalledWith('Continue with next higher version "40.2.0.0"')
+
+            expect(storeNegativeHitMock).toHaveBeenCalledTimes(0)
+            expect(detectOperatingSystemMock).toHaveBeenCalledTimes(1)
+            expect(detectOperatingSystemMock).toHaveBeenCalledWith(config)
+            expect(userSelectedVersionMock).toHaveBeenCalledTimes(1)
+            expect(userSelectedVersionMock).toHaveBeenCalledWith([version4, versionDisabled2, versionDisabled], config)
+
+            expect(fetchBranchPositionMock).toHaveBeenCalledTimes(1)
+            expect(fetchBranchPositionMock).toHaveBeenCalledWith(version4.value)
+            expect(fetchChromeUrlMock).toHaveBeenCalledTimes(1)
+            expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION, URL_OS, FILENAME_OS)
+        })
+
+        it('should automatically continue with the next available lower version on --decrease-on-fail', async () => {
             const config = createChromeConfig({
                 interactive: true,
                 onFail: 'decrease',
@@ -290,7 +301,7 @@ describe('versions', () => {
             expect(await getChromeDownloadUrl(config, [version1, version2])).toEqual(expectedSettings)
 
             expect(storeNegativeHitMock).toHaveBeenCalledTimes(1)
-            expect(storeNegativeHitMock).toHaveBeenCalledWith(version2, 'linux', 'x64')
+            expect(storeNegativeHitMock).toHaveBeenCalledWith(version2.comparable, 'linux', 'x64')
             expect(detectOperatingSystemMock).toHaveBeenCalledTimes(1)
             expect(detectOperatingSystemMock).toHaveBeenCalledWith(config)
             expect(userSelectedVersionMock).toHaveBeenCalledTimes(2)
@@ -417,7 +428,6 @@ describe('versions', () => {
             fetchBranchPositionMock.mockResolvedValueOnce(BRANCH_POSITION3)
 
             expect(await getChromeDownloadUrl(config, [version1, version2, version3])).toEqual(expectedSettings)
-            // .toEqual([undefined, undefined, FILENAME_OS])
 
             expect(storeNegativeHitMock).toHaveBeenCalledTimes(0)
             expect(detectOperatingSystemMock).toHaveBeenCalledTimes(1)
@@ -454,7 +464,6 @@ describe('versions', () => {
             fetchBranchPositionMock.mockResolvedValueOnce(BRANCH_POSITION3)
 
             expect(await getChromeDownloadUrl(config, [version1, version2, version3])).toEqual(expectedSettings)
-            // .toEqual([CHROME_URL, undefined, FILENAME_OS])
 
             expect(storeNegativeHitMock).toHaveBeenCalledTimes(0)
             expect(detectOperatingSystemMock).toHaveBeenCalledTimes(1)
@@ -473,16 +482,14 @@ describe('versions', () => {
         it('should return undefined, is config.single and no binary was found', async () => {
             const singleVersion = '10.11.12.13'
 
-            const mappedSingleVersion: IMappedVersion = {
-                comparable: new ComparableVersion({
-                    major: 10,
-                    minor: 11,
-                    branch: 12,
-                    patch: 13,
-                }),
+            const mappedSingleVersion = new MappedVersion({
+                major: 10,
+                minor: 11,
+                branch: 12,
+                patch: 13,
                 disabled: false,
-                value: singleVersion,
-            }
+            })
+
             const config = createChromeConfig({
                 single: singleVersion,
                 store: true,
@@ -498,7 +505,7 @@ describe('versions', () => {
             expect(await getChromeDownloadUrl(config, [mappedSingleVersion, version2, version3])).toEqual(expectedSettings)
 
             expect(storeNegativeHitMock).toHaveBeenCalledTimes(1)
-            expect(storeNegativeHitMock).toHaveBeenCalledWith(mappedSingleVersion, 'linux', 'x64')
+            expect(storeNegativeHitMock).toHaveBeenCalledWith(mappedSingleVersion.comparable, 'linux', 'x64')
             expect(detectOperatingSystemMock).toHaveBeenCalledTimes(1)
             expect(detectOperatingSystemMock).toHaveBeenCalledWith(config)
             expect(userSelectedVersionMock).toHaveBeenCalledTimes(0)
@@ -698,17 +705,9 @@ describe('versions', () => {
 
             const mapped = mapVersions(['10.1.2.3', '20.0.0.0'], config, new Set())
 
-            const expectedVersions: IMappedVersion[] = [
-                {
-                    comparable: new ComparableVersion(20, 0, 0, 0),
-                    disabled: false,
-                    value: '20.0.0.0',
-                },
-                {
-                    comparable: new ComparableVersion(10, 1, 2, 3),
-                    disabled: false,
-                    value: '10.1.2.3',
-                },
+            const expectedVersions = [
+                new MappedVersion(20, 0, 0, 0, false),
+                new MappedVersion(10, 1, 2, 3, false)
             ]
 
             expect(mapped).toEqual(expectedVersions)
@@ -719,17 +718,21 @@ describe('versions', () => {
 
             const mapped = mapVersions(['10.1.2.3', '10.1.2.4'], config, new Set(['10.1.2.4']))
 
-            const expectedVersions: IMappedVersion[] = [
-                {
-                    comparable: new ComparableVersion(10, 1, 2, 4),
+            const expectedVersions = [
+                new MappedVersion({
+                    major: 10,
+                    minor: 1,
+                    branch: 2,
+                    patch: 4,
                     disabled: true,
-                    value: '10.1.2.4',
-                },
-                {
-                    comparable: new ComparableVersion(10, 1, 2, 3),
+                }),
+                new MappedVersion({
+                    major: 10,
+                    minor: 1,
+                    branch: 2,
+                    patch: 3,
                     disabled: false,
-                    value: '10.1.2.3',
-                },
+                })
             ]
 
             expect(mapped).toEqual(expectedVersions)
@@ -742,12 +745,14 @@ describe('versions', () => {
 
             const mapped = mapVersions(['10.1.2.3', '10.1.2.4'], config, new Set(['10.1.2.4']))
 
-            const expectedVersions: IMappedVersion[] = [
-                {
-                    comparable: new ComparableVersion(10, 1, 2, 3),
+            const expectedVersions = [
+                new MappedVersion({
+                    major: 10,
+                    minor: 1,
+                    branch: 2,
+                    patch: 3,
                     disabled: false,
-                    value: '10.1.2.3',
-                },
+                }),
             ]
 
             expect(mapped).toEqual(expectedVersions)
@@ -760,17 +765,21 @@ describe('versions', () => {
 
             const mapped = mapVersions(['60.6.7.8', '30.0.0.0', '29.0.2000.4', '10.1.2.4'], config, new Set([]))
 
-            const expectedVersions: IMappedVersion[] = [
-                {
-                    comparable: new ComparableVersion(60, 6, 7, 8),
+            const expectedVersions = [
+                new MappedVersion({
+                    major: 60,
+                    minor: 6,
+                    branch: 7,
+                    patch: 8,
                     disabled: false,
-                    value: '60.6.7.8',
-                },
-                {
-                    comparable: new ComparableVersion(30, 0, 0, 0),
+                }),
+                new MappedVersion({
+                    major: 30,
+                    minor: 0,
+                    branch: 0,
+                    patch: 0,
                     disabled: false,
-                    value: '30.0.0.0',
-                },
+                }),
             ]
 
             expect(mapped).toEqual(expectedVersions)
@@ -783,22 +792,28 @@ describe('versions', () => {
 
             const mapped = mapVersions(['60.6.7.8', '30.0.0.0', '30.0.0.1', '29.0.2000.4', '10.1.2.4'], config, new Set([]))
 
-            const expectedVersions: IMappedVersion[] = [
-                {
-                    comparable: new ComparableVersion(30, 0, 0, 0),
+            const expectedVersions = [
+                new MappedVersion({
+                    major: 30,
+                    minor: 0,
+                    branch: 0,
+                    patch: 0,
                     disabled: false,
-                    value: '30.0.0.0',
-                },
-                {
-                    comparable: new ComparableVersion(29, 0, 2000, 4),
+                }),
+                new MappedVersion({
+                    major: 29,
+                    minor: 0,
+                    branch: 2000,
+                    patch: 4,
                     disabled: false,
-                    value: '29.0.2000.4',
-                },
-                {
-                    comparable: new ComparableVersion(10, 1, 2, 4),
+                }),
+                new MappedVersion({
+                    major: 10,
+                    minor: 1,
+                    branch: 2,
+                    patch: 4,
                     disabled: false,
-                    value: '10.1.2.4',
-                },
+                }),
             ]
 
             expect(mapped).toEqual(expectedVersions)
@@ -811,22 +826,28 @@ describe('versions', () => {
 
             const mapped = mapVersions(['60.6.7.8', '30.0.0.0', '29.0.2000.4', '10.1.2.4'], config, new Set([]))
 
-            const expectedVersions: IMappedVersion[] = [
-                {
-                    comparable: new ComparableVersion(60, 6, 7, 8),
-                    disabled: false,
-                    value: '60.6.7.8',
-                },
-                {
-                    comparable: new ComparableVersion(30, 0, 0, 0),
-                    disabled: false,
-                    value: '30.0.0.0',
-                },
-                {
-                    comparable: new ComparableVersion(29, 0, 2000, 4),
-                    disabled: false,
-                    value: '29.0.2000.4',
-                },
+            const expectedVersions = [
+                new MappedVersion({
+                    major: 60,
+                    minor: 6,
+                    branch: 7,
+                    patch: 8,
+                    disabled: false
+                }),
+                new MappedVersion({
+                    major: 30,
+                    minor: 0,
+                    branch: 0,
+                    patch: 0,
+                    disabled: false
+                }),
+                new MappedVersion({
+                    major: 29,
+                    minor: 0,
+                    branch: 2000,
+                    patch: 4,
+                    disabled: false
+                }),
             ]
 
             expect(mapped).toEqual(expectedVersions)
@@ -840,27 +861,35 @@ describe('versions', () => {
 
             const mapped = mapVersions(['60.6.7.8', '30.0.0.0', '29.0.2000.4', '10.1.2.4'], config, new Set([]))
 
-            const expectedVersions: IMappedVersion[] = [
-                {
-                    comparable: new ComparableVersion(60, 6, 7, 8),
-                    disabled: false,
-                    value: '60.6.7.8',
-                },
-                {
-                    comparable: new ComparableVersion(30, 0, 0, 0),
-                    disabled: false,
-                    value: '30.0.0.0',
-                },
-                {
-                    comparable: new ComparableVersion(29, 0, 2000, 4),
-                    disabled: false,
-                    value: '29.0.2000.4',
-                },
-                {
-                    comparable: new ComparableVersion(10, 1, 2, 4),
-                    disabled: false,
-                    value: '10.1.2.4',
-                },
+            const expectedVersions = [
+                new MappedVersion({
+                    major: 60,
+                    minor: 6,
+                    branch: 7,
+                    patch: 8,
+                    disabled: false
+                }),
+                new MappedVersion({
+                    major: 30,
+                    minor: 0,
+                    branch: 0,
+                    patch: 0,
+                    disabled: false
+                }),
+                new MappedVersion({
+                    major: 29,
+                    minor: 0,
+                    branch: 2000,
+                    patch: 4,
+                    disabled: false
+                }),
+                new MappedVersion({
+                    major: 10,
+                    minor: 1,
+                    branch: 2,
+                    patch: 4,
+                    disabled: false
+                }),
             ]
 
             expect(mapped).toEqual(expectedVersions)
@@ -873,12 +902,14 @@ describe('versions', () => {
 
             const mapped = mapVersions(['60.6.7.8', '30.0.0.0', '29.0.2000.4', '10.1.2.4'], config, new Set(['10.1.2.3']))
 
-            const expectedVersions: IMappedVersion[] = [
-                {
-                    comparable: new ComparableVersion(10, 1, 2, 3),
-                    disabled: false,
-                    value: '10.1.2.3',
-                }
+            const expectedVersions = [
+                new MappedVersion({
+                    major: 10,
+                    minor: 1,
+                    branch: 2,
+                    patch: 3,
+                    disabled: false
+                }),
             ]
 
             expect(mapped).toEqual(expectedVersions)
@@ -890,27 +921,35 @@ describe('versions', () => {
             })
             const mapped = mapVersions(['60.6.7.8', '30.0.0.0', '29.0.2000.4', '10.1.2.4'], config, new Set([]))
 
-            const expectedVersions: IMappedVersion[] = [
-                {
-                    comparable: new ComparableVersion(10, 1, 2, 4),
-                    disabled: false,
-                    value: '10.1.2.4',
-                },
-                {
-                    comparable: new ComparableVersion(29, 0, 2000, 4),
-                    disabled: false,
-                    value: '29.0.2000.4',
-                },
-                {
-                    comparable: new ComparableVersion(30, 0, 0, 0),
-                    disabled: false,
-                    value: '30.0.0.0',
-                },
-                {
-                    comparable: new ComparableVersion(60, 6, 7, 8),
-                    disabled: false,
-                    value: '60.6.7.8',
-                },
+            const expectedVersions = [
+                new MappedVersion({
+                    major: 10,
+                    minor: 1,
+                    branch: 2,
+                    patch: 4,
+                    disabled: false
+                }),
+                new MappedVersion({
+                    major: 29,
+                    minor: 0,
+                    branch: 2000,
+                    patch: 4,
+                    disabled: false
+                }),
+                new MappedVersion({
+                    major: 30,
+                    minor: 0,
+                    branch: 0,
+                    patch: 0,
+                    disabled: false
+                }),
+                new MappedVersion({
+                    major: 60,
+                    minor: 6,
+                    branch: 7,
+                    patch: 8,
+                    disabled: false
+                }),
             ]
 
             expect(mapped).toEqual(expectedVersions)
@@ -923,17 +962,21 @@ describe('versions', () => {
             })
             const mapped = mapVersions(['60.6.7.8', '30.0.0.0', '29.0.2000.4', '10.1.2.4'], config, new Set([]))
 
-            const expectedVersions: IMappedVersion[] = [
-                {
-                    comparable: new ComparableVersion(30, 0, 0, 0),
-                    disabled: false,
-                    value: '30.0.0.0',
-                },
-                {
-                    comparable: new ComparableVersion(60, 6, 7, 8),
-                    disabled: false,
-                    value: '60.6.7.8',
-                },
+            const expectedVersions = [
+                new MappedVersion({
+                    major: 30,
+                    minor: 0,
+                    branch: 0,
+                    patch: 0,
+                    disabled: false
+                }),
+                new MappedVersion({
+                    major: 60,
+                    minor: 6,
+                    branch: 7,
+                    patch: 8,
+                    disabled: false
+                }),
             ]
 
             expect(mapped).toEqual(expectedVersions)

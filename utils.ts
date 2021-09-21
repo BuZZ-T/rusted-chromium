@@ -1,5 +1,6 @@
 import { ComparableVersion } from './commons/ComparableVersion'
-import { ExtendedOS, OS, IChromeConfig, IMappedVersion, Compared, Store, TextFunction } from './interfaces'
+import { MappedVersion } from './commons/MappedVersion'
+import { ExtendedOS, OS, IChromeConfig, Compared, Store, TextFunction, IVersion, IVersionWithDisabled } from './interfaces'
 import { logger } from './log/spinner'
 
 export function detectOperatingSystem(config: IChromeConfig): [string, string] {
@@ -23,9 +24,9 @@ export function detectOperatingSystem(config: IChromeConfig): [string, string] {
 }
 
 /**
- * Descending sort comparator for IMappedVersion
+ * Descending sort comparator for MappedVersion
  */
-export function sortDescendingIMappedVersions(a: IMappedVersion, b: IMappedVersion): -1 | 0 | 1 {
+export function sortDescendingMappedVersions(a: MappedVersion, b: MappedVersion): -1 | 0 | 1 {
     const compared = compareComparableVersions(a.comparable, b.comparable)
 
     if (compared === Compared.LESS) {
@@ -39,9 +40,9 @@ export function sortDescendingIMappedVersions(a: IMappedVersion, b: IMappedVersi
 }
 
 /**
- * Ascending sort comparator for IMappedVersion
+ * Ascending sort comparator for MappedVersion
  */
-export const sortAscendingIMappedVersions = (a: IMappedVersion, b: IMappedVersion): -1 | 0 | 1 => sortAscendingComparableVersions(a.comparable, b.comparable)
+export const sortAscendingMappedVersions = (a: MappedVersion, b: MappedVersion): -1 | 0 | 1 => sortAscendingComparableVersions(a.comparable, b.comparable)
 
 /**
  * Ascending sort comparator for ComparableVersion 
@@ -121,4 +122,15 @@ export function sortStoreEntries(store: Store): Store {
 
 export function isTextFunction(value: string | TextFunction | undefined): value is TextFunction {
     return typeof value === 'function'
+}
+
+export function isIVersion(value: unknown): value is IVersion {
+    return typeof (value as IVersion).major === 'number'
+        && typeof (value as IVersion).minor === 'number'
+        && typeof (value as IVersion).branch === 'number'
+        && typeof (value as IVersion).patch === 'number'
+}
+
+export function isIVersionWithDisabled(value: unknown): value is IVersionWithDisabled {
+    return isIVersion(value) && typeof (value as IVersionWithDisabled).disabled === 'boolean'
 }

@@ -74,7 +74,7 @@ describe('readStore', () => {
             readFileMock.mockImplementation((path, options, callback) => {
                 callback(null, '{"Not parseable": "6}')
             })
-            
+
             await expect(() => readStoreFile(config)).rejects.toThrow(new Error('Unexpected end of JSON input'))
             expect(loggerMock.success).toHaveBeenCalledTimes(0)
             expect(loggerMock.error).toHaveBeenCalledTimes(1)
@@ -91,7 +91,7 @@ describe('readStore', () => {
             readFileMock.mockImplementation((path, option, callback) => {
                 callback(new Error('callback error'), '')
             })
-            
+
             await expect(() => readStoreFile(config)).rejects.toEqual(new Error('callback error'))
 
             expect(loggerMock.error).toHaveBeenCalledTimes(1)
@@ -108,7 +108,7 @@ describe('readStore', () => {
             readFileMock.mockImplementation(() => {
                 throw new Error('callback error')
             })
-            
+
             await expect(() => readStoreFile(config)).rejects.toThrow(new Error('callback error'))
 
             expect(readFileMock).toHaveBeenCalledTimes(1)
@@ -127,11 +127,29 @@ describe('readStore', () => {
                 // trailing comma on purpose
                 callback(null, '{"win": {"x64": [], "x86": [],}}')
             })
-            
+
             await expect(() => readStoreFile(config)).rejects.toThrow(new Error('Unexpected token } in JSON at position 30'))
             expect(readFileMock).toHaveBeenCalledTimes(1)
             expect(loggerMock.error).toHaveBeenCalledTimes(1)
             expect(loggerMock.error).toHaveBeenCalledWith('Unable to parse JSON file')
+        })
+
+        it('should rethrow anything else', async () => {
+            const url = 'my-url'
+            existsSyncMock.mockReturnValue(true)
+            const config: IStoreConfig = {
+                url,
+            }
+
+            readFileMock.mockImplementation(() => {
+                throw 'something happened'
+            })
+
+            await expect(() => readStoreFile(config)).rejects.toEqual('something happened')
+
+            expect(readFileMock).toHaveBeenCalledTimes(1)
+            expect(loggerMock.error).toHaveBeenCalledTimes(1)
+            expect(loggerMock.error).toHaveBeenCalledWith('something happened')
         })
     })
 })

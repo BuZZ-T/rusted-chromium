@@ -25,7 +25,7 @@ export async function downloadStore(config: IStoreConfig, destinationPath: strin
         return JSON.parse(storeFile)
     }).catch(err => {
         logger.error()
-        if (err?.message && err?.path) {
+        if (err?.message && err.path) {
             logger.error(`${err.message}: ${err.path}`)
         } else {
             logger.error(err)

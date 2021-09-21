@@ -14,49 +14,6 @@ const localPath = path.join(__dirname, '..', 'localstore.json')
 
 describe('store', () => {
 
-    describe('disableByStore', () => {
-
-        let loadStoreMock: jest.SpyInstance<Promise<Store>, []>
-
-        beforeEach(() => {
-            loadStoreMock = jest.spyOn(store, 'loadStore')
-        })
-
-        afterAll(() => {
-            loadStoreMock.mockRestore()
-        })
-
-        it('should disable version for current OS, leaving other versions untouched', async () => {
-            const mockedStore = createStore({ linux: { x86: [], x64: ['0.0.0.0', '3.3.3.3'] } })
-
-            loadStoreMock.mockReturnValue(Promise.resolve(mockedStore))
-
-            expect(await store.disableByStore([
-                {
-                    comparable: new ComparableVersion(1, 2, 3, 4),
-                    disabled: false,
-                    value: '1.2.3.4',
-                },
-                {
-                    comparable: new ComparableVersion(1, 2, 3, 4),
-                    disabled: false,
-                    value: '3.3.3.3',
-                },
-            ], 'linux', 'x64')).toEqual([
-                {
-                    comparable: new ComparableVersion(1, 2, 3, 4),
-                    disabled: false,
-                    value: '1.2.3.4',
-                },
-                {
-                    comparable: new ComparableVersion(1, 2, 3, 4),
-                    disabled: true,
-                    value: '3.3.3.3',
-                },
-            ])
-        })
-    })
-
     describe('loadStore', () => {
 
         let existsSyncMock: MaybeMocked<typeof existsSync>
@@ -66,7 +23,7 @@ describe('store', () => {
             existsSyncMock = mocked(existsSync)
             readFileMock = mocked(readFile as ReadFileWithOptions)
         })
-        
+
         beforeEach(() => {
             existsSyncMock.mockClear()
             readFileMock.mockClear()
@@ -143,11 +100,12 @@ describe('store', () => {
                 callback(null)
             })
 
-            await store.storeNegativeHit({
-                comparable: new ComparableVersion(1, 2, 3, 4),
-                disabled: true,
-                value: '1.2.3.4',
-            }, 'linux', 'x64')
+            await store.storeNegativeHit(new ComparableVersion({
+                major: 1,
+                minor: 2,
+                branch: 3,
+                patch: 4,
+            }), 'linux', 'x64')
 
             const expectedStore = createStore({ linux: { x64: ['1.2.3.4'], x86: [], } })
 
@@ -166,11 +124,12 @@ describe('store', () => {
                 callback(null)
             })
 
-            await store.storeNegativeHit({
-                comparable: new ComparableVersion(1, 2, 3, 4),
-                disabled: true,
-                value: '1.2.3.4',
-            }, 'linux', 'x64')
+            await store.storeNegativeHit(new ComparableVersion({
+                major: 1,
+                minor: 2,
+                branch: 3,
+                patch: 4,
+            }), 'linux', 'x64')
 
             const expectedStore = createStore({ linux: { x64: ['1.2.3.4'], x86: [] }, win: { x64: ['10.0.0.0'], x86: [], } })
 
@@ -181,7 +140,7 @@ describe('store', () => {
         })
 
         it('should do nothing, if entry already exists', async () => {
-            const existingStore = createStore({ win: { x64: ['10.0.0.0'], x86: [] }, linux: { x64: ['1.0.0.0'], x86: []} })
+            const existingStore = createStore({ win: { x64: ['10.0.0.0'], x86: [] }, linux: { x64: ['1.0.0.0'], x86: [] } })
 
             loadStoreMock.mockResolvedValue(existingStore)
 
@@ -189,11 +148,12 @@ describe('store', () => {
                 callback(null)
             })
 
-            await store.storeNegativeHit({
-                comparable: new ComparableVersion(1, 2, 3, 4),
-                disabled: true,
-                value: '1.0.0.0',
-            }, 'linux', 'x64')
+            await store.storeNegativeHit(new ComparableVersion({
+                major: 1,
+                minor: 0,
+                branch: 0,
+                patch: 0,
+            }), 'linux', 'x64')
 
             expect(loadStoreMock).toHaveBeenCalledTimes(1)
 
@@ -209,11 +169,12 @@ describe('store', () => {
                 callback(null)
             })
 
-            await store.storeNegativeHit({
-                comparable: new ComparableVersion(1, 2, 3, 4),
-                disabled: true,
-                value: '1.2.3.4',
-            }, 'linux', 'x64')
+            await store.storeNegativeHit(new ComparableVersion({
+                major: 1,
+                minor: 2,
+                branch: 3,
+                patch: 4,
+            }), 'linux', 'x64')
 
             const expectedStore = createStore({ linux: { x64: ['1.2.3.4'], x86: [] }, win: { x64: ['10.0.0.0', '11.0.0.0', '12.0.0.0'], x86: [], } })
 

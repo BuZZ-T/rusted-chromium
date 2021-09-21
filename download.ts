@@ -1,4 +1,4 @@
-import { existsSync, mkdir as fsMkdir, createWriteStream } from 'fs'
+import { existsSync, mkdir as fsMkdir, createWriteStream, stat as fsStat, rmdir as fsRmdir, unlink as fsUnlink } from 'fs'
 import * as path from 'path'
 import * as unzipper from 'unzipper'
 import { promisify } from 'util'
@@ -15,6 +15,27 @@ import { getChromeDownloadUrl, loadVersions, mapVersions } from './versions'
 const Progress = require('node-fetch-progress')
 
 const mkdir = promisify(fsMkdir)
+const stat = promisify(fsStat)
+const rmdir = promisify(fsRmdir)
+const unlink = promisify(fsUnlink)
+
+function registerSigIntHandler(path: string): void {
+    process.on('SIGINT', () => {
+        return stat(path)
+            .then(stats => {
+                if (stats.isDirectory()) {
+                    return rmdir(path, { recursive: true })
+                } else if (stats.isFile()) {
+                    return unlink(path)
+                } else {
+                    return
+                }
+            })
+            .finally(() => {
+                process.exit(130)
+            })
+    })
+}
 
 export async function downloadChromium(config: IChromeConfig): Promise<void> {
     const versions = await loadVersions()
@@ -32,7 +53,6 @@ export async function downloadChromium(config: IChromeConfig): Promise<void> {
 
         if (!!config.downloadFolder && !existsSync(config.downloadFolder)) {
             await mkdir(config.downloadFolder, { recursive: true })
-            // fsMkdir(config.downloadFolder, )
             logger.info(`${config.downloadFolder} created'`)
         }
 
@@ -58,11 +78,14 @@ export async function downloadChromium(config: IChromeConfig): Promise<void> {
         })
 
         if (config.autoUnzip) {
+            registerSigIntHandler(downloadPath)
             zipFileResponse.body.pipe(
                 unzipper.Extract({ path: downloadPath })
             )
         } else {
+            const filename = downloadPath + '.zip'
             const file = createWriteStream(downloadPath + '.zip')
+            registerSigIntHandler(filename)
             zipFileResponse.body.pipe(file)
         }
     }

@@ -151,7 +151,6 @@ describe('api', () => {
 
     describe('fetchChromeUrl', () => {
         it('should fetch the chrome url', async () => {
-
             const urlOS = 'url-os'
             const branchPosition = 'branch-position'
             const filenameOS = 'filename-os'
@@ -189,6 +188,49 @@ describe('api', () => {
             )
 
             await expect(() => fetchChromeUrl('', '', '')).rejects.toThrow(new Error('Status Code: 400 some-error-message'))
+        })
+
+        it('should resolve undefined if metadata contains no items', async () => {
+            const urlOS = 'url-os'
+            const branchPosition = 'branch-position'
+            const filenameOS = 'filename-os'
+
+            fetchMock.mockImplementation(() =>
+                Promise.resolve({
+                    ok: true,
+                    json() {
+                        return Promise.resolve({})
+                    }
+                })
+            )
+
+            expect(await fetchChromeUrl(branchPosition, urlOS, filenameOS)).toEqual(undefined)
+        })
+
+        it('should resolve undefined if items contain no medialink', async () => {
+            const urlOS = 'url-os'
+            const branchPosition = 'branch-position'
+            const filenameOS = 'filename-os'
+
+            fetchMock.mockImplementation(() =>
+                Promise.resolve({
+                    ok: true,
+                    json() {
+                        return Promise.resolve({
+                            items: [
+                                {
+                                    name: 'url-os/branch-position/chrome-filename-os.zip',
+                                },
+                                {
+                                    name: 'other-name',
+                                },
+                            ]
+                        })
+                    }
+                })
+            )
+
+            expect(await fetchChromeUrl(branchPosition, urlOS, filenameOS)).toEqual(undefined)
         })
     })
 

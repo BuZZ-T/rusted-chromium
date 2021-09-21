@@ -1,4 +1,7 @@
-export class ComparableVersion {
+import { IVersion } from '../interfaces'
+import { isIVersion } from '../utils'
+
+export class ComparableVersion implements IVersion {
 
     private _major: number
     private _minor: number
@@ -23,13 +26,13 @@ export class ComparableVersion {
 
     public constructor(input: string)
     public constructor(major: number, minor: number, branch: number, patch: number)
-    public constructor({ major, minor, branch, patch }: { major: number, minor: number, branch: number, patch: number })
-    public constructor(majorInput: number | string | { major: number, minor: number, branch: number, patch: number }, minor?: number, branch?: number, patch?: number) {
-        if (typeof majorInput === 'object') {
+    public constructor({ major, minor, branch, patch }: IVersion)
+    public constructor(majorInput: number | string | IVersion, minor?: number, branch?: number, patch?: number) {
+        if (isIVersion(majorInput)) {
             this._major = majorInput.major
-            this._minor = majorInput.minor || 0
-            this._branch = majorInput.branch || 0
-            this._patch = majorInput.patch || 0
+            this._minor = majorInput.minor
+            this._branch = majorInput.branch
+            this._patch = majorInput.patch
         } else if (typeof majorInput === 'number') {
             this._major = majorInput
             this._minor = minor || 0

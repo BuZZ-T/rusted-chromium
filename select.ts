@@ -1,6 +1,7 @@
 import * as prompts from 'prompts'
 
-import { IMappedVersion, IChromeConfig } from './interfaces'
+import { MappedVersion } from './commons/MappedVersion'
+import { IChromeConfig } from './interfaces'
 
 /**
  * Lets the user select a version via CLI prompt and returns it.
@@ -9,17 +10,17 @@ import { IMappedVersion, IChromeConfig } from './interfaces'
  * @param versions A decensding sorted Array of versions
  * @param config 
  */
-export async function userSelectedVersion(versions: IMappedVersion[], config: IChromeConfig): Promise<IMappedVersion | null> {
+export async function userSelectedVersion(versions: MappedVersion[], config: IChromeConfig): Promise<MappedVersion | null> {
     if (config.results === 1) {
-        return versions[0]?.disabled ? null : versions[0]
+        return versions[0]?.disabled ? null : versions[0] || null
     }
 
     if (config.onlyNewestMajor) {
         versions = versions.filter((version, index, versionArray) => {
             const previous = versionArray[index - 1]
             const previousMajor = previous?.value?.split('.')[0]
-            const currentMajor = version?.value?.split('.')[0]
-            return (currentMajor !== previousMajor || previous?.disabled) && !version?.disabled
+            const currentMajor = version.value.split('.')[0]
+            return (currentMajor !== previousMajor || previous.disabled) && !version.disabled
         }).slice(0, Number(config.results))
     }
 

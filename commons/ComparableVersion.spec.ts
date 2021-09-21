@@ -2,7 +2,7 @@ import { ComparableVersion } from './ComparableVersion'
 
 describe('ComparableVersion', () => {
 
-    describe('object input', () => {
+    describe('IVersion input', () => {
         it('should create a ComparableVersion with first input', () => {
             const versionString = '10.0.1.2'
             const versionObject = {
@@ -84,6 +84,25 @@ describe('ComparableVersion', () => {
                 patch: 1,
             }
             const cVersion = new ComparableVersion(versionObject)
+            expect(cVersion.major).toEqual(100)
+            expect(cVersion.minor).toEqual(0)
+            expect(cVersion.branch).toEqual(0)
+            expect(cVersion.patch).toEqual(1)
+
+            expect(cVersion.toString()).toEqual(versionString)
+        })
+
+        it('should create a ComparableVersion with ComparableVersion as input', () => {
+            const versionString = '100.0.0.1'
+
+            const oldComparable = new ComparableVersion({
+                major: 100,
+                minor: 0,
+                branch: 0, 
+                patch: 1,
+            })
+            
+            const cVersion = new ComparableVersion(oldComparable)
             expect(cVersion.major).toEqual(100)
             expect(cVersion.minor).toEqual(0)
             expect(cVersion.branch).toEqual(0)

@@ -36,15 +36,11 @@ export class ProgressBar extends Printer<ProgressBar> {
         return this
     }
 
-    private checkForComplete(percent: number): ProgressBar {
-        if (!this.config) {
-            return this
-        }
-        
+    private checkForComplete(config: ProgressConfig, percent: number): ProgressBar {
         return percent === 1
             ? this.clearLine()
                 .deleteLastLine()
-                .write(this.SUCCESS_FN(this.config.success))
+                .write(this.SUCCESS_FN(config.success))
                 .stop()
                 .newline()
             : this
@@ -72,7 +68,7 @@ export class ProgressBar extends Printer<ProgressBar> {
 
         return this.clearLine()
             .write(`[${chalk.bgWhite(' ').repeat(doneAmount)}${chalk.grey('.').repeat(restAmount)}]${this.config.showNumeric ? ProgressBar.calcNumeric(this.config, fraction) : ''}`)
-            .checkForComplete(fraction)
+            .checkForComplete(this.config, fraction)
     }
 }
 

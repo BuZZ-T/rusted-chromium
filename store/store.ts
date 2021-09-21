@@ -3,8 +3,9 @@ import { existsSync } from 'fs'
 import * as path from 'path'
 import { promisify } from 'util'
 
+import { ComparableVersion } from '../commons/ComparableVersion'
 import { LOCAL_STORE_FILE } from '../commons/constants'
-import { OS, Store, IMappedVersion, Arch } from '../interfaces'
+import { OS, Store, Arch } from '../interfaces'
 import { sortStoreEntries } from '../utils'
 
 const STORE_FILE = path.join(__dirname, '..', LOCAL_STORE_FILE)
@@ -27,17 +28,6 @@ const EMPTY_STORE: Store = {
     },
 }
 
-export async function disableByStore(versions: IMappedVersion[], os: OS, arch: Arch): Promise<IMappedVersion[]> {
-    const currentStore = await store.loadStore()
-
-    const storeForOS = new Set(currentStore[os][arch])
-
-    return versions.map(version => ({
-        ...version,
-        disabled: storeForOS.has(version.value)
-    }))
-}
-
 export async function loadStore(): Promise<Store> {
     // FIXME: exists is deprecated, use existsSync
     const currentStoreJson = existsSync(STORE_FILE)
@@ -52,11 +42,11 @@ export async function loadStore(): Promise<Store> {
     return currentStore
 }
 
-export async function storeNegativeHit(version: IMappedVersion, os: OS, arch: Arch): Promise<void> {
+export async function storeNegativeHit(version: ComparableVersion, os: OS, arch: Arch): Promise<void> {
     const currentStore = await store.loadStore()
     
-    if (!new Set(currentStore[os][arch]).has(version.value)) {
-        currentStore[os][arch].push(version.value)
+    if (!new Set(currentStore[os][arch]).has(version.toString())) {
+        currentStore[os][arch].push(version.toString())
 
         const sortedStore = sortStoreEntries(currentStore)
         await writeFile(STORE_FILE, JSON.stringify(sortedStore, null, 4))
@@ -64,7 +54,6 @@ export async function storeNegativeHit(version: IMappedVersion, os: OS, arch: Ar
 }
 
 const store = {
-    disableByStore,
     loadStore,
     storeNegativeHit,
 }

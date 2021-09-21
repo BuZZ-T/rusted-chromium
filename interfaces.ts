@@ -110,3 +110,14 @@ export interface IDownloadSettings {
     selectedVersion: string | undefined
     filenameOS: string
 }
+
+export interface IVersion {
+    major: number
+    minor: number
+    branch: number
+    patch: number
+}
+
+export interface IVersionWithDisabled extends IVersion {
+    disabled: boolean
+}

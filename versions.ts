@@ -1,15 +1,15 @@
 import { parse, HTMLElement as NodeParserHTMLElement } from 'node-html-parser'
 
 import { fetchBranchPosition, fetchChromeUrl, fetchChromiumTags } from './api'
-import { ComparableVersion } from './commons/ComparableVersion'
 import { SEARCH_BINARY } from './commons/constants'
-import { Compared, IChromeConfig, IMappedVersion, IDownloadSettings } from './interfaces'
+import { MappedVersion } from './commons/MappedVersion'
+import { Compared, IChromeConfig, IDownloadSettings } from './interfaces'
 import { logger } from './log/spinner'
 import { userSelectedVersion } from './select'
 import { storeNegativeHit } from './store/store'
-import { detectOperatingSystem, sortDescendingIMappedVersions, compareComparableVersions } from './utils'
+import { detectOperatingSystem, sortDescendingMappedVersions, compareComparableVersions } from './utils'
 
-export async function getChromeDownloadUrl(config: IChromeConfig, mappedVersions: IMappedVersion[]): Promise<IDownloadSettings> {
+export async function getChromeDownloadUrl(config: IChromeConfig, mappedVersions: MappedVersion[]): Promise<IDownloadSettings> {
     const [urlOS, filenameOS] = detectOperatingSystem(config)
 
     const isAutoSearch = (!config.interactive && config.onFail === 'decrease') || !!config.single
@@ -18,8 +18,8 @@ export async function getChromeDownloadUrl(config: IChromeConfig, mappedVersions
         ? mappedVersions[0]
         : await userSelectedVersion(mappedVersions, config)
 
-    if (isAutoSearch) {
-        logger.info(`Auto-searching with version ${selectedVersion?.value}`)
+    if (isAutoSearch && !!selectedVersion) {
+        logger.info(`Auto-searching with version ${selectedVersion.value}`)
     }
 
     let chromeUrl: string | undefined
@@ -43,16 +43,15 @@ export async function getChromeDownloadUrl(config: IChromeConfig, mappedVersions
             }
         }
 
-        const sVersion: IMappedVersion = selectedVersion
+        const sVersion: MappedVersion = selectedVersion
         const index = mappedVersions.findIndex(version => version.value === sVersion.value)
 
         if (!chromeUrl && !selectedVersion.disabled) {
             const invalidVersion = mappedVersions[index]
             logger.error()
-            invalidVersion.disabled = true
             if (config.store) {
                 // TODO: remove await?
-                await storeNegativeHit(invalidVersion, config.os, config.arch)
+                await storeNegativeHit(invalidVersion.comparable, config.os, config.arch)
             }
         }
 
@@ -130,22 +129,14 @@ export async function loadVersions(): Promise<string[]> {
     return versions
 }
 
-export function mapVersions(versions: string[], config: IChromeConfig, store: Set<string>): IMappedVersion[] {
+export function mapVersions(versions: string[], config: IChromeConfig, store: Set<string>): MappedVersion[] {
     if (config.single) {
-        return [{
-            comparable: new ComparableVersion(config.single),
-            disabled: false,
-            value: config.single,
-        }]
+        return [new MappedVersion(config.single, false)]
     }
 
     const filteredVersions = versions
-        .map(version => ({
-            comparable: new ComparableVersion(version),
-            disabled: store.has(version),
-            value: version,
-        }))
-        .sort(sortDescendingIMappedVersions)
+        .map(version => new MappedVersion(version, store.has(version)))
+        .sort(sortDescendingMappedVersions)
         .filter(version => compareComparableVersions(version.comparable, config.min) !== Compared.LESS
             && compareComparableVersions(version.comparable, config.max) !== Compared.GREATER)
         .filter(version => !config.hideNegativeHits || !version.disabled)

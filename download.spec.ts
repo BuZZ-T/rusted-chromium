@@ -1,4 +1,4 @@
-import { createWriteStream, existsSync, mkdir } from 'fs'
+import { existsSync, mkdir, createWriteStream, stat, rmdir, unlink, Stats } from 'fs'
 import { Response as NodeFetchResponse } from 'node-fetch'
 import { MaybeMocked, MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
@@ -10,7 +10,7 @@ import { NoChromiumDownloadError } from './errors'
 import { progress } from './log/progress'
 import { logger } from './log/spinner'
 import { loadStore } from './store/store'
-import { createChromeConfig, createStore, createDownloadSettings, MkdirWithOptions } from './test.utils'
+import { createChromeConfig, createStore, createDownloadSettings, MkdirWithOptions, StatsWithoutOptions } from './test.utils'
 import { getChromeDownloadUrl, loadVersions, mapVersions } from './versions'
 
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */
@@ -49,9 +49,15 @@ describe('download', () => {
         let existsSyncMock: MaybeMocked<typeof existsSync>
         let createWriteStreamMock: MaybeMockedDeep<typeof createWriteStream>
         let mkdirMock: MaybeMocked<MkdirWithOptions>
+        let statMock: MaybeMocked<StatsWithoutOptions>
+        let rmdirMock: MaybeMocked<typeof rmdir>
+        let unlinkMock: MaybeMocked<typeof unlink>
 
         let pipeMock: jest.Mock
         let zipFileResource: NodeFetchResponse
+
+        let processOnSpy: jest.SpyInstance
+        let processExitSpy: jest.SpyInstance
 
         beforeAll(() => {
             loadVersionsMock = mocked(loadVersions)
@@ -69,6 +75,9 @@ describe('download', () => {
             existsSyncMock = mocked(existsSync)
             createWriteStreamMock = mocked(createWriteStream)
             mkdirMock = mocked(mkdir as MkdirWithOptions)
+            statMock = mocked(stat as StatsWithoutOptions)
+            rmdirMock = mocked(rmdir)
+            unlinkMock = mocked(unlink)
 
             pipeMock = jest.fn()
             zipFileResource = {
@@ -77,6 +86,9 @@ describe('download', () => {
                 } as unknown as NodeJS.ReadableStream
             } as NodeFetchResponse
             fetchChromeZipFileMock.mockResolvedValue(zipFileResource)
+
+            processOnSpy = jest.spyOn(process, 'on')
+            processExitSpy = jest.spyOn(process, 'exit')
         })
 
         beforeEach(() => {
@@ -99,9 +111,15 @@ describe('download', () => {
             existsSyncMock.mockClear()
             createWriteStreamMock.mockClear()
             mkdirMock.mockClear()
+            statMock.mockClear()
+            rmdirMock.mockClear()
+            unlinkMock.mockClear()
 
             pipeMock.mockClear()
             onMock.mockClear()
+
+            processOnSpy.mockClear()
+            processExitSpy.mockClear()
         })
 
         it('should fetch the zip and create the dest folder', async () => {
@@ -199,9 +217,9 @@ describe('download', () => {
             expect(onMock).toHaveBeenCalledTimes(1)
             expect(onMock).toHaveBeenCalledWith('progress', expect.any(Function))
 
-            const callback = onMock.mock.calls[0][1]
+            const progressCallback = onMock.mock.calls[0][1]
 
-            callback({
+            progressCallback({
                 total: 3 * 1024 * 1024,
                 progress: 0.1,
             })
@@ -237,9 +255,9 @@ describe('download', () => {
             expect(onMock).toHaveBeenCalledTimes(1)
             expect(onMock).toHaveBeenCalledWith('progress', expect.any(Function))
 
-            const callback = onMock.mock.calls[0][1]
+            const progressCallback = onMock.mock.calls[0][1]
 
-            callback({
+            progressCallback({
                 total: 3 * 1024 * 1024,
                 progress: 0.1,
             })
@@ -275,14 +293,14 @@ describe('download', () => {
             expect(onMock).toHaveBeenCalledTimes(1)
             expect(onMock).toHaveBeenCalledWith('progress', expect.any(Function))
 
-            const callback = onMock.mock.calls[0][1]
+            const progressCallback = onMock.mock.calls[0][1]
 
-            callback({
+            progressCallback({
                 total: 3 * 1024 * 1024,
                 progress: 0.1,
             })
 
-            callback({
+            progressCallback({
                 total: 3 * 1024 * 1024,
                 progress: 0.3,
             })
@@ -343,6 +361,117 @@ describe('download', () => {
                 download: true,
             })
             await expect(() => downloadChromium(config)).rejects.toThrow(new NoChromiumDownloadError())
+        })
+
+        it('should delete the unfinished file on SIGINT while downloading', async () => {
+            getChromeDownloadUrlMock.mockResolvedValue(createDownloadSettings())
+
+            processExitSpy.mockImplementation(() => undefined as never)
+
+            statMock.mockImplementation((path, callback) => {
+                callback(null, { isDirectory: () => true } as Stats)
+            })
+            rmdirMock.mockImplementation((path, options, callback) => {
+                callback(null)
+            })
+            unlinkMock.mockImplementation((path, callback) => {
+                callback(null)
+            })
+
+            fetchChromeZipFileMock.mockResolvedValue(zipFileResource)
+
+            // Act
+            const config = createChromeConfig({
+                autoUnzip: false,
+            })
+            await downloadChromium(config)
+
+            const progressCallback = onMock.mock.calls[0][1]
+            progressCallback({
+                total: 3 * 1024 * 1024,
+                progress: 0.1,
+            })
+            const signalCallback = processOnSpy.mock.calls[0][1] as () => Promise<void>
+            await signalCallback()
+
+            expect(unlinkMock).toHaveBeenCalledTimes(0)
+            expect(rmdirMock).toHaveBeenCalledTimes(1)
+            expect(processExitSpy).toHaveBeenCalledTimes(1)
+            expect(processExitSpy).toHaveBeenCalledWith(130)
+        })
+
+        it('should delete the unfinished file on SIGINT while extracting', async () => {
+            getChromeDownloadUrlMock.mockResolvedValue(createDownloadSettings())
+
+            processExitSpy.mockImplementation(() => undefined as never)
+
+            statMock.mockImplementation((path, callback) => {
+                callback(null, { isDirectory: () => false, isFile: () => true } as Stats)
+            })
+            rmdirMock.mockImplementation((path, options, callback) => {
+                callback(null)
+            })
+            unlinkMock.mockImplementation((path, callback) => {
+                callback(null)
+            })
+
+            fetchChromeZipFileMock.mockResolvedValue(zipFileResource)
+
+            // Act
+            const config = createChromeConfig({
+                autoUnzip: false,
+            })
+            await downloadChromium(config)
+
+            const progressCallback = onMock.mock.calls[0][1]
+            progressCallback({
+                total: 3 * 1024 * 1024,
+                progress: 0.1,
+            })
+            const signalCallback = processOnSpy.mock.calls[0][1] as () => Promise<void>
+            await signalCallback()
+
+            expect(unlinkMock).toHaveBeenCalledTimes(1)
+            expect(rmdirMock).toHaveBeenCalledTimes(0)
+            expect(processExitSpy).toHaveBeenCalledTimes(1)
+            expect(processExitSpy).toHaveBeenCalledWith(130)
+        })
+
+        it('should delete nothing, if no file or directory exists', async () => {
+            getChromeDownloadUrlMock.mockResolvedValue(createDownloadSettings())
+
+            processExitSpy.mockImplementation(() => undefined as never)
+
+            statMock.mockImplementation((path, callback) => {
+                callback(null, { isDirectory: () => false, isFile: () => false } as Stats)
+            })
+            rmdirMock.mockImplementation((path, options, callback) => {
+                callback(null)
+            })
+            unlinkMock.mockImplementation((path, callback) => {
+                callback(null)
+            })
+
+            fetchChromeZipFileMock.mockResolvedValue(zipFileResource)
+
+            // Act
+            const config = createChromeConfig({
+                autoUnzip: false,
+            })
+            await downloadChromium(config)
+
+            const progressCallback = onMock.mock.calls[0][1]
+            progressCallback({
+                total: 3 * 1024 * 1024,
+                progress: 0.1,
+            })
+            const signalCallback = processOnSpy.mock.calls[0][1] as () => Promise<void>
+            await signalCallback()
+
+            expect(unlinkMock).toHaveBeenCalledTimes(0)
+            expect(rmdirMock).toHaveBeenCalledTimes(0)
+            expect(processExitSpy).toHaveBeenCalledTimes(1)
+            expect(processExitSpy).toHaveBeenCalledWith(130)
         })
     })
 })
