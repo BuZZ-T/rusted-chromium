@@ -1,4 +1,5 @@
 import { ExtendedOS } from '../interfaces'
+
 export interface IConfigOptions {
     min: string
     max: string
@@ -14,6 +15,7 @@ export interface IConfigOptions {
     decreaseOnFail: boolean
 
     importStore?: string
+    exportStore?: string | boolean
 
     unzip: boolean
     store: boolean

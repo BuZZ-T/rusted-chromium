@@ -15,6 +15,11 @@ export interface IChromeConfigWrapper {
     config: IChromeConfig
 }
 
+export interface IExportConfigWrapper {
+    action: 'exportStore'
+    config: IExportConfig
+}
+
 export interface IChromeConfig {
     min: ComparableVersion
     max: ComparableVersion
@@ -37,7 +42,11 @@ export interface IStoreConfig {
     url: string
 }
 
-export type ConfigWrapper = IStoreConfigWrapper | IChromeConfigWrapper
+export interface IExportConfig {
+    path?: string
+}
+
+export type ConfigWrapper = IStoreConfigWrapper | IChromeConfigWrapper | IExportConfigWrapper
 
 export interface IMappedVersion {
     value: string

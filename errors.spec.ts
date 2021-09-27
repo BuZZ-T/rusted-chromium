@@ -1,4 +1,4 @@
-import { BadRequestError, UnauthorizedError, NotFoundError, ForbiddenError, findAndThrowError } from './errors'
+import { BadRequestError, UnauthorizedError, NotFoundError, ForbiddenError, findAndThrowError, NoChromiumDownloadError, NoLocalstoreError } from './errors'
 
 describe('errors', () => {
     describe('findAndThrowError', () => {
@@ -104,6 +104,34 @@ describe('errors', () => {
             }
 
             expect(NotFoundError.match(pResponse as Response)).toBe(false)
+        })
+    })
+
+    describe('NoChromiumDownloadError', () => {
+        it('should set the error message', () => {
+            const error = new NoChromiumDownloadError()
+
+            expect(() => {
+                throw error
+            }).toThrow('Single version is specified, but no binary is found')
+        })
+    })
+
+    describe('NoLocalstoreError', () => {
+        it('should set the error message without path given', () => {
+            const error = new NoLocalstoreError()
+
+            expect(() => {
+                throw error
+            }).toThrow('No "localstore.json" file found')
+        })
+
+        it('should set the error message with path given', () => {
+            const error = new NoLocalstoreError('some_path')
+
+            expect(() => {
+                throw error
+            }).toThrow('No "localstore.json" file found under the given path: some_path')
         })
     })
 })

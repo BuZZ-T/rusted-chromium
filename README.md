@@ -69,6 +69,7 @@ npm run build
 |`--non-interactive` | `-n` | - | - | Don't display the version selection. Automatically select the newest version in the available range (set by `--min`, `--max` and `--max-results`). Only works when `--decrease-on-fail` is set as well.
 |`--no-download` | `-l` | - | - | Don't download the binary if it's found.
 |`--import-store` | `-I` | URL/File path | - | Download the store file "localstore.json" from a given URL or load it from a given path of the filesystem. Merges the import with an already existing store.
+|`--export-store` | `-E` | (optional) File path | - | Exports the "localstore.json" file to stdout. Optionally add a path where to find it. Uses "localstore.json" in the current folder of the rusted-chromium executable as default.
 |`--hide-negative-hits` | `-H` | - | false | Hide negative hits in the CLI prompt
 |`--folder` | `-f` | `path/to/folder` | Current folder executing the command | Set the folder to which the archive of the chromium binary or the extracted folder (if the flag `--unzip` is set)
 |`--only-newest-major` | `-O`| - | - | Show only the newest version for every major version in the user selection. If the newest versions are not available for the current os, they are skipped.
@@ -179,9 +180,32 @@ rusted-chromium -f /tmp/rusted
 ##### Import a store file (and merge it with an existing store, if available)
 ```bash
 # URL
+## long version
 rusted-chromium --import-store https://url/to/localstore.json
+## short version
+rusted-chromium -I https://url/to/localstore.json
+
 # filesystem
+## long version
 rusted-chromium --import-store /path/to/file
+## short version
+rusted-chromium -I /path/to/file
+```
+
+##### Export a store file (from default location)
+```bash
+# long version
+rusted-chromium --export-store
+# short version
+rusted-chromium -E
+```
+
+##### Export a store file (from given path)
+```bash
+# long version
+rusted-chromium --export-store /path/to/file
+# short version
+rusted-chromium -E /path/to/file
 ```
 
 ##### Show the help and quit

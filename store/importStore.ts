@@ -1,4 +1,4 @@
-import * as fs from 'fs'
+import { writeFile, readFile, existsSync } from 'fs'
 import { join } from 'path'
 import { promisify } from 'util'
 
@@ -8,8 +8,8 @@ import { sortStoreEntries } from '../utils'
 import { downloadStore } from './downloadStore'
 import { readStoreFile } from './readStore'
 
-const writeFilePromise = promisify(fs.writeFile)
-const readFilePromise = promisify(fs.readFile)
+const writeFilePromise = promisify(writeFile)
+const readFilePromise = promisify(readFile)
 
 const localStoreFilePath = join(__dirname, '..', LOCAL_STORE_FILE)
 
@@ -24,7 +24,7 @@ export async function importAndMergeLocalstore(config: IStoreConfig): Promise<St
         return Promise.reject()
     }
 
-    if (fs.existsSync(localStoreFilePath)) {
+    if (existsSync(localStoreFilePath)) {
         const localStore = await readFilePromise(LOCAL_STORE_FILE, {encoding: 'utf-8'})
         const sortedStore = sortStoreEntries(mergeStores(JSON.parse(localStore), store))
         await storeStoreFile(sortedStore)

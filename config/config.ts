@@ -41,6 +41,7 @@ export function readConfig(args: string[], platform: NodeJS.Platform): ConfigWra
         .option('-t, --no-store', 'Don\'t store negative hits in the local store file.', DEFAULT_OPTIONS.store)
         .option('-l, --no-download', 'Don\'t download the binary. It also continues with the next version, if --decrease-on-fail or --increase-on-fail is set. Useful to build up the negative hit store', DEFAULT_OPTIONS.download)
         .option('-I, --import-store <url>', 'Imports a localstore.json file either by URL (starting with "http://" or "https://" or by local file')
+        .option('-E, --export-store [path]', 'Exports the localstore.json file to stdout')
         .option('-H, --hide-negative-hits', 'Hide negative hits', DEFAULT_OPTIONS.hideNegativeHits)
         .option('-f, --folder <folder>', 'Set the download folder', null)
         .option('-O, --only-newest-major', 'Show only the newest major version in user selection', DEFAULT_OPTIONS.onlyNewestMajor)
@@ -73,6 +74,13 @@ export function readConfig(args: string[], platform: NodeJS.Platform): ConfigWra
             config: {
                 url: options.importStore,
             },
+        }
+    } else if (options.exportStore !== undefined) {
+        return {
+            action: 'exportStore',
+            config: {
+                path: typeof options.exportStore === 'string' ? options.exportStore : undefined
+            }
         }
     }
 

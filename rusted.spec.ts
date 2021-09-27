@@ -3,9 +3,10 @@ import { mocked } from 'ts-jest/utils'
 
 import { readConfig } from './config/config'
 import { downloadChromium } from './download'
-import { ConfigWrapper, IStoreConfig } from './interfaces'
+import { ConfigWrapper, IExportConfig, IStoreConfig } from './interfaces'
 import { logger } from './log/spinner'
 import { rusted } from './rusted'
+import { exportStore } from './store/exportStore'
 import { importAndMergeLocalstore } from './store/importStore'
 import { createChromeConfig } from './test.utils'
 
@@ -13,17 +14,20 @@ jest.mock('./download')
 jest.mock('./config/config')
 jest.mock('./log/spinner')
 jest.mock('./store/importStore')
+jest.mock('./store/exportStore')
 
 describe('rusted', () => {
     let readConfigMock: MaybeMocked<typeof readConfig>
     let downloadChromiumMock: MaybeMocked<typeof downloadChromium>
     let importAndMergeLocalstoreMock: MaybeMocked<typeof importAndMergeLocalstore>
+    let exportStoreMock: MaybeMocked<typeof exportStore>
     let loggerMock: MaybeMockedDeep<typeof logger>
 
     beforeAll(() => {
         readConfigMock = mocked(readConfig)
         downloadChromiumMock = mocked(downloadChromium)
         importAndMergeLocalstoreMock = mocked(importAndMergeLocalstore)
+        exportStoreMock = mocked(exportStore)
         loggerMock = mocked(logger, true)
     })
 
@@ -31,6 +35,7 @@ describe('rusted', () => {
         readConfigMock.mockClear()
         downloadChromiumMock.mockClear()
         importAndMergeLocalstoreMock.mockClear()
+        exportStoreMock.mockClear()
 
         loggerMock.error.mockClear()
     })
@@ -57,6 +62,8 @@ describe('rusted', () => {
 
         expect(importAndMergeLocalstoreMock).toHaveBeenCalledTimes(0)
 
+        expect(exportStoreMock).toHaveBeenCalledTimes(0)
+
         expect(loggerMock.error).toHaveBeenCalledTimes(0)
     })
 
@@ -80,6 +87,34 @@ describe('rusted', () => {
 
         expect(importAndMergeLocalstoreMock).toHaveBeenCalledTimes(1)
         expect(importAndMergeLocalstoreMock).toHaveBeenCalledWith(config)
+
+        expect(exportStoreMock).toHaveBeenCalledTimes(0)
+
+        expect(loggerMock.error).toHaveBeenCalledTimes(0)
+    })
+
+    it('should export the localstore', async () => {
+        const config: IExportConfig = {
+            path: 'export-path'
+        }
+
+        const configWrapper: ConfigWrapper = {
+            action: 'exportStore',
+            config,
+        }
+        readConfigMock.mockReturnValue(configWrapper)
+
+        await rusted(['test-param'], 'linux')
+
+        expect(readConfigMock).toHaveBeenCalledTimes(1)
+        expect(readConfigMock).toHaveBeenCalledWith(['test-param'], 'linux')
+
+        expect(downloadChromiumMock).toHaveBeenCalledTimes(0)
+
+        expect(importAndMergeLocalstoreMock).toHaveBeenCalledTimes(0)
+
+        expect(exportStoreMock).toHaveBeenCalledTimes(1)
+        expect(exportStoreMock).toHaveBeenCalledWith(config)
 
         expect(loggerMock.error).toHaveBeenCalledTimes(0)
     })

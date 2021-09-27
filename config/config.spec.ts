@@ -2,7 +2,7 @@ import { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
 import { ComparableVersion } from '../commons/ComparableVersion'
-import { IChromeConfigWrapper, OS, IStoreConfigWrapper } from '../interfaces'
+import { IChromeConfigWrapper, OS, IStoreConfigWrapper, IExportConfigWrapper } from '../interfaces'
 import { Spinner, logger } from '../log/spinner'
 import { createChromeConfig, createChromeOptions } from '../test.utils'
 import { DEFAULT_OPTIONS, readConfig } from './config'
@@ -246,6 +246,38 @@ describe('config', () => {
                 }
             }
 
+            expect(config).toEqual(expectedConfig)
+        })
+
+        it('should set exportStore without path', () => {
+            programMock.opts.mockReturnValue(createChromeOptions({
+                exportStore: true
+            }))
+
+            const config = readConfig([''], 'linux')
+
+            const expectedConfig: IExportConfigWrapper = {
+                action: 'exportStore',
+                config: {}
+            }
+
+            expect(config).toEqual(expectedConfig)
+        })
+
+        it('should set exportStore with path', () => {
+            programMock.opts.mockReturnValue(createChromeOptions({
+                exportStore: 'some-path'
+            }))
+
+            const config = readConfig([''], 'linux')
+
+            const expectedConfig: IExportConfigWrapper = {
+                action: 'exportStore',
+                config: {
+                    path: 'some-path'
+                }
+            }
+            
             expect(config).toEqual(expectedConfig)
         })
 

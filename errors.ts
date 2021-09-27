@@ -104,3 +104,9 @@ export class NoChromiumDownloadError extends Error {
         super('Single version is specified, but no binary is found')
     }
 }
+
+export class NoLocalstoreError extends Error {
+    public constructor(path?: string) {
+        super(`No "localstore.json" file found${path != null ? ' under the given path: ' + path : ''}`)
+    }
+}
