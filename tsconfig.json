@@ -15,7 +15,7 @@
         "forceConsistentCasingInFileNames": true
     },
     "include": [
-        "**.ts", "store/store.spec.ts"
+        "**.ts"
     ],
     "exclude": [
         "node_modules",

@@ -3,7 +3,7 @@ import { mocked } from 'ts-jest/utils'
 
 import { ComparableVersion } from './commons/ComparableVersion'
 import { MappedVersion } from './commons/MappedVersion'
-import { Compared, OS } from './interfaces'
+import { Compared, OS, IOSSettings } from './interfaces'
 import { logger, Spinner } from './log/spinner'
 import { createChromeConfig, createStore } from './test.utils'
 import { detectOperatingSystem, sortDescendingMappedVersions, compareComparableVersions, sortAscendingMappedVersions, sortStoreEntries, isTextFunction } from './utils'
@@ -25,11 +25,14 @@ describe('utils', () => {
                 os: 'linux',
                 arch: 'x64',
             })
+            const expectedOSSettings: IOSSettings = {
+                url: 'Linux_x64',
+                filename: 'linux'
+            }
 
-            const [url, file] = detectOperatingSystem(config)
+            const osSettings = detectOperatingSystem(config)
 
-            expect(url).toEqual('Linux_x64')
-            expect(file).toEqual('linux')
+            expect(osSettings).toEqual(expectedOSSettings)
             expect(loggerMock.warn).toHaveBeenCalledTimes(0)
         })
 
@@ -39,10 +42,14 @@ describe('utils', () => {
                 arch: 'x86',
             })
 
-            const [url, file] = detectOperatingSystem(config)
+            const expectedOSSettings: IOSSettings = {
+                url: 'Linux',
+                filename: 'linux'
+            }
 
-            expect(url).toEqual('Linux')
-            expect(file).toEqual('linux')
+            const osSettings = detectOperatingSystem(config)
+
+            expect(osSettings).toEqual(expectedOSSettings)
             expect(loggerMock.warn).toHaveBeenCalledTimes(0)
         })
 
@@ -51,11 +58,14 @@ describe('utils', () => {
                 os: 'win',
                 arch: 'x64',
             })
+            const expectedOSSettings: IOSSettings = {
+                url: 'Win_x64',
+                filename: 'win'
+            }
 
-            const [url, file] = detectOperatingSystem(config)
+            const osSettings = detectOperatingSystem(config)
 
-            expect(url).toEqual('Win_x64')
-            expect(file).toEqual('win')
+            expect(osSettings).toEqual(expectedOSSettings)
             expect(loggerMock.warn).toHaveBeenCalledTimes(0)
         })
 
@@ -64,10 +74,14 @@ describe('utils', () => {
                 os: 'win',
                 arch: 'x86',
             })
-            const [url, file] = detectOperatingSystem(config)
+            const expectedOSSettings: IOSSettings = {
+                url: 'Win',
+                filename: 'win'
+            }
 
-            expect(url).toEqual('Win')
-            expect(file).toEqual('win')
+            const osSettings = detectOperatingSystem(config)
+
+            expect(osSettings).toEqual(expectedOSSettings)
             expect(loggerMock.warn).toHaveBeenCalledTimes(0)
         })
 
@@ -76,10 +90,15 @@ describe('utils', () => {
                 os: 'mac',
                 arch: 'x64',
             })
-            const [url, file] = detectOperatingSystem(config)
+            const expectedOSSettings: IOSSettings = {
+                url: 'Mac',
+                filename: 'mac'
+            }
 
-            expect(url).toEqual('Mac')
-            expect(file).toEqual('mac')
+            const osSettings = detectOperatingSystem(config)
+
+            expect(osSettings).toEqual(expectedOSSettings)
+
             expect(loggerMock.warn).toHaveBeenCalledTimes(0)
         })
 
@@ -88,10 +107,15 @@ describe('utils', () => {
                 os: 'mac',
                 arch: 'x86',
             })
-            const [url, file] = detectOperatingSystem(config)
 
-            expect(url).toEqual('Mac')
-            expect(file).toEqual('mac')
+            const expectedOSSettings: IOSSettings = {
+                url: 'Mac',
+                filename: 'mac'
+            }
+
+            const osSettings = detectOperatingSystem(config)
+
+            expect(osSettings).toEqual(expectedOSSettings)
             expect(loggerMock.warn).toHaveBeenCalledTimes(1)
         })
 

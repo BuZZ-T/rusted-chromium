@@ -2,6 +2,7 @@ import { MaybeMocked, MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
 import { fetchChromiumTags, fetchBranchPosition, fetchChromeUrl, fetchChromeZipFile, fetchLocalStore } from './api'
+import { IOSSettings } from './interfaces'
 import { logger, Spinner } from './log/spinner'
 
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */
@@ -151,9 +152,11 @@ describe('api', () => {
 
     describe('fetchChromeUrl', () => {
         it('should fetch the chrome url', async () => {
-            const urlOS = 'url-os'
             const branchPosition = 'branch-position'
-            const filenameOS = 'filename-os'
+            const osSettings: IOSSettings = {
+                url: 'Linux_x64',
+                filename: 'linux',
+            }
 
             fetchMock.mockImplementation(() =>
                 Promise.resolve({
@@ -162,7 +165,7 @@ describe('api', () => {
                         return Promise.resolve({
                             items: [
                                 {
-                                    name: 'url-os/branch-position/chrome-filename-os.zip',
+                                    name: 'Linux_x64/branch-position/chrome-linux.zip',
                                     mediaLink: 'media-link',
                                 },
                                 {
@@ -175,10 +178,15 @@ describe('api', () => {
                 })
             )
 
-            expect(await fetchChromeUrl(branchPosition, urlOS, filenameOS)).toEqual('media-link')
+            expect(await fetchChromeUrl(branchPosition, osSettings)).toEqual('media-link')
         })
 
         it('should throw an error on non-ok http response', async () => {
+            const osSettings: IOSSettings = {
+                url: 'Linux_x64',
+                filename: 'linux',
+            }
+
             fetchMock.mockImplementation(() =>
                 Promise.resolve({
                     ok: false,
@@ -187,13 +195,15 @@ describe('api', () => {
                 })
             )
 
-            await expect(() => fetchChromeUrl('', '', '')).rejects.toThrow(new Error('Status Code: 400 some-error-message'))
+            await expect(() => fetchChromeUrl('', osSettings)).rejects.toThrow(new Error('Status Code: 400 some-error-message'))
         })
 
         it('should resolve undefined if metadata contains no items', async () => {
-            const urlOS = 'url-os'
             const branchPosition = 'branch-position'
-            const filenameOS = 'filename-os'
+            const osSettings: IOSSettings = {
+                url: 'Linux_x64',
+                filename: 'linux',
+            }
 
             fetchMock.mockImplementation(() =>
                 Promise.resolve({
@@ -204,13 +214,15 @@ describe('api', () => {
                 })
             )
 
-            expect(await fetchChromeUrl(branchPosition, urlOS, filenameOS)).toEqual(undefined)
+            expect(await fetchChromeUrl(branchPosition, osSettings)).toEqual(undefined)
         })
 
         it('should resolve undefined if items contain no medialink', async () => {
-            const urlOS = 'url-os'
             const branchPosition = 'branch-position'
-            const filenameOS = 'filename-os'
+            const osSettings: IOSSettings = {
+                url: 'Linux_x64',
+                filename: 'linux',
+            }
 
             fetchMock.mockImplementation(() =>
                 Promise.resolve({
@@ -230,7 +242,7 @@ describe('api', () => {
                 })
             )
 
-            expect(await fetchChromeUrl(branchPosition, urlOS, filenameOS)).toEqual(undefined)
+            expect(await fetchChromeUrl(branchPosition, osSettings)).toEqual(undefined)
         })
     })
 

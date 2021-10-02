@@ -12,6 +12,7 @@ This cli tool can be used to download old (and therefore unsupported) versions o
 * [Examples](#examples)
 * [Store file](#store-file)
 * [Chromium Version Format](#chromium-version-format)
+* [Use as API](#use-as-api)
 * [FAQ](#faq)
 
 ## Disclaimer 🔥
@@ -266,6 +267,69 @@ E.g.:
 
 * "60" means "any version with major version 60"
 * "60.0.3112" means "version 60.0.3112 with arbatrary patch version"
+
+## Use as API
+
+### Import store
+
+To import a store file, use `importAndMergeStore`:
+```ts
+import { importAndMergeLocalstore } from 'rusted-chromium';
+
+importAndMergeLocalstore({
+    url: '...', // File or URL
+});
+```
+
+### Download chromium
+
+To download a chromium version, use `downloadChromium`:
+```ts
+import { ComparableVersion, downloadChromium } from 'rusted-chromium';
+
+downloadChromium({
+    min: new ComparableVersion(0, 0, 0, 0),
+    max: new ComparableVersion(1000, 0, 0, 0),
+    results: 10,
+    os: 'linux',
+    arch: 'x64',
+    onFail: 'nothing',
+    autoUnzip: false,
+    interactive: false,
+    store: true,
+    download: true,
+    hideNegativeHits: boolean
+    downloadFolder: null,
+    onlyNewestMajor: false
+    single: null,
+    inverse: false,
+});
+```
+
+### Download a specific version of chromium
+
+This is probably the most useful version in a CI envionment. This requires less config options, as many of them are not regarded when using `single`.
+
+```ts
+import { downloadChromium } from 'rusted-chromium';
+
+downloadChromium({
+    arch: 'x64',
+    single: "10.0.0.0",
+    os: 'linux',
+    autoUnzip: false,
+    download: true,
+    downloadFolder: null,
+});
+```
+
+### Directly pass CLI flags
+If you want to directly pass `process.argv` and extend or restrict the available flags, directly import `rusted`:
+```ts
+import { rusted } from 'rusted-chromium';
+
+rusted(process.argv);
+```
 
 ## FAQ
 

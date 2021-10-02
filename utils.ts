@@ -1,23 +1,42 @@
 import { ComparableVersion } from './commons/ComparableVersion'
 import { MappedVersion } from './commons/MappedVersion'
-import { ExtendedOS, OS, IChromeConfig, Compared, Store, TextFunction, IVersion, IVersionWithDisabled } from './interfaces'
+import { ExtendedOS, OS, IChromeConfig, Compared, Store, TextFunction, IVersion, IVersionWithDisabled, OSSetting } from './interfaces'
 import { logger } from './log/spinner'
 
-export function detectOperatingSystem(config: IChromeConfig): [string, string] {
+export function detectOperatingSystem(config: IChromeConfig): OSSetting {
 
-    const archForUrl = config.arch === 'x64' ? '_x64' : ''
+    const is64Bit = config.arch === 'x64'
 
     switch (config.os) {
         case 'linux':
-            return [`Linux${archForUrl}`, 'linux']
+            return is64Bit
+                ? {
+                    url: 'Linux_x64',
+                    filename: 'linux'
+                }
+                : {
+                    url: 'Linux',
+                    filename: 'linux'
+                }
         case 'win':
-            return [`Win${archForUrl}`, 'win']
+            return is64Bit
+                ? {
+                    url: 'Win_x64',
+                    filename: 'win'
+                }
+                : {
+                    url: 'Win',
+                    filename: 'win'
+                }
         case 'mac':
             if (config.arch === 'x86') {
                 logger.warn('A mac version is not available for "x86" architecture, using "x64"!')
                 config.arch = 'x64'
             }
-            return ['Mac', 'mac']
+            return {
+                url: 'Mac',
+                filename: 'mac',
+            }
         default:
             throw new Error(`Unsupported operation system: ${config.os}`)
     }

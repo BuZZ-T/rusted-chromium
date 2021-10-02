@@ -10,7 +10,7 @@ import { storeNegativeHit } from './store/store'
 import { detectOperatingSystem, sortDescendingMappedVersions, compareComparableVersions } from './utils'
 
 export async function getChromeDownloadUrl(config: IChromeConfig, mappedVersions: MappedVersion[]): Promise<IDownloadSettings> {
-    const [urlOS, filenameOS] = detectOperatingSystem(config)
+    const osSettings = detectOperatingSystem(config)
 
     const isAutoSearch = (!config.interactive && config.onFail === 'decrease') || !!config.single
 
@@ -34,7 +34,7 @@ export async function getChromeDownloadUrl(config: IChromeConfig, mappedVersions
         if (!selectedVersion.disabled) {
             const branchPosition = await fetchBranchPosition(selectedVersion.value)
             logger.start(SEARCH_BINARY)
-            chromeUrl = await fetchChromeUrl(branchPosition, urlOS, filenameOS)
+            chromeUrl = await fetchChromeUrl(branchPosition, osSettings)
 
             if (chromeUrl && config.download) {
                 // chrome url found, ending loop
@@ -91,7 +91,7 @@ export async function getChromeDownloadUrl(config: IChromeConfig, mappedVersions
         }
     } while (!config.single && (!chromeUrl || !config.download))
 
-    return { chromeUrl, selectedVersion: selectedVersion?.value, filenameOS }
+    return { chromeUrl, selectedVersion: selectedVersion?.value, filenameOS: osSettings.filename }
 }
 
 /**

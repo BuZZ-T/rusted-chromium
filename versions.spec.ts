@@ -5,7 +5,7 @@ import { mocked } from 'ts-jest/utils'
 import { fetchBranchPosition, fetchChromeUrl, fetchChromiumTags } from './api'
 import { ComparableVersion } from './commons/ComparableVersion'
 import { MappedVersion } from './commons/MappedVersion'
-import { IDownloadSettings } from './interfaces'
+import { IDownloadSettings, IOSSettings } from './interfaces'
 import { Spinner, logger } from './log/spinner'
 import { userSelectedVersion } from './select'
 import { storeNegativeHit } from './store/store'
@@ -43,8 +43,13 @@ describe('versions', () => {
         let versionDisabled3: MappedVersion
 
         const CHROME_URL = 'chrome-url'
-        const URL_OS = 'url-os'
-        const FILENAME_OS = 'filename-os'
+        const FILENAME_OS = 'linux'
+
+        const OS_SETTINGS: IOSSettings = {
+            url: 'Linux_x64',
+            filename: FILENAME_OS,
+        }
+
         const BRANCH_POSITION = 'branch-position'
 
         beforeEach(() => {
@@ -75,7 +80,7 @@ describe('versions', () => {
             userSelectedVersionMock.mockReset()
             storeNegativeHitMock.mockReset()
 
-            detectOperatingSystemMock.mockReturnValue([URL_OS, FILENAME_OS])
+            detectOperatingSystemMock.mockReturnValue(OS_SETTINGS)
             userSelectedVersionMock.mockResolvedValue(version1)
             fetchBranchPositionMock.mockResolvedValue(BRANCH_POSITION)
             fetchChromeUrlMock.mockResolvedValue(CHROME_URL)
@@ -103,7 +108,7 @@ describe('versions', () => {
             expect(fetchBranchPositionMock).toHaveBeenCalledTimes(1)
             expect(fetchBranchPositionMock).toHaveBeenCalledWith(version1.value)
             expect(fetchChromeUrlMock).toHaveBeenCalledTimes(1)
-            expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION, URL_OS, FILENAME_OS)
+            expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION, OS_SETTINGS)
         })
 
         it('should return the chrome url for the automatically selected first mapped version on decrease', async () => {
@@ -129,7 +134,7 @@ describe('versions', () => {
             expect(fetchBranchPositionMock).toHaveBeenCalledTimes(1)
             expect(fetchBranchPositionMock).toHaveBeenCalledWith(version1.value)
             expect(fetchChromeUrlMock).toHaveBeenCalledTimes(1)
-            expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION, URL_OS, FILENAME_OS)
+            expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION, OS_SETTINGS)
         })
 
         it('should automatically continue with the next available higher version on --increase-on-fail', async () => {
@@ -160,7 +165,7 @@ describe('versions', () => {
             expect(fetchBranchPositionMock).toHaveBeenCalledTimes(1)
             expect(fetchBranchPositionMock).toHaveBeenCalledWith(version1.value)
             expect(fetchChromeUrlMock).toHaveBeenCalledTimes(1)
-            expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION, URL_OS, FILENAME_OS)
+            expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION, OS_SETTINGS)
         })
 
         it('should break on no version left on --increase-on-fail', async () => {
@@ -219,7 +224,7 @@ describe('versions', () => {
             expect(fetchBranchPositionMock).toHaveBeenCalledTimes(1)
             expect(fetchBranchPositionMock).toHaveBeenCalledWith(version4.value)
             expect(fetchChromeUrlMock).toHaveBeenCalledTimes(1)
-            expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION, URL_OS, FILENAME_OS)
+            expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION, OS_SETTINGS)
         })
 
         it('should automatically continue with the next available lower version on --decrease-on-fail', async () => {
@@ -249,7 +254,7 @@ describe('versions', () => {
             expect(fetchBranchPositionMock).toHaveBeenCalledTimes(1)
             expect(fetchBranchPositionMock).toHaveBeenCalledWith(version1.value)
             expect(fetchChromeUrlMock).toHaveBeenCalledTimes(1)
-            expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION, URL_OS, FILENAME_OS)
+            expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION, OS_SETTINGS)
         })
 
         it('should request a user selected version twice and return the chrome url on first version disabled', async () => {
@@ -276,7 +281,7 @@ describe('versions', () => {
             expect(fetchBranchPositionMock).toHaveBeenCalledTimes(1)
             expect(fetchBranchPositionMock).toHaveBeenCalledWith(version1.value)
             expect(fetchChromeUrlMock).toHaveBeenCalledTimes(1)
-            expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION, URL_OS, FILENAME_OS)
+            expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION, OS_SETTINGS)
         })
 
         it('should mark a version as disabled and request a user selected version twice on no binary found', async () => {
@@ -310,8 +315,8 @@ describe('versions', () => {
             expect(fetchBranchPositionMock).toHaveBeenCalledWith(version2.value)
             expect(fetchBranchPositionMock).toHaveBeenCalledWith(version1.value)
             expect(fetchChromeUrlMock).toHaveBeenCalledTimes(2)
-            expect(fetchChromeUrlMock).toHaveBeenCalledWith('branch-position2', URL_OS, FILENAME_OS)
-            expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION, URL_OS, FILENAME_OS)
+            expect(fetchChromeUrlMock).toHaveBeenCalledWith('branch-position2', OS_SETTINGS)
+            expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION, OS_SETTINGS)
         })
 
         it('should skip a already disabled version on --decrease-on-fail when selecting a disabled version', async () => {
@@ -347,8 +352,8 @@ describe('versions', () => {
             expect(fetchBranchPositionMock).toHaveBeenCalledWith(version1.value)
             expect(fetchBranchPositionMock).toHaveBeenCalledWith(version3.value)
             expect(fetchChromeUrlMock).toHaveBeenCalledTimes(2)
-            expect(fetchChromeUrlMock).toHaveBeenCalledWith('branch-position2', URL_OS, FILENAME_OS)
-            expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION, URL_OS, FILENAME_OS)
+            expect(fetchChromeUrlMock).toHaveBeenCalledWith('branch-position2', OS_SETTINGS)
+            expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION, OS_SETTINGS)
         })
 
         it('should not mark a version as disabled on store: false', async () => {
@@ -381,8 +386,8 @@ describe('versions', () => {
             expect(fetchBranchPositionMock).toHaveBeenCalledWith(version2.value)
             expect(fetchBranchPositionMock).toHaveBeenCalledWith(version1.value)
             expect(fetchChromeUrlMock).toHaveBeenCalledTimes(2)
-            expect(fetchChromeUrlMock).toHaveBeenCalledWith('branch-position2', URL_OS, FILENAME_OS)
-            expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION, URL_OS, FILENAME_OS)
+            expect(fetchChromeUrlMock).toHaveBeenCalledWith('branch-position2', OS_SETTINGS)
+            expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION, OS_SETTINGS)
         })
 
         it('should return null, if --decrease-on-fail reaces the end of versions on only disabled versions', async () => {
@@ -438,9 +443,9 @@ describe('versions', () => {
             expect(fetchBranchPositionMock).toHaveBeenCalledWith(version2.value)
             expect(fetchBranchPositionMock).toHaveBeenCalledWith(version1.value)
             expect(fetchChromeUrlMock).toHaveBeenCalledTimes(3)
-            expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION, URL_OS, FILENAME_OS)
-            expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION2, URL_OS, FILENAME_OS)
-            expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION3, URL_OS, FILENAME_OS)
+            expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION, OS_SETTINGS)
+            expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION2, OS_SETTINGS)
+            expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION3, OS_SETTINGS)
         })
 
         it('should do nothing if --decrease-on-fail reaces the end of version on --no-download and all versions with binary', async () => {
@@ -474,9 +479,9 @@ describe('versions', () => {
             expect(fetchBranchPositionMock).toHaveBeenCalledWith(version2.value)
             expect(fetchBranchPositionMock).toHaveBeenCalledWith(version1.value)
             expect(fetchChromeUrlMock).toHaveBeenCalledTimes(3)
-            expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION, URL_OS, FILENAME_OS)
-            expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION2, URL_OS, FILENAME_OS)
-            expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION3, URL_OS, FILENAME_OS)
+            expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION, OS_SETTINGS)
+            expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION2, OS_SETTINGS)
+            expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION3, OS_SETTINGS)
         })
 
         it('should return undefined, is config.single and no binary was found', async () => {
@@ -512,7 +517,7 @@ describe('versions', () => {
             expect(fetchBranchPositionMock).toHaveBeenCalledTimes(1)
             expect(fetchBranchPositionMock).toHaveBeenCalledWith(mappedSingleVersion.value)
             expect(fetchChromeUrlMock).toHaveBeenCalledTimes(1)
-            expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION, URL_OS, FILENAME_OS)
+            expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION, OS_SETTINGS)
         })
     })
 

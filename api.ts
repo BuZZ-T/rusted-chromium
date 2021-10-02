@@ -1,7 +1,7 @@
 import { Response as NodeFetchResponse } from 'node-fetch'
 
 import { RESOLVE_VERSION } from './commons/constants'
-import { IMetadataResponse } from './interfaces'
+import { IMetadataResponse, IOSSettings } from './interfaces'
 import { logger } from './log/spinner'
 
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */
@@ -54,14 +54,14 @@ export async function fetchBranchPosition(version: string): Promise<string> {
         })
 }
 
-export async function fetchChromeUrl(branchPosition: string, urlOS: string, filenameOS: string): Promise<string | undefined> {
-    const snapshotUrl = `https://www.googleapis.com/storage/v1/b/chromium-browser-snapshots/o?delimiter=/&prefix=${urlOS}/${branchPosition}/&fields=items(kind,mediaLink,metadata,name,size,updated),kind,prefixes,nextPageToken`
+export async function fetchChromeUrl(branchPosition: string, osSettings: IOSSettings): Promise<string | undefined> {
+    const snapshotUrl = `https://www.googleapis.com/storage/v1/b/chromium-browser-snapshots/o?delimiter=/&prefix=${osSettings.url}/${branchPosition}/&fields=items(kind,mediaLink,metadata,name,size,updated),kind,prefixes,nextPageToken`
     // TODO: adjust field in request
     const chromeMetadataResponse: IMetadataResponse = await fetch(snapshotUrl)
         .then(checkStatus)
         .then(toJson)
 
-    return chromeMetadataResponse.items?.find(item => item.name === `${urlOS}/${branchPosition}/chrome-${filenameOS}.zip`)?.mediaLink
+    return chromeMetadataResponse.items?.find(item => item.name === `${osSettings.url}/${branchPosition}/chrome-${osSettings.filename}.zip`)?.mediaLink
 }
 
 export async function fetchChromeZipFile(url: string): Promise<NodeFetchResponse> {
