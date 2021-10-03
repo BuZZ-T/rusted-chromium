@@ -2,10 +2,32 @@ import { NoParamCallback, PathLike, Stats } from 'fs'
 import { HTMLElement as NodeParserHTMLElement, Node as NodeParserNode } from 'node-html-parser'
 
 import { ComparableVersion } from './commons/ComparableVersion'
+import { MappedVersion } from './commons/MappedVersion'
 import { DEFAULT_OPTIONS } from './config/config'
 import type { IConfigOptions } from './interfaces/config.interfaces'
-import type { IChromeConfig, IDownloadSettings, IExportConfig, IStoreConfig } from './interfaces/interfaces'
+import type { GetChromeDownloadUrlReturn } from './interfaces/function.interfaces'
+import type { IChromeConfig, IChromeFullConfig, IExportConfig, IStoreConfig, IChromeSingleConfig } from './interfaces/interfaces'
 import type { IListStore } from './interfaces/store.interfaces'
+
+export const createChromeFullConfig = (config?: Partial<IChromeFullConfig>): IChromeFullConfig => ({
+    arch: 'x64',
+    autoUnzip: false,
+    download: true,
+    downloadFolder: null,
+    hideNegativeHits: false,
+    interactive: true,
+    max: new ComparableVersion(10000, 0, 0, 0),
+    min: new ComparableVersion(0, 0, 0, 0),
+    onFail: 'nothing',
+    onlyNewestMajor: false,
+    os: 'linux',
+    results: 10,
+    store: true,
+    single: null,
+    inverse: false,
+    quiet: false,
+    ...config,
+})
 
 export const createChromeConfig = (config?: Partial<IChromeConfig>): IChromeConfig => ({
     arch: 'x64',
@@ -23,6 +45,18 @@ export const createChromeConfig = (config?: Partial<IChromeConfig>): IChromeConf
     store: true,
     single: null,
     inverse: false,
+    quiet: false,
+    ...config,
+})
+
+export const createChromeSingleConfig = (config?: Partial<IChromeSingleConfig>): IChromeSingleConfig => ({
+    arch: 'x64',
+    os: 'linux',
+    autoUnzip: false,
+    store: true,
+    download: true,
+    downloadFolder: null,
+    single: '10.0.0.0',
     quiet: false,
     ...config,
 })
@@ -66,9 +100,9 @@ export const createNodeWithChildren = (...children: Array<Partial<NodeParserNode
     ],
 } as NodeParserNode)
 
-export const createDownloadSettings = (settings?: Partial<IDownloadSettings>): IDownloadSettings => ({
+export const createGetChromeDownloadUrlReturn = (settings?: Partial<GetChromeDownloadUrlReturn>): GetChromeDownloadUrlReturn => ({
     chromeUrl: 'chromeUrl',
-    selectedVersion: 'selectedVersion',
+    selectedVersion: new MappedVersion(10, 0, 0, 0, false),
     filenameOS: 'filenameOS',
     ...settings,
 })

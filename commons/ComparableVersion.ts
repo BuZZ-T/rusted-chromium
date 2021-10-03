@@ -1,5 +1,5 @@
 import type { IVersion } from '../interfaces/interfaces'
-import { isIVersion } from '../utils'
+import { isIVersion } from '../utils/typeguards'
 
 export class ComparableVersion implements IVersion {
 

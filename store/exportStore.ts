@@ -3,7 +3,7 @@ import { join } from 'path'
 
 import { LOCAL_STORE_FILE } from '../commons/constants'
 import { NoLocalstoreError } from '../errors'
-import { IExportConfig } from '../interfaces/interfaces'
+import type { IExportConfig } from '../interfaces/interfaces'
 
 export function exportStore(config: IExportConfig): void {
     const filePath = config.path ?? join(__dirname, '..', LOCAL_STORE_FILE)

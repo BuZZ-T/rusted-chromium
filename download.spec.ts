@@ -6,13 +6,14 @@ import { mocked } from 'ts-jest/utils'
 import * as unzipper from 'unzipper'
 
 import { fetchChromeZipFile } from './api'
+import { MappedVersion } from './commons/MappedVersion'
 import { downloadChromium } from './download'
 import { NoChromiumDownloadError } from './errors'
 import { progress } from './log/progress'
 import { logger } from './log/spinner'
 import { loadStore } from './store/loadStore'
 import { Store } from './store/Store'
-import { createChromeConfig, createStore, createDownloadSettings, MkdirWithOptions, StatsWithoutOptions } from './test.utils'
+import { createChromeConfig, createStore, createGetChromeDownloadUrlReturn, MkdirWithOptions, StatsWithoutOptions } from './test.utils'
 import { getChromeDownloadUrl, loadVersions, mapVersions } from './versions'
 
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */
@@ -126,7 +127,7 @@ describe('download', () => {
         })
 
         it('should fetch the zip and create the dest folder', async () => {
-            getChromeDownloadUrlMock.mockResolvedValue(createDownloadSettings())
+            getChromeDownloadUrlMock.mockResolvedValue(createGetChromeDownloadUrlReturn())
 
             fetchChromeZipFileMock.mockResolvedValue(zipFileResource)
             existsSyncMock.mockReturnValue(false)
@@ -157,7 +158,7 @@ describe('download', () => {
         })
 
         it('should fetch the zip and not create the dest folder', async () => {
-            getChromeDownloadUrlMock.mockResolvedValue(createDownloadSettings())
+            getChromeDownloadUrlMock.mockResolvedValue(createGetChromeDownloadUrlReturn())
 
             fetchChromeZipFileMock.mockResolvedValue(zipFileResource)
 
@@ -186,7 +187,7 @@ describe('download', () => {
         })
 
         it('should fetch and exract the zip', async () => {
-            getChromeDownloadUrlMock.mockResolvedValue(createDownloadSettings())
+            getChromeDownloadUrlMock.mockResolvedValue(createGetChromeDownloadUrlReturn())
 
             fetchChromeZipFileMock.mockResolvedValue(zipFileResource)
 
@@ -207,7 +208,15 @@ describe('download', () => {
         })
 
         it('should start the progress with autoUnzip=false', async () => {
-            getChromeDownloadUrlMock.mockResolvedValue(createDownloadSettings())
+            getChromeDownloadUrlMock.mockResolvedValue(createGetChromeDownloadUrlReturn({
+                selectedVersion: new MappedVersion({
+                    major: 11,
+                    minor: 12,
+                    branch: 13,
+                    patch: 14,
+                    disabled: false,
+                })
+            }))
 
             fetchChromeZipFileMock.mockResolvedValue(zipFileResource)
 
@@ -237,7 +246,7 @@ describe('download', () => {
                 unit: 'MB',
                 showNumeric: true,
                 start: 'Downloading binary...',
-                success: 'Successfully downloaded to "chrome-filenameOS-x64-selectedVersion.zip"',
+                success: 'Successfully downloaded to "chrome-filenameOS-x64-11.12.13.14.zip"',
                 fail: 'Failed to download binary'
             })
 
@@ -245,7 +254,15 @@ describe('download', () => {
         })
 
         it('should start the progress with autoUnzip=true', async () => {
-            getChromeDownloadUrlMock.mockResolvedValue(createDownloadSettings())
+            getChromeDownloadUrlMock.mockResolvedValue(createGetChromeDownloadUrlReturn({
+                selectedVersion: new MappedVersion({
+                    major: 11,
+                    minor: 12,
+                    branch: 13,
+                    patch: 14,
+                    disabled: false,
+                })
+            }))
 
             fetchChromeZipFileMock.mockResolvedValue(zipFileResource)
 
@@ -275,7 +292,7 @@ describe('download', () => {
                 unit: 'MB',
                 showNumeric: true,
                 start: 'Downloading binary...',
-                success: 'Successfully downloaded and extracted to "chrome-filenameOS-x64-selectedVersion"',
+                success: 'Successfully downloaded and extracted to "chrome-filenameOS-x64-11.12.13.14"',
                 fail: 'Failed to download binary'
             })
 
@@ -283,7 +300,15 @@ describe('download', () => {
         })
 
         it('should update the progress', async () => {
-            getChromeDownloadUrlMock.mockResolvedValue(createDownloadSettings())
+            getChromeDownloadUrlMock.mockResolvedValue(createGetChromeDownloadUrlReturn({
+                selectedVersion: new MappedVersion({
+                    major: 11,
+                    minor: 12,
+                    branch: 13,
+                    patch: 14,
+                    disabled: false,
+                })
+            }))
 
             fetchChromeZipFileMock.mockResolvedValue(zipFileResource)
 
@@ -318,7 +343,7 @@ describe('download', () => {
                 unit: 'MB',
                 showNumeric: true,
                 start: 'Downloading binary...',
-                success: 'Successfully downloaded and extracted to "chrome-filenameOS-x64-selectedVersion"',
+                success: 'Successfully downloaded and extracted to "chrome-filenameOS-x64-11.12.13.14"',
                 fail: 'Failed to download binary'
             })
 
@@ -327,7 +352,7 @@ describe('download', () => {
         })
 
         it('should do nothing on --no-download', async () => {
-            getChromeDownloadUrlMock.mockResolvedValue(createDownloadSettings())
+            getChromeDownloadUrlMock.mockResolvedValue(createGetChromeDownloadUrlReturn())
 
             // Act
             const config = createChromeConfig({
@@ -340,7 +365,7 @@ describe('download', () => {
         })
 
         it('should do nothing on download and no chromeUrl', async () => {
-            getChromeDownloadUrlMock.mockResolvedValue(createDownloadSettings({
+            getChromeDownloadUrlMock.mockResolvedValue(createGetChromeDownloadUrlReturn({
                 chromeUrl: undefined,
             }))
 
@@ -354,7 +379,7 @@ describe('download', () => {
         })
 
         it('should throw on --single without chromeUrl', async () => {
-            getChromeDownloadUrlMock.mockResolvedValue(createDownloadSettings({
+            getChromeDownloadUrlMock.mockResolvedValue(createGetChromeDownloadUrlReturn({
                 chromeUrl: undefined,
             }))
 
@@ -367,7 +392,7 @@ describe('download', () => {
         })
 
         it('should delete the unfinished file on SIGINT while downloading', async () => {
-            getChromeDownloadUrlMock.mockResolvedValue(createDownloadSettings())
+            getChromeDownloadUrlMock.mockResolvedValue(createGetChromeDownloadUrlReturn())
 
             processExitSpy.mockImplementation(() => undefined as never)
 
@@ -404,7 +429,7 @@ describe('download', () => {
         })
 
         it('should delete the unfinished file on SIGINT while extracting', async () => {
-            getChromeDownloadUrlMock.mockResolvedValue(createDownloadSettings())
+            getChromeDownloadUrlMock.mockResolvedValue(createGetChromeDownloadUrlReturn())
 
             processExitSpy.mockImplementation(() => undefined as never)
 
@@ -441,7 +466,7 @@ describe('download', () => {
         })
 
         it('should delete nothing, if no file or directory exists', async () => {
-            getChromeDownloadUrlMock.mockResolvedValue(createDownloadSettings())
+            getChromeDownloadUrlMock.mockResolvedValue(createGetChromeDownloadUrlReturn())
 
             processExitSpy.mockImplementation(() => undefined as never)
 

@@ -6,13 +6,13 @@ import { mocked } from 'ts-jest/utils'
 import { fetchBranchPosition, fetchChromeUrl, fetchChromiumTags } from './api'
 import { ComparableVersion } from './commons/ComparableVersion'
 import { MappedVersion } from './commons/MappedVersion'
-import type { IDownloadSettings } from './interfaces/interfaces'
+import type { GetChromeDownloadUrlReturn } from './interfaces/function.interfaces'
 import type { OSSetting } from './interfaces/os.interfaces'
 import { Spinner, logger } from './log/spinner'
 import { userSelectedVersion } from './select'
 import { Store } from './store/Store'
 import { storeNegativeHit } from './store/storeNegativeHit'
-import { createChromeConfig, createNodeParserHTMLElement, createNodeWithChildren, createStore } from './test.utils'
+import { createChromeConfig, createNodeParserHTMLElement, createNodeWithChildren, createStore, createChromeSingleConfig, createChromeFullConfig } from './test.utils'
 import { detectOperatingSystem } from './utils'
 import { mapVersions, getChromeDownloadUrl, loadVersions } from './versions'
 
@@ -95,9 +95,10 @@ describe('versions', () => {
                 onFail: 'nothing',
                 download: true,
             })
-            const expectedSettings: IDownloadSettings = {
+
+            const expectedSettings: GetChromeDownloadUrlReturn = {
                 chromeUrl: CHROME_URL,
-                selectedVersion: version1.value,
+                selectedVersion: version1,
                 filenameOS: FILENAME_OS,
             }
 
@@ -120,9 +121,9 @@ describe('versions', () => {
                 onFail: 'decrease',
                 download: true,
             })
-            const expectedSettings: IDownloadSettings = {
+            const expectedSettings: GetChromeDownloadUrlReturn = {
                 chromeUrl: CHROME_URL,
-                selectedVersion: version1.value,
+                selectedVersion: version1,
                 filenameOS: FILENAME_OS,
             }
 
@@ -141,14 +142,14 @@ describe('versions', () => {
         })
 
         it('should automatically continue with the next available higher version on --increase-on-fail', async () => {
-            const config = createChromeConfig({
+            const config = createChromeFullConfig({
                 interactive: true,
                 onFail: 'increase',
                 download: true,
             })
-            const expectedSettings: IDownloadSettings = {
+            const expectedSettings: GetChromeDownloadUrlReturn = {
                 chromeUrl: CHROME_URL,
-                selectedVersion: version1.value,
+                selectedVersion: version1,
                 filenameOS: FILENAME_OS,
             }
 
@@ -177,7 +178,7 @@ describe('versions', () => {
                 onFail: 'increase',
                 download: true,
             })
-            const expectedSettings: IDownloadSettings = {
+            const expectedSettings: GetChromeDownloadUrlReturn = {
                 chromeUrl: undefined,
                 selectedVersion: undefined,
                 filenameOS: FILENAME_OS,
@@ -205,9 +206,9 @@ describe('versions', () => {
                 onFail: 'increase',
                 download: true,
             })
-            const expectedSettings: IDownloadSettings = {
+            const expectedSettings: GetChromeDownloadUrlReturn = {
                 chromeUrl: 'chrome-url',
-                selectedVersion: version4.value,
+                selectedVersion: version4,
                 filenameOS: FILENAME_OS,
             }
 
@@ -236,9 +237,9 @@ describe('versions', () => {
                 onFail: 'decrease',
                 download: true,
             })
-            const expectedSettings: IDownloadSettings = {
+            const expectedSettings: GetChromeDownloadUrlReturn = {
                 chromeUrl: CHROME_URL,
-                selectedVersion: version1.value,
+                selectedVersion: version1,
                 filenameOS: FILENAME_OS,
             }
 
@@ -266,9 +267,9 @@ describe('versions', () => {
                 onFail: 'nothing',
                 download: true,
             })
-            const expectedSettings: IDownloadSettings = {
+            const expectedSettings: GetChromeDownloadUrlReturn = {
                 chromeUrl: CHROME_URL,
-                selectedVersion: version1.value,
+                selectedVersion: version1,
                 filenameOS: FILENAME_OS,
             }
 
@@ -296,9 +297,9 @@ describe('versions', () => {
                 arch: 'x64',
                 store: true,
             })
-            const expectedSettings: IDownloadSettings = {
+            const expectedSettings: GetChromeDownloadUrlReturn = {
                 chromeUrl: CHROME_URL,
-                selectedVersion: version1.value,
+                selectedVersion: version1,
                 filenameOS: FILENAME_OS,
             }
 
@@ -335,9 +336,9 @@ describe('versions', () => {
                 arch: 'x64',
                 store: false,
             })
-            const expectedSettings: IDownloadSettings = {
+            const expectedSettings: GetChromeDownloadUrlReturn = {
                 chromeUrl: CHROME_URL,
-                selectedVersion: version3.value,
+                selectedVersion: version3,
                 filenameOS: FILENAME_OS,
             }
 
@@ -372,9 +373,9 @@ describe('versions', () => {
                 arch: 'x64',
                 store: false,
             })
-            const expectedSettings: IDownloadSettings = {
+            const expectedSettings: GetChromeDownloadUrlReturn = {
                 chromeUrl: CHROME_URL,
-                selectedVersion: version1.value,
+                selectedVersion: version1,
                 filenameOS: FILENAME_OS,
             }
 
@@ -402,7 +403,7 @@ describe('versions', () => {
                 interactive: false,
                 onFail: 'decrease',
             })
-            const expectedSettings: IDownloadSettings = {
+            const expectedSettings: GetChromeDownloadUrlReturn = {
                 chromeUrl: undefined,
                 selectedVersion: undefined,
                 filenameOS: FILENAME_OS,
@@ -424,7 +425,7 @@ describe('versions', () => {
                 onFail: 'decrease',
                 store: false,
             })
-            const expectedSettings: IDownloadSettings = {
+            const expectedSettings: GetChromeDownloadUrlReturn = {
                 chromeUrl: undefined,
                 selectedVersion: undefined,
                 filenameOS: FILENAME_OS,
@@ -455,15 +456,15 @@ describe('versions', () => {
             expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION3, OS_SETTINGS)
         })
 
-        it('should do nothing if --decrease-on-fail reaces the end of version on --no-download and all versions with binary', async () => {
+        it('should do nothing if --decrease-on-fail reaches the end of versions on --no-download and all versions with binary', async () => {
             const config = createChromeConfig({
                 interactive: false,
                 onFail: 'decrease',
                 store: false,
                 download: false,
             })
-            const expectedSettings: IDownloadSettings = {
-                chromeUrl: CHROME_URL,
+            const expectedSettings: GetChromeDownloadUrlReturn = {
+                chromeUrl: undefined,
                 selectedVersion: undefined,
                 filenameOS: FILENAME_OS,
             }
@@ -502,13 +503,12 @@ describe('versions', () => {
                 disabled: false,
             })
 
-            const config = createChromeConfig({
+            const config = createChromeSingleConfig({
                 single: singleVersion,
-                store: true,
             })
-            const expectedSettings: IDownloadSettings = {
+            const expectedSettings: GetChromeDownloadUrlReturn = {
                 chromeUrl: undefined,
-                selectedVersion: mappedSingleVersion.value,
+                selectedVersion: mappedSingleVersion,
                 filenameOS: FILENAME_OS,
             }
 

@@ -1,8 +1,9 @@
 /* eslint-disable-next-line import/no-namespace */
 import * as prompts from 'prompts'
 
-import { MappedVersion } from './commons/MappedVersion'
-import type { IChromeConfig } from './interfaces/interfaces'
+import type { MappedVersion } from './commons/MappedVersion'
+import type { IChromeFullConfig } from './interfaces/interfaces'
+import type { Nullable } from './interfaces/interfaces'
 
 /**
  * Lets the user select a version via CLI prompt and returns it.
@@ -11,9 +12,9 @@ import type { IChromeConfig } from './interfaces/interfaces'
  * @param versions A decensding sorted Array of versions
  * @param config 
  */
-export async function userSelectedVersion(versions: MappedVersion[], config: IChromeConfig): Promise<MappedVersion | null> {
+export async function userSelectedVersion(versions: MappedVersion[], config: IChromeFullConfig): Promise<Nullable<MappedVersion>> {
     if (config.results === 1) {
-        return versions[0]?.disabled ? null : versions[0] || null
+        return versions[0]?.disabled ? undefined : versions[0]
     }
 
     if (config.onlyNewestMajor) {
@@ -35,5 +36,5 @@ export async function userSelectedVersion(versions: MappedVersion[], config: ICh
         hint: `for ${config.os} ${config.arch}`
     } as unknown as prompts.PromptObject)
 
-    return versions.find(v => v.value === version) || null
+    return versions.find(v => v.value === version)
 }

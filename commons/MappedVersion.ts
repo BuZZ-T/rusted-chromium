@@ -1,5 +1,5 @@
 import type { IVersionWithDisabled } from '../interfaces/interfaces'
-import { isIVersionWithDisabled } from '../utils'
+import { isIVersionWithDisabled } from '../utils/typeguards'
 import { ComparableVersion } from './ComparableVersion'
 
 export class MappedVersion {

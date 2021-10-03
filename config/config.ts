@@ -4,7 +4,7 @@ import * as program from 'commander'
 
 import { ComparableVersion } from '../commons/ComparableVersion'
 import type { IConfigOptions } from '../interfaces/config.interfaces'
-import { ConfigWrapper } from '../interfaces/interfaces'
+import type { ConfigWrapper, IChromeSingleConfig } from '../interfaces/interfaces'
 import { logger } from '../log/spinner'
 /* eslint-disable-next-line import/no-namespace */
 import * as packageJson from '../package.json'
@@ -71,6 +71,7 @@ export function readConfig(args: string[], platform: NodeJS.Platform): ConfigWra
     }
 
     const is64Bit = (options.os && options.arch) ? options.arch === 'x64' : true
+    const arch = is64Bit ? 'x64' : 'x86'
 
     if (options.importStore) {
         return {
@@ -80,13 +81,33 @@ export function readConfig(args: string[], platform: NodeJS.Platform): ConfigWra
                 quiet: options.quiet,
             },
         }
-    } else if (options.exportStore !== undefined) {
+    }
+
+    if (options.exportStore !== undefined) {
         return {
             action: 'exportStore',
             config: {
                 path: typeof options.exportStore === 'string' ? options.exportStore : undefined,
                 quiet: options.quiet,
             }
+        }
+    }
+
+    if (options.single) {
+        const config: IChromeSingleConfig = {
+            arch,
+            os,
+            autoUnzip: options.unzip,
+            store: options.store,
+            download: options.download,
+            downloadFolder: options.folder || null,
+            single: options.single,
+            quiet: options.quiet,
+        }
+
+        return {
+            action: 'loadChrome',
+            config,
         }
     }
 
@@ -98,7 +119,7 @@ export function readConfig(args: string[], platform: NodeJS.Platform): ConfigWra
             max,
             results: minIsSet && !maxResultsIsSet ? Infinity : (parseInt(options.maxResults as string, 10) || 10),
             os,
-            arch: is64Bit ? 'x64' : 'x86',
+            arch,
             onFail: options.increaseOnFail ? 'increase' : options.decreaseOnFail ? 'decrease' : 'nothing',
             interactive: !options.nonInteractive,
             store: options.store,
@@ -106,7 +127,7 @@ export function readConfig(args: string[], platform: NodeJS.Platform): ConfigWra
             hideNegativeHits: options.hideNegativeHits,
             downloadFolder: options.folder || null,
             onlyNewestMajor: options.onlyNewestMajor,
-            single: options.single || null,
+            single: null,
             inverse: options.inverse,
             quiet: options.quiet,
         },

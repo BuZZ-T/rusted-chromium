@@ -3,7 +3,7 @@ import { mocked } from 'ts-jest/utils'
 
 import { MappedVersion } from './commons/MappedVersion'
 import { userSelectedVersion } from './select'
-import { createChromeConfig } from './test.utils'
+import { createChromeFullConfig } from './test.utils'
 
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */
 const prompts = require('prompts')
@@ -35,7 +35,7 @@ describe('userSelectedVersion', () => {
         })
 
         promptsMock.mockReturnValue({ version: '10.0.0.0' })
-        const config = createChromeConfig({
+        const config = createChromeFullConfig({
             results: 10,
             onlyNewestMajor: false,
         })
@@ -67,7 +67,7 @@ describe('userSelectedVersion', () => {
             disabled: false
         })
 
-        const config = createChromeConfig({
+        const config = createChromeFullConfig({
             results: 1,
             onlyNewestMajor: false,
         })
@@ -77,12 +77,12 @@ describe('userSelectedVersion', () => {
     })
 
     it('should return null on config.results === 1 with no version', async () => {
-        const config = createChromeConfig({
+        const config = createChromeFullConfig({
             results: 1,
             onlyNewestMajor: false,
         })
 
-        expect(await userSelectedVersion([], config)).toEqual(null)
+        expect(await userSelectedVersion([], config)).toBeUndefined()
     })
 
     it('should return null on config.results === 1 with version disabled', async () => {
@@ -94,12 +94,12 @@ describe('userSelectedVersion', () => {
             disabled: true
         })
 
-        const config = createChromeConfig({
+        const config = createChromeFullConfig({
             results: 1,
             onlyNewestMajor: false,
         })
 
-        expect(await userSelectedVersion([mappedVersion1], config)).toEqual(null)
+        expect(await userSelectedVersion([mappedVersion1], config)).toBeUndefined()
         expect(promptsMock).toHaveBeenCalledTimes(0)
     })
 
@@ -134,7 +134,7 @@ describe('userSelectedVersion', () => {
         })
 
         promptsMock.mockReturnValue({ version: '10.0.0.0' })
-        const config = createChromeConfig({
+        const config = createChromeFullConfig({
             results: 10,
             onlyNewestMajor: true,
         })
@@ -181,7 +181,7 @@ describe('userSelectedVersion', () => {
         })
 
         promptsMock.mockReturnValue({ version: '10.0.0.0' })
-        const config = createChromeConfig({
+        const config = createChromeFullConfig({
             results: 3,
             onlyNewestMajor: true,
         })
@@ -201,7 +201,7 @@ describe('userSelectedVersion', () => {
         const mappedVersion20 = new MappedVersion(10, 0, 0, 0, false)
         const mappedVersion201 = new MappedVersion(20, 0, 0, 1, true)
 
-        const config = createChromeConfig({
+        const config = createChromeFullConfig({
             onlyNewestMajor: true,
             results: 2,
         })

@@ -47,7 +47,7 @@ export async function downloadChromium(config: IChromeConfig): Promise<void> {
     const { chromeUrl, selectedVersion, filenameOS } = await getChromeDownloadUrl(config, mappedVersions)
 
     if (chromeUrl && config.download) {
-        const filename = `chrome-${filenameOS}-${config.arch}-${selectedVersion}`
+        const filename = `chrome-${filenameOS}-${config.arch}-${selectedVersion?.value}`
         const downloadPath = config.downloadFolder
             ? pathJoin(config.downloadFolder, filename)
             : filename

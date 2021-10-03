@@ -1,4 +1,4 @@
-import { ComparableVersion } from '../commons/ComparableVersion'
+import type { ComparableVersion } from '../commons/ComparableVersion'
 import type { OS } from './os.interfaces'
 import type { Arch } from './store.interfaces'
 
@@ -17,7 +17,9 @@ export interface IExportConfigWrapper {
     config: IExportConfig
 }
 
-export interface IChromeConfig {
+export type IChromeConfig = IChromeFullConfig | IChromeSingleConfig
+
+export interface IChromeFullConfig {
     min: ComparableVersion
     max: ComparableVersion
     results: number
@@ -31,8 +33,19 @@ export interface IChromeConfig {
     hideNegativeHits: boolean
     downloadFolder: string | null
     onlyNewestMajor: boolean
-    single: string | null
+    single: null
     inverse: boolean
+    quiet: boolean
+}
+
+export interface IChromeSingleConfig {
+    os: OS
+    arch: Arch
+    single: string
+    store: boolean
+    autoUnzip: boolean
+    download: boolean
+    downloadFolder: string | null
     quiet: boolean
 }
 
@@ -59,12 +72,6 @@ export interface IComparableVersion {
     minor: number
     branch: number
     patch: number
-}
-
-export enum Compared {
-    GREATER,
-    LESS,
-    EQUAL,
 }
 
 export interface IMetadata {
@@ -103,12 +110,6 @@ export interface ProgressConfig {
 
 export type TextFunction = (key: string) => string
 
-export interface IDownloadSettings {
-    chromeUrl: string | undefined
-    selectedVersion: string | undefined
-    filenameOS: string
-}
-
 export interface IVersion {
     major: number
     minor: number
@@ -119,3 +120,5 @@ export interface IVersion {
 export interface IVersionWithDisabled extends IVersion {
     disabled: boolean
 }
+
+export type Nullable<T> = T | undefined | null

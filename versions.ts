@@ -3,26 +3,29 @@ import { parse, HTMLElement as NodeParserHTMLElement } from 'node-html-parser'
 import { fetchBranchPosition, fetchChromeUrl, fetchChromiumTags } from './api'
 import { SEARCH_BINARY } from './commons/constants'
 import { MappedVersion } from './commons/MappedVersion'
-import type { IChromeConfig, IDownloadSettings } from './interfaces/interfaces'
-import { Compared } from './interfaces/interfaces'
+import { Compared } from './interfaces/enums'
+import type { ContinueFetchingChromeUrlReturn, GetChromeDownloadUrlReturn } from './interfaces/function.interfaces'
+import type { IChromeFullConfig, IChromeSingleConfig, IChromeConfig, Nullable } from './interfaces/interfaces'
+import type { IOSSettings } from './interfaces/os.interfaces'
+import type { OSSetting } from './interfaces/os.interfaces'
 import { logger } from './log/spinner'
 import { userSelectedVersion } from './select'
 import { Store } from './store/Store'
 import { storeNegativeHit } from './store/storeNegativeHit'
-import { detectOperatingSystem, sortDescendingMappedVersions, compareComparableVersions } from './utils'
+import { detectOperatingSystem } from './utils'
+import { compareComparableVersions, sortDescendingMappedVersions } from './utils/sort.utils'
 
-export async function getChromeDownloadUrl(config: IChromeConfig, mappedVersions: MappedVersion[]): Promise<IDownloadSettings> {
-    const osSettings = detectOperatingSystem(config)
+export async function getChromeDownloadUrl(config: IChromeConfig, mappedVersions: MappedVersion[]): Promise<GetChromeDownloadUrlReturn> {
+    const oSSetting = detectOperatingSystem(config)
 
-    const isAutoSearch = (!config.interactive && config.onFail === 'decrease') || !!config.single
-
-    let selectedVersion = isAutoSearch
-        ? mappedVersions[0]
-        : await userSelectedVersion(mappedVersions, config)
-
-    if (isAutoSearch && !!selectedVersion) {
-        logger.info(`Auto-searching with version ${selectedVersion.value}`)
+    if (config.single !== null) {
+        return getChromeUrlForSingle(config, oSSetting, mappedVersions[0])
+    } else {
+        return getChromeUrlForFull(config, oSSetting, mappedVersions)
     }
+}
+
+async function continueFetchingChromeUrl(config: IChromeFullConfig, osSetting: OSSetting, selectedVersion: Nullable<MappedVersion>, mappedVersions: MappedVersion[]): Promise<ContinueFetchingChromeUrlReturn> {
 
     let chromeUrl: string | undefined
 
@@ -32,52 +35,42 @@ export async function getChromeDownloadUrl(config: IChromeConfig, mappedVersions
             break
         }
 
-        // when using --decrease-on-fail or --increase-on-fail, skip already disabled versions
         if (!selectedVersion.disabled) {
-            const branchPosition = await fetchBranchPosition(selectedVersion.value)
-            logger.start(SEARCH_BINARY)
-            chromeUrl = await fetchChromeUrl(branchPosition, osSettings)
+            chromeUrl = await fetchChromeUrlForVersion(config, osSetting, selectedVersion)
 
             if (chromeUrl && config.download) {
                 // chrome url found, ending loop
                 logger.success()
-                break
+                return { chromeUrl, selectedVersion }
             }
         }
 
-        const sVersion: MappedVersion = selectedVersion
-        const index = mappedVersions.findIndex(version => version.value === sVersion.value)
+        await storeIfNoBinary(config, chromeUrl, selectedVersion)
 
         if (!chromeUrl && !selectedVersion.disabled) {
-            const invalidVersion = mappedVersions[index]
-            invalidVersion.disable()
             logger.error()
-            if (config.store) {
-                // TODO: remove await?
-                await storeNegativeHit(invalidVersion.comparable, config.os, config.arch)
-            }
         }
 
         if (chromeUrl && !config.download) {
             logger.warn('Not downloading binary.')
         }
 
-        if (config.single) {
-            break
-        }
+        const sVersion: MappedVersion = selectedVersion
+        const index = mappedVersions.findIndex(mappedVersion => mappedVersion.value === sVersion.value)
 
         switch (config.onFail) {
-            case 'increase':
+            case 'increase': {
                 if (index > 0) {
                     selectedVersion = mappedVersions[index - 1]
                     if (!selectedVersion.disabled) {
                         logger.info(`Continue with next higher version "${selectedVersion.value}"`)
                     }
                 } else {
-                    selectedVersion = null
+                    return { chromeUrl: undefined, selectedVersion: undefined }
                 }
                 break
-            case 'decrease':
+            }
+            case 'decrease': {
                 if (index < mappedVersions.length - 1) {
                     const nextVersion = mappedVersions[index + 1]
                     selectedVersion = nextVersion
@@ -85,16 +78,78 @@ export async function getChromeDownloadUrl(config: IChromeConfig, mappedVersions
                         logger.info(`Continue with next lower version "${selectedVersion.value}"`)
                     }
                 } else {
-                    selectedVersion = null
+                    return { chromeUrl: undefined, selectedVersion: undefined }
                 }
                 break
-            case 'nothing':
+            }
+            case 'nothing': {
                 selectedVersion = await userSelectedVersion(mappedVersions, config)
-                break
+            }
         }
-    } while (!config.single && (!chromeUrl || !config.download))
+    } while (!chromeUrl || !config.download)
 
-    return { chromeUrl, selectedVersion: selectedVersion?.value, filenameOS: osSettings.filename }
+    return { chromeUrl, selectedVersion }
+}
+
+export async function getChromeUrlForFull(config: IChromeFullConfig, osSettings: OSSetting, mappedVersions: MappedVersion[]): Promise<GetChromeDownloadUrlReturn> {
+
+    const isAutoSearch = !config.interactive && config.onFail === 'decrease'
+
+    const version = isAutoSearch
+        ? mappedVersions[0]
+        : await userSelectedVersion(mappedVersions, config)
+
+    if (isAutoSearch && !!version) {
+        logger.info(`Auto-searching with version ${version.value}`)
+    }
+
+    const { chromeUrl, selectedVersion } = await continueFetchingChromeUrl(config, osSettings, version, mappedVersions)
+
+    return { chromeUrl, selectedVersion, filenameOS: osSettings.filename }
+}
+
+async function fetchChromeUrlForVersion(config: IChromeConfig, osSettings: IOSSettings, version: MappedVersion): Promise<string | undefined> {
+    if (version.disabled) {
+        throw new Error('TODO')
+    }
+
+    const branchPosition = await fetchBranchPosition(version.value)
+    logger.start(SEARCH_BINARY)
+    const chromeUrl = await fetchChromeUrl(branchPosition, osSettings)
+
+    if (chromeUrl && config.download) {
+        logger.success()
+    }
+
+    return chromeUrl
+
+}
+
+async function storeIfNoBinary(config: IChromeConfig, chromeUrl: string | undefined, version: MappedVersion): Promise<void> {
+    if (!chromeUrl && !version.disabled) {
+        logger.error()
+        if (config.store) {
+            version.disable()
+            // TODO: remove await?
+            await storeNegativeHit(version.comparable, config.os, config.arch)
+        }
+    }
+}
+
+export async function getChromeUrlForSingle(config: IChromeSingleConfig, oSSetting: OSSetting, selectedVersion: MappedVersion): Promise<GetChromeDownloadUrlReturn> {
+    if (selectedVersion.disabled) {
+        throw new Error('TODO')
+    }
+
+    const chromeUrl = await fetchChromeUrlForVersion(config, oSSetting, selectedVersion)
+
+    await storeIfNoBinary(config, chromeUrl, selectedVersion)
+
+    return {
+        chromeUrl,
+        filenameOS: oSSetting.filename,
+        selectedVersion,
+    }
 }
 
 /**
@@ -133,7 +188,7 @@ export async function loadVersions(): Promise<string[]> {
 }
 
 export function mapVersions(versions: string[], config: IChromeConfig, store: Store): MappedVersion[] {
-    if (config.single) {
+    if (config.single !== null) {
         return [new MappedVersion(config.single, false)]
     }
 

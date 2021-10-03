@@ -1,7 +1,8 @@
 import type { ComparableVersion } from '../commons/ComparableVersion'
 import type { OS } from '../interfaces/os.interfaces'
 import type { Arch, IListStore as IListStore, StoreSize, ISetStore } from '../interfaces/store.interfaces'
-import { setStoreToListStore, sortStoreEntries } from '../utils'
+import { setStoreToListStore } from '../utils'
+import { sortStoreEntries } from '../utils/sort.utils'
 
 export class Store {
 
