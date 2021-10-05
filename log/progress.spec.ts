@@ -7,6 +7,7 @@ jest.mock('chalk', () => ({
     bgWhite: (text: string) => `bgWhite: ${text}`,
     grey: (text: string) => `grey: ${text}`,
     green: (text: string) => `green: ${text}`,
+    red: (text: string) => `red: ${text}`,
 }))
 
 describe('ProgressBar', () => {

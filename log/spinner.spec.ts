@@ -9,7 +9,6 @@ import { Spinner } from './spinner'
 jest.mock('chalk', () => ({
     green: (text: string) => `green: ${text}`,
     red: (text: string) => `red: ${text}`,
-
 }))
 
 describe('loggerSpinner', () => {
