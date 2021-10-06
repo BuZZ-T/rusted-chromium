@@ -1,3 +1,9 @@
+/**
+ * Tests downloadStore file
+ * 
+ * @group unit/file/store/downloadStore
+ */
+
 import type { MaybeMockedDeep, MaybeMocked } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 

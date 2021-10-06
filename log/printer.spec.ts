@@ -1,3 +1,9 @@
+/**
+ * Tests printer file
+ * 
+ * @group unit/file/printer
+ */
+
 import type { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 
 import type { PrinterWriteStream } from '../interfaces/printer.interfaces'

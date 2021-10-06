@@ -1,3 +1,9 @@
+/**
+ * Tests MappedVersion class
+ * 
+ * @group unit/class/MappedVersion
+ */
+
 import type { IVersionWithDisabled } from '../interfaces/interfaces'
 import { MappedVersion } from './MappedVersion'
 

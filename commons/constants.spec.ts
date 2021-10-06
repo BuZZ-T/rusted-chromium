@@ -1,3 +1,9 @@
+/**
+ * Tests constants file
+ * 
+ * @group unit/file/constants
+ */
+
 import type { TextFunction } from '../interfaces/interfaces'
 import { READ_CONFIG } from './constants'
 

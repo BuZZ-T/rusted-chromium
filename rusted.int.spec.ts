@@ -1,3 +1,9 @@
+/**
+ * Integration tests
+ * 
+ * @group int
+ */
+
 import * as fs from 'fs'
 import * as mockFs from 'mock-fs'
 import * as path from 'path'

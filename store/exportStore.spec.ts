@@ -1,3 +1,9 @@
+/**
+ * Tests exportStore file
+ * 
+ * @group unit/file/store/exportStore
+ */
+
 import { existsSync, createReadStream, ReadStream } from 'fs'
 import { join } from 'path'
 import type { MaybeMocked, MaybeMockedDeep } from 'ts-jest/dist/utils/testing'

@@ -1,3 +1,9 @@
+/**
+ * Tests rusted file
+ * 
+ * @group unit/file/rusted
+ */
+
 import type { MaybeMocked, MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 

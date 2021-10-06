@@ -1,3 +1,9 @@
+/**
+ * Tests spinner file
+ * 
+ * @group unit/file/spinner
+ */
+
 /* eslint-disable-next-line import/no-namespace */
 import * as chalk from 'chalk'
 import type { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'

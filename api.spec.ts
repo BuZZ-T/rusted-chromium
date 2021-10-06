@@ -1,3 +1,9 @@
+/**
+ * Tests api file
+ * 
+ * @group unit/file/api
+ */
+
 import type { MaybeMocked, MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 

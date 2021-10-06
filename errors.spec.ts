@@ -1,3 +1,9 @@
+/**
+ * Tests errors file
+ * 
+ * @group unit/file/errors
+ */
+
 import { BadRequestError, UnauthorizedError, NotFoundError, ForbiddenError, findAndThrowError, NoChromiumDownloadError, NoLocalstoreError } from './errors'
 
 describe('errors', () => {

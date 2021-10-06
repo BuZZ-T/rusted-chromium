@@ -1,3 +1,9 @@
+/**
+ * Tests download file
+ * 
+ * @group unit/file/download
+ */
+
 import { existsSync, mkdir, createWriteStream, stat, rmdir, unlink, Stats } from 'fs'
 import { Response as NodeFetchResponse } from 'node-fetch'
 import type { MaybeMocked, MaybeMockedDeep } from 'ts-jest/dist/utils/testing'

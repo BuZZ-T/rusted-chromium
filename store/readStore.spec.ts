@@ -1,3 +1,9 @@
+/**
+ * Tests readStore file
+ * 
+ * @group unit/file/store/readStore
+ */
+
 import { readFile, existsSync } from 'fs'
 import type { MaybeMockedDeep, MaybeMocked } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'

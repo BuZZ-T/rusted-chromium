@@ -1,5 +1,10 @@
-import { parse } from 'node-html-parser'
-import type { HTMLElement as NodeParserHTMLElement, Node as NodeParserNode } from 'node-html-parser'
+/**
+ * Tests versions file
+ * 
+ * @group unit/file/versions
+ */
+
+import type { HTMLElement as NodeParserHTMLElement, parse, Node as NodeParserNode } from 'node-html-parser'
 import type { MaybeMockedDeep, MaybeMocked } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 

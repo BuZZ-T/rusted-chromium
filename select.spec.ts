@@ -1,3 +1,9 @@
+/**
+ * Tests select file
+ * 
+ * @group unit/file/select
+ */
+
 import type { MaybeMocked } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 

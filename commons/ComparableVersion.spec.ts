@@ -1,3 +1,9 @@
+/**
+ * Tests ComparableVersion class
+ * 
+ * @group unit/class/ComparableVersion
+ */
+
 import { ComparableVersion } from './ComparableVersion'
 
 describe('ComparableVersion', () => {

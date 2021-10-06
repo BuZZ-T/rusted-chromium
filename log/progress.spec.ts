@@ -1,3 +1,9 @@
+/**
+ * Tests progress file
+ * 
+ * @group unit/file/progress
+ */
+
 import type { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 
 import type { PrinterWriteStream } from '../interfaces/printer.interfaces'

@@ -1,3 +1,9 @@
+/**
+ * Tests config file
+ * 
+ * @group unit/file/config
+ */
+
 import type { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
