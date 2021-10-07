@@ -4,13 +4,14 @@
  * @group int
  */
 
-import * as fs from 'fs'
+import { readdirSync } from 'fs'
+/* eslint-disable-next-line import/no-namespace */
 import * as mockFs from 'mock-fs'
-import * as path from 'path'
+import { resolve } from 'path'
 
 import { downloadChromium } from './download'
-import { createStore, createChromeConfig } from './test.utils'
 import { mockAllFetches } from './test/int.utils'
+import { createStore, createChromeConfig } from './test/test.utils'
 
 jest.mock('./api')
 
@@ -23,8 +24,8 @@ describe('[int] ...', () => {
             'localstore.json': JSON.stringify(createStore()),
 
             // pass some folders to the mock for jest to be able to run
-            'node_modules': mockFs.load(path.resolve(__dirname, './node_modules')),
-            '/tmp/jest_rs': mockFs.load(path.resolve(__dirname, '/tmp/jest_rs')),
+            'node_modules': mockFs.load(resolve(__dirname, './node_modules')),
+            '/tmp/jest_rs': mockFs.load(resolve(__dirname, '/tmp/jest_rs')),
         })
     })
 
@@ -34,7 +35,7 @@ describe('[int] ...', () => {
             interactive: false,
         }))
 
-        const chromeFilename = fs.readdirSync(__dirname).find(file => file.startsWith('chrome'))
+        const chromeFilename = readdirSync(__dirname).find(file => file.startsWith('chrome'))
         expect(chromeFilename).toEqual('chrome-linux-x64-10.0.0.0.zip')
     })
 })

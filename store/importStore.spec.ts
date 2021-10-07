@@ -10,7 +10,7 @@ import type { MaybeMocked } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
 import { LOCAL_STORE_FILE } from '../commons/constants'
-import { createStore, ReadFileWithOptions, createImportConfig } from '../test.utils'
+import { createStore, ReadFileWithOptions, createImportConfig } from '../test/test.utils'
 import { downloadStore } from './downloadStore'
 import { importAndMergeLocalstore } from './importStore'
 import { readStoreFile } from './readStore'

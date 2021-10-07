@@ -9,7 +9,7 @@ import type { MaybeMockedDeep, MaybeMocked } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
 import { Spinner, logger } from '../log/spinner'
-import { createStore, ReadFileWithOptions, createImportConfig } from '../test.utils'
+import { createStore, ReadFileWithOptions, createImportConfig } from '../test/test.utils'
 import { readStoreFile } from './readStore'
 import { Store } from './Store'
 

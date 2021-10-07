@@ -14,7 +14,7 @@ import { logger } from './log/spinner'
 import { rusted } from './rusted'
 import { exportStore } from './store/exportStore'
 import { importAndMergeLocalstore } from './store/importStore'
-import { createChromeFullConfig, createExportConfig, createImportConfig } from './test.utils'
+import { createChromeFullConfig, createExportConfig, createImportConfig } from './test/test.utils'
 
 jest.mock('./download')
 jest.mock('./config/config')

@@ -4,7 +4,8 @@
  * @group unit/file/versions
  */
 
-import type { HTMLElement as NodeParserHTMLElement, parse, Node as NodeParserNode } from 'node-html-parser'
+import { parse } from 'node-html-parser'
+import type { HTMLElement as NodeParserHTMLElement, Node as NodeParserNode } from 'node-html-parser'
 import type { MaybeMockedDeep, MaybeMocked } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
@@ -17,7 +18,7 @@ import { Spinner, logger } from './log/spinner'
 import { userSelectedVersion } from './select'
 import { Store } from './store/Store'
 import { storeNegativeHit } from './store/storeNegativeHit'
-import { createNodeParserHTMLElement, createNodeWithChildren, createStore, createChromeSingleConfig, createChromeFullConfig } from './test.utils'
+import { createNodeParserHTMLElement, createNodeWithChildren, createStore, createChromeSingleConfig, createChromeFullConfig } from './test/test.utils'
 import { detectOperatingSystem } from './utils'
 import { mapVersions, getChromeDownloadUrl, loadVersions } from './versions'
 
@@ -762,7 +763,7 @@ describe('versions', () => {
         })
 
         it('should remove disabled versions on hideNegativeHits set in config', () => {
-            const config = createChromeFullConfig({
+            const config = createChromeConfig({
                 hideNegativeHits: true,
                 os: 'linux',
                 arch: 'x64',

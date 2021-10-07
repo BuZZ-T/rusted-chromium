@@ -11,7 +11,7 @@ import { ComparableVersion } from '../commons/ComparableVersion'
 import type { IChromeConfigWrapper, IStoreConfigWrapper, IExportConfigWrapper } from '../interfaces/interfaces'
 import type { OS } from '../interfaces/os.interfaces'
 import { Spinner, logger } from '../log/spinner'
-import { createChromeFullConfig, createChromeOptions, createImportConfig, createExportConfig } from '../test.utils'
+import { createChromeFullConfig, createChromeOptions, createImportConfig, createExportConfig } from '../test/test.utils'
 import { DEFAULT_OPTIONS, readConfig } from './config'
 
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */

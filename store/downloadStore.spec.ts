@@ -10,7 +10,7 @@ import { mocked } from 'ts-jest/utils'
 import { fetchLocalStore } from '../api'
 import { LOAD_CONFIG } from '../commons/constants'
 import { logger, Spinner } from '../log/spinner'
-import { createStore, createImportConfig } from '../test.utils'
+import { createStore, createImportConfig } from '../test/test.utils'
 import { downloadStore } from './downloadStore'
 import { Store } from './Store'
 

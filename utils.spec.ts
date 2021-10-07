@@ -4,14 +4,8 @@
  * @group unit/file/utils
  */
 
-import { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
-import { mocked } from 'ts-jest/utils'
-
-import { ComparableVersion } from './commons/ComparableVersion'
-import { MappedVersion } from './commons/MappedVersion'
-import { Compared } from './interfaces/interfaces'
 import type { IOSSettings, OS } from './interfaces/os.interfaces'
-import { createChromeFullConfig } from './test.utils'
+import { createChromeFullConfig } from './test/test.utils'
 import { detectOperatingSystem } from './utils'
 
 describe('utils', () => {

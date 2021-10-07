@@ -20,7 +20,7 @@ import { progress } from './log/progress'
 import { logger } from './log/spinner'
 import { loadStore } from './store/loadStore'
 import { Store } from './store/Store'
-import { createChromeFullConfig, createStore, createGetChromeDownloadUrlReturn, MkdirWithOptions, StatsWithoutOptions, createChromeSingleConfig } from './test.utils'
+import { createChromeFullConfig, createStore, createGetChromeDownloadUrlReturn, MkdirWithOptions, StatsWithoutOptions, createChromeSingleConfig } from './test/test.utils'
 import { getChromeDownloadUrl, loadVersions, mapVersions } from './versions'
 
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */

@@ -1,13 +1,13 @@
 import { NoParamCallback, PathLike, Stats } from 'fs'
 import { HTMLElement as NodeParserHTMLElement, Node as NodeParserNode } from 'node-html-parser'
 
-import { ComparableVersion } from './commons/ComparableVersion'
-import { MappedVersion } from './commons/MappedVersion'
-import { DEFAULT_OPTIONS } from './config/config'
-import type { IConfigOptions } from './interfaces/config.interfaces'
-import type { GetChromeDownloadUrlReturn } from './interfaces/function.interfaces'
-import type { IChromeFullConfig, IExportConfig, IStoreConfig, IChromeSingleConfig } from './interfaces/interfaces'
-import type { IListStore } from './interfaces/store.interfaces'
+import { ComparableVersion } from '../commons/ComparableVersion'
+import { MappedVersion } from '../commons/MappedVersion'
+import { DEFAULT_OPTIONS } from '../config/config'
+import type { IConfigOptions } from '../interfaces/config.interfaces'
+import type { GetChromeDownloadUrlReturn } from '../interfaces/function.interfaces'
+import type { IChromeFullConfig, IExportConfig, IStoreConfig, IChromeSingleConfig } from '../interfaces/interfaces'
+import type { IListStore } from '../interfaces/store.interfaces'
 
 export const createChromeFullConfig = (config?: Partial<IChromeFullConfig>): IChromeFullConfig => ({
     arch: 'x64',

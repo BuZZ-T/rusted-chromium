@@ -9,7 +9,7 @@ import { mocked } from 'ts-jest/utils'
 
 import { MappedVersion } from './commons/MappedVersion'
 import { userSelectedVersion } from './select'
-import { createChromeFullConfig } from './test.utils'
+import { createChromeFullConfig } from './test/test.utils'
 
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */
 const prompts = require('prompts')

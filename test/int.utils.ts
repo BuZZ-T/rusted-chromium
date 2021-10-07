@@ -3,7 +3,7 @@ import { PassThrough } from 'stream'
 import { mocked } from 'ts-jest/utils'
 
 import { fetchBranchPosition, fetchChromeUrl, fetchChromeZipFile, fetchChromiumTags, fetchLocalStore } from '../api'
-import { createStore } from '../test.utils'
+import { createStore } from '../test/test.utils'
 
 export function mockAllFetches(): void {
     mocked(fetchLocalStore).mockResolvedValue(JSON.stringify(createStore()))

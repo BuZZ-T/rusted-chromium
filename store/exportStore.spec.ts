@@ -10,7 +10,7 @@ import type { MaybeMocked, MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
 import { LOCAL_STORE_FILE } from '../commons/constants'
-import { createExportConfig } from '../test.utils'
+import { createExportConfig } from '../test/test.utils'
 import { exportStore } from './exportStore'
 
 jest.mock('fs')
