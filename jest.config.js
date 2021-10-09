@@ -9,5 +9,6 @@ module.exports = {
     "!<rootDir>/start-local.ts",
     "!public_api.ts",
     "!<rootDir>/test/*",
+    "!public_api.ts"
   ],
 }

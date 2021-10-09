@@ -20,7 +20,7 @@ export async function rusted(args: string[], platform: NodeJS.Platform): Promise
         await downloadChromium(config)
     } else if (configWrapper.action === 'exportStore') {
         const config: IExportConfig = configWrapper.config
-        await exportStore(config)
+        exportStore(config, process.stdout)
     } else {
         logger.error(`Failed to read config: ${JSON.stringify(configWrapper)}`)
     }

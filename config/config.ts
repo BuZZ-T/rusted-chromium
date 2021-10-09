@@ -34,7 +34,7 @@ export function readConfig(args: string[], platform: NodeJS.Platform): ConfigWra
         .version(packageJson.version)
         .option('-m, --min <version>', 'The minimum version', DEFAULT_OPTIONS.min)
         .option('-M, --max <version>', 'The maximum version. Newest version if not specificied', DEFAULT_OPTIONS.max)
-        .option('-r, --max-results <results>', 'The maximum amount of results to choose from')
+        .option('-r, --max-results <results>', 'The maximum amount of results to choose from', null)
         .option('-o, --os <os>', 'The operating system for what the binary should be downloaded')
         .option('-a, --arch <arch>', 'The architecture for what the binary should be downloaded. Valid values are "x86" and "x64". Only works when --os is also set')
         .option('-d, --decrease-on-fail', 'If a binary does not exist, go to the next lower version number and try again (regarding --min, --max and --max-results)', false)

@@ -51,7 +51,10 @@ export abstract class Printer<T extends Printer<T>> {
     }
 
     protected deleteLastLine(): T {
-        this.stdio.moveCursor(0, -1)
+        // stdio.moveCursor might not be available in some environments
+        if (typeof this.stdio.moveCursor === 'function') {
+            this.stdio.moveCursor(0, -1)
+        }
         this.clearLine()
         return this.self()
     }
