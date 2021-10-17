@@ -57,7 +57,7 @@ npm run build
 
 | Flag | Short | Parameter | Default | Description |
 |-|-|-|-|-
-|`--single`|`-s`| string | - | Use a specific version. No interactive prompt is displayed. The [Store file](#store-file) is ignored, several other flags have no effect (like `-d`, `-i`, `-n`, `-M`, `-m`, `-r` and `-O`). Exists with an error status code of 1, if no binary exists.
+|`--single`|`-s`| string | - | Use a specific version. No interactive prompt is displayed. The [Store file](#store-file) is ignored, several other flags have no effect (like `-d`, `-i`, `-n`, `-M`, `-m`, `-r` and `-O`). Terminates with an error status code of 1, if no binary exists.
 | `--max`| `-M` | integer | 10000 | Maximum version which should be selectable.
 | `--min`| `-m` | integer | 0 | Minimum version which should be selectable.
 | `--max-results`| `-r` | integer | 10 | Maximum number of results to select. Directly downloads the binary, if set to 1. **Important:**  `--max-results` is set to `Infinity`, if `--min` is set and `--max-results` is not set, so the default is overridden!
