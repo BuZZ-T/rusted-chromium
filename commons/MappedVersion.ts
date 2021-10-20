@@ -1,4 +1,4 @@
-import { IVersionWithDisabled } from '../interfaces'
+import { IVersionWithDisabled } from '../interfaces/interfaces'
 import { isIVersionWithDisabled } from '../utils'
 import { ComparableVersion } from './ComparableVersion'
 

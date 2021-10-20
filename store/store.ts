@@ -5,7 +5,8 @@ import { promisify } from 'util'
 
 import { ComparableVersion } from '../commons/ComparableVersion'
 import { LOCAL_STORE_FILE } from '../commons/constants'
-import { OS, Store, Arch } from '../interfaces'
+import { Store, Arch } from '../interfaces/interfaces'
+import { OS } from '../interfaces/os.interfaces'
 import { sortStoreEntries } from '../utils'
 
 const STORE_FILE = path.join(__dirname, '..', LOCAL_STORE_FILE)

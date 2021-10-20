@@ -1,6 +1,7 @@
 import { ComparableVersion } from './commons/ComparableVersion'
 import { MappedVersion } from './commons/MappedVersion'
-import { ExtendedOS, OS, IChromeConfig, Compared, Store, TextFunction, IVersion, IVersionWithDisabled, OSSetting } from './interfaces'
+import { IChromeConfig, Compared, Store, TextFunction, IVersion, IVersionWithDisabled } from './interfaces/interfaces'
+import { OSSetting, OS, ExtendedOS } from './interfaces/os.interfaces'
 import { logger } from './log/spinner'
 
 export function detectOperatingSystem(config: IChromeConfig): OSSetting {

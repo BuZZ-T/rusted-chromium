@@ -3,7 +3,7 @@ import { join } from 'path'
 import { promisify } from 'util'
 
 import { LOCAL_STORE_FILE } from '../commons/constants'
-import { IStoreConfig, Store, StoreSize } from '../interfaces'
+import { IStoreConfig, Store, StoreSize } from '../interfaces/interfaces'
 import { sortStoreEntries } from '../utils'
 import { downloadStore } from './downloadStore'
 import { readStoreFile } from './readStore'

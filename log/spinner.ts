@@ -1,4 +1,4 @@
-import { LoggerConfig, TextFunction } from '../interfaces'
+import { LoggerConfig, TextFunction } from '../interfaces/interfaces'
 import { isTextFunction } from '../utils'
 import { Printer } from './printer'
 

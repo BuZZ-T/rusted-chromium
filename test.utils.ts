@@ -3,8 +3,8 @@ import { HTMLElement as NodeParserHTMLElement, Node as NodeParserNode } from 'no
 
 import { ComparableVersion } from './commons/ComparableVersion'
 import { DEFAULT_OPTIONS } from './config/config'
-import { IConfigOptions } from './config/config.interfaces'
-import { IChromeConfig, IDownloadSettings, Store } from './interfaces'
+import { IConfigOptions } from './interfaces/config.interfaces'
+import { IChromeConfig, IDownloadSettings, Store } from './interfaces/interfaces'
 
 export interface PartialStdio {
     write: () => boolean

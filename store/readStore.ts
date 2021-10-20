@@ -2,7 +2,7 @@ import { existsSync, readFile } from 'fs'
 import { promisify } from 'util'
 
 import { READ_CONFIG } from '../commons/constants'
-import { IStoreConfig, Store } from '../interfaces'
+import { IStoreConfig, Store } from '../interfaces/interfaces'
 import { logger } from '../log/spinner'
 
 const readFilePromise = promisify(readFile)

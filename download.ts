@@ -5,7 +5,7 @@ import { promisify } from 'util'
 
 import { fetchChromeZipFile } from './api'
 import { NoChromiumDownloadError } from './errors'
-import { IChromeConfig } from './interfaces'
+import { IChromeConfig } from './interfaces/interfaces'
 import { progress } from './log/progress'
 import { logger } from './log/spinner'
 import { loadStore } from './store/store'

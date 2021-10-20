@@ -1,6 +1,6 @@
 import { readConfig } from './config/config'
 import { downloadChromium } from './download'
-import { IChromeConfig, IStoreConfig, IExportConfig } from './interfaces'
+import { IChromeConfig, IStoreConfig, IExportConfig } from './interfaces/interfaces'
 import { logger } from './log/spinner'
 import { exportStore } from './store/exportStore'
 import { importAndMergeLocalstore } from './store/importStore'

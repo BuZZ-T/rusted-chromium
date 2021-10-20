@@ -1,7 +1,7 @@
 import * as prompts from 'prompts'
 
 import { MappedVersion } from './commons/MappedVersion'
-import { IChromeConfig } from './interfaces'
+import { IChromeConfig } from './interfaces/interfaces'
 
 /**
  * Lets the user select a version via CLI prompt and returns it.
