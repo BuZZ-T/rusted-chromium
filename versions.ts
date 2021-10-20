@@ -48,6 +48,7 @@ export async function getChromeDownloadUrl(config: IChromeConfig, mappedVersions
 
         if (!chromeUrl && !selectedVersion.disabled) {
             const invalidVersion = mappedVersions[index]
+            invalidVersion.disable()
             logger.error()
             if (config.store) {
                 // TODO: remove await?

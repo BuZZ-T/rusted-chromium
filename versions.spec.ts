@@ -300,20 +300,24 @@ describe('versions', () => {
                 filenameOS: FILENAME_OS,
             }
 
-            userSelectedVersionMock.mockResolvedValueOnce(version2)
+            const version = new MappedVersion(20, 0, 0, 0, false)
+            const disableSpy = jest.spyOn(version, 'disable')
+
+            userSelectedVersionMock.mockResolvedValueOnce(version)
             fetchBranchPositionMock.mockResolvedValueOnce('branch-position2')
             fetchChromeUrlMock.mockResolvedValueOnce(undefined)
 
-            expect(await getChromeDownloadUrl(config, [version1, version2])).toEqual(expectedSettings)
+            expect(await getChromeDownloadUrl(config, [version1, version])).toEqual(expectedSettings)
 
+            expect(disableSpy).toHaveBeenCalledTimes(1)
             expect(storeNegativeHitMock).toHaveBeenCalledTimes(1)
-            expect(storeNegativeHitMock).toHaveBeenCalledWith(version2.comparable, 'linux', 'x64')
+            expect(storeNegativeHitMock).toHaveBeenCalledWith(version.comparable, 'linux', 'x64')
             expect(detectOperatingSystemMock).toHaveBeenCalledTimes(1)
             expect(detectOperatingSystemMock).toHaveBeenCalledWith(config)
             expect(userSelectedVersionMock).toHaveBeenCalledTimes(2)
-            expect(userSelectedVersionMock).toHaveBeenCalledWith([version1, version2], config)
+            expect(userSelectedVersionMock).toHaveBeenCalledWith([version1, version], config)
             expect(fetchBranchPositionMock).toHaveBeenCalledTimes(2)
-            expect(fetchBranchPositionMock).toHaveBeenCalledWith(version2.value)
+            expect(fetchBranchPositionMock).toHaveBeenCalledWith(version.value)
             expect(fetchBranchPositionMock).toHaveBeenCalledWith(version1.value)
             expect(fetchChromeUrlMock).toHaveBeenCalledTimes(2)
             expect(fetchChromeUrlMock).toHaveBeenCalledWith('branch-position2', OS_SETTINGS)

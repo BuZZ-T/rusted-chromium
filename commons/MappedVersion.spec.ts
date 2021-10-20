@@ -94,4 +94,20 @@ describe('MappedVersion', () => {
     it('should throw an error on unknwon input', () => {
         expect(() => new MappedVersion(0 as unknown as IVersionWithDisabled)).toThrow('This should not happen, MappedVersion called with wrong types!')
     })
+
+    it('should disable the version', () => {
+        const version = new MappedVersion({
+            major: 10,
+            minor: 0,
+            branch: 0,
+            patch: 0,
+            disabled: false
+        })
+
+        expect(version.disabled).toBe(false)
+
+        version.disable()
+
+        expect(version.disabled).toBe(true)
+    })
 })

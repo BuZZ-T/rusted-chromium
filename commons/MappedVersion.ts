@@ -19,6 +19,10 @@ export class MappedVersion {
         return this._disabled
     }
 
+    public disable(): void {
+        this._disabled = true
+    }
+
     public constructor(input: string, disabled: boolean)
     public constructor(major: number, minor: number, branch: number, patch: number, disabled: boolean)
     public constructor(versionObject: IVersionWithDisabled)
