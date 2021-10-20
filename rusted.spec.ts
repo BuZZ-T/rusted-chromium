@@ -3,7 +3,7 @@ import { mocked } from 'ts-jest/utils'
 
 import { readConfig } from './config/config'
 import { downloadChromium } from './download'
-import { ConfigWrapper, IExportConfig, IStoreConfig } from './interfaces'
+import { ConfigWrapper, IStoreConfig, IExportConfig } from './interfaces/interfaces'
 import { logger } from './log/spinner'
 import { rusted } from './rusted'
 import { exportStore } from './store/exportStore'

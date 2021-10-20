@@ -5,7 +5,8 @@ import { mocked } from 'ts-jest/utils'
 import { fetchBranchPosition, fetchChromeUrl, fetchChromiumTags } from './api'
 import { ComparableVersion } from './commons/ComparableVersion'
 import { MappedVersion } from './commons/MappedVersion'
-import { IDownloadSettings, IOSSettings } from './interfaces'
+import { IDownloadSettings } from './interfaces/interfaces'
+import { OSSetting } from './interfaces/os.interfaces'
 import { Spinner, logger } from './log/spinner'
 import { userSelectedVersion } from './select'
 import { storeNegativeHit } from './store/store'
@@ -45,7 +46,7 @@ describe('versions', () => {
         const CHROME_URL = 'chrome-url'
         const FILENAME_OS = 'linux'
 
-        const OS_SETTINGS: IOSSettings = {
+        const OS_SETTINGS: OSSetting = {
             url: 'Linux_x64',
             filename: FILENAME_OS,
         }

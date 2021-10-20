@@ -1,4 +1,4 @@
-import { TextFunction } from '../interfaces'
+import { TextFunction } from '../interfaces/interfaces'
 import { READ_CONFIG } from './constants'
 describe('constants', () => {
 

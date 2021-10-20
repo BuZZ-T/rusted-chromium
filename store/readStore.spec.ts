@@ -2,7 +2,7 @@ import { readFile, existsSync } from 'fs'
 import { MaybeMockedDeep, MaybeMocked } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
-import { IStoreConfig } from '../interfaces'
+import { IStoreConfig } from '../interfaces/interfaces'
 import { Spinner, logger } from '../log/spinner'
 import { createStore, ReadFileWithOptions } from '../test.utils'
 import { readStoreFile } from './readStore'

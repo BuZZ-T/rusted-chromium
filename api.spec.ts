@@ -2,7 +2,7 @@ import { MaybeMocked, MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
 import { fetchChromiumTags, fetchBranchPosition, fetchChromeUrl, fetchChromeZipFile, fetchLocalStore } from './api'
-import { IOSSettings } from './interfaces'
+import { IOSSettings } from './interfaces/os.interfaces'
 import { logger, Spinner } from './log/spinner'
 
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */

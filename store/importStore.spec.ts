@@ -4,7 +4,7 @@ import { MaybeMocked } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
 import { LOCAL_STORE_FILE } from '../commons/constants'
-import { IStoreConfig, Store } from '../interfaces'
+import { IStoreConfig, Store } from '../interfaces/interfaces'
 import { createStore, ReadFileWithOptions } from '../test.utils'
 import { downloadStore } from './downloadStore'
 import { importAndMergeLocalstore } from './importStore'

@@ -4,7 +4,7 @@ import { MaybeMocked } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
 import { ComparableVersion } from '../commons/ComparableVersion'
-import { Store } from '../interfaces'
+import { Store } from '../interfaces/interfaces'
 import { createStore, ReadFileWithOptions } from '../test.utils'
 import store from './store'
 
