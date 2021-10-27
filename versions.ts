@@ -6,7 +6,8 @@ import { MappedVersion } from './commons/MappedVersion'
 import { Compared, IChromeConfig, IDownloadSettings } from './interfaces/interfaces'
 import { logger } from './log/spinner'
 import { userSelectedVersion } from './select'
-import { storeNegativeHit } from './store/store'
+import { Store } from './store/Store'
+import { storeNegativeHit } from './store/storeNegativeHit'
 import { detectOperatingSystem, sortDescendingMappedVersions, compareComparableVersions } from './utils'
 
 export async function getChromeDownloadUrl(config: IChromeConfig, mappedVersions: MappedVersion[]): Promise<IDownloadSettings> {
@@ -130,17 +131,19 @@ export async function loadVersions(): Promise<string[]> {
     return versions
 }
 
-export function mapVersions(versions: string[], config: IChromeConfig, store: Set<string>): MappedVersion[] {
+export function mapVersions(versions: string[], config: IChromeConfig, store: Store): MappedVersion[] {
     if (config.single) {
         return [new MappedVersion(config.single, false)]
     }
 
+    const versionSet = store.getBy(config.os, config.arch)
+
     const filteredVersions = versions
-        .map(version => new MappedVersion(version, store.has(version)))
-        .sort(sortDescendingMappedVersions)
+        .map(version => new MappedVersion(version, versionSet.has(version)))
+        .filter(version => !config.hideNegativeHits || !version.disabled)
         .filter(version => compareComparableVersions(version.comparable, config.min) !== Compared.LESS
             && compareComparableVersions(version.comparable, config.max) !== Compared.GREATER)
-        .filter(version => !config.hideNegativeHits || !version.disabled)
+        .sort(sortDescendingMappedVersions)
 
     // Don't reduce the amount of filtered versions when --only-newest-major is set
     // because the newest available major version might be disabled for the current os 

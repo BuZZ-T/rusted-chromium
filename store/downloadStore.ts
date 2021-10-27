@@ -1,7 +1,8 @@
 import { fetchLocalStore } from '../api'
 import { LOAD_CONFIG } from '../commons/constants'
-import { IStoreConfig, Store } from '../interfaces/interfaces'
+import { IStoreConfig } from '../interfaces/interfaces'
 import { logger } from '../log/spinner'
+import { Store } from './Store'
 
 /**
  * Downloads the localstore.json file an places it in the work directory of rusted chromium.
@@ -22,7 +23,7 @@ export async function downloadStore(config: IStoreConfig, destinationPath: strin
 
     return fetchLocalStore(url).then(storeFile => {
         logger.success()
-        return JSON.parse(storeFile)
+        return new Store(storeFile)
     }).catch(err => {
         logger.error()
         if (err?.message && err.path) {
@@ -30,5 +31,7 @@ export async function downloadStore(config: IStoreConfig, destinationPath: strin
         } else {
             logger.error(err)
         }
+
+        throw err
     })
 }

@@ -1,24 +1,11 @@
-import { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
-import { mocked } from 'ts-jest/utils'
-
 import { ComparableVersion } from './commons/ComparableVersion'
 import { MappedVersion } from './commons/MappedVersion'
 import { Compared } from './interfaces/interfaces'
 import { IOSSettings, OS } from './interfaces/os.interfaces'
-import { logger, Spinner } from './log/spinner'
 import { createChromeConfig, createStore } from './test.utils'
-import { detectOperatingSystem, sortDescendingMappedVersions, compareComparableVersions, sortAscendingMappedVersions, sortStoreEntries, isTextFunction } from './utils'
-
-jest.mock('./log/spinner')
+import { detectOperatingSystem, sortDescendingMappedVersions, compareComparableVersions, sortAscendingMappedVersions, isTextFunction, sortStoreEntries } from './utils'
 
 describe('utils', () => {
-
-    let loggerMock: MaybeMockedDeep<Spinner>
-
-    beforeEach(() => {
-        loggerMock = mocked(logger, true)
-        loggerMock.warn.mockClear()
-    })
 
     describe('detectOperatingSystem', () => {
         it('should return linux 64-bit', () => {
@@ -34,7 +21,6 @@ describe('utils', () => {
             const osSettings = detectOperatingSystem(config)
 
             expect(osSettings).toEqual(expectedOSSettings)
-            expect(loggerMock.warn).toHaveBeenCalledTimes(0)
         })
 
         it('should return linux 32-bit', () => {
@@ -51,7 +37,6 @@ describe('utils', () => {
             const osSettings = detectOperatingSystem(config)
 
             expect(osSettings).toEqual(expectedOSSettings)
-            expect(loggerMock.warn).toHaveBeenCalledTimes(0)
         })
 
         it('should return windows 64-bit', () => {
@@ -67,7 +52,6 @@ describe('utils', () => {
             const osSettings = detectOperatingSystem(config)
 
             expect(osSettings).toEqual(expectedOSSettings)
-            expect(loggerMock.warn).toHaveBeenCalledTimes(0)
         })
 
         it('should return windows 32-bit', () => {
@@ -83,7 +67,6 @@ describe('utils', () => {
             const osSettings = detectOperatingSystem(config)
 
             expect(osSettings).toEqual(expectedOSSettings)
-            expect(loggerMock.warn).toHaveBeenCalledTimes(0)
         })
 
         it('should return mac 64-Bit', () => {
@@ -99,25 +82,22 @@ describe('utils', () => {
             const osSettings = detectOperatingSystem(config)
 
             expect(osSettings).toEqual(expectedOSSettings)
-
-            expect(loggerMock.warn).toHaveBeenCalledTimes(0)
         })
 
-        it('should return mac 64-bit for 32-bit request and logging warning', () => {
+        it('should return mac ARM', () => {
             const config = createChromeConfig({
                 os: 'mac',
-                arch: 'x86',
+                arch: 'arm',
             })
 
             const expectedOSSettings: IOSSettings = {
-                url: 'Mac',
+                url: 'Mac_Arm',
                 filename: 'mac'
             }
 
             const osSettings = detectOperatingSystem(config)
 
             expect(osSettings).toEqual(expectedOSSettings)
-            expect(loggerMock.warn).toHaveBeenCalledTimes(1)
         })
 
         it('should throw an error on unknown os received', () => {
@@ -351,7 +331,7 @@ describe('utils', () => {
                 },
                 mac: {
                     x64: ['10.11.0.0', '10.0.0.0'],
-                    x86: ['10.0.0.1', '10.0.0.0']
+                    arm: ['10.0.0.1', '10.0.0.0']
                 },
             })
             const sortedAll = createStore({
@@ -365,7 +345,7 @@ describe('utils', () => {
                 },
                 mac: {
                     x64: ['10.0.0.0', '10.11.0.0'],
-                    x86: ['10.0.0.0', '10.0.0.1']
+                    arm: ['10.0.0.0', '10.0.0.1']
                 },
             })
 

@@ -4,11 +4,12 @@ import { MaybeMocked } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
 import { LOCAL_STORE_FILE } from '../commons/constants'
-import { IStoreConfig, Store } from '../interfaces/interfaces'
+import { IStoreConfig } from '../interfaces/interfaces'
 import { createStore, ReadFileWithOptions } from '../test.utils'
 import { downloadStore } from './downloadStore'
 import { importAndMergeLocalstore } from './importStore'
 import { readStoreFile } from './readStore'
+import { Store } from './Store'
 
 jest.mock('fs')
 jest.mock('../log/spinner')
@@ -21,7 +22,7 @@ describe('importStore', () => {
         let existsSyncMock: MaybeMocked<typeof existsSync>
         let writeFileMock: MaybeMocked<typeof writeFile>
         let readFileMock: MaybeMocked<ReadFileWithOptions>
-        
+
         let downloadStoreMock: MaybeMocked<typeof downloadStore>
         let readStoreFileMock: MaybeMocked<typeof readStoreFile>
 
@@ -44,10 +45,10 @@ describe('importStore', () => {
         })
 
         it('should download a store via URL and store it without existing store', async () => {
-            const anyStore = createStore({ linux: { x64: ['10.11.12.13'], x86: [] } })
+            const anyStore = new Store(createStore({ linux: { x64: ['10.11.12.13'], x86: [] } }))
 
             existsSyncMock.mockReturnValue(false)
-            downloadStoreMock.mockReturnValue(Promise.resolve(anyStore))
+            downloadStoreMock.mockResolvedValue(anyStore)
             writeFileMock.mockImplementation((path, store, callback) => {
                 callback(null)
             })
@@ -63,14 +64,15 @@ describe('importStore', () => {
             expect(readFileMock).toHaveBeenCalledTimes(0)
 
             expect(writeFileMock).toHaveBeenCalledTimes(1)
-            expect(writeFileMock).toHaveBeenCalledWith(path.join(__dirname, '..', LOCAL_STORE_FILE), JSON.stringify(anyStore, null, 2), expect.any(Function))
+            expect(writeFileMock).toHaveBeenCalledWith(path.join(__dirname, '..', LOCAL_STORE_FILE), anyStore.toFormattedString(), expect.any(Function))
+
         })
 
         it('should download a store via local file and store it without existing store', async () => {
-            const anyStore = createStore({ linux: { x64: ['10.11.12.13'], x86: [] } })
+            const anyStore = new Store(createStore({ linux: { x64: ['10.11.12.13'], x86: [] } }))
 
             existsSyncMock.mockReturnValue(false)
-            readStoreFileMock.mockReturnValue(Promise.resolve(anyStore))
+            readStoreFileMock.mockResolvedValue(anyStore)
             writeFileMock.mockImplementation((path, store, callback) => {
                 callback(null)
             })
@@ -86,12 +88,12 @@ describe('importStore', () => {
             expect(readFileMock).toHaveBeenCalledTimes(0)
 
             expect(writeFileMock).toHaveBeenCalledTimes(1)
-            expect(writeFileMock).toHaveBeenCalledWith(path.join(__dirname, '..', LOCAL_STORE_FILE), JSON.stringify(anyStore, null, 2), expect.any(Function))
+            expect(writeFileMock).toHaveBeenCalledWith(path.join(__dirname, '..', LOCAL_STORE_FILE), anyStore.toFormattedString(), expect.any(Function))
         })
 
-        it('should do nothing, if no store is downloaded', async () => {
+        it('should do nothing, if no store file is loaded from file system', async () => {
             existsSyncMock.mockReturnValue(false)
-            readStoreFileMock.mockReturnValue(Promise.resolve(null as unknown as Store))
+            readStoreFileMock.mockRejectedValue(undefined)
             writeFileMock.mockImplementation((path, store, callback) => {
                 callback(null)
             })
@@ -109,9 +111,9 @@ describe('importStore', () => {
             expect(writeFileMock).toHaveBeenCalledTimes(0)
         })
 
-        it('should do nothing, if no store file is loaded from file system', async () => {
+        it('should do nothing, if no store is downloaded', async () => {
             existsSyncMock.mockReturnValue(false)
-            readStoreFileMock.mockReturnValue(Promise.resolve(null as unknown as Store))
+            downloadStoreMock.mockRejectedValue(undefined)
             writeFileMock.mockImplementation((path, store, callback) => {
                 callback(null)
             })
@@ -131,7 +133,7 @@ describe('importStore', () => {
 
         it('should merge the existing file with the file downloaded by URL', async () => {
             const existingStore = createStore({ linux: { x64: ['1.0.0.0'], x86: [] }, win: { x64: ['2.0.0.0'], x86: [] } })
-            const anyStore = createStore({ linux: { x64: ['10.11.12.13'], x86: [] } })
+            const anyStore = new Store(createStore({ linux: { x64: ['10.11.12.13'], x86: [] } }))
             const mergedStore = createStore({
                 linux: {
                     x64: ['1.0.0.0', '10.11.12.13'],
@@ -145,9 +147,9 @@ describe('importStore', () => {
 
             existsSyncMock.mockReturnValue(true)
             readFileMock.mockImplementation((file, options, callback) => {
-                callback(null, JSON.stringify(existingStore, null, 2))
+                callback(null, JSON.stringify(existingStore, null, 4))
             })
-            downloadStoreMock.mockReturnValue(Promise.resolve(anyStore))
+            downloadStoreMock.mockResolvedValue(anyStore)
             writeFileMock.mockImplementation((path, store, callback) => {
                 callback(null)
             })
@@ -163,12 +165,12 @@ describe('importStore', () => {
             expect(readFileMock).toHaveBeenCalledTimes(1)
 
             expect(writeFileMock).toHaveBeenCalledTimes(1)
-            expect(writeFileMock).toHaveBeenCalledWith(path.join(__dirname, '..', LOCAL_STORE_FILE), JSON.stringify(mergedStore, null, 2), expect.any(Function))
+            expect(writeFileMock).toHaveBeenCalledWith(path.join(__dirname, '..', LOCAL_STORE_FILE), JSON.stringify(mergedStore, null, 4), expect.any(Function))
         })
 
         it('should merge the existing file with the file downloaded by local file', async () => {
             const existingStore = createStore({ linux: { x64: ['1.0.0.0'], x86: [] }, win: { x64: ['2.0.0.0'], x86: [] } })
-            const anyStore = createStore({ linux: { x64: ['10.11.12.13'], x86: [] } })
+            const anyStore = new Store(createStore({ linux: { x64: ['10.11.12.13'], x86: [] } }))
             const mergedStore = createStore({
                 linux: {
                     x64: ['1.0.0.0', '10.11.12.13'],
@@ -184,7 +186,7 @@ describe('importStore', () => {
             readFileMock.mockImplementation((file, options, callback) => {
                 callback(null, JSON.stringify(existingStore, null, 2))
             })
-            readStoreFileMock.mockReturnValue(Promise.resolve(anyStore))
+            readStoreFileMock.mockResolvedValue(anyStore)
             writeFileMock.mockImplementation((path, store, callback) => {
                 callback(null)
             })
@@ -200,7 +202,7 @@ describe('importStore', () => {
             expect(readFileMock).toHaveBeenCalledTimes(1)
 
             expect(writeFileMock).toHaveBeenCalledTimes(1)
-            expect(writeFileMock).toHaveBeenCalledWith(path.join(__dirname, '..', LOCAL_STORE_FILE), JSON.stringify(mergedStore, null, 2), expect.any(Function))
+            expect(writeFileMock).toHaveBeenCalledWith(path.join(__dirname, '..', LOCAL_STORE_FILE), JSON.stringify(mergedStore, null, 4), expect.any(Function))
         })
     })
 })

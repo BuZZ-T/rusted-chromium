@@ -6,5 +6,6 @@ module.exports = {
     "**/*.ts",
     "!<rootDir>/node_modules/",
     "!<rootDir>/start-local.ts",
+    "!public_api.ts",
   ],
 }

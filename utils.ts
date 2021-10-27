@@ -1,8 +1,8 @@
 import { ComparableVersion } from './commons/ComparableVersion'
 import { MappedVersion } from './commons/MappedVersion'
-import { IChromeConfig, Compared, Store, TextFunction, IVersion, IVersionWithDisabled } from './interfaces/interfaces'
+import { IChromeConfig, Compared, TextFunction, IVersion, IVersionWithDisabled } from './interfaces/interfaces'
 import { OSSetting, OS, ExtendedOS } from './interfaces/os.interfaces'
-import { logger } from './log/spinner'
+import { ISetStore, IListStore } from './interfaces/store.interfaces'
 
 export function detectOperatingSystem(config: IChromeConfig): OSSetting {
 
@@ -30,14 +30,15 @@ export function detectOperatingSystem(config: IChromeConfig): OSSetting {
                     filename: 'win'
                 }
         case 'mac':
-            if (config.arch === 'x86') {
-                logger.warn('A mac version is not available for "x86" architecture, using "x64"!')
-                config.arch = 'x64'
-            }
-            return {
-                url: 'Mac',
-                filename: 'mac',
-            }
+            return config.arch === 'arm'
+                ? {
+                    url: 'Mac_Arm',
+                    filename: 'mac'
+                }
+                : {
+                    url: 'Mac',
+                    filename: 'mac'
+                }
         default:
             throw new Error(`Unsupported operation system: ${config.os}`)
     }
@@ -123,7 +124,7 @@ export function mapOS(extendedOS: string): OS {
 /**
  * Immutally sorts the entries of the given Store
  */
-export function sortStoreEntries(store: Store): Store {
+export function sortStoreEntries(store: IListStore): IListStore {
     return {
         win: {
             x64: [...store.win.x64].map(v => new ComparableVersion(v)).sort(sortAscendingComparableVersions).map(c => c.toString()),
@@ -135,7 +136,7 @@ export function sortStoreEntries(store: Store): Store {
         },
         mac: {
             x64: [...store.mac.x64].map(v => new ComparableVersion(v)).sort(sortAscendingComparableVersions).map(c => c.toString()),
-            x86: [...store.mac.x86].map(v => new ComparableVersion(v)).sort(sortAscendingComparableVersions).map(c => c.toString()),
+            arm: [...store.mac.arm].map(v => new ComparableVersion(v)).sort(sortAscendingComparableVersions).map(c => c.toString()),
         },
     }
 }
@@ -153,4 +154,21 @@ export function isIVersion(value: unknown): value is IVersion {
 
 export function isIVersionWithDisabled(value: unknown): value is IVersionWithDisabled {
     return isIVersion(value) && typeof (value as IVersionWithDisabled).disabled === 'boolean'
+}
+
+export function setStoreToListStore(setStore: ISetStore): IListStore {
+    return {
+        linux: {
+            x64: [...setStore.linux.x64],
+            x86: [...setStore.linux.x86],
+        },
+        win: {
+            x64: [...setStore.win.x64],
+            x86: [...setStore.win.x86],
+        },
+        mac: {
+            x64: [...setStore.mac.x64],
+            arm: [...setStore.mac.arm],
+        },
+    }
 }

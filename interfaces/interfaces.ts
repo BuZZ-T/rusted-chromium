@@ -1,7 +1,6 @@
 import { ComparableVersion } from '../commons/ComparableVersion'
 import { OS } from './os.interfaces'
-
-export type Arch = 'x86' | 'x64'
+import { Arch } from './store.interfaces'
 
 export interface IStoreConfigWrapper {
     action: 'importStore'
@@ -97,17 +96,6 @@ export interface ProgressConfig {
     barLength?: number
     steps?: number
     unit?: string
-}
-
-export type Store = {
-    [p in OS]: {
-        x86: string[],
-        x64: string[]
-    }
-}
-
-export type StoreSize = {
-    [p in OS]: number
 }
 
 export type TextFunction = (key: string) => string

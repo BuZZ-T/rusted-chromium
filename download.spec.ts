@@ -9,7 +9,8 @@ import { downloadChromium } from './download'
 import { NoChromiumDownloadError } from './errors'
 import { progress } from './log/progress'
 import { logger } from './log/spinner'
-import { loadStore } from './store/store'
+import { loadStore } from './store/loadStore'
+import { Store } from './store/Store'
 import { createChromeConfig, createStore, createDownloadSettings, MkdirWithOptions, StatsWithoutOptions } from './test.utils'
 import { getChromeDownloadUrl, loadVersions, mapVersions } from './versions'
 
@@ -27,7 +28,8 @@ jest.mock('unzipper')
 jest.mock('./api')
 jest.mock('./log/progress')
 jest.mock('./log/spinner')
-jest.mock('./store/store')
+jest.mock('./log/printer')
+jest.mock('./store/loadStore')
 jest.mock('./versions')
 
 describe('download', () => {
@@ -94,7 +96,7 @@ describe('download', () => {
         beforeEach(() => {
             loadVersionsMock.mockClear()
             loadStoreMock.mockClear()
-            loadStoreMock.mockResolvedValue(createStore())
+            loadStoreMock.mockResolvedValue(new Store(createStore()))
 
             mapVersionsMock.mockClear()
             getChromeDownloadUrlMock.mockClear()

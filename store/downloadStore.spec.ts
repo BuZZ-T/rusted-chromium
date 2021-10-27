@@ -6,6 +6,7 @@ import { LOAD_CONFIG } from '../commons/constants'
 import { logger, Spinner } from '../log/spinner'
 import { createStore } from '../test.utils'
 import { downloadStore } from './downloadStore'
+import { Store } from './Store'
 
 jest.mock('../log/spinner')
 jest.mock('../api')
@@ -28,11 +29,9 @@ describe('downloadStore', () => {
         const filename = 'myfile.json'
         const url = `http://some-url.de/${filename}`
         const store = createStore()
-        fetchLocalStoreMock.mockImplementation(() =>
-            Promise.resolve(JSON.stringify(store, null, 2))
-        )
+        fetchLocalStoreMock.mockResolvedValue(store)
 
-        expect(await downloadStore({ url }, filename)).toEqual(store)
+        expect(await downloadStore({ url }, filename)).toEqual(new Store(store))
 
         expect(fetchLocalStoreMock).toHaveBeenCalledTimes(1)
         expect(fetchLocalStoreMock).toHaveBeenCalledWith(url)
@@ -47,11 +46,9 @@ describe('downloadStore', () => {
         const filename = 'myfile.json'
         const url = 'http://some-url.de/'
         const store = createStore()
-        fetchLocalStoreMock.mockImplementation(() =>
-            Promise.resolve(JSON.stringify(store, null, 2))
-        )
+        fetchLocalStoreMock.mockResolvedValue(store)
 
-        expect(await downloadStore({ url }, filename)).toEqual(store)
+        expect(await downloadStore({ url }, filename)).toEqual(new Store(store))
 
         expect(fetchLocalStoreMock).toHaveBeenCalledTimes(1)
         expect(fetchLocalStoreMock).toHaveBeenCalledWith(`${url}${filename}`)
@@ -66,11 +63,9 @@ describe('downloadStore', () => {
         const filename = 'myfile.json'
         const url = 'http://some-url.de'
         const store = createStore()
-        fetchLocalStoreMock.mockImplementation(() =>
-            Promise.resolve(JSON.stringify(store, null, 2))
-        )
+        fetchLocalStoreMock.mockResolvedValue(store)
 
-        expect(await downloadStore({ url }, filename)).toEqual(store)
+        expect(await downloadStore({ url }, filename)).toEqual(new Store(store))
 
         expect(fetchLocalStoreMock).toHaveBeenCalledTimes(1)
         expect(fetchLocalStoreMock).toHaveBeenCalledWith(`${url}/${filename}`)
@@ -84,11 +79,9 @@ describe('downloadStore', () => {
     it('should log an error on failing request', async () => {
         const filename = 'myfile.json'
         const url = 'http://some-url.de'
-        fetchLocalStoreMock.mockImplementation(() =>
-            Promise.reject()
-        )
-        
-        expect(await downloadStore({ url }, filename)).toBe(undefined)
+        fetchLocalStoreMock.mockRejectedValue(undefined)
+
+        await expect(downloadStore({ url }, filename)).rejects.toEqual(undefined)
 
         expect(fetchLocalStoreMock).toHaveBeenCalledTimes(1)
         expect(fetchLocalStoreMock).toHaveBeenCalledWith(`${url}/${filename}`)
@@ -103,11 +96,9 @@ describe('downloadStore', () => {
     it('should log an error with message and path on failing request', async () => {
         const filename = 'myfile.json'
         const url = 'http://some-url.de'
-        fetchLocalStoreMock.mockImplementation(() =>
-            Promise.reject({message: 'error-msg', path: 'error-path'})
-        )
-        
-        expect(await downloadStore({ url }, filename)).toBe(undefined)
+        fetchLocalStoreMock.mockRejectedValue({ message: 'error-msg', path: 'error-path' })
+
+        await expect(downloadStore({ url }, filename)).rejects.toEqual({ message: 'error-msg', path: 'error-path' })
 
         expect(fetchLocalStoreMock).toHaveBeenCalledTimes(1)
         expect(fetchLocalStoreMock).toHaveBeenCalledWith(`${url}/${filename}`)

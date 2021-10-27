@@ -9,8 +9,9 @@ import { IDownloadSettings } from './interfaces/interfaces'
 import { OSSetting } from './interfaces/os.interfaces'
 import { Spinner, logger } from './log/spinner'
 import { userSelectedVersion } from './select'
-import { storeNegativeHit } from './store/store'
-import { createChromeConfig, createNodeParserHTMLElement, createNodeWithChildren } from './test.utils'
+import { Store } from './store/Store'
+import { storeNegativeHit } from './store/storeNegativeHit'
+import { createChromeConfig, createNodeParserHTMLElement, createNodeWithChildren, createStore } from './test.utils'
 import { detectOperatingSystem } from './utils'
 import { mapVersions, getChromeDownloadUrl, loadVersions } from './versions'
 
@@ -18,7 +19,7 @@ jest.mock('node-html-parser')
 jest.mock('./select')
 jest.mock('./api')
 jest.mock('./log/spinner')
-jest.mock('./store/store')
+jest.mock('./store/storeNegativeHit')
 
 // don't mock compareComparableVersions to test the sort and filtering based on version.comparableVersion
 jest.mock('./utils', () => ({
@@ -713,7 +714,7 @@ describe('versions', () => {
         it('should sort the versions', () => {
             const config = createChromeConfig()
 
-            const mapped = mapVersions(['10.1.2.3', '20.0.0.0'], config, new Set())
+            const mapped = mapVersions(['10.1.2.3', '20.0.0.0'], config, new Store(createStore()))
 
             const expectedVersions = [
                 new MappedVersion(20, 0, 0, 0, false),
@@ -724,9 +725,17 @@ describe('versions', () => {
         })
 
         it('should mark versions found in store as disabled', () => {
-            const config = createChromeConfig()
+            const config = createChromeConfig({
+                os: 'linux',
+                arch: 'x64',
+            })
 
-            const mapped = mapVersions(['10.1.2.3', '10.1.2.4'], config, new Set(['10.1.2.4']))
+            const mapped = mapVersions(['10.1.2.3', '10.1.2.4'], config, new Store(createStore({
+                linux: {
+                    x64: ['10.1.2.4'],
+                    x86: []
+                }
+            })))
 
             const expectedVersions = [
                 new MappedVersion({
@@ -751,9 +760,16 @@ describe('versions', () => {
         it('should remove disabled versions on hideNegativeHits set in config', () => {
             const config = createChromeConfig({
                 hideNegativeHits: true,
+                os: 'linux',
+                arch: 'x64',
             })
 
-            const mapped = mapVersions(['10.1.2.3', '10.1.2.4'], config, new Set(['10.1.2.4']))
+            const mapped = mapVersions(['10.1.2.3', '10.1.2.4'], config, new Store(createStore({
+                linux: {
+                    x64: ['10.1.2.4'],
+                    x86: []
+                }
+            })))
 
             const expectedVersions = [
                 new MappedVersion({
@@ -773,7 +789,7 @@ describe('versions', () => {
                 min: new ComparableVersion(30, 0, 0, 0)
             })
 
-            const mapped = mapVersions(['60.6.7.8', '30.0.0.0', '29.0.2000.4', '10.1.2.4'], config, new Set([]))
+            const mapped = mapVersions(['60.6.7.8', '30.0.0.0', '29.0.2000.4', '10.1.2.4'], config, new Store(createStore()))
 
             const expectedVersions = [
                 new MappedVersion({
@@ -800,7 +816,7 @@ describe('versions', () => {
                 max: new ComparableVersion(30, 0, 0, 0),
             })
 
-            const mapped = mapVersions(['60.6.7.8', '30.0.0.0', '30.0.0.1', '29.0.2000.4', '10.1.2.4'], config, new Set([]))
+            const mapped = mapVersions(['60.6.7.8', '30.0.0.0', '30.0.0.1', '29.0.2000.4', '10.1.2.4'], config, new Store(createStore()))
 
             const expectedVersions = [
                 new MappedVersion({
@@ -834,7 +850,7 @@ describe('versions', () => {
                 results: 3,
             })
 
-            const mapped = mapVersions(['60.6.7.8', '30.0.0.0', '29.0.2000.4', '10.1.2.4'], config, new Set([]))
+            const mapped = mapVersions(['60.6.7.8', '30.0.0.0', '29.0.2000.4', '10.1.2.4'], config, new Store(createStore()))
 
             const expectedVersions = [
                 new MappedVersion({
@@ -869,7 +885,7 @@ describe('versions', () => {
                 results: 3,
             })
 
-            const mapped = mapVersions(['60.6.7.8', '30.0.0.0', '29.0.2000.4', '10.1.2.4'], config, new Set([]))
+            const mapped = mapVersions(['60.6.7.8', '30.0.0.0', '29.0.2000.4', '10.1.2.4'], config, new Store(createStore()))
 
             const expectedVersions = [
                 new MappedVersion({
@@ -907,10 +923,17 @@ describe('versions', () => {
 
         it('should return the provided version on config.single, even if it\'s marked as disabled in the store', () => {
             const config = createChromeConfig({
-                single: '10.1.2.3'
+                single: '10.1.2.3',
+                os: 'linux',
+                arch: 'x64'
             })
 
-            const mapped = mapVersions(['60.6.7.8', '30.0.0.0', '29.0.2000.4', '10.1.2.4'], config, new Set(['10.1.2.3']))
+            const mapped = mapVersions(['60.6.7.8', '30.0.0.0', '29.0.2000.4', '10.1.2.4'], config, new Store(createStore({
+                linux: {
+                    x64: ['10.1.2.3'],
+                    x86: []
+                }
+            })))
 
             const expectedVersions = [
                 new MappedVersion({
@@ -929,7 +952,7 @@ describe('versions', () => {
             const config = createChromeConfig({
                 inverse: true,
             })
-            const mapped = mapVersions(['60.6.7.8', '30.0.0.0', '29.0.2000.4', '10.1.2.4'], config, new Set([]))
+            const mapped = mapVersions(['60.6.7.8', '30.0.0.0', '29.0.2000.4', '10.1.2.4'], config, new Store(createStore()))
 
             const expectedVersions = [
                 new MappedVersion({
@@ -970,7 +993,7 @@ describe('versions', () => {
                 inverse: true,
                 results: 2,
             })
-            const mapped = mapVersions(['60.6.7.8', '30.0.0.0', '29.0.2000.4', '10.1.2.4'], config, new Set([]))
+            const mapped = mapVersions(['60.6.7.8', '30.0.0.0', '29.0.2000.4', '10.1.2.4'], config, new Store(createStore()))
 
             const expectedVersions = [
                 new MappedVersion({

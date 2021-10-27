@@ -4,7 +4,8 @@ import { HTMLElement as NodeParserHTMLElement, Node as NodeParserNode } from 'no
 import { ComparableVersion } from './commons/ComparableVersion'
 import { DEFAULT_OPTIONS } from './config/config'
 import { IConfigOptions } from './interfaces/config.interfaces'
-import { IChromeConfig, IDownloadSettings, Store } from './interfaces/interfaces'
+import { IChromeConfig, IDownloadSettings } from './interfaces/interfaces'
+import { IListStore } from './interfaces/store.interfaces'
 
 export interface PartialStdio {
     write: () => boolean
@@ -32,7 +33,7 @@ export const createChromeConfig = (config?: Partial<IChromeConfig>): IChromeConf
     ...config,
 })
 
-export const createStore = (store?: Partial<Store>): Store => ({
+export const createStore = (store?: Partial<IListStore>): IListStore => ({
     win: {
         x64: [],
         x86: [],
@@ -43,7 +44,7 @@ export const createStore = (store?: Partial<Store>): Store => ({
     },
     mac: {
         x64: [],
-        x86: [],
+        arm: [],
     },
     ...store,
 })

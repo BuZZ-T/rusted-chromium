@@ -37,22 +37,17 @@ describe('api', () => {
     })
 
     describe('fetchLocalStore', () => {
-        it('should return the formatted store file as text', async () => {
+        it('should return the parsed store file', async () => {
             const url = 'local-store-url'
 
-            fetchMock.mockImplementation(() =>
-                Promise.resolve({
-                    ok: true,
-                    json() {
-                        return Promise.resolve({ some: 'store' })
-                    }
-                })
-            )
+            fetchMock.mockResolvedValue({
+                ok: true,
+                json() {
+                    return Promise.resolve({ some: 'store' })
+                }
+            })
 
-            expect(await fetchLocalStore(url)).toEqual(
-                `{
-  "some": "store"
-}`)
+            expect(await fetchLocalStore(url)).toEqual({ some: 'store' })
             expect(fetchMock.mock.calls.length).toBe(1)
             expect(fetch).toHaveBeenCalledWith(url)
         })
@@ -60,13 +55,11 @@ describe('api', () => {
         it('should throw an error on non-ok http response', async () => {
             const url = 'local-store-url'
 
-            fetchMock.mockImplementation(() =>
-                Promise.resolve({
-                    ok: false,
-                    status: 400,
-                    error: 'some-error-message',
-                })
-            )
+            fetchMock.mockResolvedValue({
+                ok: false,
+                status: 400,
+                error: 'some-error-message',
+            })
 
             await expect(() => fetchLocalStore(url)).rejects.toThrow(new Error('Status Code: 400 some-error-message'))
 
@@ -77,14 +70,12 @@ describe('api', () => {
 
     describe('fetchChromiumTags', () => {
         it('should fetch chromium tags as text', async () => {
-            fetchMock.mockImplementation(() =>
-                Promise.resolve({
-                    ok: true,
-                    text() {
-                        return Promise.resolve('some-html')
-                    }
-                })
-            )
+            fetchMock.mockResolvedValue({
+                ok: true,
+                text() {
+                    return Promise.resolve('some-html')
+                }
+            })
 
             expect(await fetchChromiumTags()).toEqual('some-html')
             expect(fetch).toHaveBeenLastCalledWith('https://chromium.googlesource.com/chromium/src/+refs')
@@ -92,13 +83,11 @@ describe('api', () => {
         })
 
         it('should throw an error on non-ok http response', async () => {
-            fetchMock.mockImplementation(() =>
-                Promise.resolve({
-                    ok: false,
-                    status: 400,
-                    error: 'some-error-message',
-                })
-            )
+            fetchMock.mockResolvedValue({
+                ok: false,
+                status: 400,
+                error: 'some-error-message',
+            })
 
             await expect(() => fetchChromiumTags()).rejects.toThrow(new Error('Status Code: 400 some-error-message'))
         })
@@ -106,14 +95,12 @@ describe('api', () => {
 
     describe('fetchBranchPosition', () => {
         it('should fetch the branch position', async () => {
-            fetchMock.mockImplementation(() =>
-                Promise.resolve({
-                    ok: true,
-                    json() {
-                        return Promise.resolve({ chromium_base_position: 3 })
-                    }
-                })
-            )
+            fetchMock.mockResolvedValue({
+                ok: true,
+                json() {
+                    return Promise.resolve({ chromium_base_position: 3 })
+                }
+            })
 
             expect(await fetchBranchPosition('any-version')).toEqual(3)
             expect(fetch).toHaveBeenLastCalledWith('https://omahaproxy.appspot.com/deps.json?version=any-version')
@@ -123,26 +110,22 @@ describe('api', () => {
         })
 
         it('should throw an error on non-ok http response', async () => {
-            fetchMock.mockImplementation(() =>
-                Promise.resolve({
-                    ok: false,
-                    status: 400,
-                    error: 'some-error-message',
-                })
-            )
+            fetchMock.mockResolvedValue({
+                ok: false,
+                status: 400,
+                error: 'some-error-message',
+            })
 
             await expect(() => fetchChromiumTags()).rejects.toThrow(new Error('Status Code: 400 some-error-message'))
         })
 
         it('should log an error on no branch position', async () => {
-            fetchMock.mockImplementation(() =>
-                Promise.resolve({
-                    ok: true,
-                    json() {
-                        return Promise.resolve({})
-                    }
-                })
-            )
+            fetchMock.mockResolvedValue({
+                ok: true,
+                json() {
+                    return Promise.resolve({})
+                }
+            })
 
             expect(await fetchBranchPosition('any-version')).toEqual(undefined)
             expect(loggerMock.error).toHaveBeenCalledTimes(1)
@@ -158,25 +141,23 @@ describe('api', () => {
                 filename: 'linux',
             }
 
-            fetchMock.mockImplementation(() =>
-                Promise.resolve({
-                    ok: true,
-                    json() {
-                        return Promise.resolve({
-                            items: [
-                                {
-                                    name: 'Linux_x64/branch-position/chrome-linux.zip',
-                                    mediaLink: 'media-link',
-                                },
-                                {
-                                    name: 'other-name',
-                                    mediaLink: 'other-media-link',
-                                },
-                            ]
-                        })
-                    }
-                })
-            )
+            fetchMock.mockResolvedValue({
+                ok: true,
+                json() {
+                    return Promise.resolve({
+                        items: [
+                            {
+                                name: 'Linux_x64/branch-position/chrome-linux.zip',
+                                mediaLink: 'media-link',
+                            },
+                            {
+                                name: 'other-name',
+                                mediaLink: 'other-media-link',
+                            },
+                        ]
+                    })
+                }
+            })
 
             expect(await fetchChromeUrl(branchPosition, osSettings)).toEqual('media-link')
         })
@@ -187,13 +168,11 @@ describe('api', () => {
                 filename: 'linux',
             }
 
-            fetchMock.mockImplementation(() =>
-                Promise.resolve({
-                    ok: false,
-                    status: 400,
-                    error: 'some-error-message',
-                })
-            )
+            fetchMock.mockResolvedValue({
+                ok: false,
+                status: 400,
+                error: 'some-error-message',
+            })
 
             await expect(() => fetchChromeUrl('', osSettings)).rejects.toThrow(new Error('Status Code: 400 some-error-message'))
         })
@@ -205,14 +184,12 @@ describe('api', () => {
                 filename: 'linux',
             }
 
-            fetchMock.mockImplementation(() =>
-                Promise.resolve({
-                    ok: true,
-                    json() {
-                        return Promise.resolve({})
-                    }
-                })
-            )
+            fetchMock.mockResolvedValue({
+                ok: true,
+                json() {
+                    return Promise.resolve({})
+                }
+            })
 
             expect(await fetchChromeUrl(branchPosition, osSettings)).toEqual(undefined)
         })
@@ -224,23 +201,21 @@ describe('api', () => {
                 filename: 'linux',
             }
 
-            fetchMock.mockImplementation(() =>
-                Promise.resolve({
-                    ok: true,
-                    json() {
-                        return Promise.resolve({
-                            items: [
-                                {
-                                    name: 'url-os/branch-position/chrome-filename-os.zip',
-                                },
-                                {
-                                    name: 'other-name',
-                                },
-                            ]
-                        })
-                    }
-                })
-            )
+            fetchMock.mockResolvedValue({
+                ok: true,
+                json() {
+                    return Promise.resolve({
+                        items: [
+                            {
+                                name: 'url-os/branch-position/chrome-filename-os.zip',
+                            },
+                            {
+                                name: 'other-name',
+                            },
+                        ]
+                    })
+                }
+            })
 
             expect(await fetchChromeUrl(branchPosition, osSettings)).toEqual(undefined)
         })
@@ -250,11 +225,9 @@ describe('api', () => {
         it('should load the chrome zip file and return the promise', async () => {
             const url = 'some-url'
 
-            fetchMock.mockImplementation(() =>
-                Promise.resolve({
-                    ok: true,
-                })
-            )
+            fetchMock.mockResolvedValue({
+                ok: true,
+            })
 
             await expect((fetchChromeZipFile(url))).resolves.toEqual({ ok: true })
         })
@@ -262,13 +235,11 @@ describe('api', () => {
         it('should throw an error on non-ok http response', async () => {
             const url = 'some-url'
 
-            fetchMock.mockImplementation(() =>
-                Promise.resolve({
-                    ok: false,
-                    status: 400,
-                    error: 'some-error-message',
-                })
-            )
+            fetchMock.mockResolvedValue({
+                ok: false,
+                status: 400,
+                error: 'some-error-message',
+            })
 
             await expect(() => fetchChromeZipFile(url)).rejects.toThrow(new Error('Status Code: 400 some-error-message'))
         })

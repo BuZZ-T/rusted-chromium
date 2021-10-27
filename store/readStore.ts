@@ -2,8 +2,9 @@ import { existsSync, readFile } from 'fs'
 import { promisify } from 'util'
 
 import { READ_CONFIG } from '../commons/constants'
-import { IStoreConfig, Store } from '../interfaces/interfaces'
+import { IStoreConfig } from '../interfaces/interfaces'
 import { logger } from '../log/spinner'
+import { Store } from './Store'
 
 const readFilePromise = promisify(readFile)
 
@@ -23,7 +24,7 @@ export async function readStoreFile(config: IStoreConfig): Promise<Store> {
         const store = await readFilePromise(config.url, { encoding: 'utf-8' })
         const parsedStore = JSON.parse(store)
         logger.success()
-        return parsedStore
+        return new Store(parsedStore)
     } catch (e) {
         if (e instanceof SyntaxError) {
             logger.error('Unable to parse JSON file')

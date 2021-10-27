@@ -3,6 +3,7 @@ import { Response as NodeFetchResponse } from 'node-fetch'
 import { RESOLVE_VERSION } from './commons/constants'
 import { IMetadataResponse } from './interfaces/interfaces'
 import { IOSSettings } from './interfaces/os.interfaces'
+import { IListStore } from './interfaces/store.interfaces'
 import { logger } from './log/spinner'
 
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */
@@ -22,11 +23,10 @@ const toJson = (response: Response): Promise<unknown> => response.json()
 
 const toText = (response: Response): Promise<string> => response.text()
 
-export async function fetchLocalStore(url: string): Promise<string> {
+export async function fetchLocalStore(url: string): Promise<IListStore> {
     return fetch(url)
         .then(checkStatus)
         .then(toJson)
-        .then((json: unknown) => JSON.stringify(json, null, 2))
 }
 
 /**

@@ -6,6 +6,7 @@ import { IStoreConfig } from '../interfaces/interfaces'
 import { Spinner, logger } from '../log/spinner'
 import { createStore, ReadFileWithOptions } from '../test.utils'
 import { readStoreFile } from './readStore'
+import { Store } from './Store'
 
 jest.mock('fs')
 jest.mock('../log/spinner')
@@ -42,10 +43,10 @@ describe('readStore', () => {
                 url,
             }
             readFileMock.mockImplementation((path, options, callback) => {
-                callback(null, JSON.stringify(expectedStore, null, 2))
+                callback(null, JSON.stringify(expectedStore, null, 4))
             })
 
-            expect(await readStoreFile(config)).toEqual(expectedStore)
+            expect(await readStoreFile(config)).toEqual(new Store(expectedStore))
             expect(readFileMock).toHaveBeenCalledTimes(1)
             expect(readFileMock).toHaveBeenCalledWith(url, { encoding: 'utf-8' }, expect.any(Function))
         })
@@ -58,7 +59,7 @@ describe('readStore', () => {
                 url,
             }
             readFileMock.mockImplementation((path, options, callback) => {
-                callback(null, JSON.stringify(expectedStore, null, 2))
+                callback(null, JSON.stringify(expectedStore, null, 4))
             })
 
             await expect(() => readStoreFile(config)).rejects.toThrow(new Error('File does not exist'))

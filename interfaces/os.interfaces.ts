@@ -1,6 +1,6 @@
 export type OS = 'win' | 'linux' | 'mac'
 export type ExtendedOS = OS | 'darwin' | 'win32'
-export type UrlOS = 'Linux_x64' | 'Linux' | 'Win_x64' | 'Win' | 'Mac'
+export type UrlOS = 'Linux_x64' | 'Linux' | 'Win_x64' | 'Win' | 'Mac' | 'Mac_Arm'
 
 export interface IOSSettings {
     url: UrlOS
@@ -13,7 +13,7 @@ export interface LinuxSetting extends IOSSettings {
 }
 
 export interface MacSetting extends IOSSettings {
-    url: 'Mac',
+    url: 'Mac_Arm' | 'Mac',
     filename: 'mac'
 }
 

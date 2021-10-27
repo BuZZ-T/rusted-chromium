@@ -8,7 +8,7 @@ import { NoChromiumDownloadError } from './errors'
 import { IChromeConfig } from './interfaces/interfaces'
 import { progress } from './log/progress'
 import { logger } from './log/spinner'
-import { loadStore } from './store/store'
+import { loadStore } from './store/loadStore'
 import { getChromeDownloadUrl, loadVersions, mapVersions } from './versions'
 
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */
@@ -40,8 +40,8 @@ function registerSigIntHandler(path: string): void {
 export async function downloadChromium(config: IChromeConfig): Promise<void> {
     const versions = await loadVersions()
     const store = await loadStore()
-    const storeByOs = new Set(store[config.os][config.arch])
-    const mappedVersions = mapVersions(versions, config, storeByOs)
+
+    const mappedVersions = mapVersions(versions, config, store)
 
     const { chromeUrl, selectedVersion, filenameOS } = await getChromeDownloadUrl(config, mappedVersions)
 
