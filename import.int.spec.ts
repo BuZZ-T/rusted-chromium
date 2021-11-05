@@ -13,7 +13,7 @@ import { mocked } from 'ts-jest/utils'
 import { promisify } from 'util'
 
 import { rusted } from './rusted'
-import { mockNodeFetch, IMockAdditional } from './test/int.utils'
+import { mockNodeFetch, IMockAdditional, getJestTmpFolder } from './test/int.utils'
 import { createStore } from './test/test.utils'
 
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */
@@ -32,16 +32,17 @@ describe('[int] import store', () => {
     let readFile: typeof fsReadFile.__promisify__
     let writeFile: typeof fsWriteFile.__promisify__
 
-    beforeAll(() => {
+    beforeAll(async () => {
 
         promptsMock = mocked(prompts)
 
+        const jestFolder = await getJestTmpFolder()
         mockFs({
             'localstore.json': JSON.stringify(createStore()),
 
             // pass some folders to the mock for jest to be able to run
             'node_modules': mockFs.load(path.resolve(__dirname, './node_modules')),
-            '/tmp': mockFs.load(path.resolve(__dirname, '/tmp')),
+            [`/tmp/${jestFolder}`]: mockFs.load(path.resolve(`/tmp/${jestFolder}`)),
         })
 
         readFile = promisify(fsReadFile)
@@ -56,6 +57,10 @@ describe('[int] import store', () => {
         mockNodeFetch(nodeFetchMock)
 
         promptsMock.mockClear()
+    })
+
+    afterAll(() => {
+        mockFs.restore()
     })
 
     it('should import by File', async () => {

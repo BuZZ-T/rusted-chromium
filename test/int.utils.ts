@@ -1,4 +1,4 @@
-import { writeFile } from 'fs'
+import { writeFile, readdir as fsReaddir } from 'fs'
 import { Response as NodeFetchResponse, RequestInfo as NodeFetchRequestInfo, Request as NodeFetchRequest } from 'node-fetch'
 import * as path from 'path'
 import { PassThrough, Readable } from 'stream'
@@ -9,6 +9,8 @@ import { Store } from '../store/Store'
 import { testMetadataResponse } from './test.metadata'
 
 const unmockedNodeFetch = jest.requireActual('node-fetch')
+
+const readdir = promisify(fsReaddir)
 
 export interface IMocks {
     mockStream: PassThrough | Readable
@@ -146,7 +148,7 @@ export function mockNodeFetch(nodeFetchMock: MaybeMockedDeep<any>, { params, con
                     }
                     break
                 }
-                
+
                 return Promise.resolve(new unmockedNodeFetch.Response(mockResponse))
             }
         }
@@ -176,4 +178,9 @@ export function mockNodeFetch(nodeFetchMock: MaybeMockedDeep<any>, { params, con
  */
 export function setLocalstore(store: Store): Promise<void> {
     return promisify(writeFile)(path.join(__dirname, 'localstore.json'), store.toFormattedString())
+}
+
+export async function getJestTmpFolder(): Promise<string | undefined> {
+    const files = await readdir('/tmp', { encoding: 'utf-8' })
+    return files.find(file => file.startsWith('jest_'))
 }

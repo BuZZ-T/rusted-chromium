@@ -15,7 +15,7 @@ import { promisify } from 'util'
 
 import { rusted } from './rusted'
 import { exportStore } from './store/exportStore'
-import { mockNodeFetch } from './test/int.utils'
+import { getJestTmpFolder, mockNodeFetch } from './test/int.utils'
 import { createStore } from './test/test.utils'
 
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */
@@ -33,16 +33,17 @@ describe('[int] export store', () => {
 
     let writeFile: typeof fsWriteFile.__promisify__
 
-    beforeAll(() => {
+    beforeAll(async () => {
 
         promptsMock = mocked(prompts)
 
+        const jestFolder = await getJestTmpFolder()
         mockFs({
             'localstore.json': JSON.stringify(createStore()),
 
             // pass some folders to the mock for jest to be able to run
             'node_modules': mockFs.load(path.resolve(__dirname, './node_modules')),
-            '/tmp': mockFs.load(path.resolve(__dirname, '/tmp')),
+            [`/tmp/${jestFolder}`]: mockFs.load(path.resolve(`/tmp/${jestFolder}`)),
         })
 
         writeFile = promisify(fsWriteFile)

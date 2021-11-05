@@ -15,7 +15,7 @@ import { promisify } from 'util'
 import { MappedVersion } from './commons/MappedVersion'
 import { IListStore } from './interfaces/store.interfaces'
 import { rusted } from './rusted'
-import { mockNodeFetch, chromeZipStream, branchPositionResponse } from './test/int.utils'
+import { mockNodeFetch, chromeZipStream, branchPositionResponse, getJestTmpFolder } from './test/int.utils'
 import { createStore } from './test/test.utils'
 import { popArray } from './utils'
 
@@ -38,16 +38,17 @@ describe('[int] download chromium', () => {
     let writeFile: typeof fsWriteFile.__promisify__
     let unlink: typeof fsUnlink.__promisify__
 
-    beforeAll(() => {
+    beforeAll(async () => {
 
         promptsMock = mocked(prompts)
 
+        const jestFolder = await getJestTmpFolder()
         mockFs({
             'localstore.json': JSON.stringify(createStore()),
 
             // pass some folders to the mock for jest to be able to run
             'node_modules': mockFs.load(path.resolve(__dirname, './node_modules')),
-            '/tmp': mockFs.load(path.resolve(__dirname, '/tmp')),
+            [`/tmp/${jestFolder}`]: mockFs.load(path.resolve(`/tmp/${jestFolder}`)),
         })
 
         readFile = promisify(fsReadFile)
@@ -88,6 +89,7 @@ describe('[int] download chromium', () => {
         chromeZipStream.end()
 
         expect(existsSync(chromeZip10)).toBe(true)
+        expect(existsSync(chromeZip20)).toBe(false)
         expect(promptsMock).toHaveBeenCalledTimes(0)
     })
 
@@ -239,7 +241,7 @@ describe('[int] download chromium', () => {
                     once: true,
                     name: 'branchPosition',
                     gen: () => gen.next(),
-                    mock: (position: string) => branchPositionResponse(position), 
+                    mock: (position: string) => branchPositionResponse(position),
                 }
             ]
         })
@@ -264,7 +266,7 @@ describe('[int] download chromium', () => {
                     once: true,
                     name: 'branchPosition',
                     gen: () => gen.next(),
-                    mock: (position: string) => branchPositionResponse(position), 
+                    mock: (position: string) => branchPositionResponse(position),
                 }
             ]
         })
