@@ -28,4 +28,6 @@ export interface IConfigOptions {
     onlyNewestMajor: boolean
     single?: string,
     inverse: boolean,
+
+    quiet: boolean,
 }

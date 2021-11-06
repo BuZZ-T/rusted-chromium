@@ -4,8 +4,7 @@ import { MaybeMocked } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
 import { LOCAL_STORE_FILE } from '../commons/constants'
-import { IStoreConfig } from '../interfaces/interfaces'
-import { createStore, ReadFileWithOptions } from '../test.utils'
+import { createStore, ReadFileWithOptions, createImportConfig } from '../test.utils'
 import { downloadStore } from './downloadStore'
 import { importAndMergeLocalstore } from './importStore'
 import { readStoreFile } from './readStore'
@@ -53,7 +52,7 @@ describe('importStore', () => {
                 callback(null)
             })
 
-            const config: IStoreConfig = { url: 'https://some.url.de' }
+            const config = createImportConfig({ url: 'https://some.url.de' })
 
             await importAndMergeLocalstore(config)
 
@@ -77,7 +76,7 @@ describe('importStore', () => {
                 callback(null)
             })
 
-            const config: IStoreConfig = { url: '/some/path/to/file' }
+            const config = createImportConfig({ url: '/some/path/to/file' })
 
             await importAndMergeLocalstore(config)
 
@@ -98,7 +97,7 @@ describe('importStore', () => {
                 callback(null)
             })
 
-            const config: IStoreConfig = { url: '/some/path/to/file' }
+            const config = createImportConfig({ url: '/some/path/to/file' })
 
             await expect(() => importAndMergeLocalstore(config)).rejects.toBe(undefined)
 
@@ -118,7 +117,7 @@ describe('importStore', () => {
                 callback(null)
             })
 
-            const config: IStoreConfig = { url: 'https://some.url.de' }
+            const config = createImportConfig({ url: 'https://some.url.de' })
 
             await expect(() => importAndMergeLocalstore(config)).rejects.toBe(undefined)
 
@@ -154,7 +153,7 @@ describe('importStore', () => {
                 callback(null)
             })
 
-            const config: IStoreConfig = { url: 'https://some.url.de' }
+            const config = createImportConfig({ url: 'https://some.url.de' })
 
             await importAndMergeLocalstore(config)
 
@@ -191,7 +190,7 @@ describe('importStore', () => {
                 callback(null)
             })
 
-            const config: IStoreConfig = { url: '/some/path/to/file' }
+            const config = createImportConfig({ url: '/some/path/to/file' })
 
             await importAndMergeLocalstore(config)
 

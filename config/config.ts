@@ -21,6 +21,7 @@ export const DEFAULT_OPTIONS: IConfigOptions = {
     increaseOnFail: false,
     decreaseOnFail: false,
     unzip: false,
+    quiet: false,
 }
 
 /**
@@ -47,6 +48,7 @@ export function readConfig(args: string[], platform: NodeJS.Platform): ConfigWra
         .option('-O, --only-newest-major', 'Show only the newest major version in user selection', DEFAULT_OPTIONS.onlyNewestMajor)
         .option('-v, --inverse', 'Sort the selectable versions ascending', DEFAULT_OPTIONS.inverse)
         .option('-s, --single <version>', 'Download a specific version in non-interactive mode, even if the file is listed in the localstore.json. Several other flags have no effect.')
+        .option('-q, --quiet', 'Suppress any logging output', false)
         .parse(args)
 
     const options = program.opts() as IConfigOptions
@@ -73,13 +75,15 @@ export function readConfig(args: string[], platform: NodeJS.Platform): ConfigWra
             action: 'importStore',
             config: {
                 url: options.importStore,
+                quiet: options.quiet,
             },
         }
     } else if (options.exportStore !== undefined) {
         return {
             action: 'exportStore',
             config: {
-                path: typeof options.exportStore === 'string' ? options.exportStore : undefined
+                path: typeof options.exportStore === 'string' ? options.exportStore : undefined,
+                quiet: options.quiet,
             }
         }
     }
@@ -102,6 +106,7 @@ export function readConfig(args: string[], platform: NodeJS.Platform): ConfigWra
             onlyNewestMajor: options.onlyNewestMajor,
             single: options.single || null,
             inverse: options.inverse,
+            quiet: options.quiet,
         },
     }
 }

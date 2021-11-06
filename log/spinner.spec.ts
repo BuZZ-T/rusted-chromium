@@ -2,7 +2,7 @@ import * as chalk from 'chalk'
 import { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
-import { PartialStdio } from '../test.utils'
+import { PrinterWriteStream } from '../interfaces/printer.interfaces'
 import { Spinner } from './spinner'
 
 jest.mock('chalk', () => ({
@@ -14,7 +14,7 @@ jest.mock('chalk', () => ({
 describe('loggerSpinner', () => {
 
     let spinner: Spinner
-    let stdioMock: MaybeMockedDeep<PartialStdio>
+    let stdioMock: MaybeMockedDeep<PrinterWriteStream>
 
     beforeAll(() => {
         stdioMock = {
@@ -24,7 +24,7 @@ describe('loggerSpinner', () => {
             moveCursor: jest.fn(),
         }
 
-        spinner = new Spinner(stdioMock as unknown as NodeJS.WriteStream)
+        spinner = new Spinner(stdioMock)
     })
 
     beforeEach(() => {

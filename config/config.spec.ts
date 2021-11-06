@@ -5,7 +5,7 @@ import { ComparableVersion } from '../commons/ComparableVersion'
 import { IChromeConfigWrapper, IStoreConfigWrapper, IExportConfigWrapper } from '../interfaces/interfaces'
 import { OS } from '../interfaces/os.interfaces'
 import { Spinner, logger } from '../log/spinner'
-import { createChromeConfig, createChromeOptions } from '../test.utils'
+import { createChromeConfig, createChromeOptions, createImportConfig, createExportConfig } from '../test.utils'
 import { DEFAULT_OPTIONS, readConfig } from './config'
 
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */
@@ -242,9 +242,7 @@ describe('config', () => {
 
             const expectedConfig: IStoreConfigWrapper = {
                 action: 'importStore',
-                config: {
-                    url: 'some-url'
-                }
+                config: createImportConfig()
             }
 
             expect(config).toEqual(expectedConfig)
@@ -259,7 +257,7 @@ describe('config', () => {
 
             const expectedConfig: IExportConfigWrapper = {
                 action: 'exportStore',
-                config: {}
+                config: createExportConfig({ path: undefined })
             }
 
             expect(config).toEqual(expectedConfig)
@@ -274,11 +272,9 @@ describe('config', () => {
 
             const expectedConfig: IExportConfigWrapper = {
                 action: 'exportStore',
-                config: {
-                    path: 'some-path'
-                }
+                config: createExportConfig()
             }
-            
+
             expect(config).toEqual(expectedConfig)
         })
 

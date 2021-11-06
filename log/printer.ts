@@ -1,11 +1,21 @@
 import * as chalk from 'chalk'
+
+import { PrinterWriteStream } from '../interfaces/printer.interfaces'
+
+const silentWriteStream: PrinterWriteStream = {
+    clearLine: () => true,
+    write: () => true,
+    cursorTo: () => true,
+    moveCursor: () => true,
+}
+
 export abstract class Printer<T extends Printer<T>> {
 
     protected readonly SUCCESS_FN = (msg: string): string => chalk.green(`✔ ${msg}`)
     protected readonly ERROR_FN = (msg: string): string => chalk.red(`✘ ${msg}`)
     protected readonly WARN_FN = (msg: string): string => chalk.yellow(`! ${msg}`)
 
-    protected constructor(private stdio: NodeJS.WriteStream) {
+    protected constructor(private stdio: PrinterWriteStream) {
     }
 
     protected abstract self(): T
@@ -57,5 +67,12 @@ export abstract class Printer<T extends Printer<T>> {
             .stop()
             .write(this.WARN_FN(text))
             .newline()
+    }
+
+    /**
+     * Suppresses all log output. Can't be undone on a running instance
+     */
+    public silent(): void {
+        this.stdio = silentWriteStream
     }
 }

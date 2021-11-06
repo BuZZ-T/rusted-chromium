@@ -1,6 +1,6 @@
 import { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 
-import { PartialStdio } from '../test.utils'
+import { PrinterWriteStream } from '../interfaces/printer.interfaces'
 import { ProgressBar } from './progress'
 
 jest.mock('chalk', () => ({
@@ -11,7 +11,7 @@ jest.mock('chalk', () => ({
 
 describe('ProgressBar', () => {
 
-    let stdioMock: MaybeMockedDeep<PartialStdio>
+    let stdioMock: MaybeMockedDeep<PrinterWriteStream>
     let progress: ProgressBar
 
     beforeEach(() => {

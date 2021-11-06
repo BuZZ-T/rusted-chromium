@@ -1,4 +1,5 @@
 import { LoggerConfig, TextFunction } from '../interfaces/interfaces'
+import { PrinterWriteStream } from '../interfaces/printer.interfaces'
 import { isTextFunction } from '../utils'
 import { Printer } from './printer'
 
@@ -11,7 +12,7 @@ export class Spinner extends Printer<Spinner> {
     private errorText: string | undefined | TextFunction
     private timer: ReturnType<typeof setTimeout> | null = null
 
-    public constructor(stdio: NodeJS.WriteStream) {
+    public constructor(stdio: PrinterWriteStream) {
         super(stdio)
     }
 

@@ -4,6 +4,7 @@ import { MaybeMocked, MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
 import { LOCAL_STORE_FILE } from '../commons/constants'
+import { createExportConfig } from '../test.utils'
 import { exportStore } from './exportStore'
 
 jest.mock('fs')
@@ -33,7 +34,7 @@ describe('exportStore', () => {
             existsSyncMock.mockReturnValue(true)
             createReadStreamMock.mockReturnValue(readStreamMock)
 
-            exportStore({})
+            exportStore(createExportConfig({ path: undefined }))
 
             expect(createReadStreamMock).toHaveBeenCalledTimes(1)
             expect(createReadStreamMock).toHaveBeenCalledWith(join(__dirname, '..', LOCAL_STORE_FILE))
@@ -45,9 +46,7 @@ describe('exportStore', () => {
             existsSyncMock.mockReturnValue(true)
             createReadStreamMock.mockReturnValue(readStreamMock)
 
-            exportStore({
-                path: 'some_path'
-            })
+            exportStore(createExportConfig({ path: 'some_path' }))
 
             expect(createReadStreamMock).toHaveBeenCalledTimes(1)
             expect(createReadStreamMock).toHaveBeenCalledWith('some_path')
@@ -59,7 +58,7 @@ describe('exportStore', () => {
             existsSyncMock.mockReturnValue(false)
             createReadStreamMock.mockReturnValue(readStreamMock)
 
-            expect(() => exportStore({})).toThrow('No "localstore.json" file found')
+            expect(() => exportStore(createExportConfig())).toThrow('No "localstore.json" file found')
 
             expect(createReadStreamMock).toHaveBeenCalledTimes(0)
             expect(readStreamMock.pipe).toHaveBeenCalledTimes(0)
@@ -69,9 +68,7 @@ describe('exportStore', () => {
             existsSyncMock.mockReturnValue(false)
             createReadStreamMock.mockReturnValue(readStreamMock)
 
-            expect(() => exportStore({
-                path: 'some_path'
-            })).toThrow('No "localstore.json" file found under the given path: some_path')
+            expect(() => exportStore(createExportConfig({ path: 'some_path' }))).toThrow('No "localstore.json" file found under the given path: some_path')
 
             expect(createReadStreamMock).toHaveBeenCalledTimes(0)
             expect(readStreamMock.pipe).toHaveBeenCalledTimes(0)

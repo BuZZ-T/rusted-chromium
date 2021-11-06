@@ -1,6 +1,6 @@
 import { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 
-import { PartialStdio } from '../test.utils'
+import { PrinterWriteStream } from '../interfaces/printer.interfaces'
 import { Printer } from './printer'
 
 jest.mock('chalk', () => ({
@@ -9,7 +9,7 @@ jest.mock('chalk', () => ({
 
 class TestPrinter extends Printer<TestPrinter> {
     
-    public constructor(stdio: NodeJS.WriteStream) {
+    public constructor(stdio: PrinterWriteStream) {
         super(stdio)
     }
     
@@ -27,7 +27,7 @@ class TestPrinter extends Printer<TestPrinter> {
 
 describe('Printer', () => {
 
-    let stdioMock: MaybeMockedDeep<PartialStdio>
+    let stdioMock: MaybeMockedDeep<PrinterWriteStream>
     let testPrinter: TestPrinter
 
     beforeEach(() => {
@@ -38,7 +38,7 @@ describe('Printer', () => {
             moveCursor: jest.fn(),
         }
 
-        testPrinter = new TestPrinter(stdioMock as unknown as NodeJS.WriteStream)
+        testPrinter = new TestPrinter(stdioMock)
     })
 
     it('should log info', () => {

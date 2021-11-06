@@ -33,14 +33,17 @@ export interface IChromeConfig {
     onlyNewestMajor: boolean
     single: string | null
     inverse: boolean
+    quiet: boolean
 }
 
 export interface IStoreConfig {
     url: string
+    quiet: boolean
 }
 
 export interface IExportConfig {
     path?: string
+    quiet: boolean
 }
 
 export type ConfigWrapper = IStoreConfigWrapper | IChromeConfigWrapper | IExportConfigWrapper

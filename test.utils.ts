@@ -4,15 +4,8 @@ import { HTMLElement as NodeParserHTMLElement, Node as NodeParserNode } from 'no
 import { ComparableVersion } from './commons/ComparableVersion'
 import { DEFAULT_OPTIONS } from './config/config'
 import { IConfigOptions } from './interfaces/config.interfaces'
-import { IChromeConfig, IDownloadSettings } from './interfaces/interfaces'
+import { IChromeConfig, IDownloadSettings, IExportConfig, IStoreConfig } from './interfaces/interfaces'
 import { IListStore } from './interfaces/store.interfaces'
-
-export interface PartialStdio {
-    write: () => boolean
-    clearLine: () => boolean
-    cursorTo: () => boolean
-    moveCursor: () => boolean
-}
 
 export const createChromeConfig = (config?: Partial<IChromeConfig>): IChromeConfig => ({
     arch: 'x64',
@@ -30,6 +23,19 @@ export const createChromeConfig = (config?: Partial<IChromeConfig>): IChromeConf
     store: true,
     single: null,
     inverse: false,
+    quiet: false,
+    ...config,
+})
+
+export const createImportConfig = (config?: Partial<IStoreConfig>): IStoreConfig => ({
+    url: 'some-url',
+    quiet: false,
+    ...config,
+})
+
+export const createExportConfig = (config?: Partial<IExportConfig>): IExportConfig => ({
+    path: 'some-path',
+    quiet: false,
     ...config,
 })
 

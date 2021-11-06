@@ -3,12 +3,12 @@ import { mocked } from 'ts-jest/utils'
 
 import { readConfig } from './config/config'
 import { downloadChromium } from './download'
-import { ConfigWrapper, IStoreConfig, IExportConfig } from './interfaces/interfaces'
+import { ConfigWrapper } from './interfaces/interfaces'
 import { logger } from './log/spinner'
 import { rusted } from './rusted'
 import { exportStore } from './store/exportStore'
 import { importAndMergeLocalstore } from './store/importStore'
-import { createChromeConfig } from './test.utils'
+import { createChromeConfig, createExportConfig, createImportConfig } from './test.utils'
 
 jest.mock('./download')
 jest.mock('./config/config')
@@ -68,13 +68,9 @@ describe('rusted', () => {
     })
 
     it('should import and merge the localstore', async () => {
-        const config: IStoreConfig = {
-            url: 'import-url'
-        }
-
         const configWrapper: ConfigWrapper = {
             action: 'importStore',
-            config,
+            config: createImportConfig()
         }
         readConfigMock.mockReturnValue(configWrapper)
 
@@ -86,7 +82,7 @@ describe('rusted', () => {
         expect(downloadChromiumMock).toHaveBeenCalledTimes(0)
 
         expect(importAndMergeLocalstoreMock).toHaveBeenCalledTimes(1)
-        expect(importAndMergeLocalstoreMock).toHaveBeenCalledWith(config)
+        expect(importAndMergeLocalstoreMock).toHaveBeenCalledWith(configWrapper.config)
 
         expect(exportStoreMock).toHaveBeenCalledTimes(0)
 
@@ -94,13 +90,9 @@ describe('rusted', () => {
     })
 
     it('should export the localstore', async () => {
-        const config: IExportConfig = {
-            path: 'export-path'
-        }
-
         const configWrapper: ConfigWrapper = {
             action: 'exportStore',
-            config,
+            config: createExportConfig(),
         }
         readConfigMock.mockReturnValue(configWrapper)
 
@@ -114,7 +106,7 @@ describe('rusted', () => {
         expect(importAndMergeLocalstoreMock).toHaveBeenCalledTimes(0)
 
         expect(exportStoreMock).toHaveBeenCalledTimes(1)
-        expect(exportStoreMock).toHaveBeenCalledWith(config)
+        expect(exportStoreMock).toHaveBeenCalledWith(configWrapper.config)
 
         expect(loggerMock.error).toHaveBeenCalledTimes(0)
     })
@@ -122,7 +114,7 @@ describe('rusted', () => {
     it('should log an error on unknown config action', async () => {
         const configWrapper: ConfigWrapper = {
             action: 'something' as 'importStore',
-            config: { url: 'something' }
+            config: createImportConfig({ url: 'something' }),
         }
         readConfigMock.mockReturnValue(configWrapper)
 
@@ -136,6 +128,6 @@ describe('rusted', () => {
         expect(importAndMergeLocalstoreMock).toHaveBeenCalledTimes(0)
 
         expect(loggerMock.error).toHaveBeenCalledTimes(1)
-        expect(loggerMock.error).toHaveBeenCalledWith('Failed to read config: {"action":"something","config":{"url":"something"}}')
+        expect(loggerMock.error).toHaveBeenCalledWith('Failed to read config: {"action":"something","config":{"url":"something","quiet":false}}')
     })
 })

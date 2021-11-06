@@ -4,7 +4,7 @@ import { mocked } from 'ts-jest/utils'
 import { fetchLocalStore } from '../api'
 import { LOAD_CONFIG } from '../commons/constants'
 import { logger, Spinner } from '../log/spinner'
-import { createStore } from '../test.utils'
+import { createStore, createImportConfig } from '../test.utils'
 import { downloadStore } from './downloadStore'
 import { Store } from './Store'
 
@@ -31,7 +31,7 @@ describe('downloadStore', () => {
         const store = createStore()
         fetchLocalStoreMock.mockResolvedValue(store)
 
-        expect(await downloadStore({ url }, filename)).toEqual(new Store(store))
+        expect(await downloadStore(createImportConfig({ url }), filename)).toEqual(new Store(store))
 
         expect(fetchLocalStoreMock).toHaveBeenCalledTimes(1)
         expect(fetchLocalStoreMock).toHaveBeenCalledWith(url)
@@ -48,7 +48,7 @@ describe('downloadStore', () => {
         const store = createStore()
         fetchLocalStoreMock.mockResolvedValue(store)
 
-        expect(await downloadStore({ url }, filename)).toEqual(new Store(store))
+        expect(await downloadStore(createImportConfig({ url }), filename)).toEqual(new Store(store))
 
         expect(fetchLocalStoreMock).toHaveBeenCalledTimes(1)
         expect(fetchLocalStoreMock).toHaveBeenCalledWith(`${url}${filename}`)
@@ -65,7 +65,7 @@ describe('downloadStore', () => {
         const store = createStore()
         fetchLocalStoreMock.mockResolvedValue(store)
 
-        expect(await downloadStore({ url }, filename)).toEqual(new Store(store))
+        expect(await downloadStore(createImportConfig({ url }), filename)).toEqual(new Store(store))
 
         expect(fetchLocalStoreMock).toHaveBeenCalledTimes(1)
         expect(fetchLocalStoreMock).toHaveBeenCalledWith(`${url}/${filename}`)
@@ -81,7 +81,7 @@ describe('downloadStore', () => {
         const url = 'http://some-url.de'
         fetchLocalStoreMock.mockRejectedValue(undefined)
 
-        await expect(downloadStore({ url }, filename)).rejects.toEqual(undefined)
+        await expect(downloadStore(createImportConfig({ url }), filename)).rejects.toEqual(undefined)
 
         expect(fetchLocalStoreMock).toHaveBeenCalledTimes(1)
         expect(fetchLocalStoreMock).toHaveBeenCalledWith(`${url}/${filename}`)
@@ -98,7 +98,7 @@ describe('downloadStore', () => {
         const url = 'http://some-url.de'
         fetchLocalStoreMock.mockRejectedValue({ message: 'error-msg', path: 'error-path' })
 
-        await expect(downloadStore({ url }, filename)).rejects.toEqual({ message: 'error-msg', path: 'error-path' })
+        await expect(downloadStore(createImportConfig({ url }), filename)).rejects.toEqual({ message: 'error-msg', path: 'error-path' })
 
         expect(fetchLocalStoreMock).toHaveBeenCalledTimes(1)
         expect(fetchLocalStoreMock).toHaveBeenCalledWith(`${url}/${filename}`)
