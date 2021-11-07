@@ -1,7 +1,8 @@
 import { existsSync, mkdir, createWriteStream, stat, rmdir, unlink, Stats } from 'fs'
 import { Response as NodeFetchResponse } from 'node-fetch'
-import { MaybeMocked, MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
+import type { MaybeMocked, MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
+/* eslint-disable-next-line import/no-namespace */
 import * as unzipper from 'unzipper'
 
 import { fetchChromeZipFile } from './api'

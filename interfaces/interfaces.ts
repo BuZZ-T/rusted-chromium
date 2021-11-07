@@ -1,6 +1,6 @@
 import { ComparableVersion } from '../commons/ComparableVersion'
-import { OS } from './os.interfaces'
-import { Arch } from './store.interfaces'
+import type { OS } from './os.interfaces'
+import type { Arch } from './store.interfaces'
 
 export interface IStoreConfigWrapper {
     action: 'importStore'

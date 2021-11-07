@@ -1,4 +1,4 @@
-import { ExtendedOS } from './os.interfaces'
+import type { ExtendedOS } from './os.interfaces'
 
 export interface IConfigOptions {
     min: string

@@ -1,6 +1,6 @@
 import { existsSync, readFile } from 'fs'
-import * as path from 'path'
-import { MaybeMocked } from 'ts-jest/dist/utils/testing'
+import { join as pathJoin } from 'path'
+import type { MaybeMocked } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
 import { createStore, ReadFileWithOptions } from '../test.utils'
@@ -9,7 +9,7 @@ import { Store } from './Store'
 
 jest.mock('fs')
 
-const localPath = path.join(__dirname, '..', 'localstore.json')
+const localPath = pathJoin(__dirname, '..', 'localstore.json')
 
 describe('loadStore', () => {
 

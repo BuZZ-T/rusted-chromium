@@ -1,9 +1,9 @@
 import { Response as NodeFetchResponse } from 'node-fetch'
 
 import { RESOLVE_VERSION } from './commons/constants'
-import { IMetadataResponse } from './interfaces/interfaces'
-import { IOSSettings } from './interfaces/os.interfaces'
-import { IListStore } from './interfaces/store.interfaces'
+import type { IMetadataResponse } from './interfaces/interfaces'
+import type { IOSSettings } from './interfaces/os.interfaces'
+import type { IListStore } from './interfaces/store.interfaces'
 import { logger } from './log/spinner'
 
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */

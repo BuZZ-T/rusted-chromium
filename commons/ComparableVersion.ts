@@ -1,4 +1,4 @@
-import { IVersion } from '../interfaces/interfaces'
+import type { IVersion } from '../interfaces/interfaces'
 import { isIVersion } from '../utils'
 
 export class ComparableVersion implements IVersion {

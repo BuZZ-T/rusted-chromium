@@ -1,7 +1,8 @@
+/* eslint-disable-next-line import/no-namespace */
 import * as prompts from 'prompts'
 
 import { MappedVersion } from './commons/MappedVersion'
-import { IChromeConfig } from './interfaces/interfaces'
+import type { IChromeConfig } from './interfaces/interfaces'
 
 /**
  * Lets the user select a version via CLI prompt and returns it.

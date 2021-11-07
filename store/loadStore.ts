@@ -1,15 +1,14 @@
-import * as fs from 'fs'
-import { existsSync } from 'fs'
-import * as path from 'path'
+import { existsSync, readFile as fsReadFile } from 'fs'
+import { join as pathJoin } from 'path'
 import { promisify } from 'util'
 
 import { LOCAL_STORE_FILE } from '../commons/constants'
-import { IListStore } from '../interfaces/store.interfaces'
+import type { IListStore } from '../interfaces/store.interfaces'
 import { Store } from './Store'
 
-const STORE_FILE = path.join(__dirname, '..', LOCAL_STORE_FILE)
+const STORE_FILE = pathJoin(__dirname, '..', LOCAL_STORE_FILE)
 
-const readFile = promisify(fs.readFile)
+const readFile = promisify(fsReadFile)
 
 const EMPTY_STORE: IListStore = {
     linux: {

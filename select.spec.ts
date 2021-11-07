@@ -1,4 +1,4 @@
-import { MaybeMocked } from 'ts-jest/dist/utils/testing'
+import type { MaybeMocked } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
 import { MappedVersion } from './commons/MappedVersion'

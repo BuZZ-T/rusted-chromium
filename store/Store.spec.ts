@@ -1,5 +1,5 @@
 import { ComparableVersion } from '../commons/ComparableVersion'
-import { Arch } from '../interfaces/store.interfaces'
+import type { Arch } from '../interfaces/store.interfaces'
 import { createStore } from '../test.utils'
 import { Store } from './Store'
 

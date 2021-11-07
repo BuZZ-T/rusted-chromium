@@ -1,6 +1,6 @@
-import { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
+import type { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 
-import { PrinterWriteStream } from '../interfaces/printer.interfaces'
+import type { PrinterWriteStream } from '../interfaces/printer.interfaces'
 import { ProgressBar } from './progress'
 
 jest.mock('chalk', () => ({

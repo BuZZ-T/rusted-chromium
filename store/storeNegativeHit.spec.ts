@@ -1,6 +1,6 @@
 import { writeFile } from 'fs'
-import * as path from 'path'
-import { MaybeMocked } from 'ts-jest/dist/utils/testing'
+import { join as pathJoin } from 'path'
+import type { MaybeMocked } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
 import { ComparableVersion } from '../commons/ComparableVersion'
@@ -12,7 +12,7 @@ import { storeNegativeHit } from './storeNegativeHit'
 jest.mock('fs')
 jest.mock('./loadStore')
 
-const localPath = path.join(__dirname, '..', 'localstore.json')
+const localPath = pathJoin(__dirname, '..', 'localstore.json')
 
 describe('storeNegativeHit', () => {
 

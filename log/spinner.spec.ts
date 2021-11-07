@@ -1,8 +1,9 @@
+/* eslint-disable-next-line import/no-namespace */
 import * as chalk from 'chalk'
-import { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
+import type { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
-import { PrinterWriteStream } from '../interfaces/printer.interfaces'
+import type { PrinterWriteStream } from '../interfaces/printer.interfaces'
 import { Spinner } from './spinner'
 
 jest.mock('chalk', () => ({

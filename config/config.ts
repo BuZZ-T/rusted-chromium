@@ -1,10 +1,12 @@
 
+/* eslint-disable-next-line import/no-namespace */
 import * as program from 'commander'
 
 import { ComparableVersion } from '../commons/ComparableVersion'
-import { IConfigOptions } from '../interfaces/config.interfaces'
+import type { IConfigOptions } from '../interfaces/config.interfaces'
 import { ConfigWrapper } from '../interfaces/interfaces'
 import { logger } from '../log/spinner'
+/* eslint-disable-next-line import/no-namespace */
 import * as packageJson from '../package.json'
 import { mapOS } from '../utils'
 

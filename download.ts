@@ -1,11 +1,12 @@
 import { existsSync, mkdir as fsMkdir, createWriteStream, stat as fsStat, rmdir as fsRmdir, unlink as fsUnlink } from 'fs'
-import * as path from 'path'
+import { join as pathJoin } from 'path'
+/* eslint-disable-next-line import/no-namespace */
 import * as unzipper from 'unzipper'
 import { promisify } from 'util'
 
 import { fetchChromeZipFile } from './api'
 import { NoChromiumDownloadError } from './errors'
-import { IChromeConfig } from './interfaces/interfaces'
+import type { IChromeConfig } from './interfaces/interfaces'
 import { progress } from './log/progress'
 import { logger } from './log/spinner'
 import { loadStore } from './store/loadStore'
@@ -48,7 +49,7 @@ export async function downloadChromium(config: IChromeConfig): Promise<void> {
     if (chromeUrl && config.download) {
         const filename = `chrome-${filenameOS}-${config.arch}-${selectedVersion}`
         const downloadPath = config.downloadFolder
-            ? path.join(config.downloadFolder, filename)
+            ? pathJoin(config.downloadFolder, filename)
             : filename
 
         if (!!config.downloadFolder && !existsSync(config.downloadFolder)) {

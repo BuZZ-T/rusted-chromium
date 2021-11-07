@@ -1,3 +1,4 @@
+/* eslint-disable-next-line import/no-namespace */
 import * as chalk from 'chalk'
 
 import { PrinterWriteStream } from '../interfaces/printer.interfaces'

@@ -3,9 +3,9 @@ import { HTMLElement as NodeParserHTMLElement, Node as NodeParserNode } from 'no
 
 import { ComparableVersion } from './commons/ComparableVersion'
 import { DEFAULT_OPTIONS } from './config/config'
-import { IConfigOptions } from './interfaces/config.interfaces'
-import { IChromeConfig, IDownloadSettings, IExportConfig, IStoreConfig } from './interfaces/interfaces'
-import { IListStore } from './interfaces/store.interfaces'
+import type { IConfigOptions } from './interfaces/config.interfaces'
+import type { IChromeConfig, IDownloadSettings, IExportConfig, IStoreConfig } from './interfaces/interfaces'
+import type { IListStore } from './interfaces/store.interfaces'
 
 export const createChromeConfig = (config?: Partial<IChromeConfig>): IChromeConfig => ({
     arch: 'x64',

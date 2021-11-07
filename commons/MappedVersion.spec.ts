@@ -1,5 +1,6 @@
-import { IVersionWithDisabled } from '../interfaces/interfaces'
+import type { IVersionWithDisabled } from '../interfaces/interfaces'
 import { MappedVersion } from './MappedVersion'
+
 describe('MappedVersion', () => {
     describe('string input', () => {
         it('should create a MappedVersion with first input', () => {

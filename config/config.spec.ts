@@ -1,9 +1,9 @@
-import { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
+import type { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
 import { ComparableVersion } from '../commons/ComparableVersion'
-import { IChromeConfigWrapper, IStoreConfigWrapper, IExportConfigWrapper } from '../interfaces/interfaces'
-import { OS } from '../interfaces/os.interfaces'
+import type { IChromeConfigWrapper, IStoreConfigWrapper, IExportConfigWrapper } from '../interfaces/interfaces'
+import type { OS } from '../interfaces/os.interfaces'
 import { Spinner, logger } from '../log/spinner'
 import { createChromeConfig, createChromeOptions, createImportConfig, createExportConfig } from '../test.utils'
 import { DEFAULT_OPTIONS, readConfig } from './config'

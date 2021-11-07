@@ -1,4 +1,4 @@
-import { OS } from './os.interfaces'
+import type { OS } from './os.interfaces'
 
 export type Arch = keyof LinuxStore | keyof WinStore | keyof MacStore
 

@@ -1,5 +1,6 @@
-import { TextFunction } from '../interfaces/interfaces'
+import type { TextFunction } from '../interfaces/interfaces'
 import { READ_CONFIG } from './constants'
+
 describe('constants', () => {
 
     it('should add the reason in the description', () => {

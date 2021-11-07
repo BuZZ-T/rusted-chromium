@@ -1,8 +1,9 @@
 import { ComparableVersion } from './commons/ComparableVersion'
 import { MappedVersion } from './commons/MappedVersion'
-import { IChromeConfig, Compared, TextFunction, IVersion, IVersionWithDisabled } from './interfaces/interfaces'
-import { OSSetting, OS, ExtendedOS } from './interfaces/os.interfaces'
-import { ISetStore, IListStore } from './interfaces/store.interfaces'
+import type { IChromeConfig, TextFunction, IVersion, IVersionWithDisabled } from './interfaces/interfaces'
+import { Compared } from './interfaces/interfaces'
+import type { OSSetting, OS, ExtendedOS } from './interfaces/os.interfaces'
+import type { ISetStore, IListStore } from './interfaces/store.interfaces'
 
 export function detectOperatingSystem(config: IChromeConfig): OSSetting {
 

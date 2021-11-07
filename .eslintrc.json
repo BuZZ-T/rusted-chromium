@@ -65,6 +65,8 @@
                 }
             }
         ],
+        "import/no-namespace": "error",
+        "import/newline-after-import": "error",
         "@typescript-eslint/no-unused-vars": "error",
         "@typescript-eslint/explicit-module-boundary-types": "error",
         "no-console": "error",

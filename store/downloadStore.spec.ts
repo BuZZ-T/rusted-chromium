@@ -1,4 +1,4 @@
-import { MaybeMockedDeep, MaybeMocked } from 'ts-jest/dist/utils/testing'
+import type { MaybeMockedDeep, MaybeMocked } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
 import { fetchLocalStore } from '../api'

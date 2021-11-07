@@ -1,7 +1,7 @@
 import { ComparableVersion } from './commons/ComparableVersion'
 import { MappedVersion } from './commons/MappedVersion'
 import { Compared } from './interfaces/interfaces'
-import { IOSSettings, OS } from './interfaces/os.interfaces'
+import type { IOSSettings, OS } from './interfaces/os.interfaces'
 import { createChromeConfig, createStore } from './test.utils'
 import { detectOperatingSystem, sortDescendingMappedVersions, compareComparableVersions, sortAscendingMappedVersions, isTextFunction, sortStoreEntries } from './utils'
 
