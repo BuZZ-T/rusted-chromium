@@ -74,6 +74,7 @@ npm run build
 |`--hide-negative-hits` | `-H` | - | false | Hide negative hits in the CLI prompt
 |`--folder` | `-f` | `path/to/folder` | Current folder executing the command | Set the folder to which the archive of the chromium binary or the extracted folder (if the flag `--unzip` is set)
 |`--only-newest-major` | `-O`| - | - | Show only the newest version for every major version in the user selection. If the newest versions are not available for the current os, they are skipped.
+| `--quiet` | `-q` | - | false | Suppress all log output.
 | `--version`| `-V` | - | - | Show current version.
 | `--help`| `-h` | - | - | Display a help with all available flags.
 
@@ -207,6 +208,14 @@ rusted-chromium -E
 rusted-chromium --export-store /path/to/file
 # short version
 rusted-chromium -E /path/to/file
+```
+
+##### Suppress all log output
+```bash
+# long version
+rusted-chromium --quiet
+# short version
+rusted-chromium -q
 ```
 
 ##### Show the help and quit

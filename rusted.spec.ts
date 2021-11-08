@@ -130,4 +130,19 @@ describe('rusted', () => {
         expect(loggerMock.error).toHaveBeenCalledTimes(1)
         expect(loggerMock.error).toHaveBeenCalledWith('Failed to read config: {"action":"something","config":{"url":"something","quiet":false}}')
     })
+
+    it('should set the logger to silent on config.quiet', async () => {
+        const configWrapper: ConfigWrapper = {
+            action: 'loadChrome',
+            config: createChromeConfig({
+                quiet: true,
+            }),
+        }
+        readConfigMock.mockReturnValue(configWrapper)
+
+        await rusted(['test-param'], 'linux')
+
+        expect(logger.silent).toHaveBeenCalledTimes(1)
+        expect(logger.silent).toHaveBeenCalledWith()
+    })
 })

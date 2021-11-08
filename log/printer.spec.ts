@@ -23,6 +23,14 @@ class TestPrinter extends Printer<TestPrinter> {
     public writeEmpty(): TestPrinter {
         return this.write()
     }
+
+    public write_(text: string): void {
+        this.write(text)
+    }
+
+    public deleteLastLine_(): void {
+        this.deleteLastLine()
+    }
 }
 
 describe('Printer', () => {
@@ -75,5 +83,19 @@ describe('Printer', () => {
         expect(stdioMock.write).toBeCalledTimes(0)
         expect(stdioMock.clearLine).toBeCalledTimes(0)
         expect(stdioMock.cursorTo).toBeCalledTimes(0)
+    })
+
+    it('should silent all log output', () => {
+        testPrinter.silent()
+
+        testPrinter.write_('some text')
+        testPrinter.info('some info')
+        testPrinter.warn('some warn')
+        testPrinter.deleteLastLine_()
+
+        expect(stdioMock.clearLine).toHaveBeenCalledTimes(0)
+        expect(stdioMock.cursorTo).toHaveBeenCalledTimes(0)
+        expect(stdioMock.write).toHaveBeenCalledTimes(0)
+        expect(stdioMock.moveCursor).toHaveBeenCalledTimes(0)
     })
 })
