@@ -5,15 +5,17 @@
  */
 
 import { existsSync, readFile as fsReadFile, writeFile as fsWriteFile, unlink as fsUnlink } from 'fs'
+/* eslint-disable-next-line import/no-namespace */
 import * as mockFs from 'mock-fs'
+/* eslint-disable-next-line import/no-namespace */
 import * as fetch from 'node-fetch'
-import * as path from 'path'
+import { join, resolve } from 'path'
 import { MaybeMocked } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 import { promisify } from 'util'
 
 import { MappedVersion } from './commons/MappedVersion'
-import { IListStore } from './interfaces/store.interfaces'
+import type { IListStore } from './interfaces/store.interfaces'
 import { rusted } from './rusted'
 import { mockNodeFetch, chromeZipStream, branchPositionResponse, getJestTmpFolder } from './test/int.utils'
 import { createStore } from './test/test.utils'
@@ -27,9 +29,9 @@ jest.mock('prompts')
 
 describe('[int] download chromium', () => {
 
-    const chromeZip10 = path.join(__dirname, 'chrome-linux-x64-10.0.0.0.zip')
-    const chromeZip20 = path.join(__dirname, 'chrome-linux-x64-20.0.0.0.zip')
-    const localStoreFile = path.join(__dirname, 'localstore.json')
+    const chromeZip10 = join(__dirname, 'chrome-linux-x64-10.0.0.0.zip')
+    const chromeZip20 = join(__dirname, 'chrome-linux-x64-20.0.0.0.zip')
+    const localStoreFile = join(__dirname, 'localstore.json')
 
     let promptsMock: MaybeMocked<typeof prompts>
     let nodeFetchMock: MaybeMocked<typeof fetch>
@@ -47,8 +49,8 @@ describe('[int] download chromium', () => {
             'localstore.json': JSON.stringify(createStore()),
 
             // pass some folders to the mock for jest to be able to run
-            'node_modules': mockFs.load(path.resolve(__dirname, './node_modules')),
-            [`/tmp/${jestFolder}`]: mockFs.load(path.resolve(`/tmp/${jestFolder}`)),
+            'node_modules': mockFs.load(resolve(__dirname, './node_modules')),
+            [`/tmp/${jestFolder}`]: mockFs.load(resolve(`/tmp/${jestFolder}`)),
         })
 
         readFile = promisify(fsReadFile)
@@ -83,10 +85,12 @@ describe('[int] download chromium', () => {
     })
 
     it('should download a chrome file with --results=1', async () => {
-        await rusted(['/some/path/to/node', '/some/path/to/rusted-chromium', '--max-results=1'], 'linux')
+        const rustedPromise = rusted(['/some/path/to/node', '/some/path/to/rusted-chromium', '--max-results=1'], 'linux')
 
-        chromeZipStream.emit('data', 'asdf')
+        chromeZipStream.push('asdf')
         chromeZipStream.end()
+
+        await rustedPromise
 
         expect(existsSync(chromeZip10)).toBe(true)
         expect(existsSync(chromeZip20)).toBe(false)
@@ -106,10 +110,12 @@ describe('[int] download chromium', () => {
 
         promptsMock.mockReturnValue({ version: '10.0.0.0' })
 
-        await rusted(['/some/path/to/node', '/some/path/to/rusted-chromium', '--max-results=1'], 'linux')
+        const rustedPromise = rusted(['/some/path/to/node', '/some/path/to/rusted-chromium', '--max-results=1'], 'linux')
 
-        chromeZipStream.emit('data', data)
+        chromeZipStream.push(data)
         chromeZipStream.end()
+
+        await rustedPromise
 
         expect(existsSync(chromeZip10)).toBe(true)
 
@@ -124,7 +130,11 @@ describe('[int] download chromium', () => {
         })
         promptsMock.mockReturnValue({ version: '20.0.0.0' })
 
-        await rusted(['/some/path/to/node', '/some/path/to/rusted-chromium'], 'linux')
+        const rustedPromise = rusted(['/some/path/to/node', '/some/path/to/rusted-chromium'], 'linux')
+
+        chromeZipStream.end()
+
+        await rustedPromise
 
         expect(existsSync(chromeZip20)).toBe(true)
 
@@ -162,7 +172,9 @@ describe('[int] download chromium', () => {
         })
         promptsMock.mockReturnValue({ version: '10.0.0.0' })
 
-        await rusted(['/some/path/to/node', '/some/path/to/rusted-chromium'], 'linux')
+        const rustedPromise = rusted(['/some/path/to/node', '/some/path/to/rusted-chromium'], 'linux')
+        chromeZipStream.end()
+        await rustedPromise 
 
         expect(existsSync(chromeZip10)).toBe(false)
 
@@ -188,7 +200,9 @@ describe('[int] download chromium', () => {
 
         expect(existsSync(localStoreFile)).toBe(false)
 
-        await rusted(['/some/path/to/node', '/some/path/to/rusted-chromium'], 'linux')
+        const rustedPromise = rusted(['/some/path/to/node', '/some/path/to/rusted-chromium'], 'linux')
+        chromeZipStream.end()
+        await rustedPromise
 
         expect(existsSync(chromeZip10)).toBe(false)
         expect(existsSync(localStoreFile)).toBe(true)
@@ -213,7 +227,11 @@ describe('[int] download chromium', () => {
         })
         promptsMock.mockReturnValue({ version: '10.0.0.0' })
 
-        await rusted(['/some/path/to/node', '/some/path/to/rusted-chromium'], 'linux')
+        const rustedPromise = rusted(['/some/path/to/node', '/some/path/to/rusted-chromium'], 'linux')
+        
+        chromeZipStream.end()
+
+        await rustedPromise
 
         expect(existsSync(chromeZip10)).toBe(false)
         expect(existsSync(localStoreFile)).toBe(true)
@@ -248,7 +266,11 @@ describe('[int] download chromium', () => {
         promptsMock.mockReturnValueOnce({ version: '20.0.0.0' })
         promptsMock.mockReturnValue({ version: '10.0.0.0' })
 
-        await rusted(['/some/path/to/node', '/some/path/to/rusted-chromium', '--decrease-on-fail'], 'linux')
+        const rustedPromise = rusted(['/some/path/to/node', '/some/path/to/rusted-chromium', '--decrease-on-fail'], 'linux')
+
+        chromeZipStream.end()
+
+        await rustedPromise
 
         expect(existsSync(chromeZip20)).toBe(false)
         expect(existsSync(chromeZip10)).toBe(true)
@@ -273,7 +295,11 @@ describe('[int] download chromium', () => {
         promptsMock.mockReturnValueOnce({ version: '10.0.0.0' })
         promptsMock.mockReturnValue({ version: '20.0.0.0' })
 
-        await rusted(['/some/path/to/node', '/some/path/to/rusted-chromium', '--increase-on-fail'], 'linux')
+        const rustedPromsie = rusted(['/some/path/to/node', '/some/path/to/rusted-chromium', '--increase-on-fail'], 'linux')
+
+        chromeZipStream.end()
+
+        await rustedPromsie
 
         expect(existsSync(chromeZip20)).toBe(true)
         expect(existsSync(chromeZip10)).toBe(false)

@@ -763,7 +763,7 @@ describe('versions', () => {
         })
 
         it('should remove disabled versions on hideNegativeHits set in config', () => {
-            const config = createChromeConfig({
+            const config = createChromeFullConfig({
                 hideNegativeHits: true,
                 os: 'linux',
                 arch: 'x64',

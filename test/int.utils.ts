@@ -1,6 +1,6 @@
 import { writeFile, readdir as fsReaddir } from 'fs'
 import { Response as NodeFetchResponse, RequestInfo as NodeFetchRequestInfo, Request as NodeFetchRequest } from 'node-fetch'
-import * as path from 'path'
+import { join } from 'path'
 import { PassThrough, Readable } from 'stream'
 import { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 import { promisify } from 'util'
@@ -177,7 +177,7 @@ export function mockNodeFetch(nodeFetchMock: MaybeMockedDeep<any>, { params, con
  * @returns 
  */
 export function setLocalstore(store: Store): Promise<void> {
-    return promisify(writeFile)(path.join(__dirname, 'localstore.json'), store.toFormattedString())
+    return promisify(writeFile)(join(__dirname, 'localstore.json'), store.toFormattedString())
 }
 
 export async function getJestTmpFolder(): Promise<string | undefined> {

@@ -1,3 +1,9 @@
+/**
+ * Tests rusted file
+ * 
+ * @group unit/class/Store
+ */
+
 import { ComparableVersion } from '../commons/ComparableVersion'
 import type { Arch } from '../interfaces/store.interfaces'
 import { createStore } from '../test/test.utils'

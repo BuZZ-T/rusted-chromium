@@ -1,7 +1,7 @@
 import { ComparableVersion } from '../commons/ComparableVersion'
 import { MappedVersion } from '../commons/MappedVersion'
 import { Compared } from '../interfaces/enums'
-import { createStore } from '../test.utils'
+import { createStore } from '../test/test.utils'
 import { sortDescendingMappedVersions, sortAscendingMappedVersions, compareComparableVersions, sortStoreEntries, sortAscendingComparableVersions, sortDescendingComparableVersions } from './sort.utils'
 
 describe('sort utils', () => {

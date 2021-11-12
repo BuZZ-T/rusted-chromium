@@ -48,7 +48,6 @@ export const createImportConfig = (config?: Partial<IStoreConfig>): IStoreConfig
 })
 
 export const createExportConfig = (config?: Partial<IExportConfig>): IExportConfig => ({
-    path: 'some-path',
     quiet: false,
     ...config,
 })

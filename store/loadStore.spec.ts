@@ -1,9 +1,15 @@
+/**
+ * Tests rusted file
+ * 
+ * @group unit/file/store/loadStore
+ */
+
 import { existsSync, readFile } from 'fs'
 import { join as pathJoin } from 'path'
 import type { MaybeMocked } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
-import { createStore, ReadFileWithOptions } from '../test.utils'
+import { ReadFileWithOptions, createStore } from '../test/test.utils'
 import { loadStore } from './loadStore'
 import { Store } from './Store'
 

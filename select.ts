@@ -13,12 +13,15 @@ import type { Nullable } from './interfaces/interfaces'
  * @param config 
  */
 export async function userSelectedVersion(versions: MappedVersion[], config: IChromeFullConfig): Promise<Nullable<MappedVersion>> {
+    if (versions.every(version => version.disabled)) {
+        return null
+    }
     if (config.results === 1) {
-        return versions[0]?.disabled ? undefined : versions[0]
+        return versions[0]
     }
 
     if (config.onlyNewestMajor) {
-        versions = versions.filter((version, index, versionArray) => {
+        versions = versions.filter((version, index, versionArray) => { 
             const previous = versionArray[index - 1]
             const previousMajor = previous?.value?.split('.')[0]
             const currentMajor = version.value.split('.')[0]

@@ -1,7 +1,6 @@
 import { existsSync, mkdir as fsMkdir, createWriteStream, stat as fsStat, rmdir as fsRmdir, unlink as fsUnlink } from 'fs'
 import { join as pathJoin } from 'path'
-/* eslint-disable-next-line import/no-namespace */
-import * as unzipper from 'unzipper'
+import { Extract } from 'unzipper'
 import { promisify } from 'util'
 
 import { fetchChromeZipFile } from './api'
@@ -81,7 +80,7 @@ export async function downloadChromium(config: IChromeConfig): Promise<void> {
         if (config.autoUnzip) {
             registerSigIntHandler(downloadPath)
             zipFileResponse.body.pipe(
-                unzipper.Extract({ path: downloadPath })
+                Extract({ path: downloadPath })
             )
         } else {
             const filename = downloadPath + '.zip'
@@ -89,6 +88,20 @@ export async function downloadChromium(config: IChromeConfig): Promise<void> {
             registerSigIntHandler(filename)
             zipFileResponse.body.pipe(file)
         }
+
+        return new Promise((resolve, reject) => {
+            zipFileResponse.body.on('finish', () => {
+                resolve()
+            })
+
+            zipFileResponse.body.on('end', () => {
+                resolve()
+            })
+
+            zipFileResponse.body.on('error', () => {
+                reject()
+            })
+        })
     }
 
     if (!chromeUrl && config.download && config.single) {

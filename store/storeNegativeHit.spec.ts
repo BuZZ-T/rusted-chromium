@@ -1,10 +1,16 @@
+/**
+ * Tests rusted file
+ * 
+ * @group unit/file/store/storeNegativeHit
+ */
+
 import { writeFile } from 'fs'
 import { join as pathJoin } from 'path'
 import type { MaybeMocked } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
 import { ComparableVersion } from '../commons/ComparableVersion'
-import { createStore } from '../test.utils'
+import { createStore } from '../test/test.utils'
 import { loadStore } from './loadStore'
 import { Store } from './Store'
 import { storeNegativeHit } from './storeNegativeHit'

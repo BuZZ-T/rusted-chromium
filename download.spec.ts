@@ -65,6 +65,7 @@ describe('download', () => {
         let unlinkMock: MaybeMocked<typeof unlink>
 
         let pipeMock: jest.Mock
+        let onMock: jest.Mock
         let zipFileResource: NodeFetchResponse
 
         let processOnSpy: jest.SpyInstance
@@ -91,9 +92,11 @@ describe('download', () => {
             unlinkMock = mocked(unlink)
 
             pipeMock = jest.fn()
+            onMock = jest.fn()
             zipFileResource = {
                 body: {
                     pipe: pipeMock,
+                    on: onMock,
                 } as unknown as NodeJS.ReadableStream
             } as NodeFetchResponse
             fetchChromeZipFileMock.mockResolvedValue(zipFileResource)
@@ -143,23 +146,28 @@ describe('download', () => {
                 callback(null)
             })
 
+            onMock.mockImplementation((eventName: string, callback: () => void) => {
+                if (eventName === 'end') {
+                    callback()
+                }
+            })
+
             // Act
             const config = createChromeFullConfig({
                 autoUnzip: false,
                 downloadFolder: 'down_folder',
             })
             await downloadChromium(config)
-
             expect(existsSyncMock).toHaveBeenCalledTimes(1)
             expect(existsSyncMock).toHaveBeenCalledWith('down_folder')
             expect(mkdirMock).toHaveBeenCalledTimes(1)
-
+    
             expect(progressConstructorMock).toHaveBeenCalledTimes(1)
             expect(progressConstructorMock).toHaveBeenCalledWith(zipFileResource, { throttle: 100 })
-
+    
             expect(progressMock.start).toHaveBeenCalledTimes(0)
             expect(progressMock.fraction).toHaveBeenCalledTimes(0)
-
+    
             expect(fetchChromeZipFileMock).toHaveBeenCalledTimes(1)
             expect(fetchChromeZipFileMock).toHaveBeenCalledWith('chromeUrl')
         })
@@ -176,6 +184,7 @@ describe('download', () => {
                 autoUnzip: false,
                 downloadFolder: 'down_folder',
             })
+
             await downloadChromium(config)
 
             expect(mkdirMock).toHaveBeenCalledTimes(0)
@@ -214,7 +223,7 @@ describe('download', () => {
             expect(fetchChromeZipFileMock).toHaveBeenCalledWith('chromeUrl')
         })
 
-        it('should start the progress with autoUnzip=false', async () => {
+        it.only('should start the progress with autoUnzip=false', async () => {
             getChromeDownloadUrlMock.mockResolvedValue(createGetChromeDownloadUrlReturn({
                 selectedVersion: new MappedVersion({
                     major: 11,
@@ -227,15 +236,30 @@ describe('download', () => {
 
             fetchChromeZipFileMock.mockResolvedValue(zipFileResource)
 
+            onMock.mockImplementation((eventName: string, callback: () => void) => {
+                if (eventName === 'end') {
+                    callback()
+                }
+            })
+
+            onMock.mockImplementation((eventName: string, callback: () => void) => {
+                if (eventName === 'end') {
+                    callback()
+                }
+            })
+
             // Act
             const config = createChromeFullConfig({
                 autoUnzip: false,
             })
             await downloadChromium(config)
 
-            expect(onMock).toHaveBeenCalledTimes(1)
-            expect(onMock).toHaveBeenCalledWith('progress', expect.any(Function))
+            expect(onMock).toHaveBeenCalledTimes(3)
+            expect(onMock).toHaveBeenCalledWith('finish', expect.any(Function))
+            expect(onMock).toHaveBeenCalledWith('end', expect.any(Function))
+            expect(onMock).toHaveBeenCalledWith('error', expect.any(Function))
 
+            debugger
             const progressCallback = onMock.mock.calls[0][1]
 
             progressCallback({
@@ -279,8 +303,10 @@ describe('download', () => {
             })
             await downloadChromium(config)
 
-            expect(onMock).toHaveBeenCalledTimes(1)
-            expect(onMock).toHaveBeenCalledWith('progress', expect.any(Function))
+            expect(onMock).toHaveBeenCalledTimes(3)
+            expect(onMock).toHaveBeenCalledWith('finish', expect.any(Function))
+            expect(onMock).toHaveBeenCalledWith('end', expect.any(Function))
+            expect(onMock).toHaveBeenCalledWith('error', expect.any(Function))
 
             const progressCallback = onMock.mock.calls[0][1]
 
@@ -325,8 +351,10 @@ describe('download', () => {
             })
             await downloadChromium(config)
 
-            expect(onMock).toHaveBeenCalledTimes(1)
-            expect(onMock).toHaveBeenCalledWith('progress', expect.any(Function))
+            expect(onMock).toHaveBeenCalledTimes(3)
+            expect(onMock).toHaveBeenCalledWith('finish', expect.any(Function))
+            expect(onMock).toHaveBeenCalledWith('end', expect.any(Function))
+            expect(onMock).toHaveBeenCalledWith('error', expect.any(Function))
 
             const progressCallback = onMock.mock.calls[0][1]
 

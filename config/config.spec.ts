@@ -278,7 +278,9 @@ describe('config', () => {
 
             const expectedConfig: IExportConfigWrapper = {
                 action: 'exportStore',
-                config: createExportConfig()
+                config: createExportConfig({
+                    path: 'some-path',
+                })
             }
 
             expect(config).toEqual(expectedConfig)

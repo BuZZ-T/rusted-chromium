@@ -88,7 +88,7 @@ describe('userSelectedVersion', () => {
             onlyNewestMajor: false,
         })
 
-        expect(await userSelectedVersion([], config)).toBeUndefined()
+        expect(await userSelectedVersion([], config)).toBeNull()
     })
 
     it('should return null on config.results === 1 with version disabled', async () => {
@@ -105,7 +105,7 @@ describe('userSelectedVersion', () => {
             onlyNewestMajor: false,
         })
 
-        expect(await userSelectedVersion([mappedVersion1], config)).toBeUndefined()
+        expect(await userSelectedVersion([mappedVersion1], config)).toBeNull()
         expect(promptsMock).toHaveBeenCalledTimes(0)
     })
 

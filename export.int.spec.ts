@@ -5,18 +5,20 @@
  */
 
 import { writeFile as fsWriteFile } from 'fs'
+/* eslint-disable-next-line import/no-namespace */
 import * as mockFs from 'mock-fs'
+/* eslint-disable-next-line import/no-namespace */
 import * as fetch from 'node-fetch'
-import * as path from 'path'
+import { join, resolve } from 'path'
 import { PassThrough } from 'stream'
-import { MaybeMocked } from 'ts-jest/dist/utils/testing'
+import type { MaybeMocked } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 import { promisify } from 'util'
 
 import { rusted } from './rusted'
 import { exportStore } from './store/exportStore'
 import { getJestTmpFolder, mockNodeFetch } from './test/int.utils'
-import { createStore } from './test/test.utils'
+import { createStore, createExportConfig } from './test/test.utils'
 
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */
 const prompts = require('prompts')
@@ -26,7 +28,7 @@ jest.mock('prompts')
 
 describe('[int] export store', () => {
 
-    const localStoreFile = path.join(__dirname, 'localstore.json')
+    const localStoreFile = join(__dirname, 'localstore.json')
 
     let promptsMock: MaybeMocked<typeof prompts>
     let nodeFetchMock: MaybeMocked<typeof fetch>
@@ -42,8 +44,8 @@ describe('[int] export store', () => {
             'localstore.json': JSON.stringify(createStore()),
 
             // pass some folders to the mock for jest to be able to run
-            'node_modules': mockFs.load(path.resolve(__dirname, './node_modules')),
-            [`/tmp/${jestFolder}`]: mockFs.load(path.resolve(`/tmp/${jestFolder}`)),
+            'node_modules': mockFs.load(resolve(__dirname, './node_modules')),
+            [`/tmp/${jestFolder}`]: mockFs.load(resolve(`/tmp/${jestFolder}`)),
         })
 
         writeFile = promisify(fsWriteFile)
@@ -86,7 +88,7 @@ describe('[int] export store', () => {
         await writeFile(localStoreFile, JSON.stringify(expectedStore, null, 4))
 
         const pass = new PassThrough()
-        exportStore({}, pass as unknown as NodeJS.WriteStream)
+        exportStore(createExportConfig(), pass as unknown as NodeJS.WriteStream)
 
         return new Promise<void>(resolve => {
             pass.on('data', data => {

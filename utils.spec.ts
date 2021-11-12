@@ -6,7 +6,7 @@
 
 import type { IOSSettings, OS } from './interfaces/os.interfaces'
 import { createChromeFullConfig } from './test/test.utils'
-import { detectOperatingSystem } from './utils'
+import { detectOperatingSystem, waitFor, popArray } from './utils'
 
 describe('utils', () => {
 
@@ -115,5 +115,55 @@ describe('utils', () => {
 
     describe('mapOS', () => {
         //
+    })
+
+    describe('waitFor', () => {
+
+        beforeEach(() => {
+            jest.useFakeTimers()
+        })
+
+        afterAll(() => {
+            jest.useRealTimers()
+        })
+
+        it('should not complete initially', async () => {
+            const spy = jest.fn()
+            async function callSpyAfterTime() {
+                await waitFor(3000)
+                spy()
+            }
+
+            callSpyAfterTime()
+
+            expect(spy).toHaveBeenCalledTimes(0)
+        })
+
+        it('should complete after the time has passed', async () => {
+            const spy = jest.fn()
+            async function callSpyAfterTime() {
+                await waitFor(3000)
+                spy()
+            }
+
+            const caller = callSpyAfterTime()
+            jest.advanceTimersByTime(3000)
+            await caller
+
+            expect(spy).toHaveBeenCalledTimes(1)
+        })
+    })
+
+    describe('popArray', () => {
+        it('should yield the array', () => {
+
+            const gen = popArray([1,2,3,4])
+
+            expect(gen.next()).toEqual({value: 1, done: false})
+            expect(gen.next()).toEqual({value: 2, done: false})
+            expect(gen.next()).toEqual({value: 3, done: false})
+            expect(gen.next()).toEqual({value: 4, done: false})
+            expect(gen.next()).toEqual({value: undefined, done: true})
+        })
     })
 })

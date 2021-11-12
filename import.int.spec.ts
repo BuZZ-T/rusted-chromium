@@ -5,9 +5,11 @@
  */
 
 import { readFile as fsReadFile, writeFile as fsWriteFile } from 'fs'
+/* eslint-disable-next-line import/no-namespace */
 import * as mockFs from 'mock-fs'
+/* eslint-disable-next-line import/no-namespace */
 import * as fetch from 'node-fetch'
-import * as path from 'path'
+import { join, resolve } from 'path'
 import { MaybeMocked } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 import { promisify } from 'util'
@@ -24,7 +26,7 @@ jest.mock('prompts')
 
 describe('[int] import store', () => {
 
-    const localStoreFile = path.join(__dirname, 'localstore.json')
+    const localStoreFile = join(__dirname, 'localstore.json')
 
     let promptsMock: MaybeMocked<typeof prompts>
     let nodeFetchMock: MaybeMocked<typeof fetch>
@@ -41,8 +43,8 @@ describe('[int] import store', () => {
             'localstore.json': JSON.stringify(createStore()),
 
             // pass some folders to the mock for jest to be able to run
-            'node_modules': mockFs.load(path.resolve(__dirname, './node_modules')),
-            [`/tmp/${jestFolder}`]: mockFs.load(path.resolve(`/tmp/${jestFolder}`)),
+            'node_modules': mockFs.load(resolve(__dirname, './node_modules')),
+            [`/tmp/${jestFolder}`]: mockFs.load(resolve(`/tmp/${jestFolder}`)),
         })
 
         readFile = promisify(fsReadFile)

@@ -6,7 +6,7 @@
 
 import { existsSync, createReadStream, ReadStream } from 'fs'
 import { join } from 'path'
-import { MaybeMocked, MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
+import type { MaybeMocked } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
 import { LOCAL_STORE_FILE } from '../commons/constants'

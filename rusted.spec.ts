@@ -112,7 +112,7 @@ describe('rusted', () => {
         expect(importAndMergeLocalstoreMock).toHaveBeenCalledTimes(0)
 
         expect(exportStoreMock).toHaveBeenCalledTimes(1)
-        expect(exportStoreMock).toHaveBeenCalledWith(configWrapper.config)
+        expect(exportStoreMock).toHaveBeenCalledWith(configWrapper.config, process.stdout)
 
         expect(loggerMock.error).toHaveBeenCalledTimes(0)
     })
