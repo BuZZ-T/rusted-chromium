@@ -6,7 +6,9 @@ node_js:
 
 script:
     - npm run lint
-    - npm run build:silent
+    - npm run build
+    - npm run init:examples
+    - npm run build:examples:silent
     - npm run test
     - npm run test:int
     - npm run test:coverage:coveralls

@@ -1,43 +1,20 @@
 import { NoParamCallback, PathLike, Stats } from 'fs'
 import { HTMLElement as NodeParserHTMLElement, Node as NodeParserNode } from 'node-html-parser'
 
-import { ComparableVersion } from '../commons/ComparableVersion'
+import { DEFAULT_FULL_CONFIG, DEFAULT_SINGLE_CONFIG, DEFAULT_CONFIG_OPTIONS } from '../commons/constants'
 import { MappedVersion } from '../commons/MappedVersion'
-import { DEFAULT_OPTIONS } from '../config/config'
 import type { IConfigOptions } from '../interfaces/config.interfaces'
 import type { GetChromeDownloadUrlReturn } from '../interfaces/function.interfaces'
 import type { IChromeFullConfig, IExportConfig, IStoreConfig, IChromeSingleConfig } from '../interfaces/interfaces'
 import type { IListStore } from '../interfaces/store.interfaces'
 
 export const createChromeFullConfig = (config?: Partial<IChromeFullConfig>): IChromeFullConfig => ({
-    arch: 'x64',
-    autoUnzip: false,
-    download: true,
-    downloadFolder: null,
-    hideNegativeHits: false,
-    interactive: true,
-    max: new ComparableVersion(10000, 0, 0, 0),
-    min: new ComparableVersion(0, 0, 0, 0),
-    onFail: 'nothing',
-    onlyNewestMajor: false,
-    os: 'linux',
-    results: 10,
-    store: true,
-    single: null,
-    inverse: false,
-    quiet: false,
+    ...DEFAULT_FULL_CONFIG,
     ...config,
 })
 
 export const createChromeSingleConfig = (config?: Partial<IChromeSingleConfig>): IChromeSingleConfig => ({
-    arch: 'x64',
-    os: 'linux',
-    autoUnzip: false,
-    store: true,
-    download: true,
-    downloadFolder: null,
-    single: new ComparableVersion(10, 0, 0, 0),
-    quiet: false,
+    ...DEFAULT_SINGLE_CONFIG,
     ...config,
 })
 
@@ -69,7 +46,7 @@ export const createStore = (store?: Partial<IListStore>): IListStore => ({
 })
 
 export const createChromeOptions = (config?: Partial<IConfigOptions>): IConfigOptions => ({
-    ...DEFAULT_OPTIONS,
+    ...DEFAULT_CONFIG_OPTIONS,
     ...config,
 })
 

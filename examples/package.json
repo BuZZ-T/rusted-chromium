@@ -1,0 +1,21 @@
+{
+  "name": "rusted-chromium-examples",
+  "version": "1.0.0",
+  "description": "Examples for the use of rusted-chromium as API",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "chromium",
+    "TypeScript",
+    "api",
+    "examples"
+  ],
+  "author": "Bastian Gebhardt <buzz-t@buzz-t.eu>",
+  "license": "MIT",
+  "dependencies": {
+    "rusted-chromium": "../"
+  }
+}

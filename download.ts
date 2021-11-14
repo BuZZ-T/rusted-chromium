@@ -4,11 +4,13 @@ import { Extract } from 'unzipper'
 import { promisify } from 'util'
 
 import { fetchChromeZipFile } from './api'
+import { DEFAULT_FULL_CONFIG, DEFAULT_SINGLE_CONFIG } from './commons/constants'
 import { NoChromiumDownloadError } from './errors'
 import type { IChromeConfig } from './interfaces/interfaces'
 import { progress } from './log/progress'
 import { logger } from './log/spinner'
 import { loadStore } from './store/loadStore'
+import { isChromeSingleConfig } from './utils/typeguards'
 import { getChromeDownloadUrl, loadVersions, mapVersions } from './versions'
 
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */
@@ -37,7 +39,30 @@ function registerSigIntHandler(path: string): void {
     })
 }
 
-export async function downloadChromium(config: IChromeConfig): Promise<void> {
+function enrichAdditionalConfig(additionalConfig: Partial<IChromeConfig> = {}): IChromeConfig {
+    if (isChromeSingleConfig(additionalConfig)) {
+        return {
+            ...DEFAULT_SINGLE_CONFIG,
+            ...additionalConfig,
+        }
+    } else {
+        return {
+            ...DEFAULT_FULL_CONFIG,
+            ...additionalConfig,
+        }
+    }
+}
+
+/**
+ * Downloads a chromium zip file based on the given config
+ * @see DEFAULT_FULL_CONFIG
+ * @see DEFAULT_SINGLE_CONFIG
+ * @param additionalConfig Manually set config, which will override the settings in the default config
+ */
+export async function downloadChromium(additionalConfig?: Partial<IChromeConfig>): Promise<void> {
+
+    const config = enrichAdditionalConfig(additionalConfig)
+
     const versions = await loadVersions()
     const store = await loadStore()
 

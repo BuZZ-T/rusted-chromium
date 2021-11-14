@@ -16,12 +16,15 @@
     "test:coverage:coveralls": "jest --group=unit --coverage --coverageReporters=text-lcov | coveralls",
     "test:debug": "node --inspect --inspect-brk node_modules/.bin/jest --group=unit --runInBand",
     "test:int:debug": "node --inspect --inspect-brk node_modules/.bin/jest --group=int --runInBand",
+    "init:examples": "cd examples/ && npm install",
     "prebuild": "npm run clean",
     "build": "tsc -p tsconfig.json",
     "build:silent": "npm run build -- --noEmit",
     "build:inc": "tsc -p tsconfig.json --incremental",
-    "release": "npm run build && npm publish",
-    "release-github": "npm run build && npm publish --registry=https://npm.pkg.github.com/",
+    "build:examples": "cd examples/ && npm run build",
+    "build:examples:silent": "cd examples/ && npm run build -- --noEmit",
+    "release": "npm run clean && npm run build && npm publish",
+    "release-github": "npm run clean && npm run build && npm publish --registry=https://npm.pkg.github.com/",
     "publish:coverage": "npm run test:coverage && npm run test:int:coverage && scp -r coverage rusted.buzz-t.eu:/srv/www/buzz-t.eu/rusted/ && scp -r coverage-int rusted.buzz-t.eu:/srv/www/buzz-t.eu/rusted/"
   },
   "bin": {

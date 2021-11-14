@@ -3,6 +3,7 @@
 import * as program from 'commander'
 
 import { ComparableVersion } from '../commons/ComparableVersion'
+import { DEFAULT_CONFIG_OPTIONS } from '../commons/constants'
 import type { IConfigOptions } from '../interfaces/config.interfaces'
 import type { ConfigWrapper, IChromeSingleConfig } from '../interfaces/interfaces'
 import { logger } from '../log/spinner'
@@ -10,30 +11,14 @@ import { logger } from '../log/spinner'
 import * as packageJson from '../package.json'
 import { mapOS } from '../utils'
 
-export const DEFAULT_OPTIONS: IConfigOptions = {
-    min: '0',
-    max: '10000',
-
-    nonInteractive: false,
-    hideNegativeHits: false,
-    onlyNewestMajor: false,
-    inverse: false,
-    store: true,
-    download: true,
-    increaseOnFail: false,
-    decreaseOnFail: false,
-    unzip: false,
-    quiet: false,
-}
-
 /**
  * Checks the arguments passed to the programm and returns them
  */
 export function readConfig(args: string[], platform: NodeJS.Platform): ConfigWrapper {
     program
         .version(packageJson.version)
-        .option('-m, --min <version>', 'The minimum version', DEFAULT_OPTIONS.min)
-        .option('-M, --max <version>', 'The maximum version. Newest version if not specificied', DEFAULT_OPTIONS.max)
+        .option('-m, --min <version>', 'The minimum version', DEFAULT_CONFIG_OPTIONS.min)
+        .option('-M, --max <version>', 'The maximum version. Newest version if not specificied', DEFAULT_CONFIG_OPTIONS.max)
         .option('-r, --max-results <results>', 'The maximum amount of results to choose from', null)
         .option('-o, --os <os>', 'The operating system for what the binary should be downloaded')
         .option('-a, --arch <arch>', 'The architecture for what the binary should be downloaded. Valid values are "x86" and "x64". Only works when --os is also set')
@@ -41,14 +26,14 @@ export function readConfig(args: string[], platform: NodeJS.Platform): ConfigWra
         .option('-i, --increase-on-fail', 'If a binary does not exist, go to the next higher version number and try again (regarding --min, --max and --max-results), overwrites "--decrease-on-fail" if both set', false)
         .option('-z, --unzip', 'Directly unzip the downloaded zip-file and delete the .zip afterwards', false)
         .option('-n, --non-interactive', 'Don\'t show the selection menu. Automatically select the newest version. Only works when --decrease-on-fail is also set.', false)
-        .option('-t, --no-store', 'Don\'t store negative hits in the local store file.', DEFAULT_OPTIONS.store)
-        .option('-l, --no-download', 'Don\'t download the binary. It also continues with the next version, if --decrease-on-fail or --increase-on-fail is set. Useful to build up the negative hit store', DEFAULT_OPTIONS.download)
+        .option('-t, --no-store', 'Don\'t store negative hits in the local store file.', DEFAULT_CONFIG_OPTIONS.store)
+        .option('-l, --no-download', 'Don\'t download the binary. It also continues with the next version, if --decrease-on-fail or --increase-on-fail is set. Useful to build up the negative hit store', DEFAULT_CONFIG_OPTIONS.download)
         .option('-I, --import-store <url>', 'Imports a localstore.json file either by URL (starting with "http://" or "https://" or by local file')
         .option('-E, --export-store [path]', 'Exports the localstore.json file to stdout')
-        .option('-H, --hide-negative-hits', 'Hide negative hits', DEFAULT_OPTIONS.hideNegativeHits)
+        .option('-H, --hide-negative-hits', 'Hide negative hits', DEFAULT_CONFIG_OPTIONS.hideNegativeHits)
         .option('-f, --folder <folder>', 'Set the download folder', null)
-        .option('-O, --only-newest-major', 'Show only the newest major version in user selection', DEFAULT_OPTIONS.onlyNewestMajor)
-        .option('-v, --inverse', 'Sort the selectable versions ascending', DEFAULT_OPTIONS.inverse)
+        .option('-O, --only-newest-major', 'Show only the newest major version in user selection', DEFAULT_CONFIG_OPTIONS.onlyNewestMajor)
+        .option('-v, --inverse', 'Sort the selectable versions ascending', DEFAULT_CONFIG_OPTIONS.inverse)
         .option('-s, --single <version>', 'Download a specific version in non-interactive mode, even if the file is listed in the localstore.json. Several other flags have no effect.')
         .option('-q, --quiet', 'Suppress any logging output', false)
         .parse(args)

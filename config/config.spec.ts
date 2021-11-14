@@ -8,11 +8,12 @@ import type { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
 import { ComparableVersion } from '../commons/ComparableVersion'
+import { DEFAULT_CONFIG_OPTIONS } from '../commons/constants'
 import type { IChromeConfigWrapper, IStoreConfigWrapper, IExportConfigWrapper } from '../interfaces/interfaces'
 import type { OS } from '../interfaces/os.interfaces'
 import { Spinner, logger } from '../log/spinner'
 import { createChromeFullConfig, createChromeOptions, createImportConfig, createExportConfig, createChromeSingleConfig } from '../test/test.utils'
-import { DEFAULT_OPTIONS, readConfig } from './config'
+import { readConfig } from './config'
 
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */
 const program = require('commander')
@@ -116,7 +117,7 @@ describe('config', () => {
 
             it('should set increase on fail', () => {
                 programMock.opts.mockReturnValue({
-                    ...DEFAULT_OPTIONS,
+                    ...DEFAULT_CONFIG_OPTIONS,
                     increaseOnFail: true,
                 })
     
