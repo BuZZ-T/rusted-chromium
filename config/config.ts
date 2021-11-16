@@ -55,9 +55,6 @@ export function readConfig(args: string[], platform: NodeJS.Platform): ConfigWra
 
     const options = program.opts() as IConfigOptions
 
-    const min = new ComparableVersion(options.min)
-    const max = new ComparableVersion(options.max)
-
     const minIsSet = +options.min > 0
     const maxResultsIsSet = !!options.maxResults
 
@@ -101,7 +98,7 @@ export function readConfig(args: string[], platform: NodeJS.Platform): ConfigWra
             store: options.store,
             download: options.download,
             downloadFolder: options.folder || null,
-            single: options.single,
+            single: new ComparableVersion(options.single),
             quiet: options.quiet,
         }
 
@@ -115,8 +112,8 @@ export function readConfig(args: string[], platform: NodeJS.Platform): ConfigWra
         action: 'loadChrome',
         config: {
             autoUnzip: options.unzip,
-            min,
-            max,
+            min: new ComparableVersion(options.min),
+            max: new ComparableVersion(options.max),
             results: minIsSet && !maxResultsIsSet ? Infinity : (parseInt(options.maxResults as string, 10) || 10),
             os,
             arch,

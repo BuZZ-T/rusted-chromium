@@ -1,12 +1,12 @@
 import type { IOSSettings, OS } from './interfaces/os.interfaces'
-import { createChromeConfig } from './test.utils'
+import { createChromeFullConfig } from './test.utils'
 import { detectOperatingSystem } from './utils'
 
 describe('utils', () => {
 
     describe('detectOperatingSystem', () => {
         it('should return linux 64-bit', () => {
-            const config = createChromeConfig({
+            const config = createChromeFullConfig({
                 os: 'linux',
                 arch: 'x64',
             })
@@ -21,7 +21,7 @@ describe('utils', () => {
         })
 
         it('should return linux 32-bit', () => {
-            const config = createChromeConfig({
+            const config = createChromeFullConfig({
                 os: 'linux',
                 arch: 'x86',
             })
@@ -37,7 +37,7 @@ describe('utils', () => {
         })
 
         it('should return windows 64-bit', () => {
-            const config = createChromeConfig({
+            const config = createChromeFullConfig({
                 os: 'win',
                 arch: 'x64',
             })
@@ -52,7 +52,7 @@ describe('utils', () => {
         })
 
         it('should return windows 32-bit', () => {
-            const config = createChromeConfig({
+            const config = createChromeFullConfig({
                 os: 'win',
                 arch: 'x86',
             })
@@ -67,7 +67,7 @@ describe('utils', () => {
         })
 
         it('should return mac 64-Bit', () => {
-            const config = createChromeConfig({
+            const config = createChromeFullConfig({
                 os: 'mac',
                 arch: 'x64',
             })
@@ -82,7 +82,7 @@ describe('utils', () => {
         })
 
         it('should return mac ARM', () => {
-            const config = createChromeConfig({
+            const config = createChromeFullConfig({
                 os: 'mac',
                 arch: 'arm',
             })
@@ -98,7 +98,7 @@ describe('utils', () => {
         })
 
         it('should throw an error on unknown os received', () => {
-            const config = createChromeConfig({
+            const config = createChromeFullConfig({
                 os: 'foo' as unknown as OS,
             })
             expect(() => {

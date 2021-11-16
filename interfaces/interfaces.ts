@@ -41,7 +41,7 @@ export interface IChromeFullConfig {
 export interface IChromeSingleConfig {
     os: OS
     arch: Arch
-    single: string
+    single: ComparableVersion
     store: boolean
     autoUnzip: boolean
     download: boolean

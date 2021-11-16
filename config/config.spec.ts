@@ -5,7 +5,7 @@ import { ComparableVersion } from '../commons/ComparableVersion'
 import type { IChromeConfigWrapper, IStoreConfigWrapper, IExportConfigWrapper } from '../interfaces/interfaces'
 import type { OS } from '../interfaces/os.interfaces'
 import { Spinner, logger } from '../log/spinner'
-import { createChromeConfig, createChromeOptions, createImportConfig, createExportConfig } from '../test.utils'
+import { createChromeFullConfig, createChromeOptions, createImportConfig, createExportConfig } from '../test.utils'
 import { DEFAULT_OPTIONS, readConfig } from './config'
 
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */
@@ -54,7 +54,7 @@ describe('config', () => {
 
             const expectedConfig: IChromeConfigWrapper = {
                 action: 'loadChrome',
-                config: createChromeConfig({
+                config: createChromeFullConfig({
                     min: new ComparableVersion({
                         branch: 0,
                         major: 20,
@@ -77,7 +77,7 @@ describe('config', () => {
 
             const expectedConfig: IChromeConfigWrapper = {
                 action: 'loadChrome',
-                config: createChromeConfig({
+                config: createChromeFullConfig({
                     max: new ComparableVersion({
                         branch: 1234,
                         major: 30,
@@ -99,7 +99,7 @@ describe('config', () => {
 
             const expectedConfig: IChromeConfigWrapper = {
                 action: 'loadChrome',
-                config: createChromeConfig({
+                config: createChromeFullConfig({
                     onFail: 'decrease',
                 })
             }
@@ -117,7 +117,7 @@ describe('config', () => {
 
             const expectedConfig: IChromeConfigWrapper = {
                 action: 'loadChrome',
-                config: createChromeConfig({
+                config: createChromeFullConfig({
                     onFail: 'increase',
                 })
             }
@@ -134,7 +134,7 @@ describe('config', () => {
 
             const expectedConfig: IChromeConfigWrapper = {
                 action: 'loadChrome',
-                config: createChromeConfig({
+                config: createChromeFullConfig({
                     autoUnzip: true,
                 })
             }
@@ -151,7 +151,7 @@ describe('config', () => {
 
             const expectedConfig: IChromeConfigWrapper = {
                 action: 'loadChrome',
-                config: createChromeConfig({
+                config: createChromeFullConfig({
                     results: 24,
                 })
             }
@@ -168,7 +168,7 @@ describe('config', () => {
 
             const expectedConfig: IChromeConfigWrapper = {
                 action: 'loadChrome',
-                config: createChromeConfig({
+                config: createChromeFullConfig({
                     download: false,
                 })
             }
@@ -185,7 +185,7 @@ describe('config', () => {
 
             const expectedConfig: IChromeConfigWrapper = {
                 action: 'loadChrome',
-                config: createChromeConfig({
+                config: createChromeFullConfig({
                     hideNegativeHits: true,
                 })
             }
@@ -202,7 +202,7 @@ describe('config', () => {
 
             const expectedConfig: IChromeConfigWrapper = {
                 action: 'loadChrome',
-                config: createChromeConfig({
+                config: createChromeFullConfig({
                     interactive: false,
                 })
             }
@@ -223,7 +223,7 @@ describe('config', () => {
 
             const expectedConfig: IChromeConfigWrapper = {
                 action: 'loadChrome',
-                config: createChromeConfig({
+                config: createChromeFullConfig({
                     interactive: false,
                     onFail: 'decrease',
                 })
@@ -288,7 +288,7 @@ describe('config', () => {
 
                 const expectedConfig: IChromeConfigWrapper = {
                     action: 'loadChrome',
-                    config: createChromeConfig({
+                    config: createChromeFullConfig({
                         arch: 'x64'
                     })
                 }
@@ -309,7 +309,7 @@ describe('config', () => {
 
                 const expectedConfig: IChromeConfigWrapper = {
                     action: 'loadChrome',
-                    config: createChromeConfig({
+                    config: createChromeFullConfig({
                         arch: 'x86',
                         os: 'linux',
                     })
@@ -328,7 +328,7 @@ describe('config', () => {
 
                 const expectedConfig: IChromeConfigWrapper = {
                     action: 'loadChrome',
-                    config: createChromeConfig({
+                    config: createChromeFullConfig({
                         os: 'win'
                     })
                 }
@@ -345,7 +345,7 @@ describe('config', () => {
 
                 const expectedConfig: IChromeConfigWrapper = {
                     action: 'loadChrome',
-                    config: createChromeConfig({
+                    config: createChromeFullConfig({
                         os: 'win'
                     })
                 }
@@ -362,7 +362,7 @@ describe('config', () => {
 
                 const expectedConfig: IChromeConfigWrapper = {
                     action: 'loadChrome',
-                    config: createChromeConfig({
+                    config: createChromeFullConfig({
                         os: 'mac'
                     })
                 }
@@ -379,7 +379,7 @@ describe('config', () => {
 
                 const expectedConfig: IChromeConfigWrapper = {
                     action: 'loadChrome',
-                    config: createChromeConfig({
+                    config: createChromeFullConfig({
                         os: 'mac'
                     })
                 }
@@ -398,7 +398,7 @@ describe('config', () => {
 
                 const expectedConfig: IChromeConfigWrapper = {
                     action: 'loadChrome',
-                    config: createChromeConfig({
+                    config: createChromeFullConfig({
                         os: 'linux',
                         arch: 'x86',
                     })

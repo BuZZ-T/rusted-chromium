@@ -6,6 +6,7 @@ import { mocked } from 'ts-jest/utils'
 import * as unzipper from 'unzipper'
 
 import { fetchChromeZipFile } from './api'
+import { ComparableVersion } from './commons/ComparableVersion'
 import { MappedVersion } from './commons/MappedVersion'
 import { downloadChromium } from './download'
 import { NoChromiumDownloadError } from './errors'
@@ -13,7 +14,7 @@ import { progress } from './log/progress'
 import { logger } from './log/spinner'
 import { loadStore } from './store/loadStore'
 import { Store } from './store/Store'
-import { createChromeConfig, createStore, createGetChromeDownloadUrlReturn, MkdirWithOptions, StatsWithoutOptions } from './test.utils'
+import { createChromeFullConfig, createStore, createGetChromeDownloadUrlReturn, MkdirWithOptions, StatsWithoutOptions, createChromeSingleConfig } from './test.utils'
 import { getChromeDownloadUrl, loadVersions, mapVersions } from './versions'
 
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */
@@ -137,7 +138,7 @@ describe('download', () => {
             })
 
             // Act
-            const config = createChromeConfig({
+            const config = createChromeFullConfig({
                 autoUnzip: false,
                 downloadFolder: 'down_folder',
             })
@@ -165,7 +166,7 @@ describe('download', () => {
             existsSyncMock.mockReturnValue(true)
 
             // Act
-            const config = createChromeConfig({
+            const config = createChromeFullConfig({
                 autoUnzip: false,
                 downloadFolder: 'down_folder',
             })
@@ -192,7 +193,7 @@ describe('download', () => {
             fetchChromeZipFileMock.mockResolvedValue(zipFileResource)
 
             // Act
-            const config = createChromeConfig({
+            const config = createChromeFullConfig({
                 autoUnzip: false,
             })
             await downloadChromium(config)
@@ -221,7 +222,7 @@ describe('download', () => {
             fetchChromeZipFileMock.mockResolvedValue(zipFileResource)
 
             // Act
-            const config = createChromeConfig({
+            const config = createChromeFullConfig({
                 autoUnzip: false,
             })
             await downloadChromium(config)
@@ -267,7 +268,7 @@ describe('download', () => {
             fetchChromeZipFileMock.mockResolvedValue(zipFileResource)
 
             // Act
-            const config = createChromeConfig({
+            const config = createChromeFullConfig({
                 autoUnzip: true,
             })
             await downloadChromium(config)
@@ -313,7 +314,7 @@ describe('download', () => {
             fetchChromeZipFileMock.mockResolvedValue(zipFileResource)
 
             // Act
-            const config = createChromeConfig({
+            const config = createChromeFullConfig({
                 autoUnzip: true,
             })
             await downloadChromium(config)
@@ -355,7 +356,7 @@ describe('download', () => {
             getChromeDownloadUrlMock.mockResolvedValue(createGetChromeDownloadUrlReturn())
 
             // Act
-            const config = createChromeConfig({
+            const config = createChromeFullConfig({
                 download: false,
             })
             await downloadChromium(config)
@@ -370,7 +371,7 @@ describe('download', () => {
             }))
 
             // Act
-            const config = createChromeConfig({
+            const config = createChromeFullConfig({
                 download: true,
             })
             await downloadChromium(config)
@@ -384,8 +385,8 @@ describe('download', () => {
             }))
 
             // Act
-            const config = createChromeConfig({
-                single: '40.0.0.1',
+            const config = createChromeSingleConfig({
+                single: new ComparableVersion(40, 0, 0, 1),
                 download: true,
             })
             await expect(() => downloadChromium(config)).rejects.toThrow(new NoChromiumDownloadError())
@@ -409,7 +410,7 @@ describe('download', () => {
             fetchChromeZipFileMock.mockResolvedValue(zipFileResource)
 
             // Act
-            const config = createChromeConfig({
+            const config = createChromeFullConfig({
                 autoUnzip: false,
             })
             await downloadChromium(config)
@@ -446,7 +447,7 @@ describe('download', () => {
             fetchChromeZipFileMock.mockResolvedValue(zipFileResource)
 
             // Act
-            const config = createChromeConfig({
+            const config = createChromeFullConfig({
                 autoUnzip: false,
             })
             await downloadChromium(config)
@@ -483,7 +484,7 @@ describe('download', () => {
             fetchChromeZipFileMock.mockResolvedValue(zipFileResource)
 
             // Act
-            const config = createChromeConfig({
+            const config = createChromeFullConfig({
                 autoUnzip: false,
             })
             await downloadChromium(config)

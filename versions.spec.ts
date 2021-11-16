@@ -12,7 +12,7 @@ import { Spinner, logger } from './log/spinner'
 import { userSelectedVersion } from './select'
 import { Store } from './store/Store'
 import { storeNegativeHit } from './store/storeNegativeHit'
-import { createChromeConfig, createNodeParserHTMLElement, createNodeWithChildren, createStore, createChromeSingleConfig, createChromeFullConfig } from './test.utils'
+import { createNodeParserHTMLElement, createNodeWithChildren, createStore, createChromeSingleConfig, createChromeFullConfig } from './test.utils'
 import { detectOperatingSystem } from './utils'
 import { mapVersions, getChromeDownloadUrl, loadVersions } from './versions'
 
@@ -90,7 +90,7 @@ describe('versions', () => {
         })
 
         it('should return the chrome url for the user selected version', async () => {
-            const config = createChromeConfig({
+            const config = createChromeFullConfig({
                 interactive: true,
                 onFail: 'nothing',
                 download: true,
@@ -116,7 +116,7 @@ describe('versions', () => {
         })
 
         it('should return the chrome url for the automatically selected first mapped version on decrease', async () => {
-            const config = createChromeConfig({
+            const config = createChromeFullConfig({
                 interactive: false,
                 onFail: 'decrease',
                 download: true,
@@ -173,7 +173,7 @@ describe('versions', () => {
         })
 
         it('should break on no version left on --increase-on-fail', async () => {
-            const config = createChromeConfig({
+            const config = createChromeFullConfig({
                 interactive: true,
                 onFail: 'increase',
                 download: true,
@@ -201,7 +201,7 @@ describe('versions', () => {
         })
 
         it('should skip the next available higher version, if it\'s disabled on --increase-on-fail', async () => {
-            const config = createChromeConfig({
+            const config = createChromeFullConfig({
                 interactive: true,
                 onFail: 'increase',
                 download: true,
@@ -232,7 +232,7 @@ describe('versions', () => {
         })
 
         it('should automatically continue with the next available lower version on --decrease-on-fail', async () => {
-            const config = createChromeConfig({
+            const config = createChromeFullConfig({
                 interactive: true,
                 onFail: 'decrease',
                 download: true,
@@ -262,7 +262,7 @@ describe('versions', () => {
         })
 
         it('should request a user selected version twice and return the chrome url on first version disabled', async () => {
-            const config = createChromeConfig({
+            const config = createChromeFullConfig({
                 interactive: true,
                 onFail: 'nothing',
                 download: true,
@@ -289,7 +289,7 @@ describe('versions', () => {
         })
 
         it('should mark a version as disabled and request a user selected version twice on no binary found', async () => {
-            const config = createChromeConfig({
+            const config = createChromeFullConfig({
                 interactive: true,
                 onFail: 'nothing',
                 download: true,
@@ -328,7 +328,7 @@ describe('versions', () => {
         })
 
         it('should skip a already disabled version on --decrease-on-fail when selecting a disabled version', async () => {
-            const config = createChromeConfig({
+            const config = createChromeFullConfig({
                 interactive: true,
                 onFail: 'decrease',
                 download: true,
@@ -365,7 +365,7 @@ describe('versions', () => {
         })
 
         it('should not mark a version as disabled on store: false', async () => {
-            const config = createChromeConfig({
+            const config = createChromeFullConfig({
                 interactive: true,
                 onFail: 'nothing',
                 download: true,
@@ -399,7 +399,7 @@ describe('versions', () => {
         })
 
         it('should return null, if --decrease-on-fail reaces the end of versions on only disabled versions', async () => {
-            const config = createChromeConfig({
+            const config = createChromeFullConfig({
                 interactive: false,
                 onFail: 'decrease',
             })
@@ -420,7 +420,7 @@ describe('versions', () => {
         })
 
         it('should return null, if --decrease-on-fail reaches the end of versions on versions without binary', async () => {
-            const config = createChromeConfig({
+            const config = createChromeFullConfig({
                 interactive: false,
                 onFail: 'decrease',
                 store: false,
@@ -457,7 +457,7 @@ describe('versions', () => {
         })
 
         it('should do nothing if --decrease-on-fail reaches the end of versions on --no-download and all versions with binary', async () => {
-            const config = createChromeConfig({
+            const config = createChromeFullConfig({
                 interactive: false,
                 onFail: 'decrease',
                 store: false,
@@ -493,8 +493,6 @@ describe('versions', () => {
         })
 
         it('should return undefined, is config.single and no binary was found', async () => {
-            const singleVersion = '10.11.12.13'
-
             const mappedSingleVersion = new MappedVersion({
                 major: 10,
                 minor: 11,
@@ -504,7 +502,7 @@ describe('versions', () => {
             })
 
             const config = createChromeSingleConfig({
-                single: singleVersion,
+                single: new ComparableVersion(10, 11, 12, 13),
             })
             const expectedSettings: GetChromeDownloadUrlReturn = {
                 chromeUrl: undefined,
@@ -713,7 +711,7 @@ describe('versions', () => {
 
     describe('mapVersions', () => {
         it('should sort the versions', () => {
-            const config = createChromeConfig()
+            const config = createChromeFullConfig()
 
             const mapped = mapVersions(['10.1.2.3', '20.0.0.0'], config, new Store(createStore()))
 
@@ -726,7 +724,7 @@ describe('versions', () => {
         })
 
         it('should mark versions found in store as disabled', () => {
-            const config = createChromeConfig({
+            const config = createChromeFullConfig({
                 os: 'linux',
                 arch: 'x64',
             })
@@ -759,7 +757,7 @@ describe('versions', () => {
         })
 
         it('should remove disabled versions on hideNegativeHits set in config', () => {
-            const config = createChromeConfig({
+            const config = createChromeFullConfig({
                 hideNegativeHits: true,
                 os: 'linux',
                 arch: 'x64',
@@ -786,7 +784,7 @@ describe('versions', () => {
         })
 
         it('should filter out versions less than config.min', () => {
-            const config = createChromeConfig({
+            const config = createChromeFullConfig({
                 min: new ComparableVersion(30, 0, 0, 0)
             })
 
@@ -813,7 +811,7 @@ describe('versions', () => {
         })
 
         it('should filter out versions greater than config.max', () => {
-            const config = createChromeConfig({
+            const config = createChromeFullConfig({
                 max: new ComparableVersion(30, 0, 0, 0),
             })
 
@@ -847,7 +845,7 @@ describe('versions', () => {
         })
 
         it('should strip the versions based to config.results', () => {
-            const config = createChromeConfig({
+            const config = createChromeFullConfig({
                 results: 3,
             })
 
@@ -881,7 +879,7 @@ describe('versions', () => {
         })
 
         it('should not strip the versions if --only-newest-major is set', () => {
-            const config = createChromeConfig({
+            const config = createChromeFullConfig({
                 onlyNewestMajor: true,
                 results: 3,
             })
@@ -923,10 +921,10 @@ describe('versions', () => {
         })
 
         it('should return the provided version on config.single, even if it\'s marked as disabled in the store', () => {
-            const config = createChromeConfig({
-                single: '10.1.2.3',
+            const config = createChromeSingleConfig({
+                single: new ComparableVersion(10, 1, 2, 3),
                 os: 'linux',
-                arch: 'x64'
+                arch: 'x64',
             })
 
             const mapped = mapVersions(['60.6.7.8', '30.0.0.0', '29.0.2000.4', '10.1.2.4'], config, new Store(createStore({
@@ -950,7 +948,7 @@ describe('versions', () => {
         })
 
         it('should return an ascending list on --inverse', () => {
-            const config = createChromeConfig({
+            const config = createChromeFullConfig({
                 inverse: true,
             })
             const mapped = mapVersions(['60.6.7.8', '30.0.0.0', '29.0.2000.4', '10.1.2.4'], config, new Store(createStore()))
@@ -990,7 +988,7 @@ describe('versions', () => {
         })
 
         it('should first limit and then sort the results on --inverse and --max-results', () => {
-            const config = createChromeConfig({
+            const config = createChromeFullConfig({
                 inverse: true,
                 results: 2,
             })

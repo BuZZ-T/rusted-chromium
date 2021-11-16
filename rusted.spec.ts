@@ -8,7 +8,7 @@ import { logger } from './log/spinner'
 import { rusted } from './rusted'
 import { exportStore } from './store/exportStore'
 import { importAndMergeLocalstore } from './store/importStore'
-import { createChromeConfig, createExportConfig, createImportConfig } from './test.utils'
+import { createChromeFullConfig, createExportConfig, createImportConfig } from './test.utils'
 
 jest.mock('./download')
 jest.mock('./config/config')
@@ -42,7 +42,7 @@ describe('rusted', () => {
 
     it('should download chromium with the given config', async () => {
 
-        const config = createChromeConfig()
+        const config = createChromeFullConfig()
 
         const configWrapper: ConfigWrapper = {
             action: 'loadChrome',
@@ -134,7 +134,7 @@ describe('rusted', () => {
     it('should set the logger to silent on config.quiet', async () => {
         const configWrapper: ConfigWrapper = {
             action: 'loadChrome',
-            config: createChromeConfig({
+            config: createChromeFullConfig({
                 quiet: true,
             }),
         }

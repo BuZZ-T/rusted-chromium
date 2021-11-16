@@ -26,8 +26,12 @@ export class MappedVersion {
     public constructor(input: string, disabled: boolean)
     public constructor(major: number, minor: number, branch: number, patch: number, disabled: boolean)
     public constructor(versionObject: IVersionWithDisabled)
-    public constructor(majorObjectInput: number | string | IVersionWithDisabled, minorDisabled?: number | boolean, branch?: number, patch?: number, disabled?: boolean) {
-        if (isIVersionWithDisabled(majorObjectInput)) {
+    public constructor(comparableVersion: ComparableVersion, disabled: boolean)
+    public constructor(majorObjectInput: number | string | IVersionWithDisabled | ComparableVersion, minorDisabled?: number | boolean, branch?: number, patch?: number, disabled?: boolean) {
+        if (majorObjectInput instanceof ComparableVersion && typeof minorDisabled === 'boolean') {
+            this._comparableVersion = majorObjectInput
+            this._disabled = minorDisabled
+        } else if (isIVersionWithDisabled(majorObjectInput)) {
             this._comparableVersion = new ComparableVersion(majorObjectInput)
             this._disabled = majorObjectInput.disabled
         }
