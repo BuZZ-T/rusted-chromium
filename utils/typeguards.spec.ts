@@ -1,3 +1,9 @@
+/**
+ * Tests download file
+ * 
+ * @group unit/utils/typeguard
+ */
+
 import { isTextFunction, isIVersion, isIVersionWithDisabled } from './typeguards'
 
 describe('typeguards', () => {

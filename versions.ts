@@ -91,7 +91,7 @@ async function continueFetchingChromeUrl(config: IChromeFullConfig, osSetting: O
     return { chromeUrl, selectedVersion }
 }
 
-export async function getChromeUrlForFull(config: IChromeFullConfig, osSettings: OSSetting, mappedVersions: MappedVersion[]): Promise<GetChromeDownloadUrlReturn> {
+async function getChromeUrlForFull(config: IChromeFullConfig, osSettings: OSSetting, mappedVersions: MappedVersion[]): Promise<GetChromeDownloadUrlReturn> {
 
     const isAutoSearch = !config.interactive && config.onFail === 'decrease'
 
@@ -108,11 +108,19 @@ export async function getChromeUrlForFull(config: IChromeFullConfig, osSettings:
     return { chromeUrl, selectedVersion, filenameOS: osSettings.filename }
 }
 
-async function fetchChromeUrlForVersion(config: IChromeConfig, osSettings: IOSSettings, version: MappedVersion): Promise<string | undefined> {
-    if (version.disabled) {
-        throw new Error('TODO')
-    }
+async function getChromeUrlForSingle(config: IChromeSingleConfig, oSSetting: OSSetting, selectedVersion: MappedVersion): Promise<GetChromeDownloadUrlReturn> {
+    const chromeUrl = await fetchChromeUrlForVersion(config, oSSetting, selectedVersion)
 
+    await storeIfNoBinary(config, chromeUrl, selectedVersion)
+
+    return {
+        chromeUrl,
+        filenameOS: oSSetting.filename,
+        selectedVersion,
+    }
+}
+
+async function fetchChromeUrlForVersion(config: IChromeConfig, osSettings: IOSSettings, version: MappedVersion): Promise<string | undefined> {
     const branchPosition = await fetchBranchPosition(version.value)
     logger.start(SEARCH_BINARY)
     const chromeUrl = await fetchChromeUrl(branchPosition, osSettings)
@@ -133,22 +141,6 @@ async function storeIfNoBinary(config: IChromeConfig, chromeUrl: string | undefi
             // TODO: remove await?
             await storeNegativeHit(version.comparable, config.os, config.arch)
         }
-    }
-}
-
-export async function getChromeUrlForSingle(config: IChromeSingleConfig, oSSetting: OSSetting, selectedVersion: MappedVersion): Promise<GetChromeDownloadUrlReturn> {
-    if (selectedVersion.disabled) {
-        throw new Error('TODO')
-    }
-
-    const chromeUrl = await fetchChromeUrlForVersion(config, oSSetting, selectedVersion)
-
-    await storeIfNoBinary(config, chromeUrl, selectedVersion)
-
-    return {
-        chromeUrl,
-        filenameOS: oSSetting.filename,
-        selectedVersion,
     }
 }
 

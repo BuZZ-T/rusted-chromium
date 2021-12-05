@@ -530,6 +530,21 @@ describe('versions', () => {
             expect(fetchChromeUrlMock).toHaveBeenCalledTimes(1)
             expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION, OS_SETTINGS)
         })
+
+        it('should return undefined on auto-search without version', async () => {
+            const config = createChromeFullConfig({
+                interactive: false,
+                onFail: 'decrease',
+            })
+
+            const expectedSettings: GetChromeDownloadUrlReturn = {
+                chromeUrl: undefined,
+                selectedVersion: undefined,
+                filenameOS: FILENAME_OS,
+            }
+
+            expect(await getChromeDownloadUrl(config, [])).toEqual(expectedSettings)
+        })
     })
 
     describe('loadVersions', () => {

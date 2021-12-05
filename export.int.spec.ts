@@ -9,7 +9,7 @@ import { writeFile as fsWriteFile } from 'fs'
 import * as mockFs from 'mock-fs'
 /* eslint-disable-next-line import/no-namespace */
 import * as fetch from 'node-fetch'
-import { join, resolve } from 'path'
+import { join, resolve as pathResolve } from 'path'
 import { PassThrough } from 'stream'
 import type { MaybeMocked } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
@@ -44,8 +44,8 @@ describe('[int] export store', () => {
             'localstore.json': JSON.stringify(createStore()),
 
             // pass some folders to the mock for jest to be able to run
-            'node_modules': mockFs.load(resolve(__dirname, './node_modules')),
-            [`/tmp/${jestFolder}`]: mockFs.load(resolve(`/tmp/${jestFolder}`)),
+            'node_modules': mockFs.load(pathResolve(__dirname, './node_modules')),
+            [`/tmp/${jestFolder}`]: mockFs.load(pathResolve(`/tmp/${jestFolder}`)),
         })
 
         writeFile = promisify(fsWriteFile)

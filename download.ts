@@ -45,8 +45,8 @@ export async function downloadChromium(config: IChromeConfig): Promise<void> {
 
     const { chromeUrl, selectedVersion, filenameOS } = await getChromeDownloadUrl(config, mappedVersions)
 
-    if (chromeUrl && config.download) {
-        const filename = `chrome-${filenameOS}-${config.arch}-${selectedVersion?.value}`
+    if (chromeUrl && selectedVersion && config.download) {
+        const filename = `chrome-${filenameOS}-${config.arch}-${selectedVersion.value}`
         const downloadPath = config.downloadFolder
             ? pathJoin(config.downloadFolder, filename)
             : filename
@@ -83,9 +83,9 @@ export async function downloadChromium(config: IChromeConfig): Promise<void> {
                 Extract({ path: downloadPath })
             )
         } else {
-            const filename = downloadPath + '.zip'
-            const file = createWriteStream(downloadPath + '.zip')
-            registerSigIntHandler(filename)
+            const filenameWithExtension = downloadPath + '.zip'
+            const file = createWriteStream(filenameWithExtension)
+            registerSigIntHandler(filenameWithExtension)
             zipFileResponse.body.pipe(file)
         }
 

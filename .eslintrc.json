@@ -71,6 +71,8 @@
         "@typescript-eslint/no-unused-vars": "error",
         "@typescript-eslint/explicit-module-boundary-types": "error",
         "no-console": "error",
-        "jest/expect-expect": "error"
+        "jest/expect-expect": "error",
+        "no-shadow": "off", // replaced by ts-eslint rule below
+        "@typescript-eslint/no-shadow": "error"
     }
 }

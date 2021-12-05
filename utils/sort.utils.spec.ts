@@ -1,3 +1,9 @@
+/**
+ * Tests download file
+ * 
+ * @group unit/utils/sort
+ */
+
 import { ComparableVersion } from '../commons/ComparableVersion'
 import { MappedVersion } from '../commons/MappedVersion'
 import { Compared } from '../interfaces/enums'
