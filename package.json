@@ -13,7 +13,7 @@
     "test:int": "jest --group=int",
     "test:coverage": "jest --group=unit --coverage",
     "test:int:coverage": "jest --group=int --coverage --coverage-directory=coverage-int",
-    "test:coverage:coveralls": "jest --group=unit --coverage --coverageReporters=text-lcov | coveralls",
+    "test:coverage:coveralls": "jest --group=int --coverage --coverageReporters=text-lcov | coveralls",
     "test:debug": "node --inspect --inspect-brk node_modules/.bin/jest --group=unit --runInBand",
     "test:int:debug": "node --inspect --inspect-brk node_modules/.bin/jest --group=int --runInBand",
     "init:examples": "cd examples/ && npm install",
