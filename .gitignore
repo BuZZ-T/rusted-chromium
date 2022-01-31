@@ -14,3 +14,5 @@ chrome-*.zip
 chrome-*/
 
 localstore.json
+
+tsconfig.tsbuildinfo
