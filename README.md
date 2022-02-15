@@ -67,8 +67,8 @@ npm run build
 | `--max`| `-M` | integer | 10000 | Maximum version which should be selectable.
 | `--min`| `-m` | integer | 0 | Minimum version which should be selectable.
 | `--max-results`| `-r` | integer | 10 | Maximum number of results to select. Directly downloads the binary, if set to 1. **Important:**  `--max-results` is set to `Infinity`, if `--min` is set and `--max-results` is not set, so the default is overridden!
-| `--os`| `-o` | "win"/"linux"/"mac"/"darwin" | The operation system on the current system | Set the operation system of the binary. Valid values are "win", "linux" and "mac"/"darwin".
-| `--arch`| `-a` |  "x86"/"x64" "x86" is ignored for os "mac" | The architecture on the current system | Set the architecture of the binary. The flag is only regarded, if `--os` is present.
+| `--os`| `-o` | "win"/"linux"/"mac"/"darwin" | The operation system on the current system | Set the operation system of the binary.
+| `--arch`| `-a` |  "x86"/"x64" for "win" or "linux.  "x64"/"arm" for "mac" | The architecture on the current system | Set the architecture of the binary. The flag is only regarded, if `--os` is present.
 | `--unzip` | `-z` | - | - | Directly unzip the downloaded zip-file and delete the .zip afterwards
 | `--decrease-on-fail`| `-d` | - | - | Automatically try the next lower version, if the selected version has no binary.
 | `--increase-on-fail`| `-i` | - | - | Automatically try the next higher version, if the selected version has no binary.
@@ -88,7 +88,7 @@ npm run build
 ##### Download a specific version, exit and fail if it does not exist
 ```bash
 # long version
-rusted-chromum --single 70.0.3539.100
+rusted-chromium --single 70.0.3539.100
 # short version
 rusted-chromium -s 70.0.3539.100
 ```
@@ -244,7 +244,7 @@ rusted-chromium -V
 It's possible that for a given combination of
 
 * operating system (windows/linux/mac)
-* architecture (32-bit/64-bit)
+* architecture (x86/x64 for Win/Linux or x64/arm for mac)
 * version (e.g. 63.0.3239.150)
 
 a binary might be not available.
