@@ -21,7 +21,8 @@
     "build:silent": "npm run build -- --noEmit",
     "build:inc": "tsc -p tsconfig.json --incremental",
     "release": "npm run build && npm publish",
-    "release-github": "npm run build && npm publish --registry=https://npm.pkg.github.com/"
+    "release-github": "npm run build && npm publish --registry=https://npm.pkg.github.com/",
+    "publish:coverage": "npm run test:coverage && npm run test:int:coverage && scp -r coverage rusted.buzz-t.eu:/srv/www/buzz-t.eu/rusted/ && scp -r coverage-int rusted.buzz-t.eu:/srv/www/buzz-t.eu/rusted/"
   },
   "bin": {
     "rusted-chromium": "bin/rusted-chromium.js"
