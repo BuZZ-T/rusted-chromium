@@ -2,6 +2,7 @@
 *.orig
 
 coverage/
+coverage-int/
 
 node_modules/
 *.js
