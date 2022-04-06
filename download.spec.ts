@@ -16,8 +16,8 @@ import { ComparableVersion } from './commons/ComparableVersion'
 import { MappedVersion } from './commons/MappedVersion'
 import { downloadChromium } from './download'
 import { NoChromiumDownloadError } from './errors'
+import { Logger, logger } from './log/logger'
 import { progress } from './log/progress'
-import { logger } from './log/spinner'
 import { loadStore } from './store/loadStore'
 import { Store } from './store/Store'
 import { createChromeFullConfig, createStore, createGetChromeDownloadUrlReturn, MkdirWithOptions, StatsWithoutOptions, createChromeSingleConfig } from './test/test.utils'
@@ -36,7 +36,7 @@ jest.mock('unzipper')
 
 jest.mock('./api')
 jest.mock('./log/progress')
-jest.mock('./log/spinner')
+jest.mock('./log/logger')
 jest.mock('./log/printer')
 jest.mock('./store/loadStore')
 jest.mock('./versions')
@@ -53,7 +53,7 @@ describe('download', () => {
 
         let progressConstructorMock: MaybeMocked<typeof Progress>
         let progressMock: MaybeMockedDeep<typeof progress>
-        let loggerMock: MaybeMockedDeep<typeof logger>
+        let loggerMock: MaybeMockedDeep<Logger>
 
         let unzipperMock: MaybeMockedDeep<typeof unzipper>
 

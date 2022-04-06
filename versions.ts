@@ -1,14 +1,15 @@
 import { parse, HTMLElement as NodeParserHTMLElement } from 'node-html-parser'
 
 import { fetchBranchPosition, fetchChromeUrl, fetchChromiumTags } from './api'
-import { SEARCH_BINARY } from './commons/constants'
+import { SEARCH_BINARY } from './commons/loggerTexts'
 import { MappedVersion } from './commons/MappedVersion'
 import { Compared } from './interfaces/enums'
 import type { ContinueFetchingChromeUrlReturn, GetChromeDownloadUrlReturn } from './interfaces/function.interfaces'
 import type { IChromeFullConfig, IChromeSingleConfig, IChromeConfig, Nullable } from './interfaces/interfaces'
 import type { IOSSettings } from './interfaces/os.interfaces'
 import type { OSSetting } from './interfaces/os.interfaces'
-import { logger } from './log/spinner'
+import { logger } from './log/logger'
+import { spinner } from './log/spinner'
 import { userSelectedVersion } from './select'
 import { Store } from './store/Store'
 import { storeNegativeHit } from './store/storeNegativeHit'
@@ -40,7 +41,7 @@ async function continueFetchingChromeUrl(config: IChromeFullConfig, osSetting: O
 
             if (chromeUrl && config.download) {
                 // chrome url found, ending loop
-                logger.success()
+                spinner.success()
                 return { chromeUrl, selectedVersion }
             }
         }
@@ -48,7 +49,7 @@ async function continueFetchingChromeUrl(config: IChromeFullConfig, osSetting: O
         await storeIfNoBinary(config, chromeUrl, selectedVersion)
 
         if (!chromeUrl && !selectedVersion.disabled) {
-            logger.error()
+            spinner.error()
         }
 
         if (chromeUrl && !config.download) {
@@ -122,11 +123,11 @@ async function getChromeUrlForSingle(config: IChromeSingleConfig, oSSetting: OSS
 
 async function fetchChromeUrlForVersion(config: IChromeConfig, osSettings: IOSSettings, version: MappedVersion): Promise<string | undefined> {
     const branchPosition = await fetchBranchPosition(version.value)
-    logger.start(SEARCH_BINARY)
+    spinner.start(SEARCH_BINARY)
     const chromeUrl = await fetchChromeUrl(branchPosition, osSettings)
 
     if (chromeUrl && config.download) {
-        logger.success()
+        spinner.success()
     }
 
     return chromeUrl
@@ -135,7 +136,7 @@ async function fetchChromeUrlForVersion(config: IChromeConfig, osSettings: IOSSe
 
 async function storeIfNoBinary(config: IChromeConfig, chromeUrl: string | undefined, version: MappedVersion): Promise<void> {
     if (!chromeUrl && !version.disabled) {
-        logger.error()
+        spinner.error()
         if (config.store) {
             version.disable()
             // TODO: remove await?

@@ -15,6 +15,7 @@ export abstract class Printer<T extends Printer<T>> {
     protected readonly SUCCESS_FN = (msg: string): string => chalk.green(`✔ ${msg}`)
     protected readonly ERROR_FN = (msg: string): string => chalk.red(`✘ ${msg}`)
     protected readonly WARN_FN = (msg: string): string => chalk.yellow(`! ${msg}`)
+    protected readonly INFO_FN = (msg: string): string => chalk.blue(`➔ ${msg}`)
 
     protected constructor(private stdio: PrinterWriteStream) {
     }
@@ -57,20 +58,6 @@ export abstract class Printer<T extends Printer<T>> {
         }
         this.clearLine()
         return this.self()
-    }
-
-    public info(text: string): T {
-        return this.clearLine()
-            .stop()
-            .write(text)
-            .newline()
-    }
-
-    public warn(text: string): T {
-        return this.clearLine()
-            .stop()
-            .write(this.WARN_FN(text))
-            .newline()
     }
 
     /**

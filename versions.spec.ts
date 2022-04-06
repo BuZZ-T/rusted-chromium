@@ -14,7 +14,8 @@ import { ComparableVersion } from './commons/ComparableVersion'
 import { MappedVersion } from './commons/MappedVersion'
 import type { GetChromeDownloadUrlReturn } from './interfaces/function.interfaces'
 import type { OSSetting } from './interfaces/os.interfaces'
-import { Spinner, logger } from './log/spinner'
+import { logger, Logger } from './log/logger'
+import { Spinner, spinner } from './log/spinner'
 import { userSelectedVersion } from './select'
 import { Store } from './store/Store'
 import { storeNegativeHit } from './store/storeNegativeHit'
@@ -26,6 +27,7 @@ jest.mock('node-html-parser')
 jest.mock('./select')
 jest.mock('./api')
 jest.mock('./log/spinner')
+jest.mock('./log/logger')
 jest.mock('./store/storeNegativeHit')
 
 // don't mock compareComparableVersions to test the sort and filtering based on version.comparableVersion
@@ -36,7 +38,8 @@ jest.mock('./utils', () => ({
 
 describe('versions', () => {
     describe('getChromeDownloadUrl', () => {
-        let loggerMock: MaybeMockedDeep<Spinner>
+        let loggerMock: MaybeMockedDeep<Logger>
+        let spinnerMock: MaybeMockedDeep<Spinner>
         let detectOperatingSystemMock: MaybeMocked<typeof detectOperatingSystem>
         let fetchBranchPositionMock: MaybeMocked<typeof fetchBranchPosition>
         let fetchChromeUrlMock: MaybeMocked<typeof fetchChromeUrl>
@@ -71,11 +74,13 @@ describe('versions', () => {
             versionDisabled3 = new MappedVersion(40, 2, 0, 0, true)
 
             loggerMock = mocked(logger, true)
-            loggerMock.start.mockClear()
             loggerMock.info.mockClear()
-            loggerMock.success.mockClear()
-            loggerMock.error.mockClear()
             loggerMock.warn.mockClear()
+
+            spinnerMock = mocked(spinner, true)
+            spinnerMock.start.mockClear()
+            spinnerMock.success.mockClear()
+            spinnerMock.error.mockClear()
 
             detectOperatingSystemMock = mocked(detectOperatingSystem)
             fetchBranchPositionMock = mocked(fetchBranchPosition)

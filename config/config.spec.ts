@@ -11,7 +11,7 @@ import { ComparableVersion } from '../commons/ComparableVersion'
 import { DEFAULT_CONFIG_OPTIONS } from '../commons/constants'
 import type { IChromeConfigWrapper, IStoreConfigWrapper, IExportConfigWrapper } from '../interfaces/interfaces'
 import type { OS } from '../interfaces/os.interfaces'
-import { Spinner, logger } from '../log/spinner'
+import { Logger, logger } from '../log/logger'
 import { createChromeFullConfig, createChromeOptions, createImportConfig, createExportConfig, createChromeSingleConfig } from '../test/test.utils'
 import { readConfig } from './config'
 
@@ -19,12 +19,12 @@ import { readConfig } from './config'
 const program = require('commander')
 
 jest.mock('commander')
-jest.mock('../log/spinner')
+jest.mock('../log/logger')
 
 describe('config', () => {
 
     let programMock: MaybeMockedDeep<typeof program>
-    let loggerMock: MaybeMockedDeep<Spinner>
+    let loggerMock: MaybeMockedDeep<Logger>
 
     describe('readConfig', () => {
 

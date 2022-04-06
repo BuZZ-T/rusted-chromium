@@ -5,10 +5,11 @@ import { promisify } from 'util'
 
 import { fetchChromeZipFile } from './api'
 import { DEFAULT_FULL_CONFIG, DEFAULT_SINGLE_CONFIG } from './commons/constants'
+import { DOWNLOAD_ZIP, EXTRACT_ZIP } from './commons/loggerTexts'
 import { NoChromiumDownloadError } from './errors'
 import type { IChromeConfig } from './interfaces/interfaces'
+import { logger } from './log/logger'
 import { progress } from './log/progress'
-import { logger } from './log/spinner'
 import { loadStore } from './store/loadStore'
 import { isChromeSingleConfig } from './utils/typeguards'
 import { getChromeDownloadUrl, loadVersions, mapVersions } from './versions'
@@ -87,14 +88,17 @@ export async function downloadChromium(additionalConfig?: Partial<IChromeConfig>
 
         new Progress(zipFileResponse, { throttle: 100 }).on('progress', (p: { progress: number, total: number }) => {
             if (isFirstProgress) {
+
+                const progressConfig = config.autoUnzip ? EXTRACT_ZIP : DOWNLOAD_ZIP
+
                 progress.start({
                     barLength: 40,
                     steps: Math.round(p.total / 1024 / 1024),
                     unit: 'MB',
                     showNumeric: true,
-                    start: 'Downloading binary...',
-                    success: `Successfully downloaded ${config.autoUnzip ? 'and extracted ' : ''}to "${downloadPath}${config.autoUnzip ? '' : '.zip'}"`,
-                    fail: 'Failed to download binary',
+                    start: progressConfig.start,
+                    success: progressConfig.success(downloadPath),
+                    fail: progressConfig.fail,
                 })
                 isFirstProgress = false
             } else {

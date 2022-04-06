@@ -69,6 +69,16 @@ export class Spinner extends Printer<Spinner> {
                 : this.errorText)
             .newline()
     }
+    
+    public update(text: string): Spinner {
+        if (!this.timer) {
+            // no running spinner, can't update
+            return this
+        }
+        
+        return this.clearLine()
+            .write(text)
+    }
 }
 
-export const logger = new Spinner(process.stdout)
+export const spinner = new Spinner(process.stdout)

@@ -6,7 +6,7 @@ import { ComparableVersion } from '../commons/ComparableVersion'
 import { DEFAULT_CONFIG_OPTIONS } from '../commons/constants'
 import type { IConfigOptions } from '../interfaces/config.interfaces'
 import type { ConfigWrapper, IChromeSingleConfig } from '../interfaces/interfaces'
-import { logger } from '../log/spinner'
+import { logger } from '../log/logger'
 /* eslint-disable-next-line import/no-namespace */
 import * as packageJson from '../package.json'
 import { mapOS } from '../utils'

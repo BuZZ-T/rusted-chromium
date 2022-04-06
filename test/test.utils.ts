@@ -1,11 +1,13 @@
 import { NoParamCallback, PathLike, Stats } from 'fs'
 import { HTMLElement as NodeParserHTMLElement, Node as NodeParserNode } from 'node-html-parser'
+import { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 
 import { DEFAULT_FULL_CONFIG, DEFAULT_SINGLE_CONFIG, DEFAULT_CONFIG_OPTIONS } from '../commons/constants'
 import { MappedVersion } from '../commons/MappedVersion'
 import type { IConfigOptions } from '../interfaces/config.interfaces'
 import type { GetChromeDownloadUrlReturn } from '../interfaces/function.interfaces'
 import type { IChromeFullConfig, IExportConfig, IStoreConfig, IChromeSingleConfig } from '../interfaces/interfaces'
+import { PrinterWriteStream } from '../interfaces/printer.interfaces'
 import type { IListStore } from '../interfaces/store.interfaces'
 
 export const createChromeFullConfig = (config?: Partial<IChromeFullConfig>): IChromeFullConfig => ({
@@ -79,3 +81,10 @@ export const createNodeParserHTMLElement = (querySelectorAllMock: jest.Mock<any,
 
     return element
 }
+
+export const createStdioMock = (): MaybeMockedDeep<PrinterWriteStream> => ({
+    write: jest.fn(),
+    clearLine: jest.fn(),
+    cursorTo: jest.fn(),
+    moveCursor: jest.fn(),
+})

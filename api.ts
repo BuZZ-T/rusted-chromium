@@ -1,10 +1,10 @@
 import { Response as NodeFetchResponse } from 'node-fetch'
 
-import { RESOLVE_VERSION } from './commons/constants'
+import { RESOLVE_VERSION } from './commons/loggerTexts'
 import type { IMetadataResponse } from './interfaces/interfaces'
 import type { IOSSettings } from './interfaces/os.interfaces'
 import type { IListStore } from './interfaces/store.interfaces'
-import { logger } from './log/spinner'
+import { spinner } from './log/spinner'
 
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */
 const fetch = require('node-fetch')
@@ -39,7 +39,7 @@ export async function fetchChromiumTags(): Promise<string> {
 }
 
 export async function fetchBranchPosition(version: string): Promise<string> {
-    logger.start(RESOLVE_VERSION)
+    spinner.start(RESOLVE_VERSION)
 
     return fetch(`https://omahaproxy.appspot.com/deps.json?version=${version}`)
         .then(checkStatus)
@@ -47,9 +47,9 @@ export async function fetchBranchPosition(version: string): Promise<string> {
         .then((response: { chromium_base_position?: string }) => response.chromium_base_position)
         .then((resolvedVersion: string | undefined) => {
             if (resolvedVersion) {
-                logger.success()
+                spinner.success()
             } else {
-                logger.error()
+                spinner.error()
             }
             return resolvedVersion
         })

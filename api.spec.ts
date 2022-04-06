@@ -9,7 +9,7 @@ import { mocked } from 'ts-jest/utils'
 
 import { fetchChromiumTags, fetchBranchPosition, fetchChromeUrl, fetchChromeZipFile, fetchLocalStore } from './api'
 import type { IOSSettings } from './interfaces/os.interfaces'
-import { logger, Spinner } from './log/spinner'
+import { spinner, Spinner } from './log/spinner'
 
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */
 const fetch = require('node-fetch')
@@ -25,21 +25,21 @@ jest.mock('./log/progress')
 
 describe('api', () => {
 
-    let loggerMock: MaybeMockedDeep<Spinner>
+    let spinnerMock: MaybeMockedDeep<Spinner>
     let fetchMock: MaybeMocked<typeof fetch>
 
     beforeAll(() => {
         fetchMock = mocked(fetch)
-        loggerMock = mocked(logger, true)
+        spinnerMock = mocked(spinner, true)
     })
 
     beforeEach(() => {
         onMock.mockReset()
         fetchMock.mockClear()
 
-        loggerMock.start.mockClear()
-        loggerMock.success.mockClear()
-        loggerMock.error.mockClear()
+        spinnerMock.start.mockClear()
+        spinnerMock.success.mockClear()
+        spinnerMock.error.mockClear()
     })
 
     describe('fetchLocalStore', () => {
@@ -110,8 +110,8 @@ describe('api', () => {
 
             expect(await fetchBranchPosition('any-version')).toEqual(3)
             expect(fetch).toHaveBeenLastCalledWith('https://omahaproxy.appspot.com/deps.json?version=any-version')
-            expect(loggerMock.success).toHaveBeenCalledTimes(1)
-            expect(loggerMock.error).toHaveBeenCalledTimes(0)
+            expect(spinnerMock.success).toHaveBeenCalledTimes(1)
+            expect(spinnerMock.error).toHaveBeenCalledTimes(0)
 
         })
 
@@ -134,8 +134,8 @@ describe('api', () => {
             })
 
             expect(await fetchBranchPosition('any-version')).toEqual(undefined)
-            expect(loggerMock.error).toHaveBeenCalledTimes(1)
-            expect(loggerMock.success).toHaveBeenCalledTimes(0)
+            expect(spinnerMock.error).toHaveBeenCalledTimes(1)
+            expect(spinnerMock.success).toHaveBeenCalledTimes(0)
         })
     })
 

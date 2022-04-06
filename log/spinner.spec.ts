@@ -10,6 +10,7 @@ import type { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
 import type { PrinterWriteStream } from '../interfaces/printer.interfaces'
+import { createStdioMock } from '../test/test.utils'
 import { Spinner } from './spinner'
 
 jest.mock('chalk', () => ({
@@ -23,12 +24,7 @@ describe('loggerSpinner', () => {
     let stdioMock: MaybeMockedDeep<PrinterWriteStream>
 
     beforeAll(() => {
-        stdioMock = {
-            write: jest.fn(),
-            clearLine: jest.fn(),
-            cursorTo: jest.fn(),
-            moveCursor: jest.fn(),
-        }
+        stdioMock = createStdioMock()
 
         spinner = new Spinner(stdioMock)
     })
@@ -60,8 +56,8 @@ describe('loggerSpinner', () => {
 
             expect(stdioMock.write).toHaveBeenCalledTimes(1)
             expect(stdioMock.write).toHaveBeenCalledWith('⠏ start_text')
-            expect(stdioMock.clearLine).toBeCalledTimes(0)
-            expect(stdioMock.cursorTo).toBeCalledTimes(0)
+            expect(stdioMock.clearLine).toHaveBeenCalledTimes(0)
+            expect(stdioMock.cursorTo).toHaveBeenCalledTimes(0)
         })
 
         it('should write the spinner after one tick', () => {
@@ -80,9 +76,9 @@ describe('loggerSpinner', () => {
                 ['⠏ start_text'],
                 ['⠋ start_text'],
             ])
-            expect(stdioMock.clearLine).toBeCalledTimes(1)
+            expect(stdioMock.clearLine).toHaveBeenCalledTimes(1)
             expect(stdioMock.clearLine).toBeCalledWith(0)
-            expect(stdioMock.cursorTo).toBeCalledTimes(1)
+            expect(stdioMock.cursorTo).toHaveBeenCalledTimes(1)
             expect(stdioMock.cursorTo).toBeCalledWith(0)
         })
 
@@ -149,9 +145,9 @@ describe('loggerSpinner', () => {
                 ['green: ✔ success_text'],
                 ['\n']
             ])
-            expect(stdioMock.clearLine).toBeCalledTimes(1)
+            expect(stdioMock.clearLine).toHaveBeenCalledTimes(1)
             expect(stdioMock.clearLine).toBeCalledWith(0)
-            expect(stdioMock.cursorTo).toBeCalledTimes(1)
+            expect(stdioMock.cursorTo).toHaveBeenCalledTimes(1)
             expect(stdioMock.cursorTo).toBeCalledWith(0)
         })
 
@@ -172,9 +168,9 @@ describe('loggerSpinner', () => {
                 ['green: ✔ success_text (foo)'],
                 ['\n']
             ])
-            expect(stdioMock.clearLine).toBeCalledTimes(1)
+            expect(stdioMock.clearLine).toHaveBeenCalledTimes(1)
             expect(stdioMock.clearLine).toBeCalledWith(0)
-            expect(stdioMock.cursorTo).toBeCalledTimes(1)
+            expect(stdioMock.cursorTo).toHaveBeenCalledTimes(1)
             expect(stdioMock.cursorTo).toBeCalledWith(0)
         })
 
@@ -195,9 +191,9 @@ describe('loggerSpinner', () => {
                 ['green: ✔ success_text'],
                 ['\n']
             ])
-            expect(stdioMock.clearLine).toBeCalledTimes(1)
+            expect(stdioMock.clearLine).toHaveBeenCalledTimes(1)
             expect(stdioMock.clearLine).toBeCalledWith(0)
-            expect(stdioMock.cursorTo).toBeCalledTimes(1)
+            expect(stdioMock.cursorTo).toHaveBeenCalledTimes(1)
             expect(stdioMock.cursorTo).toBeCalledWith(0)
         })
 
@@ -218,9 +214,9 @@ describe('loggerSpinner', () => {
                 ['green: ✔ success_text ()'],
                 ['\n']
             ])
-            expect(stdioMock.clearLine).toBeCalledTimes(1)
+            expect(stdioMock.clearLine).toHaveBeenCalledTimes(1)
             expect(stdioMock.clearLine).toBeCalledWith(0)
-            expect(stdioMock.cursorTo).toBeCalledTimes(1)
+            expect(stdioMock.cursorTo).toHaveBeenCalledTimes(1)
             expect(stdioMock.cursorTo).toBeCalledWith(0)
         })
     })
@@ -243,9 +239,9 @@ describe('loggerSpinner', () => {
                 ['red: ✘ fail_text'],
                 ['\n']
             ])
-            expect(stdioMock.clearLine).toBeCalledTimes(1)
+            expect(stdioMock.clearLine).toHaveBeenCalledTimes(1)
             expect(stdioMock.clearLine).toBeCalledWith(0)
-            expect(stdioMock.cursorTo).toBeCalledTimes(1)
+            expect(stdioMock.cursorTo).toHaveBeenCalledTimes(1)
             expect(stdioMock.cursorTo).toBeCalledWith(0)
         })
 
@@ -266,9 +262,9 @@ describe('loggerSpinner', () => {
                 ['red: ✘ fail_text (foo)'],
                 ['\n']
             ])
-            expect(stdioMock.clearLine).toBeCalledTimes(1)
+            expect(stdioMock.clearLine).toHaveBeenCalledTimes(1)
             expect(stdioMock.clearLine).toBeCalledWith(0)
-            expect(stdioMock.cursorTo).toBeCalledTimes(1)
+            expect(stdioMock.cursorTo).toHaveBeenCalledTimes(1)
             expect(stdioMock.cursorTo).toBeCalledWith(0)
         })
 
@@ -289,9 +285,9 @@ describe('loggerSpinner', () => {
                 ['red: ✘ fail_text'],
                 ['\n']
             ])
-            expect(stdioMock.clearLine).toBeCalledTimes(1)
+            expect(stdioMock.clearLine).toHaveBeenCalledTimes(1)
             expect(stdioMock.clearLine).toBeCalledWith(0)
-            expect(stdioMock.cursorTo).toBeCalledTimes(1)
+            expect(stdioMock.cursorTo).toHaveBeenCalledTimes(1)
             expect(stdioMock.cursorTo).toBeCalledWith(0)
         })
 
@@ -312,9 +308,63 @@ describe('loggerSpinner', () => {
                 ['red: ✘ fail_text ()'],
                 ['\n']
             ])
-            expect(stdioMock.clearLine).toBeCalledTimes(1)
+            expect(stdioMock.clearLine).toHaveBeenCalledTimes(1)
             expect(stdioMock.clearLine).toBeCalledWith(0)
-            expect(stdioMock.cursorTo).toBeCalledTimes(1)
+            expect(stdioMock.cursorTo).toHaveBeenCalledTimes(1)
+            expect(stdioMock.cursorTo).toBeCalledWith(0)
+        })
+    })
+
+    describe('update', () => {
+        it('should do nothing on not running spinner', () => {
+            spinner.update('update-text')
+
+            expect(stdioMock.write).toHaveBeenCalledTimes(0)
+            expect(stdioMock.clearLine).toHaveBeenCalledTimes(0)
+            expect(stdioMock.cursorTo).toHaveBeenCalledTimes(0)
+        })
+
+        it('should update the text on running spinner', () => {
+            spinner.start({
+                start: 'start_text',
+                fail: 'fail_text',
+                success: 'success_text',
+            })
+
+            expect(stdioMock.write).toHaveBeenCalledTimes(1)
+
+            spinner.update('update-text')
+
+            expect(stdioMock.write).toHaveBeenCalledTimes(2)
+            expect(stdioMock.write.mock.calls).toEqual([
+                ['⠏ start_text'],
+                ['update-text'],
+            ])
+            expect(stdioMock.clearLine).toHaveBeenCalledTimes(1)
+            expect(stdioMock.clearLine).toBeCalledWith(0)
+            expect(stdioMock.cursorTo).toHaveBeenCalledTimes(1)
+            expect(stdioMock.cursorTo).toBeCalledWith(0)
+        })
+
+        it('should update the text on running spinner again', () => {
+            spinner.start({
+                start: 'start_text',
+                fail: 'fail_text',
+                success: 'success_text',
+            })
+
+            spinner.update('update-text')
+            spinner.update('update-text2')
+
+            // expect(stdioMock.write).toHaveBeenCalledTimes(3)
+            expect(stdioMock.write.mock.calls).toEqual([
+                ['⠏ start_text'],
+                ['update-text'],
+                ['update-text2'],
+            ])
+            expect(stdioMock.clearLine).toHaveBeenCalledTimes(2)
+            expect(stdioMock.clearLine).toBeCalledWith(0)
+            expect(stdioMock.cursorTo).toHaveBeenCalledTimes(2)
             expect(stdioMock.cursorTo).toBeCalledWith(0)
         })
     })

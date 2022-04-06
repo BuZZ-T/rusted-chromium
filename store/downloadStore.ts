@@ -1,7 +1,7 @@
 import { fetchLocalStore } from '../api'
-import { LOAD_CONFIG } from '../commons/constants'
+import { LOAD_CONFIG } from '../commons/loggerTexts'
 import type { IStoreConfig } from '../interfaces/interfaces'
-import { logger } from '../log/spinner'
+import { spinner } from '../log/spinner'
 import { Store } from './Store'
 
 /**
@@ -19,17 +19,17 @@ export async function downloadStore(config: IStoreConfig, destinationPath: strin
         url = `${url}${destinationPath}`
     }
 
-    logger.start(LOAD_CONFIG)
+    spinner.start(LOAD_CONFIG)
 
     return fetchLocalStore(url).then(storeFile => {
-        logger.success()
+        spinner.success()
         return new Store(storeFile)
     }).catch(err => {
-        logger.error()
+        spinner.error()
         if (err?.message && err.path) {
-            logger.error(`${err.message}: ${err.path}`)
+            spinner.error(`${err.message}: ${err.path}`)
         } else {
-            logger.error(err)
+            spinner.error(err)
         }
 
         throw err

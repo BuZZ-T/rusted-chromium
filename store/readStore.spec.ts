@@ -8,7 +8,7 @@ import { readFile, existsSync } from 'fs'
 import type { MaybeMockedDeep, MaybeMocked } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
-import { Spinner, logger } from '../log/spinner'
+import { Spinner, spinner } from '../log/spinner'
 import { createStore, ReadFileWithOptions, createImportConfig } from '../test/test.utils'
 import { readStoreFile } from './readStore'
 import { Store } from './Store'
@@ -22,22 +22,22 @@ describe('readStore', () => {
 
         let readFileMock: MaybeMocked<ReadFileWithOptions>
         let existsSyncMock: MaybeMocked<typeof existsSync>
-        let loggerMock: MaybeMockedDeep<Spinner>
+        let spinnerMock: MaybeMockedDeep<Spinner>
 
         beforeAll(() => {
             readFileMock = mocked(readFile as ReadFileWithOptions)
             existsSyncMock = mocked(existsSync)
 
-            loggerMock = mocked(logger, true)
+            spinnerMock = mocked(spinner, true)
         })
 
         beforeEach(() => {
             readFileMock.mockReset()
             existsSyncMock.mockClear()
 
-            loggerMock.start.mockClear()
-            loggerMock.success.mockClear()
-            loggerMock.error.mockClear()
+            spinnerMock.start.mockClear()
+            spinnerMock.success.mockClear()
+            spinnerMock.error.mockClear()
         })
 
         it('should return the parsed store received from the file system', async () => {
@@ -73,9 +73,9 @@ describe('readStore', () => {
             })
 
             await expect(() => readStoreFile(createImportConfig({ url }))).rejects.toThrow(new Error('Unexpected end of JSON input'))
-            expect(loggerMock.success).toHaveBeenCalledTimes(0)
-            expect(loggerMock.error).toHaveBeenCalledTimes(1)
-            expect(loggerMock.error).toHaveBeenCalledWith('Unable to parse JSON file')
+            expect(spinnerMock.success).toHaveBeenCalledTimes(0)
+            expect(spinnerMock.error).toHaveBeenCalledTimes(1)
+            expect(spinnerMock.error).toHaveBeenCalledWith('Unable to parse JSON file')
         })
 
         it('should throw an error on error in promisify callback', async () => {
@@ -88,8 +88,8 @@ describe('readStore', () => {
 
             await expect(() => readStoreFile(createImportConfig({ url }))).rejects.toEqual(new Error('callback error'))
 
-            expect(loggerMock.error).toHaveBeenCalledTimes(1)
-            expect(loggerMock.error).toHaveBeenCalledWith('Error: callback error')
+            expect(spinnerMock.error).toHaveBeenCalledTimes(1)
+            expect(spinnerMock.error).toHaveBeenCalledWith('Error: callback error')
         })
 
         it('should rethrow a received error', async () => {
@@ -103,8 +103,8 @@ describe('readStore', () => {
             await expect(() => readStoreFile(createImportConfig({ url }))).rejects.toThrow(new Error('callback error'))
 
             expect(readFileMock).toHaveBeenCalledTimes(1)
-            expect(loggerMock.error).toHaveBeenCalledTimes(1)
-            expect(loggerMock.error).toHaveBeenCalledWith('Error: callback error')
+            expect(spinnerMock.error).toHaveBeenCalledTimes(1)
+            expect(spinnerMock.error).toHaveBeenCalledWith('Error: callback error')
         })
 
         it('should rethrow a received SyntaxError', async () => {
@@ -118,8 +118,8 @@ describe('readStore', () => {
 
             await expect(() => readStoreFile(createImportConfig({ url }))).rejects.toThrow(new Error('Unexpected token } in JSON at position 30'))
             expect(readFileMock).toHaveBeenCalledTimes(1)
-            expect(loggerMock.error).toHaveBeenCalledTimes(1)
-            expect(loggerMock.error).toHaveBeenCalledWith('Unable to parse JSON file')
+            expect(spinnerMock.error).toHaveBeenCalledTimes(1)
+            expect(spinnerMock.error).toHaveBeenCalledWith('Unable to parse JSON file')
         })
 
         it('should rethrow anything else', async () => {
@@ -133,8 +133,8 @@ describe('readStore', () => {
             await expect(() => readStoreFile(createImportConfig({ url }))).rejects.toEqual('something happened')
 
             expect(readFileMock).toHaveBeenCalledTimes(1)
-            expect(loggerMock.error).toHaveBeenCalledTimes(1)
-            expect(loggerMock.error).toHaveBeenCalledWith('something happened')
+            expect(spinnerMock.error).toHaveBeenCalledTimes(1)
+            expect(spinnerMock.error).toHaveBeenCalledWith('something happened')
         })
     })
 })

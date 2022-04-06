@@ -98,6 +98,13 @@ export interface LoggerConfig {
     fail: string | TextFunction
 }
 
+// TODO: name
+export interface LogConfig<Success extends string | TextFunction, Fail extends string | TextFunction> extends LoggerConfig {
+    start: string
+    success: Success
+    fail: Fail
+}
+
 export interface ProgressConfig {
     start: string
     success: string

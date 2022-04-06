@@ -7,6 +7,7 @@
 import type { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 
 import type { PrinterWriteStream } from '../interfaces/printer.interfaces'
+import { createStdioMock } from '../test/test.utils'
 import { Printer } from './printer'
 
 jest.mock('chalk', () => ({
@@ -45,42 +46,9 @@ describe('Printer', () => {
     let testPrinter: TestPrinter
 
     beforeEach(() => {
-        stdioMock = {
-            write: jest.fn(),
-            clearLine: jest.fn(),
-            cursorTo: jest.fn(),
-            moveCursor: jest.fn(),
-        }
+        stdioMock = createStdioMock()
 
         testPrinter = new TestPrinter(stdioMock)
-    })
-
-    it('should log info', () => {
-        testPrinter.info('foo')
-
-        expect(stdioMock.write).toBeCalledTimes(2)
-        expect(stdioMock.write.mock.calls).toEqual([
-            ['foo'],
-            ['\n'],
-        ])
-        expect(stdioMock.clearLine).toBeCalledTimes(1)
-        expect(stdioMock.clearLine).toBeCalledWith(0)
-        expect(stdioMock.cursorTo).toBeCalledTimes(1)
-        expect(stdioMock.cursorTo).toBeCalledWith(0)
-    })
-
-    it('should log warn', () => {
-        testPrinter.warn('foo')
-
-        expect(stdioMock.write).toBeCalledTimes(2)
-        expect(stdioMock.write.mock.calls).toEqual([
-            ['yellow: ! foo'],
-            ['\n'],
-        ])
-        expect(stdioMock.clearLine).toBeCalledTimes(1)
-        expect(stdioMock.clearLine).toBeCalledWith(0)
-        expect(stdioMock.cursorTo).toBeCalledTimes(1)
-        expect(stdioMock.cursorTo).toBeCalledWith(0)
     })
 
     it('shouldn\'t write something on write without text', () => {
@@ -95,8 +63,6 @@ describe('Printer', () => {
         testPrinter.silent()
 
         testPrinter.write_('some text')
-        testPrinter.info('some info')
-        testPrinter.warn('some warn')
         testPrinter.deleteLastLine_()
 
         expect(stdioMock.clearLine).toHaveBeenCalledTimes(0)

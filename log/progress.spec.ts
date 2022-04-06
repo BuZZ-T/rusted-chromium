@@ -7,12 +7,13 @@
 import type { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 
 import type { PrinterWriteStream } from '../interfaces/printer.interfaces'
+import { createStdioMock } from '../test/test.utils'
 import { ProgressBar } from './progress'
 
 jest.mock('chalk', () => ({
     bgWhite: (text: string) => `bgWhite: ${text}`,
-    grey: (text: string) => `grey: ${text}`,
     green: (text: string) => `green: ${text}`,
+    grey: (text: string) => `grey: ${text}`,
     red: (text: string) => `red: ${text}`,
 }))
 
@@ -22,12 +23,7 @@ describe('ProgressBar', () => {
     let progress: ProgressBar
 
     beforeEach(() => {
-        stdioMock = {
-            write: jest.fn(),
-            clearLine: jest.fn(),
-            cursorTo: jest.fn(),
-            moveCursor: jest.fn(),
-        }
+        stdioMock = createStdioMock()
 
         progress = new ProgressBar(stdioMock as unknown as NodeJS.WriteStream)
     })

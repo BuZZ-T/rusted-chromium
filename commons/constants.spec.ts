@@ -5,7 +5,7 @@
  */
 
 import type { TextFunction } from '../interfaces/interfaces'
-import { READ_CONFIG } from './constants'
+import { READ_CONFIG } from './loggerTexts'
 
 describe('constants', () => {
 
