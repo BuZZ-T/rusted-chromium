@@ -338,7 +338,7 @@ describe('loggerSpinner', () => {
             expect(stdioMock.write).toHaveBeenCalledTimes(2)
             expect(stdioMock.write.mock.calls).toEqual([
                 ['⠏ start_text'],
-                ['update-text'],
+                ['⠏ update-text'],
             ])
             expect(stdioMock.clearLine).toHaveBeenCalledTimes(1)
             expect(stdioMock.clearLine).toBeCalledWith(0)
@@ -359,8 +359,8 @@ describe('loggerSpinner', () => {
             // expect(stdioMock.write).toHaveBeenCalledTimes(3)
             expect(stdioMock.write.mock.calls).toEqual([
                 ['⠏ start_text'],
-                ['update-text'],
-                ['update-text2'],
+                ['⠏ update-text'],
+                ['⠏ update-text2'],
             ])
             expect(stdioMock.clearLine).toHaveBeenCalledTimes(2)
             expect(stdioMock.clearLine).toBeCalledWith(0)

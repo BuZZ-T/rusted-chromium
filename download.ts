@@ -1,6 +1,5 @@
 import { existsSync, mkdir as fsMkdir, createWriteStream, stat as fsStat, rmdir as fsRmdir, unlink as fsUnlink } from 'fs'
 import { join as pathJoin } from 'path'
-import { Extract } from 'unzipper'
 import { promisify } from 'util'
 
 import { fetchChromeZipFile } from './api'
@@ -10,12 +9,15 @@ import { NoChromiumDownloadError } from './errors'
 import type { IChromeConfig } from './interfaces/interfaces'
 import { logger } from './log/logger'
 import { progress } from './log/progress'
+import { spinner } from './log/spinner'
 import { loadStore } from './store/loadStore'
 import { isChromeSingleConfig } from './utils/typeguards'
 import { getChromeDownloadUrl, loadVersions, mapVersions } from './versions'
 
-/* eslint-disable-next-line @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/no-var-requires */
+const extract = require('extract-zip')
 const Progress = require('node-fetch-progress')
+/* eslint-enable @typescript-eslint/no-var-requires */
 
 const mkdir = promisify(fsMkdir)
 const stat = promisify(fsStat)
@@ -54,6 +56,21 @@ function enrichAdditionalConfig(additionalConfig: Partial<IChromeConfig> = {}): 
     }
 }
 
+async function extractZip(downloadPath: string) {
+    try {
+        spinner.start(EXTRACT_ZIP)
+        await extract(`${downloadPath}.zip`, { dir: pathJoin(__dirname, downloadPath), onEntry: function(file: {fileName: string}) {
+            spinner.update(`Extracting: ${file.fileName}`)
+        } })
+        spinner.success(downloadPath)
+        unlink(`${downloadPath}.zip`).catch(err => {
+            logger.error(`Error removing zip file after extracting: ${err.toString()}`)
+        })
+    } catch (err) {
+        spinner.error((err as Error).toString())
+    }
+}
+
 /**
  * Downloads a chromium zip file based on the given config
  * @see DEFAULT_FULL_CONFIG
@@ -88,17 +105,14 @@ export async function downloadChromium(additionalConfig?: Partial<IChromeConfig>
 
         new Progress(zipFileResponse, { throttle: 100 }).on('progress', (p: { progress: number, total: number }) => {
             if (isFirstProgress) {
-
-                const progressConfig = config.autoUnzip ? EXTRACT_ZIP : DOWNLOAD_ZIP
-
                 progress.start({
                     barLength: 40,
                     steps: Math.round(p.total / 1024 / 1024),
                     unit: 'MB',
                     showNumeric: true,
-                    start: progressConfig.start,
-                    success: progressConfig.success(downloadPath),
-                    fail: progressConfig.fail,
+                    start: DOWNLOAD_ZIP.start,
+                    success: DOWNLOAD_ZIP.success(downloadPath),
+                    fail: DOWNLOAD_ZIP.fail,
                 })
                 isFirstProgress = false
             } else {
@@ -106,24 +120,16 @@ export async function downloadChromium(additionalConfig?: Partial<IChromeConfig>
             }
         })
 
-        if (config.autoUnzip) {
-            registerSigIntHandler(downloadPath)
-            zipFileResponse.body.pipe(
-                Extract({ path: downloadPath })
-            )
-        } else {
-            const filenameWithExtension = downloadPath + '.zip'
-            const file = createWriteStream(filenameWithExtension)
-            registerSigIntHandler(filenameWithExtension)
-            zipFileResponse.body.pipe(file)
-        }
+        const filenameWithExtension = downloadPath + '.zip'
+        const file = createWriteStream(filenameWithExtension)
+        registerSigIntHandler(filenameWithExtension)
+        zipFileResponse.body.pipe(file)
 
         return new Promise((resolve, reject) => {
-            zipFileResponse.body.on('finish', () => {
-                resolve()
-            })
-
-            zipFileResponse.body.on('end', () => {
+            zipFileResponse.body.on('end', async () => {
+                if (config.autoUnzip) {
+                    await extractZip(downloadPath)
+                }
                 resolve()
             })
 

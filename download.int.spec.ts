@@ -9,7 +9,7 @@ import { existsSync, readFile as fsReadFile, writeFile as fsWriteFile, unlink as
 import * as mockFs from 'mock-fs'
 /* eslint-disable-next-line import/no-namespace */
 import * as fetch from 'node-fetch'
-import { join, resolve } from 'path'
+import { join as pathJoin, resolve } from 'path'
 import { MaybeMocked } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 import { promisify } from 'util'
@@ -29,9 +29,13 @@ jest.mock('prompts')
 
 describe('[int] download chromium', () => {
 
-    const chromeZip10 = join(__dirname, 'chrome-linux-x64-10.0.0.0.zip')
-    const chromeZip20 = join(__dirname, 'chrome-linux-x64-20.0.0.0.zip')
-    const localStoreFile = join(__dirname, 'localstore.json')
+    // https://stackoverflow.com/questions/2438800/what-is-the-smallest-legal-zip-jar-file
+    const minimalValidZipfile = new Uint8Array([80, 75, 5, 6].concat(Array.from({length: 18}).map(() => 0)))
+    
+    const chromeZip10 = pathJoin(__dirname, 'chrome-linux-x64-10.0.0.0.zip')
+    const chromeZip20 = pathJoin(__dirname, 'chrome-linux-x64-20.0.0.0.zip')
+    const chromeFolder20 = pathJoin(__dirname, 'chrome-linux-x64-20.0.0.0')
+    const localStoreFile = pathJoin(__dirname, 'localstore.json')
 
     let promptsMock: MaybeMocked<typeof prompts>
     let nodeFetchMock: MaybeMocked<typeof fetch>
@@ -137,6 +141,56 @@ describe('[int] download chromium', () => {
         await rustedPromise
 
         expect(existsSync(chromeZip20)).toBe(true)
+
+        expect(promptsMock).toHaveBeenCalledTimes(1)
+        expect(promptsMock).toHaveBeenCalledWith({
+            choices: [
+                new MappedVersion({
+                    major: 20,
+                    minor: 0,
+                    branch: 0,
+                    patch: 0,
+                    disabled: false,
+                }),
+                new MappedVersion({
+                    major: 10,
+                    minor: 0,
+                    branch: 0,
+                    patch: 0,
+                    disabled: false,
+                }),
+            ],
+            hint: 'for linux x64',
+            message: 'Select a version',
+            name: 'version',
+            type: 'select',
+            warn: 'This version seems to not have a binary',
+        })
+    })
+
+    it('should select, download and extract a version', async () => {
+        mockNodeFetch(nodeFetchMock, {
+            params: {
+                tags: ['10.0.0.0', '20.0.0.0']
+            },
+            config: {
+                chromeZip: {
+                    contentLength: minimalValidZipfile.length,
+                }
+            }
+        })
+        promptsMock.mockReturnValue({ version: '20.0.0.0' })
+
+        const rustedPromise = rusted(['/some/path/to/node', '/some/path/to/rusted-chromium', '--unzip'], 'linux')
+
+        chromeZipStream.push(minimalValidZipfile)
+        chromeZipStream.end()
+
+        await rustedPromise
+
+        expect(existsSync(chromeFolder20)).toBe(true)
+        expect(existsSync(chromeZip10)).toBe(false)
+        expect(existsSync(chromeZip20)).toBe(false)
 
         expect(promptsMock).toHaveBeenCalledTimes(1)
         expect(promptsMock).toHaveBeenCalledWith({

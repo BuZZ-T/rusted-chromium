@@ -1,4 +1,4 @@
-import type { LoggerConfig, TextFunction } from '../interfaces/interfaces'
+import type { AnyLoggerConfig, TextFunction } from '../interfaces/interfaces'
 import type { PrinterWriteStream } from '../interfaces/printer.interfaces'
 import { isTextFunction } from '../utils/typeguards'
 import { Printer } from './printer'
@@ -7,13 +7,23 @@ export class Spinner extends Printer<Spinner> {
 
     private readonly SPINNER_STATES = '⠏⠋⠙⠹⠸⠼⠴⠦⠧⠇'
 
-    private startText: string | undefined
+    private runningText: string | undefined
     private successText: string | undefined | TextFunction
     private errorText: string | undefined | TextFunction
     private timer: ReturnType<typeof setTimeout> | null = null
+    private count = 0
 
     public constructor(stdio: PrinterWriteStream) {
         super(stdio)
+    }
+
+    private increaseCount(): void {
+        this.count = (this.count + 1) % (this.SPINNER_STATES.length - 1)
+    }
+
+    private writeLine(): Spinner {
+        return this.clearLine()
+            .write(`${this.SPINNER_STATES[this.count]} ${this.runningText}`)
     }
 
     protected self(): Spinner {
@@ -28,9 +38,9 @@ export class Spinner extends Printer<Spinner> {
         return this
     }
 
-    public start(loggingConfig: LoggerConfig): Spinner {
+    public start(loggingConfig: AnyLoggerConfig): Spinner {
         const { start, success, fail } = loggingConfig
-        this.startText = start
+        this.runningText = start
         this.successText = isTextFunction(success)
             ? (text: string) => this.SUCCESS_FN(success(text))
             : this.SUCCESS_FN(success)
@@ -39,15 +49,14 @@ export class Spinner extends Printer<Spinner> {
             : this.ERROR_FN(fail)
 
         this.stop()
-        let count = 0
+        this.count = 0
         this.timer = setInterval(() => {
-            this.clearLine()
-
-            count = (count + 1) % (this.SPINNER_STATES.length - 1)
-            this.write(`${this.SPINNER_STATES[count]} ${this.startText}`)
+            this.increaseCount()
+            
+            this.writeLine()
         }, 100)
 
-        this.write(`${this.SPINNER_STATES[0]} ${this.startText}`)
+        this.write(`${this.SPINNER_STATES[0]} ${this.runningText}`)
 
         return this
     }
@@ -71,13 +80,13 @@ export class Spinner extends Printer<Spinner> {
     }
     
     public update(text: string): Spinner {
-        if (!this.timer) {
-            // no running spinner, can't update
-            return this
+        if (this.timer) {
+            // only update with running spinner
+            this.runningText = text
+            return this.writeLine()
         }
         
-        return this.clearLine()
-            .write(text)
+        return this
     }
 }
 

@@ -92,18 +92,15 @@ export interface IMetadataResponse {
     items: IMetadata[]
 }
 
-export interface LoggerConfig {
-    start: string
-    success: string | TextFunction
-    fail: string | TextFunction
-}
-
-// TODO: name
-export interface LogConfig<Success extends string | TextFunction, Fail extends string | TextFunction> extends LoggerConfig {
+export interface LoggerConfig<Success extends string | TextFunction, Fail extends string | TextFunction> {
     start: string
     success: Success
     fail: Fail
 }
+
+export type StringLoggerConfig = LoggerConfig<string, string> 
+
+export type AnyLoggerConfig = LoggerConfig<string | TextFunction, string | TextFunction>
 
 export interface ProgressConfig {
     start: string
