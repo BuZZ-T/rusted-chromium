@@ -154,6 +154,7 @@ describe('download', () => {
         })
 
         it('should fetch the zip and create the dest folder', async () => {
+            mapVersionsMock.mockReturnValue([new MappedVersion(10, 0, 0, 1, false)])
             getChromeDownloadUrlMock.mockResolvedValue(createGetChromeDownloadUrlReturn())
 
             fetchChromeZipFileMock.mockResolvedValue(zipFileResource)
@@ -181,6 +182,36 @@ describe('download', () => {
     
             expect(fetchChromeZipFileMock).toHaveBeenCalledTimes(1)
             expect(fetchChromeZipFileMock).toHaveBeenCalledWith('chromeUrl')
+
+            expect(getChromeDownloadUrlMock).toHaveBeenCalledTimes(1)
+            expect(getChromeDownloadUrlMock).toHaveBeenCalledWith({
+                arch: 'x64',
+                autoUnzip: false,
+                download: true,
+                downloadFolder: 'down_folder',
+                hideNegativeHits: false,
+                interactive: true,
+                inverse: false,
+                max: new ComparableVersion({
+                    major: 10000,
+                    minor: 0,
+                    branch: 0,
+                    patch: 0,
+                }),
+                min: new ComparableVersion({
+                    branch: 0,
+                    major: 0,
+                    minor: 0,
+                    patch: 0,
+                }),
+                onFail: 'nothing',
+                onlyNewestMajor: false,
+                os: 'linux',
+                quiet: false,
+                results: 10,
+                single: null,
+                store: true,
+            }, [new MappedVersion(10, 0, 0, 1, false)])
         })
 
         it('should fetch the zip and create the dest folder on finish', async () => {
@@ -232,6 +263,76 @@ describe('download', () => {
 
             expect(existsSyncMock).toHaveBeenCalledTimes(1)
             expect(existsSyncMock).toHaveBeenCalledWith('down_folder')
+
+            expect(progressConstructorMock).toHaveBeenCalledTimes(1)
+            expect(progressConstructorMock).toHaveBeenCalledWith(zipFileResource, { throttle: 100 })
+
+            expect(progressMock.start).toHaveBeenCalledTimes(0)
+            expect(progressMock.fraction).toHaveBeenCalledTimes(0)
+
+            expect(fetchChromeZipFileMock).toHaveBeenCalledTimes(1)
+            expect(fetchChromeZipFileMock).toHaveBeenCalledWith('chromeUrl')
+        })
+
+        it('should fetch the zip with defaults', async () => {
+            mapVersionsMock.mockReturnValue([new MappedVersion(10, 0, 0, 2, false)])
+            getChromeDownloadUrlMock.mockResolvedValue(createGetChromeDownloadUrlReturn())
+
+            fetchChromeZipFileMock.mockResolvedValue(zipFileResource)
+
+            // Act
+            await downloadChromium.withDefaults()
+
+            expect(progressConstructorMock).toHaveBeenCalledTimes(1)
+            expect(progressConstructorMock).toHaveBeenCalledWith(zipFileResource, { throttle: 100 })
+
+            expect(progressMock.start).toHaveBeenCalledTimes(0)
+            expect(progressMock.fraction).toHaveBeenCalledTimes(0)
+
+            expect(fetchChromeZipFileMock).toHaveBeenCalledTimes(1)
+            expect(fetchChromeZipFileMock).toHaveBeenCalledWith('chromeUrl')
+
+            expect(getChromeDownloadUrlMock).toHaveBeenCalledTimes(1)
+            expect(getChromeDownloadUrlMock).toHaveBeenCalledWith({
+                arch: 'x64',
+                autoUnzip: false,
+                download: true,
+                downloadFolder: null,
+                hideNegativeHits: false,
+                interactive: true,
+                inverse: false,
+                max: new ComparableVersion({
+                    major: 10000,
+                    minor: 0,
+                    branch: 0,
+                    patch: 0,
+                }),
+                min: new ComparableVersion({
+                    branch: 0,
+                    major: 0,
+                    minor: 0,
+                    patch: 0,
+                }),
+                onFail: 'nothing',
+                onlyNewestMajor: false,
+                os: 'linux',
+                quiet: false,
+                results: 10,
+                single: null,
+                store: true,
+            }, [new MappedVersion(10, 0, 0, 2, false)])
+            
+        })
+
+        it('should fetch the zip with defaults for single', async () => {
+            getChromeDownloadUrlMock.mockResolvedValue(createGetChromeDownloadUrlReturn())
+
+            fetchChromeZipFileMock.mockResolvedValue(zipFileResource)
+
+            // Act
+            await downloadChromium.withDefaults({
+                single: new ComparableVersion(10, 0, 0, 0),
+            })
 
             expect(progressConstructorMock).toHaveBeenCalledTimes(1)
             expect(progressConstructorMock).toHaveBeenCalledWith(zipFileResource, { throttle: 100 })

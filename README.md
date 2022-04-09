@@ -284,6 +284,8 @@ E.g.:
 
 ## Use as API
 
+rusted-chromium can be used as API as well. See more examples [here](https://github.com/BuZZ-T/rusted-chromium/blob/main/examples/README.md).
+
 ### Import store
 
 To import a store file, use `importAndMergeStore`:
@@ -302,32 +304,42 @@ To download a chromium version, use `downloadChromium`:
 import { ComparableVersion, downloadChromium } from 'rusted-chromium';
 
 downloadChromium({
-    min: new ComparableVersion(0, 0, 0, 0),
-    max: new ComparableVersion(1000, 0, 0, 0),
-    results: 10,
-    os: 'linux',
     arch: 'x64',
-    onFail: 'nothing',
     autoUnzip: false,
-    interactive: false,
-    store: true,
     download: true,
-    hideNegativeHits: boolean
-    downloadFolder: null,
-    onlyNewestMajor: false
-    single: null,
+    hideNegativeHits: false,
+    interactive: true,
     inverse: false,
-});
+    max: new ComparableVersion(95, 0, 0, 0),
+    min: new ComparableVersion(0,0,0,0),
+    onFail: 'nothing',
+    onlyNewestMajor: false,
+    os: 'linux',
+    quiet: false,
+    store: true,
+    results: 10,
+    downloadFolder: null,
+    single: null,
+})
 ```
 
-### Download a specific version of chromium
+### Directly pass CLI flags
+If you want to directly pass `process.argv` and extend or restrict the available flags, directly import `rusted`:
+```ts
+import { rusted } from 'rusted-chromium'
+
+rusted(process.argv, 'linux')
+
+```
+
+### Use defaults and override specific settings
 
 This is probably the most useful version in a CI envionment. This requires less config options, as many of them are not regarded when using `single`.
 
 ```ts
 import { downloadChromium } from 'rusted-chromium';
 
-downloadChromium({
+downloadChromium.withDefaults({
     arch: 'x64',
     single: "10.0.0.0",
     os: 'linux',
@@ -337,13 +349,7 @@ downloadChromium({
 });
 ```
 
-### Directly pass CLI flags
-If you want to directly pass `process.argv` and extend or restrict the available flags, directly import `rusted`:
-```ts
-import { rusted } from 'rusted-chromium';
-
-rusted(process.argv);
-```
+**See more examples to use the API [here](https://github.com/BuZZ-T/rusted-chromium/blob/main/examples/README.md).**
 
 ## FAQ
 

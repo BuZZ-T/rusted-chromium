@@ -16,5 +16,5 @@ export function isIVersionWithDisabled(value: unknown): value is IVersionWithDis
 }
 
 export function isChromeSingleConfig(value: Partial<IChromeConfig>): value is Partial<IChromeSingleConfig> {
-    return value.single !== null
+    return value.single !== null && value.single !== undefined
 }

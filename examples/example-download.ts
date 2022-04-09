@@ -1,6 +1,6 @@
 import { downloadChromium } from 'rusted-chromium'
 
-downloadChromium({
+downloadChromium.withDefaults({
     arch: 'x64',
     os: 'linux',
 })

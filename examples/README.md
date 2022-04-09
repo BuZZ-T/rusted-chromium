@@ -59,14 +59,15 @@ downloadChromium({
 
 Downloads a specific version (98.0.4707.2) for Linux 64-Bit.
 
-```
+```ts
 import { ComparableVersion, downloadChromium } from 'rusted-chromium'
 
-downloadChromium({
+downloadChromium.withDefaults({
     single: new ComparableVersion(98, 0, 4707, 2),
     os: 'linux',
     arch: 'x64',
 })
+
 ```
 
 ### example-download.ts
@@ -74,10 +75,11 @@ Opens the cli prompt with the default configuration, only setting os and arch.
 ```ts
 import { downloadChromium } from 'rusted-chromium'
 
-downloadChromium({
+downloadChromium.withDefaults({
     arch: 'x64',
     os: 'linux',
 })
+
 ```
 
 ### example-download-default-config.ts
@@ -85,7 +87,8 @@ Opens the cli prompt with the default configuration.
 ```ts
 import { downloadChromium } from 'rusted-chromium'
 
-downloadChromium()
+downloadChromium.withDefaults()
+
 ```
 
 ### example-export.ts
@@ -107,4 +110,12 @@ importAndMergeLocalstore({
     quiet: false,
     url: 'https://rusted.buzz-t.eu/localstore.json'
 })
+```
+
+### example-pass-cli-flags.ts
+Directly pass the cli flags to `rusted-chromium` and it interpret it. 
+```ts
+import { rusted } from 'rusted-chromium'
+
+rusted(process.argv, 'linux')
 ```

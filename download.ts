@@ -77,9 +77,7 @@ async function extractZip(downloadPath: string) {
  * @see DEFAULT_SINGLE_CONFIG
  * @param additionalConfig Manually set config, which will override the settings in the default config
  */
-export async function downloadChromium(additionalConfig?: Partial<IChromeConfig>): Promise<void> {
-
-    const config = enrichAdditionalConfig(additionalConfig)
+async function downloadForConfig(config: IChromeConfig): Promise<void> {
 
     const versions = await loadVersions()
     const store = await loadStore()
@@ -143,3 +141,21 @@ export async function downloadChromium(additionalConfig?: Partial<IChromeConfig>
         throw new NoChromiumDownloadError()
     }
 }
+
+/**
+ * Downlodas a chromium zip file with default config, which can be partially overridden 
+ * @param config IChromeConfig to override the default config. May omit fields and can be ommited entirely
+ * @returns 
+ */
+const withDefaults = (config: Partial<IChromeConfig> = {}) => downloadForConfig(enrichAdditionalConfig(config))
+
+/**
+ * Downloads a chromium zip file based on the given config
+ * @see DEFAULT_FULL_CONFIG
+ * @see DEFAULT_SINGLE_CONFIG
+ * @param additionalConfig Manually set config, which will override the settings in the default config
+ */
+export const downloadChromium = Object.assign(
+    downloadForConfig,
+    { withDefaults }
+)

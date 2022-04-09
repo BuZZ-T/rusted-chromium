@@ -4,7 +4,8 @@
  * @group unit/utils/typeguard
  */
 
-import { isTextFunction, isIVersion, isIVersionWithDisabled } from './typeguards'
+import { ComparableVersion } from '../commons/ComparableVersion'
+import { isTextFunction, isIVersion, isIVersionWithDisabled, isChromeSingleConfig } from './typeguards'
 
 describe('typeguards', () => {
 
@@ -137,6 +138,27 @@ describe('typeguards', () => {
                 minor: 11,
                 branch: 12,
                 disabled: false,
+            })).toBe(false)
+        })
+    })
+
+    describe('isChromeSingleConfig', () => {
+        it('should correctly identify an IChromeSingleConfig', () => {
+            expect(isChromeSingleConfig({
+                single: new ComparableVersion(1,2,3,4),
+            })).toBe(true)
+        })
+
+        it('should return false on single === null', () => {
+            expect(isChromeSingleConfig({
+                hideNegativeHits: true,
+                single: null,
+            })).toBe(false)
+        })
+
+        it('should return false on single === undefined', () => {
+            expect(isChromeSingleConfig({
+                inverse: false,
             })).toBe(false)
         })
     })
