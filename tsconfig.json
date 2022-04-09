@@ -12,7 +12,8 @@
         "noImplicitAny": true,
         "resolveJsonModule": true,
         "noImplicitReturns": true,
-        "forceConsistentCasingInFileNames": true
+        "forceConsistentCasingInFileNames": true,
+        "declaration": true
     },
     "include": [
         "**.ts"

@@ -7,6 +7,7 @@ coverage-int/
 node_modules/
 *.js
 *.js.map
+*.d.ts
 
 # Downloaded binaries
 chrome-*.zip

@@ -1,3 +1,8 @@
 *.ts
+!*.d.ts
+
 localstore.json
 test/
+examples/
+coverage/
+coverage-int/
