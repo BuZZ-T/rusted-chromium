@@ -354,6 +354,32 @@ downloadChromium.withDefaults({
 });
 ```
 
+### Use the fluent API
+
+The fluent API can be accessed by using `.with`.
+
+```ts
+import { downloadChromium } from 'rusted-chromium'
+
+downloadChromium.with
+    .arch('x64')
+    .os('linux')
+    .interactive()
+    .start()
+```
+
+For the single mode (in normal config `single: <version>`), use `.withSingle`:
+
+```ts
+downloadChromium.withSingle
+	.download()
+	.autoUnzip()
+	.single('10.11.12.13')
+	.start()
+```
+
+Be aware that `.start()` is only available, after `single(...)` has been used.
+
 **See more examples to use the API [here](https://github.com/BuZZ-T/rusted-chromium/blob/main/examples/README.md).**
 
 ## FAQ

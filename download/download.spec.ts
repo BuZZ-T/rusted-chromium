@@ -9,18 +9,18 @@ import { Response as NodeFetchResponse } from 'node-fetch'
 import type { MaybeMocked, MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
-import { fetchChromeZipFile } from './api'
-import { ComparableVersion } from './commons/ComparableVersion'
-import { MappedVersion } from './commons/MappedVersion'
+import { fetchChromeZipFile } from '../api'
+import { ComparableVersion } from '../commons/ComparableVersion'
+import { MappedVersion } from '../commons/MappedVersion'
+import { NoChromiumDownloadError } from '../errors'
+import { Logger, logger, DebugMode } from '../log/logger'
+import { progress, ProgressBar } from '../log/progress'
+import { spinner, Spinner } from '../log/spinner'
+import { loadStore } from '../store/loadStore'
+import { Store } from '../store/Store'
+import { createChromeFullConfig, createStore, createGetChromeDownloadUrlReturn, MkdirWithOptions, StatsWithoutOptions, createChromeSingleConfig } from '../test/test.utils'
+import { getChromeDownloadUrl, loadVersions, mapVersions } from '../versions'
 import { downloadChromium } from './download'
-import { NoChromiumDownloadError } from './errors'
-import { Logger, logger, DebugMode } from './log/logger'
-import { progress, ProgressBar } from './log/progress'
-import { spinner, Spinner } from './log/spinner'
-import { loadStore } from './store/loadStore'
-import { Store } from './store/Store'
-import { createChromeFullConfig, createStore, createGetChromeDownloadUrlReturn, MkdirWithOptions, StatsWithoutOptions, createChromeSingleConfig } from './test/test.utils'
-import { getChromeDownloadUrl, loadVersions, mapVersions } from './versions'
 
 /* eslint-disable @typescript-eslint/no-var-requires */
 const extract = require('extract-zip')
@@ -33,13 +33,13 @@ jest.mock('fs')
 jest.mock('node-fetch-progress')
 jest.mock('extract-zip')
 
-jest.mock('./api')
-jest.mock('./log/progress')
-jest.mock('./log/spinner')
-jest.mock('./log/logger')
-jest.mock('./log/printer')
-jest.mock('./store/loadStore')
-jest.mock('./versions')
+jest.mock('../api')
+jest.mock('../log/progress')
+jest.mock('../log/spinner')
+jest.mock('../log/logger')
+jest.mock('../log/printer')
+jest.mock('../store/loadStore')
+jest.mock('../versions')
 
 describe('download', () => {
     describe('downloadChromium', () => {

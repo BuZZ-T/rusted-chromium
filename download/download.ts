@@ -2,17 +2,19 @@ import { existsSync, mkdir as fsMkdir, createWriteStream, stat as fsStat, rmdir 
 import { join as pathJoin } from 'path'
 import { promisify } from 'util'
 
-import { fetchChromeZipFile } from './api'
-import { DEFAULT_FULL_CONFIG, DEFAULT_SINGLE_CONFIG } from './commons/constants'
-import { DOWNLOAD_ZIP, EXTRACT_ZIP } from './commons/loggerTexts'
-import { NoChromiumDownloadError } from './errors'
-import type { DownloadReportEntry, IChromeConfig } from './interfaces/interfaces'
-import { DebugMode, logger } from './log/logger'
-import { progress } from './log/progress'
-import { spinner } from './log/spinner'
-import { loadStore } from './store/loadStore'
-import { isChromeSingleConfig } from './utils/typeguards'
-import { getChromeDownloadUrl, loadVersions, mapVersions } from './versions'
+import { fetchChromeZipFile } from '../api'
+import { DEFAULT_FULL_CONFIG, DEFAULT_SINGLE_CONFIG } from '../commons/constants'
+import { DOWNLOAD_ZIP, EXTRACT_ZIP } from '../commons/loggerTexts'
+import { NoChromiumDownloadError } from '../errors'
+import type { DownloadReportEntry, IChromeConfig } from '../interfaces/interfaces'
+import { DebugMode, logger } from '../log/logger'
+import { progress } from '../log/progress'
+import { spinner } from '../log/spinner'
+import { loadStore } from '../store/loadStore'
+import { isChromeSingleConfig } from '../utils/typeguards'
+import { getChromeDownloadUrl, loadVersions, mapVersions } from '../versions'
+import { FluentDownload } from './download-fluent'
+import { FluentDownloadSingleIncomplete } from './download-fluent-single'
 
 /* eslint-disable @typescript-eslint/no-var-requires */
 const extract = require('extract-zip')
@@ -149,20 +151,27 @@ async function downloadForConfig(config: IChromeConfig): Promise<DownloadReportE
     return report
 }
 
-/**
- * Downlodas a chromium zip file with default config, which can be partially overridden 
- * @param config IChromeConfig to override the default config. May omit fields and can be ommited entirely
- * @returns 
- */
-const withDefaults = (config: Partial<IChromeConfig> = {}) => downloadForConfig(enrichAdditionalConfig(config))
+const fluent = new FluentDownload()
+const fluentSingle = new FluentDownloadSingleIncomplete()
 
 /**
  * Downloads a chromium zip file based on the given config
- * @see DEFAULT_FULL_CONFIG
- * @see DEFAULT_SINGLE_CONFIG
- * @param additionalConfig Manually set config, which will override the settings in the default config
  */
+
 export const downloadChromium = Object.assign(
     downloadForConfig,
-    { withDefaults }
+    { 
+        /**
+         * Allows to setup the configuration for downloading rusted-chromium via a fluent interface.
+         * If a value is not set, it defaults to "false".
+         * Complete the configuration and start executing with ".start()"
+         */
+        with: fluent,
+        withSingle: fluentSingle,
+        /**
+         * Downloads a chromium zip file with default config, which can be partially overridden 
+         * @param config IChromeConfig to override the default config. May omit fields and can be ommited entirely
+         */
+        withDefaults: (config: Partial<IChromeConfig> = {}) => downloadForConfig(enrichAdditionalConfig(config)),
+    }
 )

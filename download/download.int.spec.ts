@@ -14,12 +14,12 @@ import { MaybeMocked } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 import { promisify } from 'util'
 
-import { MappedVersion } from './commons/MappedVersion'
-import type { IListStore } from './interfaces/store.interfaces'
-import { rusted } from './rusted'
-import { mockNodeFetch, chromeZipStream, branchPositionResponse, getJestTmpFolder } from './test/int.utils'
-import { createStore } from './test/test.utils'
-import { popArray } from './utils'
+import { MappedVersion } from '../commons/MappedVersion'
+import type { IListStore } from '../interfaces/store.interfaces'
+import { rusted } from '../rusted'
+import { mockNodeFetch, chromeZipStream, branchPositionResponse, getJestTmpFolder, minimalValidZipfile } from '../test/int.utils'
+import { createStore } from '../test/test.utils'
+import { popArray } from '../utils'
 
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */
 const prompts = require('prompts')
@@ -28,14 +28,11 @@ jest.mock('node-fetch', () => jest.fn())
 jest.mock('prompts')
 
 describe('[int] download chromium', () => {
-
-    // https://stackoverflow.com/questions/2438800/what-is-the-smallest-legal-zip-jar-file
-    const minimalValidZipfile = new Uint8Array([80, 75, 5, 6].concat(Array.from({length: 18}).map(() => 0)))
-    
-    const chromeZip10 = pathJoin(__dirname, 'chrome-linux-x64-10.0.0.0.zip')
-    const chromeZip20 = pathJoin(__dirname, 'chrome-linux-x64-20.0.0.0.zip')
+    const chromeZip10 = pathJoin(__dirname, '../', 'chrome-linux-x64-10.0.0.0.zip')
+    const chromeZip20 = pathJoin(__dirname, '../', 'chrome-linux-x64-20.0.0.0.zip')
+    // TODO: why no "../" here?
     const chromeFolder20 = pathJoin(__dirname, 'chrome-linux-x64-20.0.0.0')
-    const localStoreFile = pathJoin(__dirname, 'localstore.json')
+    const localStoreFile = pathJoin(__dirname, '../', 'localstore.json')
 
     let promptsMock: MaybeMocked<typeof prompts>
     let nodeFetchMock: MaybeMocked<typeof fetch>
@@ -45,15 +42,14 @@ describe('[int] download chromium', () => {
     let unlink: typeof fsUnlink.__promisify__
 
     beforeAll(async () => {
-
         promptsMock = mocked(prompts)
 
         const jestFolder = await getJestTmpFolder()
         mockFs({
-            'localstore.json': JSON.stringify(createStore()),
+            '../localstore.json': JSON.stringify(createStore()),
 
             // pass some folders to the mock for jest to be able to run
-            'node_modules': mockFs.load(resolve(__dirname, './node_modules')),
+            './node_modules': mockFs.load(resolve(__dirname, '../node_modules')),
             [`/tmp/${jestFolder}`]: mockFs.load(resolve(`/tmp/${jestFolder}`)),
         })
 

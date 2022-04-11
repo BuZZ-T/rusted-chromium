@@ -184,3 +184,6 @@ export async function getJestTmpFolder(): Promise<string | undefined> {
     const files = await readdir('/tmp', { encoding: 'utf-8' })
     return files.find(file => file.startsWith('jest_'))
 }
+
+// https://stackoverflow.com/questions/2438800/what-is-the-smallest-legal-zip-jar-file
+export const minimalValidZipfile = new Uint8Array([80, 75, 5, 6].concat(Array.from({length: 18}).map(() => 0)))

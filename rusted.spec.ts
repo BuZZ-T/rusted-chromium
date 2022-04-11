@@ -8,7 +8,7 @@ import type { MaybeMocked, MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
 import { readConfig } from './config/config'
-import { downloadChromium } from './download'
+import { downloadChromium } from './download/download'
 import type { ConfigWrapper } from './interfaces/interfaces'
 import { logger, Logger } from './log/logger'
 import { progress, ProgressBar } from './log/progress'
@@ -18,7 +18,7 @@ import { exportStore } from './store/exportStore'
 import { importAndMergeLocalstore } from './store/importStore'
 import { createChromeFullConfig, createExportConfig, createImportConfig } from './test/test.utils'
 
-jest.mock('./download')
+jest.mock('./download/download')
 jest.mock('./config/config')
 jest.mock('./log/logger')
 jest.mock('./log/spinner')

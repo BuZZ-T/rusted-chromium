@@ -1,5 +1,5 @@
 import { readConfig } from './config/config'
-import { downloadChromium } from './download'
+import { downloadChromium } from './download/download'
 import type { IChromeConfig, IStoreConfig, IExportConfig } from './interfaces/interfaces'
 import { logger } from './log/logger'
 import { progress } from './log/progress'
