@@ -5,7 +5,9 @@ import { SEARCH_BINARY } from './commons/loggerTexts'
 import { MappedVersion } from './commons/MappedVersion'
 import { Compared } from './interfaces/enums'
 import type { ContinueFetchingChromeUrlReturn, GetChromeDownloadUrlReturn } from './interfaces/function.interfaces'
-import type { IChromeFullConfig, IChromeSingleConfig, IChromeConfig, Nullable } from './interfaces/interfaces'
+import { ContinueFetchingChromeUrlParams } from './interfaces/function.interfaces'
+import type { IChromeFullConfig, IChromeSingleConfig, IChromeConfig } from './interfaces/interfaces'
+import { DownloadReportEntry } from './interfaces/interfaces'
 import type { IOSSettings } from './interfaces/os.interfaces'
 import type { OSSetting } from './interfaces/os.interfaces'
 import { logger } from './log/logger'
@@ -26,9 +28,15 @@ export async function getChromeDownloadUrl(config: IChromeConfig, mappedVersions
     }
 }
 
-async function continueFetchingChromeUrl(config: IChromeFullConfig, osSetting: OSSetting, selectedVersion: Nullable<MappedVersion>, mappedVersions: MappedVersion[]): Promise<ContinueFetchingChromeUrlReturn> {
+async function continueFetchingChromeUrl({
+    config,
+    mappedVersions,
+    osSetting,
+    version: selectedVersion,
+}: ContinueFetchingChromeUrlParams): Promise<ContinueFetchingChromeUrlReturn> {
 
     let chromeUrl: string | undefined
+    const report: DownloadReportEntry[] = []
 
     do {
         if (!selectedVersion) {
@@ -39,11 +47,23 @@ async function continueFetchingChromeUrl(config: IChromeFullConfig, osSetting: O
         if (!selectedVersion.disabled) {
             chromeUrl = await fetchChromeUrlForVersion(config, osSetting, selectedVersion)
 
+            report.push({
+                binaryExists: !!chromeUrl,
+                download: config.download,
+                version: selectedVersion,
+            })
+
             if (chromeUrl && config.download) {
                 // chrome url found, ending loop
                 spinner.success()
-                return { chromeUrl, selectedVersion }
+                return { chromeUrl, report, selectedVersion }
             }
+        } else {
+            report.push({
+                binaryExists: false,
+                download: config.download,
+                version: selectedVersion,
+            })
         }
 
         await storeIfNoBinary(config, chromeUrl, selectedVersion)
@@ -67,7 +87,7 @@ async function continueFetchingChromeUrl(config: IChromeFullConfig, osSetting: O
                         logger.info(`Continue with next higher version "${selectedVersion.value}"`)
                     }
                 } else {
-                    return { chromeUrl: undefined, selectedVersion: undefined }
+                    return { chromeUrl: undefined, report, selectedVersion: undefined }
                 }
                 break
             }
@@ -79,7 +99,7 @@ async function continueFetchingChromeUrl(config: IChromeFullConfig, osSetting: O
                         logger.info(`Continue with next lower version "${selectedVersion.value}"`)
                     }
                 } else {
-                    return { chromeUrl: undefined, selectedVersion: undefined }
+                    return { chromeUrl: undefined, report, selectedVersion: undefined }
                 }
                 break
             }
@@ -89,10 +109,10 @@ async function continueFetchingChromeUrl(config: IChromeFullConfig, osSetting: O
         }
     } while (!chromeUrl || !config.download)
 
-    return { chromeUrl, selectedVersion }
+    return { chromeUrl, report, selectedVersion }
 }
 
-async function getChromeUrlForFull(config: IChromeFullConfig, osSettings: OSSetting, mappedVersions: MappedVersion[]): Promise<GetChromeDownloadUrlReturn> {
+async function getChromeUrlForFull(config: IChromeFullConfig, osSetting: OSSetting, mappedVersions: MappedVersion[]): Promise<GetChromeDownloadUrlReturn> {
 
     const isAutoSearch = !config.interactive && config.onFail === 'decrease'
 
@@ -104,9 +124,9 @@ async function getChromeUrlForFull(config: IChromeFullConfig, osSettings: OSSett
         logger.info(`Auto-searching with version ${version.value}`)
     }
 
-    const { chromeUrl, selectedVersion } = await continueFetchingChromeUrl(config, osSettings, version, mappedVersions)
+    const { chromeUrl, report, selectedVersion } = await continueFetchingChromeUrl({config, osSetting, version, mappedVersions})
 
-    return { chromeUrl, selectedVersion, filenameOS: osSettings.filename }
+    return { chromeUrl, selectedVersion, filenameOS: osSetting.filename, report }
 }
 
 async function getChromeUrlForSingle(config: IChromeSingleConfig, oSSetting: OSSetting, selectedVersion: MappedVersion): Promise<GetChromeDownloadUrlReturn> {
@@ -114,9 +134,18 @@ async function getChromeUrlForSingle(config: IChromeSingleConfig, oSSetting: OSS
 
     await storeIfNoBinary(config, chromeUrl, selectedVersion)
 
+    const report: DownloadReportEntry[] = [
+        {
+            binaryExists: !!chromeUrl,
+            download: config.download,
+            version: selectedVersion,
+        }
+    ]
+
     return {
         chromeUrl,
         filenameOS: oSSetting.filename,
+        report,
         selectedVersion,
     }
 }

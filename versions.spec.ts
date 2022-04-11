@@ -109,8 +109,15 @@ describe('versions', () => {
 
             const expectedSettings: GetChromeDownloadUrlReturn = {
                 chromeUrl: CHROME_URL,
-                selectedVersion: version1,
                 filenameOS: FILENAME_OS,
+                report: [
+                    {
+                        binaryExists: true,
+                        download: true,
+                        version: version1,
+                    },
+                ],
+                selectedVersion: version1,
             }
 
             expect(await getChromeDownloadUrl(config, [version1, version2])).toEqual(expectedSettings)
@@ -134,8 +141,15 @@ describe('versions', () => {
             })
             const expectedSettings: GetChromeDownloadUrlReturn = {
                 chromeUrl: CHROME_URL,
-                selectedVersion: version1,
                 filenameOS: FILENAME_OS,
+                report: [
+                    {
+                        binaryExists: true,
+                        download: true,
+                        version: version1,
+                    },
+                ],
+                selectedVersion: version1,
             }
 
             expect(await getChromeDownloadUrl(config, [version1, version2])).toEqual(expectedSettings)
@@ -160,8 +174,20 @@ describe('versions', () => {
             })
             const expectedSettings: GetChromeDownloadUrlReturn = {
                 chromeUrl: CHROME_URL,
-                selectedVersion: version1,
                 filenameOS: FILENAME_OS,
+                report: [
+                    {
+                        binaryExists: false,
+                        download: true,
+                        version: versionDisabled,
+                    },
+                    {
+                        binaryExists: true,
+                        download: true,
+                        version: version1,
+                    },
+                ],
+                selectedVersion: version1,
             }
 
             userSelectedVersionMock.mockResolvedValue(versionDisabled)
@@ -191,8 +217,15 @@ describe('versions', () => {
             })
             const expectedSettings: GetChromeDownloadUrlReturn = {
                 chromeUrl: undefined,
-                selectedVersion: undefined,
                 filenameOS: FILENAME_OS,
+                report: [
+                    {
+                        binaryExists: false,
+                        download: true,
+                        version: versionDisabled,
+                    },
+                ],
+                selectedVersion: undefined,
             }
 
             userSelectedVersionMock.mockResolvedValue(versionDisabled)
@@ -219,8 +252,26 @@ describe('versions', () => {
             })
             const expectedSettings: GetChromeDownloadUrlReturn = {
                 chromeUrl: 'chrome-url',
-                selectedVersion: version4,
                 filenameOS: FILENAME_OS,
+                report: [
+                    {
+                        binaryExists: false,
+                        download: true,
+                        version: versionDisabled,
+                    },
+                    {
+                        binaryExists: false,
+                        download: true,
+                        version: versionDisabled2,
+
+                    },
+                    {
+                        binaryExists: true,
+                        download: true,
+                        version: new MappedVersion(versionDisabled3.comparable, false),
+                    }
+                ],
+                selectedVersion: version4,
             }
 
             userSelectedVersionMock.mockResolvedValue(versionDisabled)
@@ -250,8 +301,20 @@ describe('versions', () => {
             })
             const expectedSettings: GetChromeDownloadUrlReturn = {
                 chromeUrl: CHROME_URL,
-                selectedVersion: version1,
                 filenameOS: FILENAME_OS,
+                report: [
+                    {
+                        binaryExists: false,
+                        download: true,
+                        version: versionDisabled,
+                    },
+                    {
+                        binaryExists: true,
+                        download: true,
+                        version: version1,
+                    },
+                ],
+                selectedVersion: version1,
             }
 
             userSelectedVersionMock.mockResolvedValue(versionDisabled)
@@ -280,8 +343,20 @@ describe('versions', () => {
             })
             const expectedSettings: GetChromeDownloadUrlReturn = {
                 chromeUrl: CHROME_URL,
-                selectedVersion: version1,
                 filenameOS: FILENAME_OS,
+                report: [
+                    {
+                        binaryExists: false,
+                        download: true,
+                        version: versionDisabled,
+                    },
+                    {
+                        binaryExists: true,
+                        download: true,
+                        version: version1,
+                    },
+                ],
+                selectedVersion: version1,
             }
 
             userSelectedVersionMock.mockResolvedValueOnce(versionDisabled)
@@ -308,13 +383,27 @@ describe('versions', () => {
                 arch: 'x64',
                 store: true,
             })
+            
+            const version = new MappedVersion(20, 0, 0, 0, false)
+
             const expectedSettings: GetChromeDownloadUrlReturn = {
                 chromeUrl: CHROME_URL,
-                selectedVersion: version1,
                 filenameOS: FILENAME_OS,
+                report: [
+                    {
+                        binaryExists: false,
+                        download: true,
+                        version: version,
+                    },
+                    {
+                        binaryExists: true,
+                        download: true,
+                        version: version1,
+                    },
+                ],
+                selectedVersion: version1,
             }
 
-            const version = new MappedVersion(20, 0, 0, 0, false)
             const disableSpy = jest.spyOn(version, 'disable')
 
             userSelectedVersionMock.mockResolvedValueOnce(version)
@@ -349,8 +438,25 @@ describe('versions', () => {
             })
             const expectedSettings: GetChromeDownloadUrlReturn = {
                 chromeUrl: CHROME_URL,
-                selectedVersion: version3,
                 filenameOS: FILENAME_OS,
+                report: [
+                    {
+                        binaryExists: false,
+                        download: true,
+                        version: version1,
+                    },
+                    {
+                        binaryExists: false,
+                        download: true,
+                        version: versionDisabled,
+                    },
+                    {
+                        binaryExists: true,
+                        download: true,
+                        version: version3,
+                    }
+                ],
+                selectedVersion: version3,
             }
 
             userSelectedVersionMock.mockReset()
@@ -386,8 +492,20 @@ describe('versions', () => {
             })
             const expectedSettings: GetChromeDownloadUrlReturn = {
                 chromeUrl: CHROME_URL,
-                selectedVersion: version1,
                 filenameOS: FILENAME_OS,
+                report: [
+                    {
+                        binaryExists: false,
+                        download: true,
+                        version: new MappedVersion(version2.comparable, true),
+                    },
+                    {
+                        binaryExists: true,
+                        download: true,
+                        version: version1,
+                    },
+                ],
+                selectedVersion: version1,
             }
 
             userSelectedVersionMock.mockResolvedValueOnce(version2)
@@ -416,8 +534,25 @@ describe('versions', () => {
             })
             const expectedSettings: GetChromeDownloadUrlReturn = {
                 chromeUrl: undefined,
-                selectedVersion: undefined,
                 filenameOS: FILENAME_OS,
+                report: [
+                    {
+                        binaryExists: false,
+                        download: true,
+                        version: versionDisabled,
+                    },
+                    {
+                        binaryExists: false,
+                        download: true,
+                        version: versionDisabled2,
+                    },
+                    {
+                        binaryExists: false,
+                        download: true,
+                        version: versionDisabled3,
+                    },
+                ],
+                selectedVersion: undefined,
             }
 
             expect(await getChromeDownloadUrl(config, [versionDisabled, versionDisabled2, versionDisabled3])).toEqual(expectedSettings)
@@ -438,8 +573,25 @@ describe('versions', () => {
             })
             const expectedSettings: GetChromeDownloadUrlReturn = {
                 chromeUrl: undefined,
-                selectedVersion: undefined,
                 filenameOS: FILENAME_OS,
+                report: [
+                    {
+                        binaryExists: false,
+                        download: true,
+                        version: version1,
+                    },
+                    {
+                        binaryExists: false,
+                        download: true,
+                        version: version2,
+                    },
+                    {
+                        binaryExists: false,
+                        download: true,
+                        version: version3,
+                    },
+                ],
+                selectedVersion: undefined,
             }
             const BRANCH_POSITION2 = 'branch-position2'
             const BRANCH_POSITION3 = 'branch-position3'
@@ -476,8 +628,25 @@ describe('versions', () => {
             })
             const expectedSettings: GetChromeDownloadUrlReturn = {
                 chromeUrl: undefined,
-                selectedVersion: undefined,
                 filenameOS: FILENAME_OS,
+                report: [
+                    {
+                        binaryExists: true,
+                        download: false,
+                        version: version1,
+                    },
+                    {
+                        binaryExists: true,
+                        download: false,
+                        version: version2,
+                    },
+                    {
+                        binaryExists: true,
+                        download: false,
+                        version: version3,
+                    },
+                ],
+                selectedVersion: undefined,
             }
             const BRANCH_POSITION2 = 'branch-position2'
             const BRANCH_POSITION3 = 'branch-position3'
@@ -504,21 +673,22 @@ describe('versions', () => {
         })
 
         it('should return undefined, is config.single and no binary was found', async () => {
-            const mappedSingleVersion = new MappedVersion({
-                major: 10,
-                minor: 11,
-                branch: 12,
-                patch: 13,
-                disabled: false,
-            })
+            const singleVersion = new ComparableVersion(10, 11, 12, 13)
+
+            const mappedSingleVersion = new MappedVersion(singleVersion, false)
 
             const config = createChromeSingleConfig({
-                single: new ComparableVersion(10, 11, 12, 13),
+                single: singleVersion,
             })
             const expectedSettings: GetChromeDownloadUrlReturn = {
                 chromeUrl: undefined,
-                selectedVersion: mappedSingleVersion,
                 filenameOS: FILENAME_OS,
+                report: [{
+                    binaryExists: false,
+                    download: true, 
+                    version: new MappedVersion(singleVersion, true)
+                }],
+                selectedVersion: mappedSingleVersion,
             }
 
             fetchChromeUrlMock.mockResolvedValue(undefined)
@@ -544,8 +714,9 @@ describe('versions', () => {
 
             const expectedSettings: GetChromeDownloadUrlReturn = {
                 chromeUrl: undefined,
-                selectedVersion: undefined,
                 filenameOS: FILENAME_OS,
+                report: [],
+                selectedVersion: undefined,
             }
 
             expect(await getChromeDownloadUrl(config, [])).toEqual(expectedSettings)

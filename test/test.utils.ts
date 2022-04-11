@@ -62,6 +62,7 @@ export const createGetChromeDownloadUrlReturn = (settings?: Partial<GetChromeDow
     chromeUrl: 'chromeUrl',
     selectedVersion: new MappedVersion(10, 0, 0, 0, false),
     filenameOS: 'filenameOS',
+    report: [],
     ...settings,
 })
 

@@ -1,4 +1,5 @@
 import type { ComparableVersion } from '../commons/ComparableVersion'
+import { MappedVersion } from '../commons/MappedVersion'
 import type { OS } from './os.interfaces'
 import type { Arch } from './store.interfaces'
 
@@ -126,3 +127,9 @@ export interface IVersionWithDisabled extends IVersion {
 }
 
 export type Nullable<T> = T | undefined | null
+
+export interface DownloadReportEntry {
+    binaryExists: boolean
+    download: boolean
+    version: Nullable<MappedVersion>
+}

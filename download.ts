@@ -6,7 +6,7 @@ import { fetchChromeZipFile } from './api'
 import { DEFAULT_FULL_CONFIG, DEFAULT_SINGLE_CONFIG } from './commons/constants'
 import { DOWNLOAD_ZIP, EXTRACT_ZIP } from './commons/loggerTexts'
 import { NoChromiumDownloadError } from './errors'
-import type { IChromeConfig } from './interfaces/interfaces'
+import type { DownloadReportEntry, IChromeConfig } from './interfaces/interfaces'
 import { logger } from './log/logger'
 import { progress } from './log/progress'
 import { spinner } from './log/spinner'
@@ -77,14 +77,14 @@ async function extractZip(downloadPath: string) {
  * @see DEFAULT_SINGLE_CONFIG
  * @param additionalConfig Manually set config, which will override the settings in the default config
  */
-async function downloadForConfig(config: IChromeConfig): Promise<void> {
+async function downloadForConfig(config: IChromeConfig): Promise<DownloadReportEntry[]> {
 
     const versions = await loadVersions()
     const store = await loadStore()
 
     const mappedVersions = mapVersions(versions, config, store)
 
-    const { chromeUrl, selectedVersion, filenameOS } = await getChromeDownloadUrl(config, mappedVersions)
+    const { chromeUrl, filenameOS, report, selectedVersion } = await getChromeDownloadUrl(config, mappedVersions)
 
     if (chromeUrl && selectedVersion && config.download) {
         const filename = `chrome-${filenameOS}-${config.arch}-${selectedVersion.value}`
@@ -128,7 +128,7 @@ async function downloadForConfig(config: IChromeConfig): Promise<void> {
                 if (config.autoUnzip) {
                     await extractZip(downloadPath)
                 }
-                resolve()
+                resolve(report)
             })
 
             zipFileResponse.body.on('error', () => {
@@ -140,6 +140,8 @@ async function downloadForConfig(config: IChromeConfig): Promise<void> {
     if (!chromeUrl && config.download && config.single) {
         throw new NoChromiumDownloadError()
     }
+
+    return report
 }
 
 /**
