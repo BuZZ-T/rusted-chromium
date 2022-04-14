@@ -137,8 +137,9 @@ async function fetchChromeUrlForVersion(config: IChromeConfig, osSettings: IOSSe
 async function storeIfNoBinary(config: IChromeConfig, chromeUrl: string | undefined, version: MappedVersion): Promise<void> {
     if (!chromeUrl && !version.disabled) {
         spinner.error()
+        // disable the version in the prompt
+        version.disable()
         if (config.store) {
-            version.disable()
             // TODO: remove await?
             await storeNegativeHit(version.comparable, config.os, config.arch)
         }
