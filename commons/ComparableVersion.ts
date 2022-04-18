@@ -1,3 +1,4 @@
+import { Compared } from '../interfaces/enums'
 import type { IVersion } from '../interfaces/interfaces'
 import { isIVersion } from '../utils/typeguards'
 
@@ -50,5 +51,34 @@ export class ComparableVersion implements IVersion {
 
     public toString(): string {
         return `${this.major}.${this.minor}.${this.branch}.${this.patch}`
+    }
+
+    /**
+     * Compares two ComparableVersions with each other.
+     * if version < other, the result is Compared.LESS
+     * if version > other, the result is Compared.GREATER
+     * if version === other, the result is Compared.EQUAL
+     * 
+     * @param version 
+     * @param other 
+     */
+    public static compare(version: ComparableVersion, other: ComparableVersion): Compared {
+        if (version.major > other.major) { return Compared.GREATER }
+        if (version.major < other.major) { return Compared.LESS }
+    
+        if (version.minor > other.minor) { return Compared.GREATER }
+        if (version.minor < other.minor) { return Compared.LESS }
+    
+        if (version.branch > other.branch) { return Compared.GREATER }
+        if (version.branch < other.branch) { return Compared.LESS }
+    
+        if (version.patch > other.patch) { return Compared.GREATER }
+        if (version.patch < other.patch) { return Compared.LESS }
+    
+        return Compared.EQUAL
+    }
+
+    public static max(...versions: ComparableVersion[]): ComparableVersion {
+        return versions.reduce((currentMax, version) => ComparableVersion.compare(currentMax, version) === Compared.LESS ? version : currentMax)
     }
 }

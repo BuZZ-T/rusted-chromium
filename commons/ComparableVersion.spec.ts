@@ -4,6 +4,7 @@
  * @group unit/class/ComparableVersion
  */
 
+import { Compared } from '../interfaces/enums'
 import { ComparableVersion } from './ComparableVersion'
 
 describe('ComparableVersion', () => {
@@ -234,6 +235,121 @@ describe('ComparableVersion', () => {
             expect(cVersion.patch).toEqual(1)
 
             expect(cVersion.toString()).toEqual(versionString)
+        })
+    })
+
+    describe('compare', () => {
+        it('should compare major versions', () => {
+            expect(ComparableVersion.compare(
+                new ComparableVersion(10, 0, 0, 0),
+                new ComparableVersion(20, 0, 0, 0)
+            )).toEqual(Compared.LESS)
+            expect(ComparableVersion.compare(
+                new ComparableVersion(20, 0, 0, 0),
+                new ComparableVersion(10, 0, 0, 0)
+            )).toEqual(Compared.GREATER)
+        })
+
+        it('should compare minor versions', () => {
+            expect(ComparableVersion.compare(
+                new ComparableVersion(10, 0, 0, 0),
+                new ComparableVersion(10, 1, 0, 0)
+            )).toEqual(Compared.LESS)
+            expect(ComparableVersion.compare(
+                new ComparableVersion(10, 1, 0, 0),
+                new ComparableVersion(10, 0, 0, 0)
+            )).toEqual(Compared.GREATER)
+        })
+
+        it('should compare branch versions', () => {
+            expect(ComparableVersion.compare(
+                new ComparableVersion(10, 0, 0, 0),
+                new ComparableVersion(10, 0, 1, 0)
+            )).toEqual(Compared.LESS)
+            expect(ComparableVersion.compare(
+                new ComparableVersion(10, 0, 1, 0),
+                new ComparableVersion(10, 0, 0, 0)
+            )).toEqual(Compared.GREATER)
+        })
+
+        it('should compare patch versions', () => {
+            expect(ComparableVersion.compare(
+                new ComparableVersion(10, 0, 0, 0),
+                new ComparableVersion(10, 0, 0, 1)
+            )).toEqual(Compared.LESS)
+            expect(ComparableVersion.compare(
+                new ComparableVersion(10, 0, 0, 1),
+                new ComparableVersion(10, 0, 0, 0)
+            )).toEqual(Compared.GREATER)
+        })
+
+        it('should compare equal versions', () => {
+            expect(ComparableVersion.compare(
+                new ComparableVersion(10, 1, 2, 3),
+                new ComparableVersion(10, 1, 2, 3)
+            )).toEqual(Compared.EQUAL)
+        })
+    })
+
+    describe('max', () => {
+        it('should select the greater major version', () => {
+            expect(ComparableVersion.max(
+                new ComparableVersion(10, 0, 0, 0),
+                new ComparableVersion(15, 0, 0, 0),
+                new ComparableVersion(20, 0, 0, 0)
+            )).toEqual(new ComparableVersion(20, 0, 0, 0))
+            expect(ComparableVersion.max(
+                new ComparableVersion(20, 0, 0, 0),
+                new ComparableVersion(15, 0, 0, 0),
+                new ComparableVersion(10, 0, 0, 0)
+            )).toEqual(new ComparableVersion(20, 0, 0, 0))
+        })
+
+        it('should select the greater minor version', () => {
+            expect(ComparableVersion.max(
+                new ComparableVersion(10, 0, 0, 0),
+                new ComparableVersion(10, 1, 0, 0),
+                new ComparableVersion(10, 2, 0, 0)
+            )).toEqual(new ComparableVersion(10, 2, 0, 0))
+            expect(ComparableVersion.max(
+                new ComparableVersion(10, 2, 0, 0),
+                new ComparableVersion(10, 1, 0, 0),
+                new ComparableVersion(10, 0, 0, 0)
+            )).toEqual(new ComparableVersion(10, 2, 0, 0))
+        })
+
+        it('should select the greater branch version', () => {
+            expect(ComparableVersion.max(
+                new ComparableVersion(10, 0, 0, 0),
+                new ComparableVersion(10, 0, 1, 0),
+                new ComparableVersion(10, 0, 2, 0),
+
+            )).toEqual(new ComparableVersion(10, 0, 2, 0))
+            expect(ComparableVersion.max(
+                new ComparableVersion(10, 0, 2, 0),
+                new ComparableVersion(10, 0, 1, 0),
+                new ComparableVersion(10, 0, 0, 0)
+            )).toEqual(new ComparableVersion(10, 0, 2, 0))
+        })
+
+        it('should select the greater patch version', () => {
+            expect(ComparableVersion.max(
+                new ComparableVersion(10, 0, 0, 0),
+                new ComparableVersion(10, 0, 0, 1),
+                new ComparableVersion(10, 0, 0, 2),
+            )).toEqual(new ComparableVersion(10, 0, 0, 2))
+            expect(ComparableVersion.max(
+                new ComparableVersion(10, 0, 0, 2),
+                new ComparableVersion(10, 0, 0, 1),
+                new ComparableVersion(10, 0, 0, 0)
+            )).toEqual(new ComparableVersion(10, 0, 0, 2))
+        })
+
+        it('should select one of both equal versions', () => {
+            expect(ComparableVersion.max(
+                new ComparableVersion(10, 1, 2, 3),
+                new ComparableVersion(10, 1, 2, 3)
+            )).toEqual(new ComparableVersion(10, 1, 2, 3))
         })
     })
 })

@@ -6,64 +6,10 @@
 
 import { ComparableVersion } from '../commons/ComparableVersion'
 import { MappedVersion } from '../commons/MappedVersion'
-import { Compared } from '../interfaces/enums'
 import { createStore } from '../test/test.utils'
-import { sortDescendingMappedVersions, sortAscendingMappedVersions, compareComparableVersions, sortStoreEntries, sortAscendingComparableVersions, sortDescendingComparableVersions } from './sort.utils'
+import { sortDescendingMappedVersions, sortAscendingMappedVersions, sortStoreEntries, sortAscendingComparableVersions, sortDescendingComparableVersions } from './sort.utils'
 
 describe('sort utils', () => {
-
-    describe('compareComparableVersions', () => {
-        it('should compare major versions', () => {
-            expect(compareComparableVersions(
-                new ComparableVersion(10, 0, 0, 0),
-                new ComparableVersion(20, 0, 0, 0)
-            )).toEqual(Compared.LESS)
-            expect(compareComparableVersions(
-                new ComparableVersion(20, 0, 0, 0),
-                new ComparableVersion(10, 0, 0, 0)
-            )).toEqual(Compared.GREATER)
-        })
-
-        it('should compare minor versions', () => {
-            expect(compareComparableVersions(
-                new ComparableVersion(10, 0, 0, 0),
-                new ComparableVersion(10, 1, 0, 0)
-            )).toEqual(Compared.LESS)
-            expect(compareComparableVersions(
-                new ComparableVersion(10, 1, 0, 0),
-                new ComparableVersion(10, 0, 0, 0)
-            )).toEqual(Compared.GREATER)
-        })
-
-        it('should compare branch versions', () => {
-            expect(compareComparableVersions(
-                new ComparableVersion(10, 0, 0, 0),
-                new ComparableVersion(10, 0, 1, 0)
-            )).toEqual(Compared.LESS)
-            expect(compareComparableVersions(
-                new ComparableVersion(10, 0, 1, 0),
-                new ComparableVersion(10, 0, 0, 0)
-            )).toEqual(Compared.GREATER)
-        })
-
-        it('should compare patch versions', () => {
-            expect(compareComparableVersions(
-                new ComparableVersion(10, 0, 0, 0),
-                new ComparableVersion(10, 0, 0, 1)
-            )).toEqual(Compared.LESS)
-            expect(compareComparableVersions(
-                new ComparableVersion(10, 0, 0, 1),
-                new ComparableVersion(10, 0, 0, 0)
-            )).toEqual(Compared.GREATER)
-        })
-
-        it('should compare equal versions', () => {
-            expect(compareComparableVersions(
-                new ComparableVersion(10, 1, 2, 3),
-                new ComparableVersion(10, 1, 2, 3)
-            )).toEqual(Compared.EQUAL)
-        })
-    })
 
     describe('sortAscendingComparableVersions', () => {
         let versionMajor1: ComparableVersion

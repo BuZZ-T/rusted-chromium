@@ -4,35 +4,10 @@ import { Compared } from '../interfaces/enums'
 import type { IListStore } from '../interfaces/store.interfaces'
 
 /**
- * Compares two ComparableVersions with each other.
- * if version < other, the result is Compared.LESS
- * if version > other, the result is Compared.GREATER
- * if version === other, the result is Compared.EQUAL
- * 
- * @param version 
- * @param other 
- */
-export function compareComparableVersions(version: ComparableVersion, other: ComparableVersion): Compared {
-    if (version.major > other.major) { return Compared.GREATER }
-    if (version.major < other.major) { return Compared.LESS }
-
-    if (version.minor > other.minor) { return Compared.GREATER }
-    if (version.minor < other.minor) { return Compared.LESS }
-
-    if (version.branch > other.branch) { return Compared.GREATER }
-    if (version.branch < other.branch) { return Compared.LESS }
-
-    if (version.patch > other.patch) { return Compared.GREATER }
-    if (version.patch < other.patch) { return Compared.LESS }
-
-    return Compared.EQUAL
-}
-
-/**
  * Ascending sort comparator for ComparableVersion 
  */
 export function sortAscendingComparableVersions(a: ComparableVersion, b: ComparableVersion): -1 | 0 | 1 {
-    const compared = compareComparableVersions(a, b)
+    const compared = ComparableVersion.compare(a, b)
 
     if (compared === Compared.GREATER) {
         return 1
@@ -48,7 +23,7 @@ export function sortAscendingComparableVersions(a: ComparableVersion, b: Compara
  * Descending sort comparator for ComparableVersion 
  */
 export function sortDescendingComparableVersions(a: ComparableVersion, b: ComparableVersion): -1 | 0 | 1 {
-    const compared = compareComparableVersions(a, b)
+    const compared = ComparableVersion.compare(a, b)
 
     if (compared === Compared.LESS) {
         return 1

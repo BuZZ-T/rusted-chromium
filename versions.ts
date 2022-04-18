@@ -1,6 +1,7 @@
 import { parse, HTMLElement as NodeParserHTMLElement } from 'node-html-parser'
 
 import { fetchBranchPosition, fetchChromeUrl, fetchChromiumTags } from './api'
+import { ComparableVersion } from './commons/ComparableVersion'
 import { SEARCH_BINARY } from './commons/loggerTexts'
 import { MappedVersion } from './commons/MappedVersion'
 import { Compared } from './interfaces/enums'
@@ -16,7 +17,7 @@ import { userSelectedVersion } from './select'
 import { Store } from './store/Store'
 import { storeNegativeHit } from './store/storeNegativeHit'
 import { detectOperatingSystem } from './utils'
-import { compareComparableVersions, sortDescendingMappedVersions } from './utils/sort.utils'
+import { sortDescendingMappedVersions } from './utils/sort.utils'
 
 export async function getChromeDownloadUrl(config: IChromeConfig, mappedVersions: MappedVersion[]): Promise<GetChromeDownloadUrlReturn> {
     const oSSetting = detectOperatingSystem(config)
@@ -220,8 +221,8 @@ export function mapVersions(versions: string[], config: IChromeConfig, store: St
     const filteredVersions = versions
         .map(version => new MappedVersion(version, versionSet.has(version)))
         .filter(version => !config.hideNegativeHits || !version.disabled)
-        .filter(version => compareComparableVersions(version.comparable, config.min) !== Compared.LESS
-            && compareComparableVersions(version.comparable, config.max) !== Compared.GREATER)
+        .filter(version => ComparableVersion.compare(version.comparable, config.min) !== Compared.LESS
+            && ComparableVersion.compare(version.comparable, config.max) !== Compared.GREATER)
         .sort(sortDescendingMappedVersions)
 
     // Don't reduce the amount of filtered versions when --only-newest-major is set
