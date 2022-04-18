@@ -8,16 +8,17 @@ export const DEFAULT_CONFIG_OPTIONS: IConfigOptions = {
     min: '0',
     max: '10000',
 
-    nonInteractive: false,
-    hideNegativeHits: false,
-    onlyNewestMajor: false,
-    inverse: false,
-    store: true,
-    download: true,
-    increaseOnFail: false,
+    debug: false,
     decreaseOnFail: false,
-    unzip: false,
+    download: true,
+    hideNegativeHits: false,
+    increaseOnFail: false,
+    inverse: false,
+    nonInteractive: false,
+    onlyNewestMajor: false,
     quiet: false,
+    store: true,
+    unzip: false,
 }
 
 export const DEFAULT_FULL_CONFIG: IChromeFullConfig = {

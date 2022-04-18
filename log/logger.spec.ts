@@ -8,10 +8,11 @@ import type { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 
 import type { PrinterWriteStream } from '../interfaces/printer.interfaces'
 import { createStdioMock } from '../test/test.utils'
-import { Logger } from './logger'
+import { DebugMode, Logger } from './logger'
 
 jest.mock('chalk', () => ({
     blue: (text: string) => `blue: ${text}`,
+    magenta: (text: string) => `magenta: ${text}`,
     red: (text: string) => `red: ${text}`,
     yellow: (text: string) => `yellow: ${text}`,
 }))
@@ -59,6 +60,29 @@ describe('logger', () => {
         expect(stdioMock.write).toBeCalledTimes(2)
         expect(stdioMock.write.mock.calls).toEqual([
             ['red: ✘ foo'],
+            ['\n'],
+        ])
+        expect(stdioMock.clearLine).toBeCalledTimes(1)
+        expect(stdioMock.clearLine).toBeCalledWith(0)
+        expect(stdioMock.cursorTo).toBeCalledTimes(1)
+        expect(stdioMock.cursorTo).toBeCalledWith(0)
+    })
+
+    it('should not log debug on DebugMode.NONE', () => {
+        logger.debug('foo')
+
+        expect(stdioMock.write).toBeCalledTimes(0)
+        expect(stdioMock.clearLine).toBeCalledTimes(0)
+        expect(stdioMock.cursorTo).toBeCalledTimes(0)
+    })
+
+    it('should log debug on DebugMode.DEBUG', () => {
+        logger.setDebugMode(DebugMode.DEBUG)
+        logger.debug('foo')
+
+        expect(stdioMock.write).toBeCalledTimes(2)
+        expect(stdioMock.write.mock.calls).toEqual([
+            ['magenta: ? foo'],
             ['\n'],
         ])
         expect(stdioMock.clearLine).toBeCalledTimes(1)

@@ -4,6 +4,7 @@ import { promisify } from 'util'
 
 import { LOCAL_STORE_FILE } from '../commons/constants'
 import type { IListStore } from '../interfaces/store.interfaces'
+import { logger } from '../log/logger'
 import { Store } from './Store'
 
 const STORE_FILE = pathJoin(__dirname, '..', LOCAL_STORE_FILE)
@@ -26,7 +27,9 @@ const EMPTY_STORE: IListStore = {
 }
 
 export async function loadStore(): Promise<Store> {
-    // FIXME: exists is deprecated, use existsSync
+
+    logger.debug(`using store file: ${STORE_FILE}`)
+    
     const currentStoreJson = existsSync(STORE_FILE)
         ? await readFile(STORE_FILE, 'utf8')
         : JSON.stringify(EMPTY_STORE)

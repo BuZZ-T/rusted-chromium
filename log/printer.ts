@@ -16,6 +16,7 @@ export abstract class Printer<T extends Printer<T>> {
     protected readonly ERROR_FN = (msg: string): string => chalk.red(`✘ ${msg}`)
     protected readonly WARN_FN = (msg: string): string => chalk.yellow(`! ${msg}`)
     protected readonly INFO_FN = (msg: string): string => chalk.blue(`➔ ${msg}`)
+    protected readonly DEBUG_FN = (msg: string): string => chalk.magenta(`? ${msg}`)
 
     protected constructor(private stdio: PrinterWriteStream) {
     }

@@ -6,7 +6,7 @@ import { ComparableVersion } from '../commons/ComparableVersion'
 import { DEFAULT_CONFIG_OPTIONS } from '../commons/constants'
 import type { IConfigOptions } from '../interfaces/config.interfaces'
 import type { ConfigWrapper, IChromeSingleConfig } from '../interfaces/interfaces'
-import { logger } from '../log/logger'
+import { DebugMode, logger } from '../log/logger'
 /* eslint-disable-next-line import/no-namespace */
 import * as packageJson from '../package.json'
 import { mapOS } from '../utils'
@@ -24,7 +24,7 @@ export function readConfig(args: string[], platform: NodeJS.Platform): ConfigWra
         .option('-a, --arch <arch>', 'The architecture for what the binary should be downloaded. Valid values are "x86" and "x64". Only works when --os is also set')
         .option('-d, --decrease-on-fail', 'If a binary does not exist, go to the next lower version number and try again (regarding --min, --max and --max-results)', false)
         .option('-i, --increase-on-fail', 'If a binary does not exist, go to the next higher version number and try again (regarding --min, --max and --max-results), overwrites "--decrease-on-fail" if both set', false)
-        .option('-z, --unzip', 'Directly unzip the downloaded zip-file and delete the .zip afterwards', false)
+        .option('-z, --unzip', 'Directly unzip the downloaded zip-file and delete the .zip afterwards', DEFAULT_CONFIG_OPTIONS.unzip)
         .option('-n, --non-interactive', 'Don\'t show the selection menu. Automatically select the newest version. Only works when --decrease-on-fail is also set.', false)
         .option('-t, --no-store', 'Don\'t store negative hits in the local store file.', DEFAULT_CONFIG_OPTIONS.store)
         .option('-l, --no-download', 'Don\'t download the binary. It also continues with the next version, if --decrease-on-fail or --increase-on-fail is set. Useful to build up the negative hit store', DEFAULT_CONFIG_OPTIONS.download)
@@ -35,7 +35,8 @@ export function readConfig(args: string[], platform: NodeJS.Platform): ConfigWra
         .option('-O, --only-newest-major', 'Show only the newest major version in user selection', DEFAULT_CONFIG_OPTIONS.onlyNewestMajor)
         .option('-v, --inverse', 'Sort the selectable versions ascending', DEFAULT_CONFIG_OPTIONS.inverse)
         .option('-s, --single <version>', 'Download a specific version in non-interactive mode, even if the file is listed in the localstore.json. Several other flags have no effect.')
-        .option('-q, --quiet', 'Suppress any logging output', false)
+        .option('-q, --quiet', 'Suppress any logging output', DEFAULT_CONFIG_OPTIONS.quiet)
+        .option('--debug', 'Activates the debug mode (extended logging)', DEFAULT_CONFIG_OPTIONS.debug)
         .parse(args)
 
     const options = program.opts() as IConfigOptions
@@ -44,6 +45,10 @@ export function readConfig(args: string[], platform: NodeJS.Platform): ConfigWra
     const maxResultsIsSet = !!options.maxResults
 
     const os = mapOS(options.os || platform)
+
+    if(options.debug) {
+        logger.setDebugMode(DebugMode.DEBUG)
+    }
 
     if (!options.os && options.arch) {
         logger.warn('Setting "--arch" has no effect, when "--os" is not set!')

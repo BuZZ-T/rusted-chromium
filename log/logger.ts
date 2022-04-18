@@ -1,6 +1,11 @@
 import type { PrinterWriteStream } from '../interfaces/printer.interfaces'
 import { Printer } from './printer'
 
+export enum DebugMode {
+    NONE,
+    DEBUG,
+}
+
 /**
  * Just a simple logger which holds no state. Try to prevent this when giving feedback to the user.
  * Rather try to use a stateful logging like Spinner, Progress or Status
@@ -10,7 +15,14 @@ export class Logger extends Printer<Logger> {
         super(stdio)
     }
 
+    private debugMode = DebugMode.NONE
+    
     protected self(): Logger {
+        return this
+    }
+
+    public setDebugMode(mode: DebugMode): Logger {
+        this.debugMode = mode
         return this
     }
 
@@ -38,7 +50,14 @@ export class Logger extends Printer<Logger> {
         return this.clearLine()
             .write(this.WARN_FN(text))
             .newline()
+    }
 
+    public debug(text: string): Logger {
+        return this.debugMode !== DebugMode.NONE
+            ? this.clearLine()
+                .write(this.DEBUG_FN(text))
+                .newline()
+            : this.self()
     }
 }
 
