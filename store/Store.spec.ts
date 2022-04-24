@@ -262,5 +262,69 @@ describe('Store', () => {
     }
 }`)
         })
+
+        it('should format the store with indentation without indenting the arrays', () => {
+            const store = new Store(createStore({
+                linux: {
+                    x64: ['10.0.0.0', '20.0.0.0', '30.0.0.0'],
+                    x86: ['10.0.0.0']
+                }
+            }))
+
+            expect(store.toMinimalFormattedString()).toEqual(`{
+    "win": {
+        "x64": [],
+        "x86": []
+    },
+    "linux": {
+        "x64": ["10.0.0.0","20.0.0.0","30.0.0.0"],
+        "x86": ["10.0.0.0"]
+    },
+    "mac": {
+        "x64": [],
+        "arm": []
+    }
+}`)
+        })
+
+        it('should create a parsable string using toString', () => {
+            const store = new Store(createStore({
+                linux: {
+                    x64: ['10.0.0.0', '20.0.0.0', '30.0.0.0'],
+                    x86: ['10.0.0.0']
+                }
+            }))
+
+            const parsedStore = JSON.parse(store.toString())
+
+            expect(new Store(parsedStore)).toEqual(store)
+        })
+
+        it('should create a parsable string using toFormattedString', () => {
+            const store = new Store(createStore({
+                linux: {
+                    x64: ['10.0.0.0', '20.0.0.0', '30.0.0.0'],
+                    x86: ['10.0.0.0']
+                }
+            }))
+
+            const parsedStore = JSON.parse(store.toFormattedString())
+
+            expect(new Store(parsedStore)).toEqual(store)
+        })
+
+        it('should create a parsable string using toMinimalFormattedString', () => {
+            const store = new Store(createStore({
+                linux: {
+                    x64: ['10.0.0.0', '20.0.0.0', '30.0.0.0'],
+                    x86: ['10.0.0.0']
+                }
+            }))
+
+            const parsedStore = JSON.parse(store.toMinimalFormattedString())
+
+            expect(new Store(parsedStore)).toEqual(store)
+        })
+
     })
 })

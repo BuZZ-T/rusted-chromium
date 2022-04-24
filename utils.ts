@@ -1,6 +1,6 @@
 import type { IChromeConfig } from './interfaces/interfaces'
 import type { OSSetting, OS, ExtendedOS } from './interfaces/os.interfaces'
-import { IListStore, ISetStore } from './interfaces/store.interfaces'
+import type { IListStore, ISetStore } from './interfaces/store.interfaces'
 
 export function detectOperatingSystem(config: IChromeConfig): OSSetting {
 

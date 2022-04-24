@@ -36,5 +36,5 @@ export async function importAndMergeLocalstore(config: IStoreConfig): Promise<St
 }
 
 async function storeStoreFile(store: Store): Promise<void> {
-    return writeFilePromise(localStoreFilePath, store.toFormattedString())
+    return writeFilePromise(localStoreFilePath, store.toMinimalFormattedString())
 }

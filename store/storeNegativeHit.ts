@@ -18,6 +18,6 @@ export async function storeNegativeHit(version: ComparableVersion, os: OS, arch:
     if (!currentStore.has(os, arch, version)) {
         currentStore.add(os, arch, version)
 
-        await writeFile(STORE_FILE, currentStore.toFormattedString())
+        await writeFile(STORE_FILE, currentStore.toMinimalFormattedString())
     }
 }

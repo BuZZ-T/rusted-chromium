@@ -113,6 +113,14 @@ export class Store {
         return JSON.stringify(sortStoreEntries(setStoreToListStore(this.store)), null, spaces)
     }
 
+    public toMinimalFormattedString(spaces = 4): string {
+        return JSON.stringify(sortStoreEntries(setStoreToListStore(this.store)), (k, v) => v instanceof Array ? JSON.stringify(v) : v, spaces)
+            .replace(/"\[/g, '[')
+            .replace(/\]"/g, ']')
+            .replace(/\\"/g, '"')
+            .replace(/""/g, '"')
+    }
+
     public size(): StoreSize {
         return {
             linux: this.store.linux.x64.size + this.store.linux.x86.size,

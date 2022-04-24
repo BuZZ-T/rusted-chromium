@@ -56,12 +56,12 @@ describe('storeNegativeHit', () => {
             patch: 4,
         }), 'linux', 'x64')
 
-        const expectedStore = createStore({ linux: { x64: ['1.2.3.4'], x86: [], } })
+        const expectedStore = new Store(createStore({ linux: { x64: ['1.2.3.4'], x86: [], } }))
 
         expect(loadStoreMock).toHaveBeenCalledTimes(1)
 
         expect(writeFileMock).toHaveBeenCalledTimes(1)
-        expect(writeFileMock).toHaveBeenCalledWith(localPath, JSON.stringify(expectedStore, null, 4), expect.any(Function))
+        expect(writeFileMock).toHaveBeenCalledWith(localPath, expectedStore.toMinimalFormattedString(), expect.any(Function))
     })
 
     it('should extend an existing store with one entry', async () => {
@@ -81,12 +81,12 @@ describe('storeNegativeHit', () => {
             patch: 4,
         }), 'linux', 'x64')
 
-        const expectedStore = createStore({ linux: { x64: ['1.2.3.4'], x86: [] }, win: { x64: ['10.0.0.0'], x86: [], } })
+        const expectedStore = new Store(createStore({ linux: { x64: ['1.2.3.4'], x86: [] }, win: { x64: ['10.0.0.0'], x86: [], } }))
 
         expect(loadStoreMock).toHaveBeenCalledTimes(1)
 
         expect(writeFileMock).toHaveBeenCalledTimes(1)
-        expect(writeFileMock).toHaveBeenCalledWith(localPath, JSON.stringify(expectedStore, null, 4), expect.any(Function))
+        expect(writeFileMock).toHaveBeenCalledWith(localPath, expectedStore.toMinimalFormattedString(), expect.any(Function))
     })
 
     it('should do nothing, if entry already exists', async () => {
@@ -128,11 +128,11 @@ describe('storeNegativeHit', () => {
             patch: 4,
         }), 'linux', 'x64')
 
-        const expectedStore = createStore({ linux: { x64: ['1.2.3.4'], x86: [] }, win: { x64: ['10.0.0.0', '11.0.0.0', '12.0.0.0'], x86: [], } })
+        const expectedStore = new Store(createStore({ linux: { x64: ['1.2.3.4'], x86: [] }, win: { x64: ['10.0.0.0', '11.0.0.0', '12.0.0.0'], x86: [], } }))
 
         expect(loadStoreMock).toHaveBeenCalledTimes(1)
 
         expect(writeFileMock).toHaveBeenCalledTimes(1)
-        expect(writeFileMock).toHaveBeenCalledWith(localPath, JSON.stringify(expectedStore, null, 4), expect.any(Function))
+        expect(writeFileMock).toHaveBeenCalledWith(localPath, expectedStore.toMinimalFormattedString(), expect.any(Function))
     })
 })

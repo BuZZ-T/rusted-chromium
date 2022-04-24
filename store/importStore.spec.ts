@@ -69,7 +69,7 @@ describe('importStore', () => {
             expect(readFileMock).toHaveBeenCalledTimes(0)
 
             expect(writeFileMock).toHaveBeenCalledTimes(1)
-            expect(writeFileMock).toHaveBeenCalledWith(pathJoin(__dirname, '..', LOCAL_STORE_FILE), anyStore.toFormattedString(), expect.any(Function))
+            expect(writeFileMock).toHaveBeenCalledWith(pathJoin(__dirname, '..', LOCAL_STORE_FILE), anyStore.toMinimalFormattedString(), expect.any(Function))
 
         })
 
@@ -93,7 +93,7 @@ describe('importStore', () => {
             expect(readFileMock).toHaveBeenCalledTimes(0)
 
             expect(writeFileMock).toHaveBeenCalledTimes(1)
-            expect(writeFileMock).toHaveBeenCalledWith(pathJoin(__dirname, '..', LOCAL_STORE_FILE), anyStore.toFormattedString(), expect.any(Function))
+            expect(writeFileMock).toHaveBeenCalledWith(pathJoin(__dirname, '..', LOCAL_STORE_FILE), anyStore.toMinimalFormattedString(), expect.any(Function))
         })
 
         it('should do nothing, if no store file is loaded from file system', async () => {
@@ -170,7 +170,7 @@ describe('importStore', () => {
             expect(readFileMock).toHaveBeenCalledTimes(1)
 
             expect(writeFileMock).toHaveBeenCalledTimes(1)
-            expect(writeFileMock).toHaveBeenCalledWith(pathJoin(__dirname, '..', LOCAL_STORE_FILE), JSON.stringify(mergedStore, null, 4), expect.any(Function))
+            expect(writeFileMock).toHaveBeenCalledWith(pathJoin(__dirname, '..', LOCAL_STORE_FILE), new Store(mergedStore).toMinimalFormattedString(), expect.any(Function))
         })
 
         it('should merge the existing file with the file downloaded by local file', async () => {
@@ -207,7 +207,7 @@ describe('importStore', () => {
             expect(readFileMock).toHaveBeenCalledTimes(1)
 
             expect(writeFileMock).toHaveBeenCalledTimes(1)
-            expect(writeFileMock).toHaveBeenCalledWith(pathJoin(__dirname, '..', LOCAL_STORE_FILE), JSON.stringify(mergedStore, null, 4), expect.any(Function))
+            expect(writeFileMock).toHaveBeenCalledWith(pathJoin(__dirname, '..', LOCAL_STORE_FILE), new Store(mergedStore).toMinimalFormattedString(), expect.any(Function))
         })
     })
 })

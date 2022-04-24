@@ -15,6 +15,7 @@ import { mocked } from 'ts-jest/utils'
 import { promisify } from 'util'
 
 import { rusted } from './rusted'
+import { Store } from './store/Store'
 import { mockNodeFetch, IMockAdditional, getJestTmpFolder } from './test/int.utils'
 import { createStore } from './test/test.utils'
 
@@ -81,7 +82,7 @@ describe('[int] import store', () => {
 
         const storedStore = await readFile(localStoreFile, { encoding: 'utf-8' })
 
-        expect(storedStore).toEqual(JSON.stringify(expectedStore, null, 4))
+        expect(storedStore).toEqual(new Store(expectedStore).toMinimalFormattedString())
     })
 
     it('should import by URL', async () => {
@@ -106,6 +107,6 @@ describe('[int] import store', () => {
 
         const storedStore = await readFile(localStoreFile, { encoding: 'utf-8' })
 
-        expect(storedStore).toEqual(JSON.stringify(expectedStore, null, 4))
+        expect(storedStore).toEqual(new Store(expectedStore).toMinimalFormattedString())
     })
 })

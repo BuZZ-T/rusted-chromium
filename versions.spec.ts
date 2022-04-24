@@ -21,6 +21,8 @@ import { Store } from './store/Store'
 import { storeNegativeHit } from './store/storeNegativeHit'
 import { createNodeParserHTMLElement, createNodeWithChildren, createStore, createChromeSingleConfig, createChromeFullConfig } from './test/test.utils'
 import { detectOperatingSystem } from './utils'
+// eslint-disable-next-line import/no-namespace
+import * as utils from './utils'
 import { mapVersions, getChromeDownloadUrl, loadVersions } from './versions'
 
 jest.mock('node-html-parser')
@@ -32,7 +34,7 @@ jest.mock('./store/storeNegativeHit')
 
 // don't mock compareComparableVersions to test the sort and filtering based on version.comparableVersion
 jest.mock('./utils', () => ({
-    ...jest.requireActual<any>('./utils'),
+    ...jest.requireActual<typeof utils>('./utils'),
     detectOperatingSystem: jest.fn(),
 }))
 
