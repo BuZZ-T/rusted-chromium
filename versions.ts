@@ -85,7 +85,8 @@ async function continueFetchingChromeUrl({
                 if (index > 0) {
                     selectedVersion = mappedVersions[index - 1]
                     if (!selectedVersion.disabled) {
-                        logger.info(`Continue with next higher version "${selectedVersion.value}"`)
+                        const higherLower = config.inverse ? 'lower' : 'higher'
+                        logger.info(`Continue with next ${higherLower} version "${selectedVersion.value}"`)
                     }
                 } else {
                     return { chromeUrl: undefined, report, selectedVersion: undefined }
@@ -97,7 +98,10 @@ async function continueFetchingChromeUrl({
                     const nextVersion = mappedVersions[index + 1]
                     selectedVersion = nextVersion
                     if (!selectedVersion.disabled) {
-                        logger.info(`Continue with next lower version "${selectedVersion.value}"`)
+
+                        const higherLower = config.inverse ? 'higher' : 'lower'
+                        
+                        logger.info(`Continue with next ${higherLower} version "${selectedVersion.value}"`)
                     }
                 } else {
                     return { chromeUrl: undefined, report, selectedVersion: undefined }

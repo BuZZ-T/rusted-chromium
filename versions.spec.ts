@@ -337,6 +337,33 @@ describe('versions', () => {
             expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION, OS_SETTINGS)
         })
 
+        it('should log "Continue with next higher version" on --decrease-on-fail and --inverse', async () => {
+            const config = createChromeFullConfig({
+                interactive: true,
+                onFail: 'decrease',
+                download: true,
+                inverse: true,
+            })
+            userSelectedVersionMock.mockResolvedValue(versionDisabled   )
+
+            await getChromeDownloadUrl(config, [versionDisabled, version1])
+            expect(loggerMock.info).toHaveBeenCalledWith('Continue with next higher version "10.0.0.0"')
+        })
+
+        it('should log "Continue with next lower version" on --increase-on-fail and --inverse', async () => {
+            const config = createChromeFullConfig({
+                interactive: true,
+                onFail: 'increase',
+                download: true,
+                inverse: true,
+            })
+            userSelectedVersionMock.mockResolvedValue(versionDisabled)
+
+            await getChromeDownloadUrl(config, [version1, versionDisabled])
+
+            expect(loggerMock.info).toHaveBeenCalledWith('Continue with next lower version "10.0.0.0"')
+        })
+
         it('should request a user selected version twice and return the chrome url on first version disabled', async () => {
             const config = createChromeFullConfig({
                 interactive: true,
