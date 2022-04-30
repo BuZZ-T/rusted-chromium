@@ -4,6 +4,7 @@ import * as prompts from 'prompts'
 import type { MappedVersion } from './commons/MappedVersion'
 import type { IChromeFullConfig } from './interfaces/interfaces'
 import type { Nullable } from './interfaces/interfaces'
+import { logger } from './log/logger'
 
 /**
  * Lets the user select a version via CLI prompt and returns it.
@@ -14,6 +15,7 @@ import type { Nullable } from './interfaces/interfaces'
  */
 export async function userSelectedVersion(versions: MappedVersion[], config: IChromeFullConfig): Promise<Nullable<MappedVersion>> {
     if (versions.every(version => version.disabled)) {
+        logger.warn('All versions in the range are disabled, try a different range and amount!')
         return null
     }
     if (config.results === 1) {

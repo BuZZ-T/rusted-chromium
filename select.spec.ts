@@ -4,10 +4,11 @@
  * @group unit/file/select
  */
 
-import type { MaybeMocked } from 'ts-jest/dist/utils/testing'
+import type { MaybeMocked, MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
 import { MappedVersion } from './commons/MappedVersion'
+import { logger } from './log/logger'
 import { userSelectedVersion } from './select'
 import { createChromeFullConfig } from './test/test.utils'
 
@@ -15,13 +16,18 @@ import { createChromeFullConfig } from './test/test.utils'
 const prompts = require('prompts')
 
 jest.mock('prompts')
+jest.mock('./log/logger')
 
 describe('userSelectedVersion', () => {
     let promptsMock: MaybeMocked<typeof prompts>
+    let loggerMock: MaybeMockedDeep<typeof logger>
 
     beforeEach(() => {
         promptsMock = mocked(prompts)
         promptsMock.mockClear()
+
+        loggerMock = mocked(logger, true)
+        loggerMock.warn.mockClear()
     })
 
     it('should select the vesion received by prompts', async () => {
@@ -55,6 +61,7 @@ describe('userSelectedVersion', () => {
             choices: [mappedVersion1, mappedVersion2],
             hint: `for ${config.os} ${config.arch}`
         })
+        expect(loggerMock.warn).toHaveBeenCalledTimes(0)
     })
 
     it('should automatically select the first entry on config.results === 1', async () => {
@@ -80,6 +87,7 @@ describe('userSelectedVersion', () => {
 
         expect(await userSelectedVersion([mappedVersion1, mappedVersion2], config)).toEqual(mappedVersion1)
         expect(promptsMock).toHaveBeenCalledTimes(0)
+        expect(loggerMock.warn).toHaveBeenCalledTimes(0)
     })
 
     it('should return null on config.results === 1 with no version', async () => {
@@ -89,6 +97,8 @@ describe('userSelectedVersion', () => {
         })
 
         expect(await userSelectedVersion([], config)).toBeNull()
+        expect(loggerMock.warn).toHaveBeenCalledTimes(1)
+        expect(loggerMock.warn).toHaveBeenCalledWith('All versions in the range are disabled, try a different range and amount!')
     })
 
     it('should return null on config.results === 1 with version disabled', async () => {
@@ -107,6 +117,37 @@ describe('userSelectedVersion', () => {
 
         expect(await userSelectedVersion([mappedVersion1], config)).toBeNull()
         expect(promptsMock).toHaveBeenCalledTimes(0)
+        expect(loggerMock.warn).toHaveBeenCalledTimes(1)
+        expect(loggerMock.warn).toHaveBeenCalledWith('All versions in the range are disabled, try a different range and amount!')
+
+    })
+
+    it('should return null with all versions disabled', async () => {
+        const mappedVersion1 = new MappedVersion({
+            major: 10,
+            minor: 0,
+            branch: 0,
+            patch: 0,
+            disabled: true
+        })
+
+        const mappedVersion2 = new MappedVersion({
+            major: 20,
+            minor: 0,
+            branch: 0,
+            patch: 0,
+            disabled: true
+        })
+
+        const config = createChromeFullConfig({
+            results: 1,
+            onlyNewestMajor: false,
+        })
+
+        expect(await userSelectedVersion([mappedVersion1, mappedVersion2], config)).toBeNull()
+        expect(promptsMock).toHaveBeenCalledTimes(0)
+        expect(loggerMock.warn).toHaveBeenCalledTimes(1)
+        expect(loggerMock.warn).toHaveBeenCalledWith('All versions in the range are disabled, try a different range and amount!')
     })
 
     it('should filter out not-newest major versions on --only-newest-major', async () => {
@@ -145,6 +186,7 @@ describe('userSelectedVersion', () => {
             onlyNewestMajor: true,
         })
 
+        // TODO: expect ?
         await userSelectedVersion([mappedVersion60_2, mappedVersion60, mappedVersion10_2, mappedVersion10], config)
         expect(promptsMock).toHaveBeenCalledWith({
             type: 'select',
@@ -154,6 +196,7 @@ describe('userSelectedVersion', () => {
             choices: [mappedVersion60_2, mappedVersion10_2],
             hint: `for ${config.os} ${config.arch}`
         })
+        expect(loggerMock.warn).toHaveBeenCalledTimes(0)
     })
 
     it('should strip the amount of versions passed to prompts on --only-newest-major', async () => {
@@ -192,6 +235,7 @@ describe('userSelectedVersion', () => {
             onlyNewestMajor: true,
         })
 
+        // TODO: expect ?
         await userSelectedVersion([mappedVersion60, mappedVersion40, mappedVersion20, mappedVersion10], config)
         expect(promptsMock).toHaveBeenCalledWith({
             type: 'select',
@@ -201,6 +245,7 @@ describe('userSelectedVersion', () => {
             choices: [mappedVersion60, mappedVersion40, mappedVersion20],
             hint: `for ${config.os} ${config.arch}`
         })
+        expect(loggerMock.warn).toHaveBeenCalledTimes(0)
     })
 
     it('should select the next version is newest major is disabled on --only-newest-major', async () => {
@@ -212,6 +257,7 @@ describe('userSelectedVersion', () => {
             results: 2,
         })
 
+        // TODO: expect ?
         await userSelectedVersion([mappedVersion20, mappedVersion201], config)
         expect(promptsMock).toHaveBeenCalledWith({
             type: 'select',
@@ -221,6 +267,6 @@ describe('userSelectedVersion', () => {
             choices: [mappedVersion20],
             hint: `for ${config.os} ${config.arch}`
         })
+        expect(loggerMock.warn).toHaveBeenCalledTimes(0)
     })
-
 })
