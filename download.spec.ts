@@ -109,10 +109,14 @@ describe('download', () => {
 
         beforeEach(() => {
             loadVersionsMock.mockReset()
+            loadVersionsMock.mockResolvedValue(['10.0.0.0', '11.0.0.0', '12.0.0.0', '13.0.0.0', '14.0.0.0', '15.0.0.0'])
+            
             loadStoreMock.mockReset()
             loadStoreMock.mockResolvedValue(new Store(createStore()))
 
             mapVersionsMock.mockReset()
+            mapVersionsMock.mockReturnValue([new MappedVersion('10.0.0.0', true), new MappedVersion('11.0.0.0', true)])
+
             getChromeDownloadUrlMock.mockReset()
             fetchChromeZipFileMock.mockReset()
             

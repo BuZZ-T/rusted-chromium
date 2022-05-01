@@ -352,4 +352,34 @@ describe('ComparableVersion', () => {
             )).toEqual(new ComparableVersion(10, 1, 2, 3))
         })
     })
+
+    describe('nextMajorVersion', () => {
+        it('should go to the next major version', () => {
+            expect(ComparableVersion.nextMajorVersion(new ComparableVersion({
+                major: 10,
+                minor: 11,
+                branch: 12,
+                patch: 13,
+            }))).toEqual(new ComparableVersion({
+                major: 11,
+                minor: 0,
+                branch: 0,
+                patch: 0,
+            }))
+        })
+
+        it('should go to five major versions up', () => {
+            expect(ComparableVersion.nextMajorVersion(new ComparableVersion({
+                major: 10,
+                minor: 11,
+                branch: 12,
+                patch: 13,
+            }), 5)).toEqual(new ComparableVersion({
+                major: 15,
+                minor: 0,
+                branch: 0,
+                patch: 0,
+            }))
+        })
+    })
 })

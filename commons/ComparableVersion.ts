@@ -81,4 +81,13 @@ export class ComparableVersion implements IVersion {
     public static max(...versions: ComparableVersion[]): ComparableVersion {
         return versions.reduce((currentMax, version) => ComparableVersion.compare(currentMax, version) === Compared.LESS ? version : currentMax)
     }
+
+    public static nextMajorVersion(version: ComparableVersion, plus = 1): ComparableVersion {
+        return new ComparableVersion({
+            major: version.major + plus,
+            minor: 0,
+            branch: 0,
+            patch: 0,
+        })
+    }
 }
