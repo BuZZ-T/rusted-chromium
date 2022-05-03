@@ -23,11 +23,13 @@ export const createChromeSingleConfig = (config?: Partial<IChromeSingleConfig>):
 export const createImportConfig = (config?: Partial<IStoreConfig>): IStoreConfig => ({
     url: 'some-url',
     quiet: false,
+    debug: false,
     ...config,
 })
 
 export const createExportConfig = (config?: Partial<IExportConfig>): IExportConfig => ({
     quiet: false,
+    debug: false,
     ...config,
 })
 

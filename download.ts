@@ -7,7 +7,7 @@ import { DEFAULT_FULL_CONFIG, DEFAULT_SINGLE_CONFIG } from './commons/constants'
 import { DOWNLOAD_ZIP, EXTRACT_ZIP } from './commons/loggerTexts'
 import { NoChromiumDownloadError } from './errors'
 import type { DownloadReportEntry, IChromeConfig } from './interfaces/interfaces'
-import { logger } from './log/logger'
+import { DebugMode, logger } from './log/logger'
 import { progress } from './log/progress'
 import { spinner } from './log/spinner'
 import { loadStore } from './store/loadStore'
@@ -78,6 +78,9 @@ async function extractZip(downloadPath: string) {
  * @param additionalConfig Manually set config, which will override the settings in the default config
  */
 async function downloadForConfig(config: IChromeConfig): Promise<DownloadReportEntry[]> {
+    if(config.debug) {
+        logger.setDebugMode(DebugMode.DEBUG)
+    }
 
     const versions = await loadVersions()
     const store = await loadStore()

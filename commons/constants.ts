@@ -24,20 +24,21 @@ export const DEFAULT_CONFIG_OPTIONS: IConfigOptions = {
 export const DEFAULT_FULL_CONFIG: IChromeFullConfig = {
     arch: 'x64',
     autoUnzip: false,
+    debug: false,
     download: true,
     downloadFolder: null,
     hideNegativeHits: false,
     interactive: true,
+    inverse: false,
     max: new ComparableVersion(10000, 0, 0, 0),
     min: new ComparableVersion(0, 0, 0, 0),
     onFail: 'nothing',
     onlyNewestMajor: false,
     os: 'linux',
-    results: 10,
-    store: true,
-    single: null,
-    inverse: false,
     quiet: false,
+    results: 10,
+    single: null,
+    store: true,
 }
 
 export const DEFAULT_SINGLE_CONFIG: IChromeSingleConfig = {
@@ -49,4 +50,5 @@ export const DEFAULT_SINGLE_CONFIG: IChromeSingleConfig = {
     downloadFolder: null,
     single: new ComparableVersion(10, 0, 0, 0),
     quiet: false,
+    debug: false,
 }

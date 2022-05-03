@@ -6,7 +6,7 @@ import { ComparableVersion } from '../commons/ComparableVersion'
 import { DEFAULT_CONFIG_OPTIONS } from '../commons/constants'
 import type { IConfigOptions } from '../interfaces/config.interfaces'
 import type { ConfigWrapper, IChromeSingleConfig } from '../interfaces/interfaces'
-import { DebugMode, logger } from '../log/logger'
+import { logger } from '../log/logger'
 /* eslint-disable-next-line import/no-namespace */
 import * as packageJson from '../package.json'
 import { mapOS } from '../utils'
@@ -46,10 +46,6 @@ export function readConfig(args: string[], platform: NodeJS.Platform): ConfigWra
 
     const os = mapOS(options.os || platform)
 
-    if(options.debug) {
-        logger.setDebugMode(DebugMode.DEBUG)
-    }
-
     if (!options.os && options.arch) {
         logger.warn('Setting "--arch" has no effect, when "--os" is not set!')
     }
@@ -66,6 +62,7 @@ export function readConfig(args: string[], platform: NodeJS.Platform): ConfigWra
             config: {
                 url: options.importStore,
                 quiet: options.quiet,
+                debug: options.debug,
             },
         }
     }
@@ -76,6 +73,7 @@ export function readConfig(args: string[], platform: NodeJS.Platform): ConfigWra
             config: {
                 path: typeof options.exportStore === 'string' ? options.exportStore : undefined,
                 quiet: options.quiet,
+                debug: options.debug,
             }
         }
     }
@@ -90,6 +88,7 @@ export function readConfig(args: string[], platform: NodeJS.Platform): ConfigWra
             downloadFolder: options.folder || null,
             single: new ComparableVersion(options.single),
             quiet: options.quiet,
+            debug: options.debug,
         }
 
         return {
@@ -117,6 +116,7 @@ export function readConfig(args: string[], platform: NodeJS.Platform): ConfigWra
             single: null,
             inverse: options.inverse,
             quiet: options.quiet,
+            debug: options.debug,
         },
     }
 }

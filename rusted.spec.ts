@@ -148,7 +148,7 @@ describe('rusted', () => {
         expect(importAndMergeLocalstoreMock).toHaveBeenCalledTimes(0)
 
         expect(loggerMock.error).toHaveBeenCalledTimes(1)
-        expect(loggerMock.error).toHaveBeenCalledWith('Failed to read config: {"action":"something","config":{"url":"something","quiet":false}}')
+        expect(loggerMock.error).toHaveBeenCalledWith('Failed to read config: {"action":"something","config":{"url":"something","quiet":false,"debug":false}}')
     })
 
     it('should set the logger to silent on config.quiet', async () => {

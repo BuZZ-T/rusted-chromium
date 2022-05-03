@@ -6,10 +6,11 @@
 
 import { existsSync, readFile, writeFile } from 'fs'
 import { join as pathJoin } from 'path'
-import type { MaybeMocked } from 'ts-jest/dist/utils/testing'
+import type { MaybeMocked, MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
 import { LOCAL_STORE_FILE } from '../commons/constants'
+import { logger, DebugMode, Logger } from '../log/logger'
 import { createStore, ReadFileWithOptions, createImportConfig } from '../test/test.utils'
 import { downloadStore } from './downloadStore'
 import { importAndMergeLocalstore } from './importStore'
@@ -20,6 +21,7 @@ jest.mock('fs')
 jest.mock('../log/spinner')
 jest.mock('./downloadStore')
 jest.mock('./readStore')
+jest.mock('../log/logger')
 
 describe('importStore', () => {
     describe('importAndMergeLocalstore', () => {
@@ -31,6 +33,8 @@ describe('importStore', () => {
         let downloadStoreMock: MaybeMocked<typeof downloadStore>
         let readStoreFileMock: MaybeMocked<typeof readStoreFile>
 
+        let loggerMock: MaybeMockedDeep<Logger>
+
         beforeAll(() => {
             downloadStoreMock = mocked(downloadStore)
             readStoreFileMock = mocked(readStoreFile)
@@ -38,6 +42,8 @@ describe('importStore', () => {
             existsSyncMock = mocked(existsSync)
             writeFileMock = mocked(writeFile)
             readFileMock = mocked(readFile as ReadFileWithOptions)
+
+            loggerMock = mocked(logger, true)
         })
 
         beforeEach(() => {
@@ -47,6 +53,8 @@ describe('importStore', () => {
             existsSyncMock.mockClear()
             writeFileMock.mockClear()
             readFileMock.mockClear()
+
+            loggerMock.setDebugMode.mockReset()
         })
 
         it('should download a store via URL and store it without existing store', async () => {
@@ -70,7 +78,6 @@ describe('importStore', () => {
 
             expect(writeFileMock).toHaveBeenCalledTimes(1)
             expect(writeFileMock).toHaveBeenCalledWith(pathJoin(__dirname, '..', LOCAL_STORE_FILE), anyStore.toMinimalFormattedString(), expect.any(Function))
-
         })
 
         it('should download a store via local file and store it without existing store', async () => {
@@ -208,6 +215,23 @@ describe('importStore', () => {
 
             expect(writeFileMock).toHaveBeenCalledTimes(1)
             expect(writeFileMock).toHaveBeenCalledWith(pathJoin(__dirname, '..', LOCAL_STORE_FILE), new Store(mergedStore).toMinimalFormattedString(), expect.any(Function))
+        })
+
+        it('should enable debugging on config.debug', async () => {
+            const anyStore = new Store(createStore({ linux: { x64: ['10.11.12.13'], x86: [] } }))
+
+            existsSyncMock.mockReturnValue(false)
+            downloadStoreMock.mockResolvedValue(anyStore)
+            writeFileMock.mockImplementation((path, store, callback) => {
+                callback(null)
+            })
+
+            const config = createImportConfig({ debug: true, url: 'https://some.url.de' })
+
+            await importAndMergeLocalstore(config)
+
+            expect(loggerMock.setDebugMode).toHaveBeenCalledTimes(1)
+            expect(loggerMock.setDebugMode).toHaveBeenCalledWith(DebugMode.DEBUG)
         })
     })
 })

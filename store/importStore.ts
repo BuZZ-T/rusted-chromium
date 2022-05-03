@@ -5,6 +5,7 @@ import { promisify } from 'util'
 import { LOCAL_STORE_FILE } from '../commons/constants'
 import type { IStoreConfig } from '../interfaces/interfaces'
 import type { StoreSize } from '../interfaces/store.interfaces'
+import { DebugMode, logger } from '../log/logger'
 import { downloadStore } from './downloadStore'
 import { readStoreFile } from './readStore'
 import type { Store } from './Store'
@@ -15,6 +16,10 @@ const readFilePromise = promisify(readFile)
 const localStoreFilePath = join(__dirname, '..', LOCAL_STORE_FILE)
 
 export async function importAndMergeLocalstore(config: IStoreConfig): Promise<StoreSize> {
+    if(config.debug) {
+        logger.setDebugMode(DebugMode.DEBUG)
+    }
+
     const isURL = config.url.startsWith('http://') || config.url.startsWith('https://')
 
     const store = isURL

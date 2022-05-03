@@ -14,7 +14,7 @@ import { ComparableVersion } from './commons/ComparableVersion'
 import { MappedVersion } from './commons/MappedVersion'
 import { downloadChromium } from './download'
 import { NoChromiumDownloadError } from './errors'
-import { Logger, logger } from './log/logger'
+import { Logger, logger, DebugMode } from './log/logger'
 import { progress, ProgressBar } from './log/progress'
 import { spinner, Spinner } from './log/spinner'
 import { loadStore } from './store/loadStore'
@@ -122,7 +122,9 @@ describe('download', () => {
             
             progressMock.start.mockReset()
             progressMock.fraction.mockReset()
+
             loggerMock.info.mockReset()
+            loggerMock.setDebugMode.mockReset()
             
             spinnerMock.start.mockReset()
             spinnerMock.success.mockReset()
@@ -191,6 +193,7 @@ describe('download', () => {
             expect(getChromeDownloadUrlMock).toHaveBeenCalledWith({
                 arch: 'x64',
                 autoUnzip: false,
+                debug: false,
                 download: true,
                 downloadFolder: 'down_folder',
                 hideNegativeHits: false,
@@ -300,6 +303,7 @@ describe('download', () => {
             expect(getChromeDownloadUrlMock).toHaveBeenCalledWith({
                 arch: 'x64',
                 autoUnzip: false,
+                debug: false,
                 download: true,
                 downloadFolder: null,
                 hideNegativeHits: false,
@@ -850,5 +854,29 @@ describe('download', () => {
             expect(processExitSpy).toHaveBeenCalledTimes(1)
             expect(processExitSpy).toHaveBeenCalledWith(130)
         })
+
+        it('should enable debugging on config.debug', async () => {
+            mapVersionsMock.mockReturnValue([new MappedVersion(10, 0, 0, 1, false)])
+            getChromeDownloadUrlMock.mockResolvedValue(createGetChromeDownloadUrlReturn())
+
+            fetchChromeZipFileMock.mockResolvedValue(zipFileResource)
+            existsSyncMock.mockReturnValue(false)
+
+            mkdirMock.mockImplementation((path, options, callback) => {
+                callback(null)
+            })
+
+            // Act
+            const config = createChromeFullConfig({
+                autoUnzip: false,
+                debug: true,
+                downloadFolder: 'down_folder',
+            })
+            await downloadChromium(config)
+
+            expect(loggerMock.setDebugMode).toHaveBeenCalledTimes(1)
+            expect(loggerMock.setDebugMode).toHaveBeenCalledWith(DebugMode.DEBUG)
+        })
+        
     })
 })

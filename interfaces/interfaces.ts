@@ -37,6 +37,7 @@ export interface IChromeFullConfig {
     single: null
     inverse: boolean
     quiet: boolean
+    debug: boolean
 }
 
 export interface IChromeSingleConfig {
@@ -48,16 +49,19 @@ export interface IChromeSingleConfig {
     download: boolean
     downloadFolder: string | null
     quiet: boolean
+    debug: boolean
 }
 
 export interface IStoreConfig {
     url: string
     quiet: boolean
+    debug: boolean
 }
 
 export interface IExportConfig {
     path?: string
     quiet: boolean
+    debug: boolean
 }
 
 export type ConfigWrapper = IStoreConfigWrapper | IChromeConfigWrapper | IExportConfigWrapper

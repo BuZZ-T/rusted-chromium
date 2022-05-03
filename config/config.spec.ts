@@ -11,7 +11,7 @@ import { ComparableVersion } from '../commons/ComparableVersion'
 import { DEFAULT_CONFIG_OPTIONS } from '../commons/constants'
 import type { IChromeConfigWrapper, IStoreConfigWrapper, IExportConfigWrapper } from '../interfaces/interfaces'
 import type { OS } from '../interfaces/os.interfaces'
-import { Logger, logger, DebugMode } from '../log/logger'
+import { Logger, logger } from '../log/logger'
 import { createChromeFullConfig, createChromeOptions, createImportConfig, createExportConfig, createChromeSingleConfig } from '../test/test.utils'
 import { readConfig } from './config'
 
@@ -250,11 +250,11 @@ describe('config', () => {
             
                 const expectedConfig: IChromeConfigWrapper = {
                     action: 'loadChrome',
-                    config: createChromeFullConfig()
+                    config: createChromeFullConfig({
+                        debug: true,
+                    })
                 }
             
-                expect(loggerMock.setDebugMode).toBeCalledTimes(1)
-                expect(loggerMock.setDebugMode).toBeCalledWith(DebugMode.DEBUG)
                 expect(config).toEqual(expectedConfig)
             })
 

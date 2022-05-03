@@ -6,14 +6,17 @@
 
 import { existsSync, createReadStream, ReadStream } from 'fs'
 import { join } from 'path'
-import type { MaybeMocked } from 'ts-jest/dist/utils/testing'
+import type { MaybeMocked, MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
 import { LOCAL_STORE_FILE } from '../commons/constants'
+import { logger, Logger, DebugMode } from '../log/logger'
 import { createExportConfig } from '../test/test.utils'
 import { exportStore } from './exportStore'
 
 jest.mock('fs')
+
+jest.mock('../log/logger')
 
 describe('exportStore', () => {
 
@@ -21,6 +24,8 @@ describe('exportStore', () => {
     let createReadStreamMock: MaybeMocked<typeof createReadStream>
     let readStreamMock: MaybeMocked<ReadStream>
     let writeStreamMock: MaybeMocked<NodeJS.WriteStream>
+
+    let loggerMock: MaybeMockedDeep<Logger>
 
     beforeAll(() => {
         existsSyncMock = mocked(existsSync)
@@ -31,6 +36,8 @@ describe('exportStore', () => {
         writeStreamMock = {
             write: jest.fn()
         } as unknown as MaybeMocked<NodeJS.WriteStream>
+
+        loggerMock = mocked(logger, true)
     })
 
     beforeEach(() => {
@@ -82,6 +89,16 @@ describe('exportStore', () => {
 
             expect(createReadStreamMock).toHaveBeenCalledTimes(0)
             expect(readStreamMock.pipe).toHaveBeenCalledTimes(0)
+        })
+
+        it('should enable debugging on config.debug', () => {
+            existsSyncMock.mockReturnValue(true)
+            createReadStreamMock.mockReturnValue(readStreamMock)
+
+            exportStore(createExportConfig({ debug: true, path: 'some_path' }), writeStreamMock)
+
+            expect(loggerMock.setDebugMode).toHaveBeenCalledTimes(1)
+            expect(loggerMock.setDebugMode).toHaveBeenCalledWith(DebugMode.DEBUG)
         })
     })
 })
