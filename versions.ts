@@ -54,12 +54,15 @@ async function continueFetchingChromeUrl({
                 version: selectedVersion,
             })
 
-            if (chromeUrl && config.download) {
-                // chrome url found, ending loop
+            if (chromeUrl) {
                 spinner.success()
-                return { chromeUrl, report, selectedVersion }
+
+                if (config.download) {
+                    return { chromeUrl, report, selectedVersion }
+                }
             }
         } else {
+            logger.warn('Already disabled version!')
             report.push({
                 binaryExists: false,
                 download: config.download,
@@ -74,6 +77,7 @@ async function continueFetchingChromeUrl({
         }
 
         if (chromeUrl && !config.download) {
+            chromeUrl = undefined
             logger.warn('Not downloading binary.')
         }
 
@@ -95,8 +99,7 @@ async function continueFetchingChromeUrl({
             }
             case 'decrease': {
                 if (index < mappedVersions.length - 1) {
-                    const nextVersion = mappedVersions[index + 1]
-                    selectedVersion = nextVersion
+                    selectedVersion = mappedVersions[index + 1]
                     if (!selectedVersion.disabled) {
 
                         const higherLower = config.inverse ? 'higher' : 'lower'
