@@ -1213,7 +1213,7 @@ describe('versions', () => {
             expect(mapped).toEqual(expectedVersions)
         })
 
-        it('should first limit and then sort the results on --inverse and --max-results', () => {
+        it('should first sort, then inverse and then limit the results on --inverse and --max-results', () => {
             const config = createChromeFullConfig({
                 inverse: true,
                 results: 2,
@@ -1222,17 +1222,17 @@ describe('versions', () => {
 
             const expectedVersions = [
                 new MappedVersion({
-                    major: 30,
-                    minor: 0,
-                    branch: 0,
-                    patch: 0,
+                    major: 10,
+                    minor: 1,
+                    branch: 2,
+                    patch: 4,
                     disabled: false
                 }),
                 new MappedVersion({
-                    major: 60,
-                    minor: 6,
-                    branch: 7,
-                    patch: 8,
+                    major: 29,
+                    minor: 0,
+                    branch: 2000,
+                    patch: 4,
                     disabled: false
                 }),
             ]

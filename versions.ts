@@ -232,13 +232,13 @@ export function mapVersions(versions: string[], config: IChromeConfig, store: St
             && ComparableVersion.compare(version.comparable, config.max) !== Compared.GREATER)
         .sort(sortDescendingMappedVersions)
 
+    const versionRegardingInverse = config.inverse
+        ? filteredVersions.reverse()
+        : filteredVersions
+
     // Don't reduce the amount of filtered versions when --only-newest-major is set
     // because the newest available major version might be disabled for the current os 
-    const limitedVersions = config.onlyNewestMajor
-        ? filteredVersions
-        : filteredVersions.slice(0, Number(config.results))
-
-    return config.inverse
-        ? limitedVersions.reverse()
-        : limitedVersions
+    return config.onlyNewestMajor
+        ? versionRegardingInverse
+        : versionRegardingInverse.slice(0, Number(config.results))
 }
