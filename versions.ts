@@ -55,8 +55,6 @@ async function continueFetchingChromeUrl({
             })
 
             if (chromeUrl) {
-                spinner.success()
-
                 if (config.download) {
                     return { chromeUrl, report, selectedVersion }
                 }

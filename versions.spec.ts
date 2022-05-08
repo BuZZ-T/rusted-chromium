@@ -11,6 +11,7 @@ import { mocked } from 'ts-jest/utils'
 
 import { fetchBranchPosition, fetchChromeUrl, fetchChromiumTags } from './api'
 import { ComparableVersion } from './commons/ComparableVersion'
+import { SEARCH_BINARY } from './commons/loggerTexts'
 import { MappedVersion } from './commons/MappedVersion'
 import type { GetChromeDownloadUrlReturn } from './interfaces/function.interfaces'
 import type { OSSetting } from './interfaces/os.interfaces'
@@ -133,6 +134,11 @@ describe('versions', () => {
             expect(fetchBranchPositionMock).toHaveBeenCalledWith(version1.value)
             expect(fetchChromeUrlMock).toHaveBeenCalledTimes(1)
             expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION, OS_SETTINGS)
+
+            expect(spinnerMock.start).toHaveBeenCalledTimes(1)
+            expect(spinnerMock.start).toHaveBeenCalledWith(SEARCH_BINARY)
+            expect(spinnerMock.success).toHaveBeenCalledTimes(1)
+            expect(spinnerMock.error).toHaveBeenCalledTimes(0)
         })
 
         it('should return the chrome url for the automatically selected first mapped version on decrease', async () => {
@@ -166,6 +172,11 @@ describe('versions', () => {
             expect(fetchBranchPositionMock).toHaveBeenCalledWith(version1.value)
             expect(fetchChromeUrlMock).toHaveBeenCalledTimes(1)
             expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION, OS_SETTINGS)
+
+            expect(spinnerMock.start).toHaveBeenCalledTimes(1)
+            expect(spinnerMock.start).toHaveBeenCalledWith(SEARCH_BINARY)
+            expect(spinnerMock.success).toHaveBeenCalledTimes(1)
+            expect(spinnerMock.error).toHaveBeenCalledTimes(0)
         })
 
         it('should automatically continue with the next available higher version on --increase-on-fail', async () => {
@@ -209,6 +220,11 @@ describe('versions', () => {
             expect(fetchBranchPositionMock).toHaveBeenCalledWith(version1.value)
             expect(fetchChromeUrlMock).toHaveBeenCalledTimes(1)
             expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION, OS_SETTINGS)
+
+            expect(spinnerMock.start).toHaveBeenCalledTimes(1)
+            expect(spinnerMock.start).toHaveBeenCalledWith(SEARCH_BINARY)
+            expect(spinnerMock.success).toHaveBeenCalledTimes(1)
+            expect(spinnerMock.error).toHaveBeenCalledTimes(0)
         })
 
         it('should break on no version left on --increase-on-fail', async () => {
@@ -244,6 +260,10 @@ describe('versions', () => {
 
             expect(fetchBranchPositionMock).toHaveBeenCalledTimes(0)
             expect(fetchChromeUrlMock).toHaveBeenCalledTimes(0)
+
+            expect(spinnerMock.start).toHaveBeenCalledTimes(0)
+            expect(spinnerMock.success).toHaveBeenCalledTimes(0)
+            expect(spinnerMock.error).toHaveBeenCalledTimes(0)
         })
 
         it('should skip the next available higher version, if it\'s disabled on --increase-on-fail', async () => {
@@ -293,6 +313,11 @@ describe('versions', () => {
             expect(fetchBranchPositionMock).toHaveBeenCalledWith(version4.value)
             expect(fetchChromeUrlMock).toHaveBeenCalledTimes(1)
             expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION, OS_SETTINGS)
+
+            expect(spinnerMock.start).toHaveBeenCalledTimes(1)
+            expect(spinnerMock.start).toHaveBeenCalledWith(SEARCH_BINARY)
+            expect(spinnerMock.success).toHaveBeenCalledTimes(1)
+            expect(spinnerMock.error).toHaveBeenCalledTimes(0)
         })
 
         it('should automatically continue with the next available lower version on --decrease-on-fail', async () => {
@@ -335,6 +360,11 @@ describe('versions', () => {
             expect(fetchBranchPositionMock).toHaveBeenCalledWith(version1.value)
             expect(fetchChromeUrlMock).toHaveBeenCalledTimes(1)
             expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION, OS_SETTINGS)
+
+            expect(spinnerMock.start).toHaveBeenCalledTimes(1)
+            expect(spinnerMock.start).toHaveBeenCalledWith(SEARCH_BINARY)
+            expect(spinnerMock.success).toHaveBeenCalledTimes(1)
+            expect(spinnerMock.error).toHaveBeenCalledTimes(0)
         })
 
         it('should log "Continue with next higher version" on --decrease-on-fail and --inverse', async () => {
@@ -362,6 +392,11 @@ describe('versions', () => {
             await getChromeDownloadUrl(config, [version1, versionDisabled])
 
             expect(loggerMock.info).toHaveBeenCalledWith('Continue with next lower version "10.0.0.0"')
+
+            expect(spinnerMock.start).toHaveBeenCalledTimes(1)
+            expect(spinnerMock.start).toHaveBeenCalledWith(SEARCH_BINARY)
+            expect(spinnerMock.success).toHaveBeenCalledTimes(1)
+            expect(spinnerMock.error).toHaveBeenCalledTimes(0)
         })
 
         it('should request a user selected version twice and return the chrome url on first version disabled', async () => {
@@ -401,6 +436,11 @@ describe('versions', () => {
             expect(fetchBranchPositionMock).toHaveBeenCalledWith(version1.value)
             expect(fetchChromeUrlMock).toHaveBeenCalledTimes(1)
             expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION, OS_SETTINGS)
+
+            expect(spinnerMock.start).toHaveBeenCalledTimes(1)
+            expect(spinnerMock.start).toHaveBeenCalledWith(SEARCH_BINARY)
+            expect(spinnerMock.success).toHaveBeenCalledTimes(1)
+            expect(spinnerMock.error).toHaveBeenCalledTimes(0)
         })
 
         it('should mark a version as disabled and request a user selected version twice on no binary found', async () => {
@@ -454,6 +494,11 @@ describe('versions', () => {
             expect(fetchChromeUrlMock).toHaveBeenCalledTimes(2)
             expect(fetchChromeUrlMock).toHaveBeenCalledWith('branch-position2', OS_SETTINGS)
             expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION, OS_SETTINGS)
+
+            expect(spinnerMock.start).toHaveBeenCalledTimes(2)
+            expect(spinnerMock.start.mock.calls).toEqual([[SEARCH_BINARY], [SEARCH_BINARY]])
+            expect(spinnerMock.success).toHaveBeenCalledTimes(1)
+            expect(spinnerMock.error).toHaveBeenCalledTimes(1)
         })
 
         it('should skip a already disabled version on --decrease-on-fail when selecting a disabled version', async () => {
@@ -508,6 +553,11 @@ describe('versions', () => {
             expect(fetchChromeUrlMock).toHaveBeenCalledTimes(2)
             expect(fetchChromeUrlMock).toHaveBeenCalledWith('branch-position2', OS_SETTINGS)
             expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION, OS_SETTINGS)
+
+            expect(spinnerMock.start).toHaveBeenCalledTimes(2)
+            expect(spinnerMock.start.mock.calls).toEqual([[SEARCH_BINARY], [SEARCH_BINARY]])
+            expect(spinnerMock.success).toHaveBeenCalledTimes(1)
+            expect(spinnerMock.error).toHaveBeenCalledTimes(1)
         })
 
         it('should not mark a version as disabled on store: false', async () => {
@@ -554,6 +604,11 @@ describe('versions', () => {
             expect(fetchChromeUrlMock).toHaveBeenCalledTimes(2)
             expect(fetchChromeUrlMock).toHaveBeenCalledWith('branch-position2', OS_SETTINGS)
             expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION, OS_SETTINGS)
+
+            expect(spinnerMock.start).toHaveBeenCalledTimes(2)
+            expect(spinnerMock.start.mock.calls).toEqual([[SEARCH_BINARY], [SEARCH_BINARY]])
+            expect(spinnerMock.success).toHaveBeenCalledTimes(1)
+            expect(spinnerMock.error).toHaveBeenCalledTimes(1)
         })
 
         it('should return null, if --decrease-on-fail reaces the end of versions on only disabled versions', async () => {
@@ -592,6 +647,10 @@ describe('versions', () => {
             expect(userSelectedVersionMock).toHaveBeenCalledTimes(0)
             expect(fetchBranchPositionMock).toHaveBeenCalledTimes(0)
             expect(fetchChromeUrlMock).toHaveBeenCalledTimes(0)
+
+            expect(spinnerMock.start).toHaveBeenCalledTimes(0)
+            expect(spinnerMock.success).toHaveBeenCalledTimes(0)
+            expect(spinnerMock.error).toHaveBeenCalledTimes(0)
         })
 
         it('should return null, if --decrease-on-fail reaches the end of versions on versions without binary', async () => {
@@ -646,6 +705,11 @@ describe('versions', () => {
             expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION, OS_SETTINGS)
             expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION2, OS_SETTINGS)
             expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION3, OS_SETTINGS)
+
+            expect(spinnerMock.start).toHaveBeenCalledTimes(3)
+            expect(spinnerMock.start.mock.calls).toEqual([[SEARCH_BINARY], [SEARCH_BINARY], [SEARCH_BINARY]])
+            expect(spinnerMock.success).toHaveBeenCalledTimes(0)
+            expect(spinnerMock.error).toHaveBeenCalledTimes(3)
         })
 
         it('should do nothing if --decrease-on-fail reaches the end of versions on --no-download and all versions with binary', async () => {
@@ -699,6 +763,11 @@ describe('versions', () => {
             expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION, OS_SETTINGS)
             expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION2, OS_SETTINGS)
             expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION3, OS_SETTINGS)
+
+            expect(spinnerMock.start).toHaveBeenCalledTimes(3)
+            expect(spinnerMock.start.mock.calls).toEqual([[SEARCH_BINARY], [SEARCH_BINARY], [SEARCH_BINARY]])
+            expect(spinnerMock.success).toHaveBeenCalledTimes(0)
+            expect(spinnerMock.error).toHaveBeenCalledTimes(0)
         })
 
         it('should return undefined, is config.single and no binary was found', async () => {
@@ -733,6 +802,11 @@ describe('versions', () => {
             expect(fetchBranchPositionMock).toHaveBeenCalledWith(mappedSingleVersion.value)
             expect(fetchChromeUrlMock).toHaveBeenCalledTimes(1)
             expect(fetchChromeUrlMock).toHaveBeenCalledWith(BRANCH_POSITION, OS_SETTINGS)
+
+            expect(spinnerMock.start).toHaveBeenCalledTimes(1)
+            expect(spinnerMock.start).toHaveBeenCalledWith(SEARCH_BINARY)
+            expect(spinnerMock.success).toHaveBeenCalledTimes(0)
+            expect(spinnerMock.error).toHaveBeenCalledTimes(1)
         })
 
         it('should return undefined on auto-search without version', async () => {
@@ -749,6 +823,10 @@ describe('versions', () => {
             }
 
             expect(await getChromeDownloadUrl(config, [])).toEqual(expectedSettings)
+
+            expect(spinnerMock.start).toHaveBeenCalledTimes(0)
+            expect(spinnerMock.success).toHaveBeenCalledTimes(0)
+            expect(spinnerMock.error).toHaveBeenCalledTimes(0)
         })
     })
 
