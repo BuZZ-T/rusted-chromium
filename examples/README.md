@@ -38,7 +38,9 @@ import { ComparableVersion, downloadChromium } from 'rusted-chromium'
 downloadChromium({
     arch: 'x64',
     autoUnzip: false,
+    debug: false,
     download: true,
+    downloadFolder: null,
     hideNegativeHits: false,
     interactive: true,
     inverse: false,
@@ -48,11 +50,11 @@ downloadChromium({
     onlyNewestMajor: false,
     os: 'linux',
     quiet: false,
-    store: true,
     results: 10,
-    downloadFolder: null,
     single: null,
+    store: true,
 })
+
 ```
 
 ### example-download-single.ts
@@ -97,6 +99,7 @@ Exports the localstore.json to stdout.
 import { exportStore } from 'rusted-chromium'
 
 exportStore({
+    debug: false,
     quiet: false,
 }, process.stdout)
 ```
@@ -107,6 +110,7 @@ Imports the localstore.json from a URL and merges it with an existing localstore
 import { importAndMergeLocalstore } from 'rusted-chromium'
 
 importAndMergeLocalstore({
+    debug: false,
     quiet: false,
     url: 'https://rusted.buzz-t.eu/localstore.json'
 })
