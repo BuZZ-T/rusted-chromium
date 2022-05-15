@@ -42,7 +42,7 @@
   "author": "Bastian Gebhardt <buzz-t@buzz-t.eu>",
   "license": "MIT",
   "dependencies": {
-    "chalk": "^3.0.0",
+    "chalk": "^4.0.0",
     "commander": "^4.1.1",
     "extract-zip": "^2.0.1",
     "lodash": "^4.17.21",
