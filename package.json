@@ -48,7 +48,7 @@
     "node-fetch": "^2.6.7",
     "node-fetch-progress": "^1.0.2",
     "node-html-parser": "^1.2.5",
-    "prompts": "^2.3.1"
+    "prompts": "^2.4.2"
   },
   "devDependencies": {
     "@types/jest": "^26.0.15",
