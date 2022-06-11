@@ -13,6 +13,7 @@ This cli tool can be used to download old (and therefore unsupported) versions o
 
 * [Disclaimer](#disclaimer-)
 * [Installation](#installation)
+* [Supported node versions](#supported-node-versions)
 * [All available flags](#all-available-flags)
 * [Examples](#examples)
 * [Store file](#store-file)
@@ -58,6 +59,10 @@ npm run build
 ./bin/rusted-chromium.js --help
 
 ```
+
+## Supported node versions
+
+node 16+
 
 ## All available flags
 
