@@ -354,4 +354,39 @@ describe('[int] download chromium', () => {
         expect(existsSync(chromeZip20)).toBe(true)
         expect(existsSync(chromeZip10)).toBe(false)
     })
+
+    it('should prompt only the newest majors', async () => {
+        const gen = popArray(['4444'])
+
+        mockNodeFetch(nodeFetchMock, {
+            params: {
+                tags: ['30.0.0.0', '20.0.0.1', '20.0.0.0', '10.0.3.0', '10.0.0.0']
+            },
+            urls: [
+                {
+                    once: true,
+                    name: 'branchPosition',
+                    gen: () => gen.next(),
+                    mock: (position: string) => branchPositionResponse(position),
+                }
+            ]
+        })
+        promptsMock.mockReturnValue({ version: '20.0.0.0' })
+
+        const rustedPromsie = rusted(['/some/path/to/node', '/some/path/to/rusted-chromium', '--only-newest-major'], 'linux')
+
+        chromeZipStream.end()
+
+        await rustedPromsie
+
+        expect(promptsMock).toHaveBeenCalledWith({
+            type: 'select',
+            name: 'version',
+            message: 'Select a version',
+            // FIXME: Check missing warn field in PromptObject
+            warn: 'This version seems to not have a binary',
+            choices: [new MappedVersion('30.0.0.0', false), new MappedVersion('20.0.0.1', false), new MappedVersion('10.0.3.0', false)],
+            hint: expect.any(String),
+        })
+    })
 })
