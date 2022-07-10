@@ -18,4 +18,5 @@ downloadChromium({
     downloadFolder: null,
     single: null,
     debug: false,
+    list: false,
 })

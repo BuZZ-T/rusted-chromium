@@ -23,6 +23,7 @@ const allFalseConfig: IChromeFullConfig = {
     hideNegativeHits: false,
     interactive: false,
     inverse: false,
+    list: false,
     max: new ComparableVersion(Infinity, 0, 0, 0),
     min: new ComparableVersion(-Infinity, 0, 0, 0),
     onFail: 'nothing',

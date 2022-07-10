@@ -22,15 +22,6 @@ export async function userSelectedVersion(versions: MappedVersion[], config: ICh
         return versions[0]
     }
 
-    if (config.onlyNewestMajor) {
-        versions = versions.filter((version, index, versionArray) => { 
-            const previous = versionArray[index - 1]
-            const previousMajor = previous?.value?.split('.')[0]
-            const currentMajor = version.value.split('.')[0]
-            return (currentMajor !== previousMajor || previous.disabled) && !version.disabled
-        }).slice(0, Number(config.results))
-    }
-
     const { version } = await prompts({
         type: 'select',
         name: 'version',

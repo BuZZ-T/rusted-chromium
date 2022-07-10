@@ -97,6 +97,7 @@ describe('[int] download API', () => {
             downloadFolder: null,
             single: null,
             debug: false,
+            list: false,
         })
 
         chromeZipStream.push('asdf')

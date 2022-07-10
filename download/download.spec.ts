@@ -13,6 +13,7 @@ import { fetchChromeZipFile } from '../api'
 import { ComparableVersion } from '../commons/ComparableVersion'
 import { MappedVersion } from '../commons/MappedVersion'
 import { NoChromiumDownloadError } from '../errors'
+import { IChromeConfig } from '../interfaces/interfaces'
 import { Logger, logger, DebugMode } from '../log/logger'
 import { progress, ProgressBar } from '../log/progress'
 import { spinner, Spinner } from '../log/spinner'
@@ -190,7 +191,8 @@ describe('download', () => {
             expect(fetchChromeZipFileMock).toHaveBeenCalledWith('chromeUrl')
 
             expect(getChromeDownloadUrlMock).toHaveBeenCalledTimes(1)
-            expect(getChromeDownloadUrlMock).toHaveBeenCalledWith({
+
+            const expected: IChromeConfig = {
                 arch: 'x64',
                 autoUnzip: false,
                 debug: false,
@@ -218,7 +220,10 @@ describe('download', () => {
                 results: 10,
                 single: null,
                 store: true,
-            }, [new MappedVersion(10, 0, 0, 1, false)])
+                list: false,
+            }
+            
+            expect(getChromeDownloadUrlMock).toHaveBeenCalledWith(expected, [new MappedVersion(10, 0, 0, 1, false)])
         })
 
         it('should fetch the zip and create the dest folder on finish', async () => {
@@ -300,7 +305,8 @@ describe('download', () => {
             expect(fetchChromeZipFileMock).toHaveBeenCalledWith('chromeUrl')
 
             expect(getChromeDownloadUrlMock).toHaveBeenCalledTimes(1)
-            expect(getChromeDownloadUrlMock).toHaveBeenCalledWith({
+
+            const expected: IChromeConfig = {
                 arch: 'x64',
                 autoUnzip: false,
                 debug: false,
@@ -328,7 +334,10 @@ describe('download', () => {
                 results: 10,
                 single: null,
                 store: true,
-            }, [new MappedVersion(10, 0, 0, 2, false)])
+                list: false,
+            }
+
+            expect(getChromeDownloadUrlMock).toHaveBeenCalledWith(expected, [new MappedVersion(10, 0, 0, 2, false)])
             
         })
 
@@ -878,5 +887,27 @@ describe('download', () => {
             expect(loggerMock.setDebugMode).toHaveBeenCalledWith(DebugMode.DEBUG)
         })
         
+        it('should log the files and quit on config.list', async () => {
+            mapVersionsMock.mockReturnValue([new MappedVersion(20, 0, 0, 1, true), new MappedVersion(10, 0, 0, 1, false)])
+            getChromeDownloadUrlMock.mockResolvedValue(createGetChromeDownloadUrlReturn())
+
+            fetchChromeZipFileMock.mockResolvedValue(zipFileResource)
+            existsSyncMock.mockReturnValue(false)
+
+            mkdirMock.mockImplementation((path, options, callback) => {
+                callback(null)
+            })
+
+            // Act
+            const config = createChromeFullConfig({
+                list: true
+            })
+            await downloadChromium(config)
+
+            expect(loggerMock.info).toHaveBeenCalledTimes(2)
+            expect(loggerMock.warn).toHaveBeenCalledTimes(1)
+            expect(loggerMock.info.mock.calls).toEqual([['versions:'], ['10.0.0.1']])
+            expect(loggerMock.warn).toHaveBeenCalledWith('20.0.0.1')
+        })
     })
 })

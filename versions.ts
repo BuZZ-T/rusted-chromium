@@ -234,9 +234,14 @@ export function mapVersions(versions: string[], config: IChromeConfig, store: St
         ? filteredVersions.reverse()
         : filteredVersions
 
-    // Don't reduce the amount of filtered versions when --only-newest-major is set
-    // because the newest available major version might be disabled for the current os 
-    return config.onlyNewestMajor
-        ? versionRegardingInverse
-        : versionRegardingInverse.slice(0, Number(config.results))
+    if (config.onlyNewestMajor) {
+        return versionRegardingInverse.filter((version, index, versionArray) => { 
+            const previous = versionArray[index - 1]
+            const previousMajor = previous?.value?.split('.')[0]
+            const currentMajor = version.value.split('.')[0]
+            return (currentMajor !== previousMajor || previous.disabled) && !version.disabled
+        }).slice(0, Number(config.results))
+    }
+
+    return versionRegardingInverse.slice(0, Number(config.results))
 }

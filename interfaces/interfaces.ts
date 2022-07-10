@@ -20,36 +20,32 @@ export interface IExportConfigWrapper {
 
 export type IChromeConfig = IChromeFullConfig | IChromeSingleConfig
 
-export interface IChromeFullConfig {
-    min: ComparableVersion
-    max: ComparableVersion
-    results: number
-    os: OS
+export interface IChromeCoreConfig {
     arch: Arch
-    onFail: 'nothing' | 'increase' | 'decrease'
     autoUnzip: boolean
-    interactive: boolean
-    store: boolean
-    download: boolean
-    hideNegativeHits: boolean
-    downloadFolder: string | null
-    onlyNewestMajor: boolean
-    single: null
-    inverse: boolean
-    quiet: boolean
     debug: boolean
+    download: boolean
+    downloadFolder: string | null
+    os: OS
+    quiet: boolean
+    store: boolean
 }
 
-export interface IChromeSingleConfig {
-    os: OS
-    arch: Arch
+export interface IChromeFullConfig extends IChromeCoreConfig {
+    hideNegativeHits: boolean
+    interactive: boolean
+    inverse: boolean
+    list: boolean
+    max: ComparableVersion
+    min: ComparableVersion
+    onFail: 'nothing' | 'increase' | 'decrease'
+    onlyNewestMajor: boolean
+    results: number
+    single: null
+}
+
+export interface IChromeSingleConfig extends IChromeCoreConfig {
     single: ComparableVersion
-    store: boolean
-    autoUnzip: boolean
-    download: boolean
-    downloadFolder: string | null
-    quiet: boolean
-    debug: boolean
 }
 
 export interface IStoreConfig {

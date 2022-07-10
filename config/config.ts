@@ -35,6 +35,7 @@ export function readConfig(args: string[], platform: NodeJS.Platform): ConfigWra
         .option('-O, --only-newest-major', 'Show only the newest major version in user selection', DEFAULT_CONFIG_OPTIONS.onlyNewestMajor)
         .option('-v, --inverse', 'Sort the selectable versions ascending', DEFAULT_CONFIG_OPTIONS.inverse)
         .option('-s, --single <version>', 'Download a specific version in non-interactive mode, even if the file is listed in the localstore.json. Several other flags have no effect.')
+        .option('--list', 'List versions matching the criteria, doing nothing more', DEFAULT_CONFIG_OPTIONS.list)
         .option('-q, --quiet', 'Suppress any logging output', DEFAULT_CONFIG_OPTIONS.quiet)
         .option('--debug', 'Activates the debug mode (extended logging)', DEFAULT_CONFIG_OPTIONS.debug)
         .parse(args)
@@ -100,23 +101,24 @@ export function readConfig(args: string[], platform: NodeJS.Platform): ConfigWra
     return {
         action: 'loadChrome',
         config: {
-            autoUnzip: options.unzip,
-            min: new ComparableVersion(options.min),
-            max: new ComparableVersion(options.max),
-            results: minIsSet && !maxResultsIsSet ? Infinity : (parseInt(options.maxResults as string, 10) || 10),
-            os,
             arch,
-            onFail: options.increaseOnFail ? 'increase' : options.decreaseOnFail ? 'decrease' : 'nothing',
-            interactive: !options.nonInteractive,
-            store: options.store,
-            download: options.download,
-            hideNegativeHits: options.hideNegativeHits,
-            downloadFolder: options.folder || null,
-            onlyNewestMajor: options.onlyNewestMajor,
-            single: null,
-            inverse: options.inverse,
-            quiet: options.quiet,
+            autoUnzip: options.unzip,
             debug: options.debug,
+            download: options.download,
+            downloadFolder: options.folder || null,
+            hideNegativeHits: options.hideNegativeHits,
+            interactive: !options.nonInteractive,
+            inverse: options.inverse,
+            list: options.list,
+            max: new ComparableVersion(options.max),
+            min: new ComparableVersion(options.min),
+            onFail: options.increaseOnFail ? 'increase' : options.decreaseOnFail ? 'decrease' : 'nothing',
+            onlyNewestMajor: options.onlyNewestMajor,
+            os,
+            quiet: options.quiet,
+            results: minIsSet && !maxResultsIsSet ? Infinity : (parseInt(options.maxResults as string, 10) || 10),
+            single: null,
+            store: options.store,
         },
     }
 }

@@ -1182,13 +1182,13 @@ describe('versions', () => {
             expect(mapped).toEqual(expectedVersions)
         })
 
-        it('should not strip the versions if --only-newest-major is set', () => {
+        it('should filter the versions if --only-newest-major is set', () => {
             const config = createChromeFullConfig({
                 onlyNewestMajor: true,
-                results: 3,
+                results: 10,
             })
 
-            const mapped = mapVersions(['60.6.7.8', '30.0.0.0', '29.0.2000.4', '10.1.2.4'], config, new Store(createStore()))
+            const mapped = mapVersions(['60.6.7.8', '30.0.0.0', '10.0.2000.4', '10.0.2.4'], config, new Store(createStore()))
 
             const expectedVersions = [
                 new MappedVersion({
@@ -1206,16 +1206,9 @@ describe('versions', () => {
                     disabled: false
                 }),
                 new MappedVersion({
-                    major: 29,
+                    major: 10,
                     minor: 0,
                     branch: 2000,
-                    patch: 4,
-                    disabled: false
-                }),
-                new MappedVersion({
-                    major: 10,
-                    minor: 1,
-                    branch: 2,
                     patch: 4,
                     disabled: false
                 }),

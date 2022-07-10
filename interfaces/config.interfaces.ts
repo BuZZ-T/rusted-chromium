@@ -29,6 +29,8 @@ export interface IConfigOptions {
     single?: string,
     inverse: boolean,
 
+    list: boolean,
+
     debug: boolean,
 
     quiet: boolean,

@@ -89,6 +89,18 @@ async function downloadForConfig(config: IChromeConfig): Promise<DownloadReportE
 
     const mappedVersions = mapVersions(versions, config, store)
 
+    if (!isChromeSingleConfig(config) && config.list) {
+        logger.info('versions:')
+        mappedVersions.forEach(v => {
+            if (v.disabled) {
+                logger.warn(v.value)
+            } else {
+                logger.info(v.value)
+            }
+        })
+        return []
+    }
+
     logger.debug(`total number of versions: ${versions.length}, filtered versions: ${mappedVersions.length}`)
 
     const { chromeUrl, filenameOS, report, selectedVersion } = await getChromeDownloadUrl(config, mappedVersions)
