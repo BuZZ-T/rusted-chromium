@@ -84,7 +84,9 @@ node 16+
 |`--hide-negative-hits` | `-H` | - | false | Hide negative hits in the CLI prompt
 |`--folder` | `-f` | `path/to/folder` | Current folder executing the command | Set the folder to which the archive of the chromium binary or the extracted folder (if the flag `--unzip` is set)
 |`--only-newest-major` | `-O`| - | - | Show only the newest version for every major version in the user selection. If the newest versions are not available for the current os, they are skipped.
+| `--list` | | - | false | Only log all matching versions to stdout, quit the program afterwards.
 | `--quiet` | `-q` | - | false | Suppress all log output.
+| `--debug` | | - | false | Add additional debug logging.
 | `--version`| `-V` | - | - | Show current version.
 | `--help`| `-h` | - | - | Display a help with all available flags.
 
@@ -228,6 +230,11 @@ rusted-chromium --quiet
 rusted-chromium -q
 ```
 
+##### List all matching versions and quit
+```bash
+rusted-chromium --list
+```
+
 ##### Show the help and quit
 ```bash
 # long version
@@ -257,7 +264,7 @@ The reason for this is, if a new patch is released, it might only fix bugs for a
 Unfortunately, this can only be detected at the very end of the api-call chain.
 
 Every time a "negative hit" (so no binary is available) is detected, this is written to a Store file `localstore.json` in the same folder as the `rusted-chromium` executable.
-The next time a range of versions is requested by `rusted-chromium`, this version is automatically marked "not-available".
+The next time a range of versions is requested by `rusted-chromium`, this version is automatically marked as "not-available".
 
 ### Download Store file
 
@@ -311,20 +318,22 @@ import { ComparableVersion, downloadChromium } from 'rusted-chromium';
 downloadChromium({
     arch: 'x64',
     autoUnzip: false,
+    debug: false,
     download: true,
+    downloadFolder: null,
     hideNegativeHits: false,
     interactive: true,
     inverse: false,
+    list: false,
     max: new ComparableVersion(95, 0, 0, 0),
     min: new ComparableVersion(0,0,0,0),
     onFail: 'nothing',
     onlyNewestMajor: false,
     os: 'linux',
     quiet: false,
-    store: true,
     results: 10,
-    downloadFolder: null,
     single: null,
+    store: true,
 })
 ```
 
