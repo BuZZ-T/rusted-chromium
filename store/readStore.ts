@@ -1,12 +1,10 @@
-import { existsSync, readFile } from 'fs'
-import { promisify } from 'util'
+import { existsSync } from 'fs'
+import { readFile } from 'fs/promises'
 
 import { READ_CONFIG } from '../commons/loggerTexts'
 import type { IStoreConfig } from '../interfaces/interfaces'
 import { spinner } from '../log/spinner'
 import { Store } from './Store'
-
-const readFilePromise = promisify(readFile)
 
 /**
  * Reads a store file from a given path on the local file system
@@ -21,7 +19,7 @@ export async function readStoreFile(config: IStoreConfig): Promise<Store> {
     }
 
     try {
-        const store = await readFilePromise(config.url, { encoding: 'utf-8' })
+        const store = await readFile(config.url, { encoding: 'utf-8' })
         const parsedStore = JSON.parse(store)
         spinner.success()
         return new Store(parsedStore)

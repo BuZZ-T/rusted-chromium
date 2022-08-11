@@ -17,5 +17,8 @@
   "license": "MIT",
   "dependencies": {
     "rusted-chromium": "../"
+  },
+  "devDependencies": {
+    "@types/node": "^15.14.9"
   }
 }

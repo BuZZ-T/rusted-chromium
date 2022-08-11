@@ -4,20 +4,22 @@
  * @group unit/file/store/importtore
  */
 
-import { existsSync, readFile, writeFile } from 'fs'
+import { existsSync } from 'fs'
+import { readFile, writeFile } from 'fs/promises'
 import { join as pathJoin } from 'path'
 import type { MaybeMocked, MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
 import { LOCAL_STORE_FILE } from '../commons/constants'
 import { logger, DebugMode, Logger } from '../log/logger'
-import { createStore, ReadFileWithOptions, createImportConfig } from '../test/test.utils'
+import { createStore, createImportConfig } from '../test/test.utils'
 import { downloadStore } from './downloadStore'
 import { importAndMergeLocalstore } from './importStore'
 import { readStoreFile } from './readStore'
 import { Store } from './Store'
 
 jest.mock('fs')
+jest.mock('fs/promises')
 jest.mock('../log/spinner')
 jest.mock('./downloadStore')
 jest.mock('./readStore')
@@ -28,7 +30,7 @@ describe('importStore', () => {
 
         let existsSyncMock: MaybeMocked<typeof existsSync>
         let writeFileMock: MaybeMocked<typeof writeFile>
-        let readFileMock: MaybeMocked<ReadFileWithOptions>
+        let readFileMock: MaybeMocked<typeof readFile>
 
         let downloadStoreMock: MaybeMocked<typeof downloadStore>
         let readStoreFileMock: MaybeMocked<typeof readStoreFile>
@@ -41,7 +43,7 @@ describe('importStore', () => {
 
             existsSyncMock = mocked(existsSync)
             writeFileMock = mocked(writeFile)
-            readFileMock = mocked(readFile as ReadFileWithOptions)
+            readFileMock = mocked(readFile)
 
             loggerMock = mocked(logger, true)
         })
@@ -62,9 +64,6 @@ describe('importStore', () => {
 
             existsSyncMock.mockReturnValue(false)
             downloadStoreMock.mockResolvedValue(anyStore)
-            writeFileMock.mockImplementation((path, store, callback) => {
-                callback(null)
-            })
 
             const config = createImportConfig({ url: 'https://some.url.de' })
 
@@ -77,7 +76,7 @@ describe('importStore', () => {
             expect(readFileMock).toHaveBeenCalledTimes(0)
 
             expect(writeFileMock).toHaveBeenCalledTimes(1)
-            expect(writeFileMock).toHaveBeenCalledWith(pathJoin(__dirname, '..', LOCAL_STORE_FILE), anyStore.toMinimalFormattedString(), expect.any(Function))
+            expect(writeFileMock).toHaveBeenCalledWith(pathJoin(__dirname, '..', LOCAL_STORE_FILE), anyStore.toMinimalFormattedString())
         })
 
         it('should download a store via local file and store it without existing store', async () => {
@@ -85,9 +84,6 @@ describe('importStore', () => {
 
             existsSyncMock.mockReturnValue(false)
             readStoreFileMock.mockResolvedValue(anyStore)
-            writeFileMock.mockImplementation((path, store, callback) => {
-                callback(null)
-            })
 
             const config = createImportConfig({ url: '/some/path/to/file' })
 
@@ -100,15 +96,12 @@ describe('importStore', () => {
             expect(readFileMock).toHaveBeenCalledTimes(0)
 
             expect(writeFileMock).toHaveBeenCalledTimes(1)
-            expect(writeFileMock).toHaveBeenCalledWith(pathJoin(__dirname, '..', LOCAL_STORE_FILE), anyStore.toMinimalFormattedString(), expect.any(Function))
+            expect(writeFileMock).toHaveBeenCalledWith(pathJoin(__dirname, '..', LOCAL_STORE_FILE), anyStore.toMinimalFormattedString())
         })
 
         it('should do nothing, if no store file is loaded from file system', async () => {
             existsSyncMock.mockReturnValue(false)
             readStoreFileMock.mockRejectedValue(undefined)
-            writeFileMock.mockImplementation((path, store, callback) => {
-                callback(null)
-            })
 
             const config = createImportConfig({ url: '/some/path/to/file' })
 
@@ -126,9 +119,6 @@ describe('importStore', () => {
         it('should do nothing, if no store is downloaded', async () => {
             existsSyncMock.mockReturnValue(false)
             downloadStoreMock.mockRejectedValue(undefined)
-            writeFileMock.mockImplementation((path, store, callback) => {
-                callback(null)
-            })
 
             const config = createImportConfig({ url: 'https://some.url.de' })
 
@@ -158,13 +148,8 @@ describe('importStore', () => {
             })
 
             existsSyncMock.mockReturnValue(true)
-            readFileMock.mockImplementation((file, options, callback) => {
-                callback(null, JSON.stringify(existingStore, null, 4))
-            })
+            readFileMock.mockResolvedValue(JSON.stringify(existingStore, null, 4))
             downloadStoreMock.mockResolvedValue(anyStore)
-            writeFileMock.mockImplementation((path, store, callback) => {
-                callback(null)
-            })
 
             const config = createImportConfig({ url: 'https://some.url.de' })
 
@@ -177,7 +162,7 @@ describe('importStore', () => {
             expect(readFileMock).toHaveBeenCalledTimes(1)
 
             expect(writeFileMock).toHaveBeenCalledTimes(1)
-            expect(writeFileMock).toHaveBeenCalledWith(pathJoin(__dirname, '..', LOCAL_STORE_FILE), new Store(mergedStore).toMinimalFormattedString(), expect.any(Function))
+            expect(writeFileMock).toHaveBeenCalledWith(pathJoin(__dirname, '..', LOCAL_STORE_FILE), new Store(mergedStore).toMinimalFormattedString())
         })
 
         it('should merge the existing file with the file downloaded by local file', async () => {
@@ -195,13 +180,8 @@ describe('importStore', () => {
             })
 
             existsSyncMock.mockReturnValue(true)
-            readFileMock.mockImplementation((file, options, callback) => {
-                callback(null, JSON.stringify(existingStore, null, 2))
-            })
+            readFileMock.mockResolvedValue(JSON.stringify(existingStore, null, 2))
             readStoreFileMock.mockResolvedValue(anyStore)
-            writeFileMock.mockImplementation((path, store, callback) => {
-                callback(null)
-            })
 
             const config = createImportConfig({ url: '/some/path/to/file' })
 
@@ -214,7 +194,7 @@ describe('importStore', () => {
             expect(readFileMock).toHaveBeenCalledTimes(1)
 
             expect(writeFileMock).toHaveBeenCalledTimes(1)
-            expect(writeFileMock).toHaveBeenCalledWith(pathJoin(__dirname, '..', LOCAL_STORE_FILE), new Store(mergedStore).toMinimalFormattedString(), expect.any(Function))
+            expect(writeFileMock).toHaveBeenCalledWith(pathJoin(__dirname, '..', LOCAL_STORE_FILE), new Store(mergedStore).toMinimalFormattedString())
         })
 
         it('should enable debugging on config.debug', async () => {
@@ -222,9 +202,6 @@ describe('importStore', () => {
 
             existsSyncMock.mockReturnValue(false)
             downloadStoreMock.mockResolvedValue(anyStore)
-            writeFileMock.mockImplementation((path, store, callback) => {
-                callback(null)
-            })
 
             const config = createImportConfig({ debug: true, url: 'https://some.url.de' })
 

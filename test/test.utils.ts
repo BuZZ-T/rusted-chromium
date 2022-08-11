@@ -1,4 +1,3 @@
-import { NoParamCallback, PathLike, Stats } from 'fs'
 import { HTMLElement as NodeParserHTMLElement, Node as NodeParserNode } from 'node-html-parser'
 import { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 
@@ -67,15 +66,6 @@ export const createGetChromeDownloadUrlReturn = (settings?: Partial<GetChromeDow
     report: [],
     ...settings,
 })
-
-/**
- * (Re-) defines one overload method of fs.mkdir. Used to nail down this overloading to jest's mockImplementation
- */
-export type MkdirWithOptions = (path: PathLike, options: unknown, callback: NoParamCallback) => void
-
-export type ReadFileWithOptions = (path: PathLike, options: unknown, callback: (err: NodeJS.ErrnoException | null, data: string) => void) => void
-
-export type StatsWithoutOptions = (path: PathLike, callback: (err: NodeJS.ErrnoException | null, stats: Stats) => void) => void
 
 export const createNodeParserHTMLElement = (querySelectorAllMock: jest.Mock<any, any>): NodeParserHTMLElement & { valid: boolean } => {
     const element = new NodeParserHTMLElement('html', {}) as NodeParserHTMLElement & { valid: boolean }

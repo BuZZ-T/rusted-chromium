@@ -4,7 +4,8 @@
  * @group unit/file/download
  */
 
-import { existsSync, mkdir, createWriteStream, stat, rmdir, unlink, Stats } from 'fs'
+import { existsSync, createWriteStream, Stats } from 'fs'
+import { mkdir, stat, rmdir, unlink }from 'fs/promises'
 import { Response as NodeFetchResponse } from 'node-fetch'
 import type { MaybeMocked, MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
@@ -19,7 +20,7 @@ import { progress, ProgressBar } from '../log/progress'
 import { spinner, Spinner } from '../log/spinner'
 import { loadStore } from '../store/loadStore'
 import { Store } from '../store/Store'
-import { createChromeFullConfig, createStore, createGetChromeDownloadUrlReturn, MkdirWithOptions, StatsWithoutOptions, createChromeSingleConfig } from '../test/test.utils'
+import { createChromeFullConfig, createStore, createGetChromeDownloadUrlReturn, createChromeSingleConfig } from '../test/test.utils'
 import { getChromeDownloadUrl, loadVersions, mapVersions } from '../versions'
 import { downloadChromium } from './download'
 
@@ -31,6 +32,7 @@ const Progress = require('node-fetch-progress')
 const progressOnMock = jest.fn()
 
 jest.mock('fs')
+jest.mock('fs/promises')
 jest.mock('node-fetch-progress')
 jest.mock('extract-zip')
 
@@ -61,8 +63,8 @@ describe('download', () => {
 
         let existsSyncMock: MaybeMocked<typeof existsSync>
         let createWriteStreamMock: MaybeMockedDeep<typeof createWriteStream>
-        let mkdirMock: MaybeMocked<MkdirWithOptions>
-        let statMock: MaybeMocked<StatsWithoutOptions>
+        let mkdirMock: MaybeMocked<typeof mkdir>
+        let statMock: MaybeMocked<typeof stat>
         let rmdirMock: MaybeMocked<typeof rmdir>
         let unlinkMock: MaybeMocked<typeof unlink>
 
@@ -89,8 +91,8 @@ describe('download', () => {
 
             existsSyncMock = mocked(existsSync)
             createWriteStreamMock = mocked(createWriteStream)
-            mkdirMock = mocked(mkdir as MkdirWithOptions)
-            statMock = mocked(stat as StatsWithoutOptions)
+            mkdirMock = mocked(mkdir)
+            statMock = mocked(stat)
             rmdirMock = mocked(rmdir)
             unlinkMock = mocked(unlink)
 
@@ -167,10 +169,6 @@ describe('download', () => {
             fetchChromeZipFileMock.mockResolvedValue(zipFileResource)
             existsSyncMock.mockReturnValue(false)
 
-            mkdirMock.mockImplementation((path, options, callback) => {
-                callback(null)
-            })
-
             // Act
             const config = createChromeFullConfig({
                 autoUnzip: false,
@@ -231,10 +229,6 @@ describe('download', () => {
 
             fetchChromeZipFileMock.mockResolvedValue(zipFileResource)
             existsSyncMock.mockReturnValue(false)
-
-            mkdirMock.mockImplementation((path, options, callback) => {
-                callback(null)
-            })
 
             // Act
             const config = createChromeFullConfig({
@@ -478,7 +472,7 @@ describe('download', () => {
             expect(spinnerMock.update).toHaveBeenCalledTimes(0)
 
             expect(unlinkMock).toHaveBeenCalledTimes(1)
-            expect(unlinkMock).toHaveBeenCalledWith('chrome-filenameOS-x64-11.12.13.14.zip', expect.any(Function))
+            expect(unlinkMock).toHaveBeenCalledWith('chrome-filenameOS-x64-11.12.13.14.zip')
 
             expect(logger.error).toHaveBeenCalledTimes(0)
         })
@@ -603,10 +597,8 @@ describe('download', () => {
 
             fetchChromeZipFileMock.mockResolvedValue(zipFileResource)
 
-            unlinkMock.mockImplementation(() => {
-                throw new Error('unlink-error')
-            })
-
+            unlinkMock.mockRejectedValue(new Error('unlink-error'))
+            
             // Act
             const config = createChromeFullConfig({
                 autoUnzip: true,
@@ -758,15 +750,7 @@ describe('download', () => {
 
             processExitSpy.mockImplementation(() => undefined as never)
 
-            statMock.mockImplementation((path, callback) => {
-                callback(null, { isDirectory: () => true } as Stats)
-            })
-            rmdirMock.mockImplementation((path, options, callback) => {
-                callback(null)
-            })
-            unlinkMock.mockImplementation((path, callback) => {
-                callback(null)
-            })
+            statMock.mockResolvedValue({ isDirectory: () => true } as Stats)
 
             fetchChromeZipFileMock.mockResolvedValue(zipFileResource)
 
@@ -795,15 +779,7 @@ describe('download', () => {
 
             processExitSpy.mockImplementation(() => undefined as never)
 
-            statMock.mockImplementation((path, callback) => {
-                callback(null, { isDirectory: () => false, isFile: () => true } as Stats)
-            })
-            rmdirMock.mockImplementation((path, options, callback) => {
-                callback(null)
-            })
-            unlinkMock.mockImplementation((path, callback) => {
-                callback(null)
-            })
+            statMock.mockResolvedValue({ isDirectory: () => false, isFile: () => true } as Stats)
 
             fetchChromeZipFileMock.mockResolvedValue(zipFileResource)
 
@@ -832,15 +808,7 @@ describe('download', () => {
 
             processExitSpy.mockImplementation(() => undefined as never)
 
-            statMock.mockImplementation((path, callback) => {
-                callback(null, { isDirectory: () => false, isFile: () => false } as Stats)
-            })
-            rmdirMock.mockImplementation((path, options, callback) => {
-                callback(null)
-            })
-            unlinkMock.mockImplementation((path, callback) => {
-                callback(null)
-            })
+            statMock.mockResolvedValue({ isDirectory: () => false, isFile: () => false } as Stats)
 
             fetchChromeZipFileMock.mockResolvedValue(zipFileResource)
 
@@ -871,10 +839,6 @@ describe('download', () => {
             fetchChromeZipFileMock.mockResolvedValue(zipFileResource)
             existsSyncMock.mockReturnValue(false)
 
-            mkdirMock.mockImplementation((path, options, callback) => {
-                callback(null)
-            })
-
             // Act
             const config = createChromeFullConfig({
                 autoUnzip: false,
@@ -893,10 +857,6 @@ describe('download', () => {
 
             fetchChromeZipFileMock.mockResolvedValue(zipFileResource)
             existsSyncMock.mockReturnValue(false)
-
-            mkdirMock.mockImplementation((path, options, callback) => {
-                callback(null)
-            })
 
             // Act
             const config = createChromeFullConfig({

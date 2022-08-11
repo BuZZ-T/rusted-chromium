@@ -4,7 +4,7 @@
  * @group int/use-case/importStore
  */
 
-import { readFile as fsReadFile, writeFile as fsWriteFile } from 'fs'
+import { readFile, writeFile } from 'fs/promises'
 /* eslint-disable-next-line import/no-namespace */
 import * as mockFs from 'mock-fs'
 /* eslint-disable-next-line import/no-namespace */
@@ -12,7 +12,6 @@ import * as fetch from 'node-fetch'
 import { join, resolve } from 'path'
 import { MaybeMocked } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
-import { promisify } from 'util'
 
 import { rusted } from './rusted'
 import { Store } from './store/Store'
@@ -32,9 +31,6 @@ describe('[int] import store', () => {
     let promptsMock: MaybeMocked<typeof prompts>
     let nodeFetchMock: MaybeMocked<typeof fetch>
 
-    let readFile: typeof fsReadFile.__promisify__
-    let writeFile: typeof fsWriteFile.__promisify__
-
     beforeAll(async () => {
 
         promptsMock = mocked(prompts)
@@ -47,9 +43,6 @@ describe('[int] import store', () => {
             'node_modules': mockFs.load(resolve(__dirname, './node_modules')),
             [`/tmp/${jestFolder}`]: mockFs.load(resolve(`/tmp/${jestFolder}`)),
         })
-
-        readFile = promisify(fsReadFile)
-        writeFile = promisify(fsWriteFile)
     })
 
     beforeEach(async () => {

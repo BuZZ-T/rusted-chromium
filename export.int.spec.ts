@@ -4,7 +4,7 @@
  * @group int/use-case/exportStore
  */
 
-import { writeFile as fsWriteFile } from 'fs'
+import { writeFile } from 'fs/promises'
 /* eslint-disable-next-line import/no-namespace */
 import * as mockFs from 'mock-fs'
 /* eslint-disable-next-line import/no-namespace */
@@ -13,7 +13,6 @@ import { join, resolve as pathResolve } from 'path'
 import { PassThrough } from 'stream'
 import type { MaybeMocked } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
-import { promisify } from 'util'
 
 import { rusted } from './rusted'
 import { exportStore } from './store/exportStore'
@@ -33,8 +32,6 @@ describe('[int] export store', () => {
     let promptsMock: MaybeMocked<typeof prompts>
     let nodeFetchMock: MaybeMocked<typeof fetch>
 
-    let writeFile: typeof fsWriteFile.__promisify__
-
     beforeAll(async () => {
 
         promptsMock = mocked(prompts)
@@ -47,8 +44,6 @@ describe('[int] export store', () => {
             'node_modules': mockFs.load(pathResolve(__dirname, './node_modules')),
             [`/tmp/${jestFolder}`]: mockFs.load(pathResolve(`/tmp/${jestFolder}`)),
         })
-
-        writeFile = promisify(fsWriteFile)
     })
 
     beforeEach(async () => {

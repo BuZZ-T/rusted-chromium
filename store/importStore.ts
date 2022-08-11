@@ -1,6 +1,6 @@
-import { writeFile, readFile, existsSync } from 'fs'
+import { existsSync } from 'fs'
+import { readFile, writeFile } from 'fs/promises'
 import { join } from 'path'
-import { promisify } from 'util'
 
 import { LOCAL_STORE_FILE } from '../commons/constants'
 import type { IStoreConfig } from '../interfaces/interfaces'
@@ -9,9 +9,6 @@ import { DebugMode, logger } from '../log/logger'
 import { downloadStore } from './downloadStore'
 import { readStoreFile } from './readStore'
 import type { Store } from './Store'
-
-const writeFilePromise = promisify(writeFile)
-const readFilePromise = promisify(readFile)
 
 const localStoreFilePath = join(__dirname, '..', LOCAL_STORE_FILE)
 
@@ -25,9 +22,16 @@ export async function importAndMergeLocalstore(config: IStoreConfig): Promise<St
     const store = isURL
         ? await downloadStore(config, LOCAL_STORE_FILE)
         : await readStoreFile(config)
+        
+    // try {
+    //     const stats = promises.stat(localStoreFilePath)
+
+    // } catch(e) {
+        
+    // }
 
     if (existsSync(localStoreFilePath)) {
-        const localStore = await readFilePromise(LOCAL_STORE_FILE, { encoding: 'utf-8' })
+        const localStore = await readFile(LOCAL_STORE_FILE, { encoding: 'utf-8' })
 
         const sortedStore = store.merge(JSON.parse(localStore))
 
@@ -41,5 +45,5 @@ export async function importAndMergeLocalstore(config: IStoreConfig): Promise<St
 }
 
 async function storeStoreFile(store: Store): Promise<void> {
-    return writeFilePromise(localStoreFilePath, store.toMinimalFormattedString())
+    return writeFile(localStoreFilePath, store.toMinimalFormattedString())
 }

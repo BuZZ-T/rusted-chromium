@@ -1,6 +1,6 @@
-import { existsSync, mkdir as fsMkdir, createWriteStream, stat as fsStat, rmdir as fsRmdir, unlink as fsUnlink } from 'fs'
+import { createWriteStream, existsSync } from 'fs'
+import { mkdir, stat, rmdir, unlink } from 'fs/promises'
 import { join as pathJoin } from 'path'
-import { promisify } from 'util'
 
 import { fetchChromeZipFile } from '../api'
 import { DEFAULT_FULL_CONFIG, DEFAULT_SINGLE_CONFIG } from '../commons/constants'
@@ -20,11 +20,6 @@ import { FluentDownloadSingleIncomplete } from './download-fluent-single'
 const extract = require('extract-zip')
 const Progress = require('node-fetch-progress')
 /* eslint-enable @typescript-eslint/no-var-requires */
-
-const mkdir = promisify(fsMkdir)
-const stat = promisify(fsStat)
-const rmdir = promisify(fsRmdir)
-const unlink = promisify(fsUnlink)
 
 function registerSigIntHandler(path: string): void {
     process.on('SIGINT', () => {

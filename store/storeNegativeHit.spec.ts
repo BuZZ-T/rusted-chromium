@@ -4,7 +4,7 @@
  * @group unit/file/store/storeNegativeHit
  */
 
-import { writeFile } from 'fs'
+import { writeFile } from 'fs/promises'
 import { join as pathJoin } from 'path'
 import type { MaybeMocked } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
@@ -15,7 +15,7 @@ import { loadStore } from './loadStore'
 import { Store } from './Store'
 import { storeNegativeHit } from './storeNegativeHit'
 
-jest.mock('fs')
+jest.mock('fs/promises')
 jest.mock('./loadStore')
 
 const localPath = pathJoin(__dirname, '..', 'localstore.json')
@@ -45,10 +45,6 @@ describe('storeNegativeHit', () => {
 
         loadStoreMock.mockResolvedValue(mStore)
 
-        writeFileMock.mockImplementation((path, store, callback) => {
-            callback(null)
-        })
-
         await storeNegativeHit(new ComparableVersion({
             major: 1,
             minor: 2,
@@ -61,7 +57,7 @@ describe('storeNegativeHit', () => {
         expect(loadStoreMock).toHaveBeenCalledTimes(1)
 
         expect(writeFileMock).toHaveBeenCalledTimes(1)
-        expect(writeFileMock).toHaveBeenCalledWith(localPath, expectedStore.toMinimalFormattedString(), expect.any(Function))
+        expect(writeFileMock).toHaveBeenCalledWith(localPath, expectedStore.toMinimalFormattedString())
     })
 
     it('should extend an existing store with one entry', async () => {
@@ -69,10 +65,6 @@ describe('storeNegativeHit', () => {
         const eStore = new Store(existingStore)
 
         loadStoreMock.mockResolvedValue(eStore)
-
-        writeFileMock.mockImplementation((path, store, callback) => {
-            callback(null)
-        })
 
         await storeNegativeHit(new ComparableVersion({
             major: 1,
@@ -86,7 +78,7 @@ describe('storeNegativeHit', () => {
         expect(loadStoreMock).toHaveBeenCalledTimes(1)
 
         expect(writeFileMock).toHaveBeenCalledTimes(1)
-        expect(writeFileMock).toHaveBeenCalledWith(localPath, expectedStore.toMinimalFormattedString(), expect.any(Function))
+        expect(writeFileMock).toHaveBeenCalledWith(localPath, expectedStore.toMinimalFormattedString())
     })
 
     it('should do nothing, if entry already exists', async () => {
@@ -94,10 +86,6 @@ describe('storeNegativeHit', () => {
         const eStore = new Store(existingStore)
 
         loadStoreMock.mockResolvedValue(eStore)
-
-        writeFileMock.mockImplementation((path, store, callback) => {
-            callback(null)
-        })
 
         await storeNegativeHit(new ComparableVersion({
             major: 1,
@@ -117,10 +105,6 @@ describe('storeNegativeHit', () => {
 
         loadStoreMock.mockResolvedValue(eStore)
 
-        writeFileMock.mockImplementation((path, store, callback) => {
-            callback(null)
-        })
-
         await storeNegativeHit(new ComparableVersion({
             major: 1,
             minor: 2,
@@ -133,6 +117,6 @@ describe('storeNegativeHit', () => {
         expect(loadStoreMock).toHaveBeenCalledTimes(1)
 
         expect(writeFileMock).toHaveBeenCalledTimes(1)
-        expect(writeFileMock).toHaveBeenCalledWith(localPath, expectedStore.toMinimalFormattedString(), expect.any(Function))
+        expect(writeFileMock).toHaveBeenCalledWith(localPath, expectedStore.toMinimalFormattedString())
     })
 })

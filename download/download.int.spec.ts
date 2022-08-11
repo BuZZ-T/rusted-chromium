@@ -4,7 +4,8 @@
  * @group int/use-case/downloadChromium
  */
 
-import { existsSync, readFile as fsReadFile, writeFile as fsWriteFile, unlink as fsUnlink } from 'fs'
+import { existsSync } from 'fs'
+import { readFile, writeFile, unlink } from 'fs/promises'
 /* eslint-disable-next-line import/no-namespace */
 import * as mockFs from 'mock-fs'
 /* eslint-disable-next-line import/no-namespace */
@@ -12,7 +13,6 @@ import * as fetch from 'node-fetch'
 import { join as pathJoin, resolve } from 'path'
 import { MaybeMocked } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
-import { promisify } from 'util'
 
 import { MappedVersion } from '../commons/MappedVersion'
 import type { IListStore } from '../interfaces/store.interfaces'
@@ -37,10 +37,6 @@ describe('[int] download chromium', () => {
     let promptsMock: MaybeMocked<typeof prompts>
     let nodeFetchMock: MaybeMocked<typeof fetch>
 
-    let readFile: typeof fsReadFile.__promisify__
-    let writeFile: typeof fsWriteFile.__promisify__
-    let unlink: typeof fsUnlink.__promisify__
-
     beforeAll(async () => {
         promptsMock = mocked(prompts)
 
@@ -52,10 +48,6 @@ describe('[int] download chromium', () => {
             './node_modules': mockFs.load(resolve(__dirname, '../node_modules')),
             [`/tmp/${jestFolder}`]: mockFs.load(resolve(`/tmp/${jestFolder}`)),
         })
-
-        readFile = promisify(fsReadFile)
-        writeFile = promisify(fsWriteFile)
-        unlink = promisify(fsUnlink)
     })
 
     beforeEach(async () => {
