@@ -4,7 +4,6 @@
  * @group int/api/downloadChromium
  */
 
-import { existsSync } from 'fs'
 import { writeFile, unlink } from 'fs/promises'
 /* eslint-disable-next-line import/no-namespace */
 import * as mockFs from 'mock-fs'
@@ -17,6 +16,7 @@ import { mocked } from 'ts-jest/utils'
 import { ComparableVersion } from '../commons/ComparableVersion'
 import { mockNodeFetch, chromeZipStream, getJestTmpFolder } from '../test/int.utils'
 import { createStore } from '../test/test.utils'
+import { existsAndIsFile } from '../utils/file.utils'
 import { downloadChromium } from './download'
 
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */
@@ -49,10 +49,10 @@ describe('[int] download API', () => {
     beforeEach(async () => {
         // clear mock-fs
         await writeFile(localStoreFile, JSON.stringify(createStore()))
-        if (existsSync(chromeZip10)) {
+        if (await existsAndIsFile(chromeZip10)) {
             await unlink(chromeZip10)
         }
-        if (existsSync(chromeZip20)) {
+        if (await existsAndIsFile(chromeZip20)) {
             await unlink(chromeZip20)
         }
         
@@ -99,8 +99,8 @@ describe('[int] download API', () => {
 
         await downloadPromise
 
-        expect(existsSync(chromeZip10)).toBe(true)
-        expect(existsSync(chromeZip20)).toBe(false)
+        expect(await existsAndIsFile(chromeZip10)).toBe(true)
+        expect(await existsAndIsFile(chromeZip20)).toBe(false)
     })
 
     it('should download with default settings and { results: 1 }', async () => {
@@ -111,8 +111,8 @@ describe('[int] download API', () => {
 
         await downloadPromise
 
-        expect(existsSync(chromeZip10)).toBe(true)
-        expect(existsSync(chromeZip20)).toBe(false)
+        expect(await existsAndIsFile(chromeZip10)).toBe(true)
+        expect(await existsAndIsFile(chromeZip20)).toBe(false)
     })
 
     it('should download with fluent interface and { results: 1 }', async () => {
@@ -129,8 +129,8 @@ describe('[int] download API', () => {
 
         await downloadPromise
 
-        expect(existsSync(chromeZip10)).toBe(true)
-        expect(existsSync(chromeZip20)).toBe(false)
+        expect(await existsAndIsFile(chromeZip10)).toBe(true)
+        expect(await existsAndIsFile(chromeZip20)).toBe(false)
     })
 
     it('should download single with fluent interface', async () => {
@@ -147,8 +147,8 @@ describe('[int] download API', () => {
 
         await downloadPromise
 
-        expect(existsSync(chromeZip10)).toBe(true)
-        expect(existsSync(chromeZip20)).toBe(false)
+        expect(await existsAndIsFile(chromeZip10)).toBe(true)
+        expect(await existsAndIsFile(chromeZip20)).toBe(false)
     })
 
     it('should download single as string with fluent interface', async () => {
@@ -165,7 +165,7 @@ describe('[int] download API', () => {
 
         await downloadPromise
 
-        expect(existsSync(chromeZip10)).toBe(false)
-        expect(existsSync(chromeZip20)).toBe(true)
+        expect(await existsAndIsFile(chromeZip10)).toBe(false)
+        expect(await existsAndIsFile(chromeZip20)).toBe(true)
     })
 })

@@ -4,7 +4,6 @@
  * @group int/use-case/downloadChromium
  */
 
-import { existsSync } from 'fs'
 import { readFile, writeFile, unlink } from 'fs/promises'
 /* eslint-disable-next-line import/no-namespace */
 import * as mockFs from 'mock-fs'
@@ -20,6 +19,7 @@ import { rusted } from '../rusted'
 import { mockNodeFetch, chromeZipStream, branchPositionResponse, getJestTmpFolder, minimalValidZipfile } from '../test/int.utils'
 import { createStore } from '../test/test.utils'
 import { popArray } from '../utils'
+import { existsAndIsFile, existsAndIsFolder } from '../utils/file.utils'
 
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */
 const prompts = require('prompts')
@@ -53,10 +53,10 @@ describe('[int] download chromium', () => {
     beforeEach(async () => {
         // clear mock-fs
         await writeFile(localStoreFile, JSON.stringify(createStore()))
-        if (existsSync(chromeZip10)) {
+        if (await existsAndIsFile(chromeZip10)) {
             await unlink(chromeZip10)
         }
-        if (existsSync(chromeZip20)) {
+        if (await existsAndIsFile(chromeZip20)) {
             await unlink(chromeZip20)
         }
 
@@ -84,8 +84,8 @@ describe('[int] download chromium', () => {
 
         await rustedPromise
 
-        expect(existsSync(chromeZip10)).toBe(true)
-        expect(existsSync(chromeZip20)).toBe(false)
+        expect(await existsAndIsFile(chromeZip10)).toBe(true)
+        expect(await existsAndIsFile(chromeZip20)).toBe(false)
         expect(promptsMock).toHaveBeenCalledTimes(0)
     })
 
@@ -109,7 +109,7 @@ describe('[int] download chromium', () => {
 
         await rustedPromise
 
-        expect(existsSync(chromeZip10)).toBe(true)
+        expect(await existsAndIsFile(chromeZip10)).toBe(true)
 
         await expect(readFile(chromeZip10, { encoding: 'utf-8' })).resolves.toEqual(data)
     })
@@ -128,7 +128,7 @@ describe('[int] download chromium', () => {
 
         await rustedPromise
 
-        expect(existsSync(chromeZip20)).toBe(true)
+        expect(await existsAndIsFile(chromeZip20)).toBe(true)
 
         expect(promptsMock).toHaveBeenCalledTimes(1)
         expect(promptsMock).toHaveBeenCalledWith({
@@ -176,9 +176,9 @@ describe('[int] download chromium', () => {
 
         await rustedPromise
 
-        expect(existsSync(chromeFolder20)).toBe(true)
-        expect(existsSync(chromeZip10)).toBe(false)
-        expect(existsSync(chromeZip20)).toBe(false)
+        expect(await existsAndIsFolder(chromeFolder20)).toBe(true)
+        expect(await existsAndIsFile(chromeZip10)).toBe(false)
+        expect(await existsAndIsFile(chromeZip20)).toBe(false)
 
         expect(promptsMock).toHaveBeenCalledTimes(1)
         expect(promptsMock).toHaveBeenCalledWith({
@@ -218,7 +218,7 @@ describe('[int] download chromium', () => {
         chromeZipStream.end()
         await rustedPromise 
 
-        expect(existsSync(chromeZip10)).toBe(false)
+        expect(await existsAndIsFile(chromeZip10)).toBe(false)
 
         const storedStore = await readFile(localStoreFile, { encoding: 'utf-8' })
         const store: IListStore = JSON.parse(storedStore)
@@ -240,14 +240,14 @@ describe('[int] download chromium', () => {
         })
         promptsMock.mockReturnValue({ version: '10.0.0.0' })
 
-        expect(existsSync(localStoreFile)).toBe(false)
+        expect(await existsAndIsFile(localStoreFile)).toBe(false)
 
         const rustedPromise = rusted(['/some/path/to/node', '/some/path/to/rusted-chromium'], 'linux')
         chromeZipStream.end()
         await rustedPromise
 
-        expect(existsSync(chromeZip10)).toBe(false)
-        expect(existsSync(localStoreFile)).toBe(true)
+        expect(await existsAndIsFile(chromeZip10)).toBe(false)
+        expect(await existsAndIsFile(localStoreFile)).toBe(true)
 
         const storedStore = await readFile(localStoreFile, { encoding: 'utf-8' })
         const store: IListStore = JSON.parse(storedStore)
@@ -275,8 +275,8 @@ describe('[int] download chromium', () => {
 
         await rustedPromise
 
-        expect(existsSync(chromeZip10)).toBe(false)
-        expect(existsSync(localStoreFile)).toBe(true)
+        expect(await existsAndIsFile(chromeZip10)).toBe(false)
+        expect(await existsAndIsFile(localStoreFile)).toBe(true)
 
         const storedStore = await readFile(localStoreFile, { encoding: 'utf-8' })
         const store: IListStore = JSON.parse(storedStore)
@@ -314,8 +314,8 @@ describe('[int] download chromium', () => {
 
         await rustedPromise
 
-        expect(existsSync(chromeZip20)).toBe(false)
-        expect(existsSync(chromeZip10)).toBe(true)
+        expect(await existsAndIsFile(chromeZip20)).toBe(false)
+        expect(await existsAndIsFile(chromeZip10)).toBe(true)
     })
 
     it('should increase on fail', async () => {
@@ -343,8 +343,8 @@ describe('[int] download chromium', () => {
 
         await rustedPromsie
 
-        expect(existsSync(chromeZip20)).toBe(true)
-        expect(existsSync(chromeZip10)).toBe(false)
+        expect(await existsAndIsFile(chromeZip20)).toBe(true)
+        expect(await existsAndIsFile(chromeZip10)).toBe(false)
     })
 
     it('should prompt only the newest majors', async () => {

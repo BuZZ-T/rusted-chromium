@@ -1,4 +1,3 @@
-import { existsSync } from 'fs'
 import { readFile, writeFile } from 'fs/promises'
 import { join } from 'path'
 
@@ -6,6 +5,7 @@ import { LOCAL_STORE_FILE } from '../commons/constants'
 import type { IStoreConfig } from '../interfaces/interfaces'
 import type { StoreSize } from '../interfaces/store.interfaces'
 import { DebugMode, logger } from '../log/logger'
+import { existsAndIsFile } from '../utils/file.utils'
 import { downloadStore } from './downloadStore'
 import { readStoreFile } from './readStore'
 import type { Store } from './Store'
@@ -23,14 +23,7 @@ export async function importAndMergeLocalstore(config: IStoreConfig): Promise<St
         ? await downloadStore(config, LOCAL_STORE_FILE)
         : await readStoreFile(config)
         
-    // try {
-    //     const stats = promises.stat(localStoreFilePath)
-
-    // } catch(e) {
-        
-    // }
-
-    if (existsSync(localStoreFilePath)) {
+    if (await existsAndIsFile(localStoreFilePath)) {
         const localStore = await readFile(LOCAL_STORE_FILE, { encoding: 'utf-8' })
 
         const sortedStore = store.merge(JSON.parse(localStore))

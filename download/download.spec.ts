@@ -4,7 +4,7 @@
  * @group unit/file/download
  */
 
-import { existsSync, createWriteStream, Stats } from 'fs'
+import { createWriteStream, Stats } from 'fs'
 import { mkdir, stat, rmdir, unlink }from 'fs/promises'
 import { Response as NodeFetchResponse } from 'node-fetch'
 import type { MaybeMocked, MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
@@ -21,6 +21,7 @@ import { spinner, Spinner } from '../log/spinner'
 import { loadStore } from '../store/loadStore'
 import { Store } from '../store/Store'
 import { createChromeFullConfig, createStore, createGetChromeDownloadUrlReturn, createChromeSingleConfig } from '../test/test.utils'
+import { existsAndIsFolder } from '../utils/file.utils'
 import { getChromeDownloadUrl, loadVersions, mapVersions } from '../versions'
 import { downloadChromium } from './download'
 
@@ -43,6 +44,7 @@ jest.mock('../log/logger')
 jest.mock('../log/printer')
 jest.mock('../store/loadStore')
 jest.mock('../versions')
+jest.mock('../utils/file.utils')
 
 describe('download', () => {
     describe('downloadChromium', () => {
@@ -61,7 +63,7 @@ describe('download', () => {
 
         let extractMock: MaybeMockedDeep<typeof extract>
 
-        let existsSyncMock: MaybeMocked<typeof existsSync>
+        let existsAndIsFolderMock: MaybeMocked<typeof existsAndIsFolder>
         let createWriteStreamMock: MaybeMockedDeep<typeof createWriteStream>
         let mkdirMock: MaybeMocked<typeof mkdir>
         let statMock: MaybeMocked<typeof stat>
@@ -89,7 +91,7 @@ describe('download', () => {
 
             extractMock = mocked(extract)
 
-            existsSyncMock = mocked(existsSync)
+            existsAndIsFolderMock = mocked(existsAndIsFolder)
             createWriteStreamMock = mocked(createWriteStream)
             mkdirMock = mocked(mkdir)
             statMock = mocked(stat)
@@ -136,7 +138,7 @@ describe('download', () => {
             
             extractMock.mockReset()
             
-            existsSyncMock.mockReset()
+            existsAndIsFolderMock.mockReset()
             createWriteStreamMock.mockReset()
             mkdirMock.mockReset()
             statMock.mockReset()
@@ -167,7 +169,7 @@ describe('download', () => {
             getChromeDownloadUrlMock.mockResolvedValue(createGetChromeDownloadUrlReturn())
 
             fetchChromeZipFileMock.mockResolvedValue(zipFileResource)
-            existsSyncMock.mockReturnValue(false)
+            existsAndIsFolderMock.mockResolvedValue(false)
 
             // Act
             const config = createChromeFullConfig({
@@ -175,8 +177,8 @@ describe('download', () => {
                 downloadFolder: 'down_folder',
             })
             await downloadChromium(config)
-            expect(existsSyncMock).toHaveBeenCalledTimes(1)
-            expect(existsSyncMock).toHaveBeenCalledWith('down_folder')
+            expect(existsAndIsFolderMock).toHaveBeenCalledTimes(1)
+            expect(existsAndIsFolderMock).toHaveBeenCalledWith('down_folder')
             expect(mkdirMock).toHaveBeenCalledTimes(1)
     
             expect(progressConstructorMock).toHaveBeenCalledTimes(1)
@@ -228,7 +230,7 @@ describe('download', () => {
             getChromeDownloadUrlMock.mockResolvedValue(createGetChromeDownloadUrlReturn())
 
             fetchChromeZipFileMock.mockResolvedValue(zipFileResource)
-            existsSyncMock.mockReturnValue(false)
+            existsAndIsFolderMock.mockResolvedValue(false)
 
             // Act
             const config = createChromeFullConfig({
@@ -236,8 +238,8 @@ describe('download', () => {
                 downloadFolder: 'down_folder',
             })
             await downloadChromium(config)
-            expect(existsSyncMock).toHaveBeenCalledTimes(1)
-            expect(existsSyncMock).toHaveBeenCalledWith('down_folder')
+            expect(existsAndIsFolderMock).toHaveBeenCalledTimes(1)
+            expect(existsAndIsFolderMock).toHaveBeenCalledWith('down_folder')
             expect(mkdirMock).toHaveBeenCalledTimes(1)
     
             expect(progressConstructorMock).toHaveBeenCalledTimes(1)
@@ -255,7 +257,7 @@ describe('download', () => {
 
             fetchChromeZipFileMock.mockResolvedValue(zipFileResource)
 
-            existsSyncMock.mockReturnValue(true)
+            existsAndIsFolderMock.mockResolvedValue(true)
 
             // Act
             const config = createChromeFullConfig({
@@ -267,8 +269,8 @@ describe('download', () => {
 
             expect(mkdirMock).toHaveBeenCalledTimes(0)
 
-            expect(existsSyncMock).toHaveBeenCalledTimes(1)
-            expect(existsSyncMock).toHaveBeenCalledWith('down_folder')
+            expect(existsAndIsFolderMock).toHaveBeenCalledTimes(1)
+            expect(existsAndIsFolderMock).toHaveBeenCalledWith('down_folder')
 
             expect(progressConstructorMock).toHaveBeenCalledTimes(1)
             expect(progressConstructorMock).toHaveBeenCalledWith(zipFileResource, { throttle: 100 })
@@ -837,7 +839,7 @@ describe('download', () => {
             getChromeDownloadUrlMock.mockResolvedValue(createGetChromeDownloadUrlReturn())
 
             fetchChromeZipFileMock.mockResolvedValue(zipFileResource)
-            existsSyncMock.mockReturnValue(false)
+            existsAndIsFolderMock.mockResolvedValue(false)
 
             // Act
             const config = createChromeFullConfig({
@@ -856,7 +858,7 @@ describe('download', () => {
             getChromeDownloadUrlMock.mockResolvedValue(createGetChromeDownloadUrlReturn())
 
             fetchChromeZipFileMock.mockResolvedValue(zipFileResource)
-            existsSyncMock.mockReturnValue(false)
+            existsAndIsFolderMock.mockResolvedValue(false)
 
             // Act
             const config = createChromeFullConfig({

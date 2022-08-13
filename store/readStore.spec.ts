@@ -4,19 +4,19 @@
  * @group unit/file/store/readStore
  */
 
-import { existsSync } from 'fs'
 import { readFile } from 'fs/promises'
 import type { MaybeMockedDeep, MaybeMocked } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
 import { Spinner, spinner } from '../log/spinner'
 import { createStore, createImportConfig } from '../test/test.utils'
+import { existsAndIsFile } from '../utils/file.utils'
 import { readStoreFile } from './readStore'
 import { Store } from './Store'
 
-jest.mock('fs')
 jest.mock('fs/promises')
 
+jest.mock('../utils/file.utils')
 jest.mock('../log/spinner')
 
 describe('readStore', () => {
@@ -24,19 +24,19 @@ describe('readStore', () => {
     describe('readStoreFile', () => {
 
         let readFileMock: MaybeMocked<typeof readFile>
-        let existsSyncMock: MaybeMocked<typeof existsSync>
+        let existsAndIsFileMock: MaybeMocked<typeof existsAndIsFile>
         let spinnerMock: MaybeMockedDeep<Spinner>
 
         beforeAll(() => {
             readFileMock = mocked(readFile)
-            existsSyncMock = mocked(existsSync)
+            existsAndIsFileMock = mocked(existsAndIsFile)
 
             spinnerMock = mocked(spinner, true)
         })
 
         beforeEach(() => {
             readFileMock.mockReset()
-            existsSyncMock.mockClear()
+            existsAndIsFileMock.mockClear()
 
             spinnerMock.start.mockClear()
             spinnerMock.success.mockClear()
@@ -45,7 +45,7 @@ describe('readStore', () => {
 
         it('should return the parsed store received from the file system', async () => {
             const url = 'my-url'
-            existsSyncMock.mockReturnValue(true)
+            existsAndIsFileMock.mockResolvedValue(true)
             const expectedStore = createStore()
             readFileMock.mockResolvedValue(JSON.stringify(expectedStore, null, 4))
 
@@ -56,7 +56,7 @@ describe('readStore', () => {
 
         it('should reject the returned Promise on file not exist on filesystem', async () => {
             const url = 'my-url'
-            existsSyncMock.mockReturnValue(false)
+            existsAndIsFileMock.mockResolvedValue(false)
             const expectedStore = createStore()
             readFileMock.mockResolvedValue(JSON.stringify(expectedStore, null, 4))
 
@@ -66,7 +66,7 @@ describe('readStore', () => {
 
         it('should throw an error on unparsable JSON', async () => {
             const url = 'my-url'
-            existsSyncMock.mockReturnValue(true)
+            existsAndIsFileMock.mockResolvedValue(true)
             readFileMock.mockResolvedValue('{"Not parseable": "6}')
 
             await expect(() => readStoreFile(createImportConfig({ url }))).rejects.toThrow(new Error('Unexpected end of JSON input'))
@@ -77,7 +77,7 @@ describe('readStore', () => {
 
         it('should throw an error on rejected promise', async () => {
             const url = 'my-url'
-            existsSyncMock.mockReturnValue(true)
+            existsAndIsFileMock.mockResolvedValue(true)
 
             readFileMock.mockRejectedValue(new Error('callback error'))
 
@@ -89,7 +89,7 @@ describe('readStore', () => {
 
         it('should rethrow a received error', async () => {
             const url = 'my-url'
-            existsSyncMock.mockReturnValue(true)
+            existsAndIsFileMock.mockResolvedValue(true)
 
             readFileMock.mockImplementation(() => {
                 throw new Error('callback error')
@@ -104,7 +104,7 @@ describe('readStore', () => {
 
         it('should rethrow a received SyntaxError', async () => {
             const url = 'my-url'
-            existsSyncMock.mockReturnValue(true)
+            existsAndIsFileMock.mockResolvedValue(true)
 
             // trailing comma on purpose
             readFileMock.mockResolvedValue('{"win": {"x64": [], "x86": [],}}')
@@ -117,7 +117,7 @@ describe('readStore', () => {
 
         it('should rethrow anything else', async () => {
             const url = 'my-url'
-            existsSyncMock.mockReturnValue(true)
+            existsAndIsFileMock.mockResolvedValue(true)
 
             readFileMock.mockImplementation(() => {
                 throw 'something happened'

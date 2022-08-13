@@ -1,4 +1,4 @@
-import { createWriteStream, existsSync } from 'fs'
+import { createWriteStream } from 'fs'
 import { mkdir, stat, rmdir, unlink } from 'fs/promises'
 import { join as pathJoin } from 'path'
 
@@ -11,6 +11,7 @@ import { DebugMode, logger } from '../log/logger'
 import { progress } from '../log/progress'
 import { spinner } from '../log/spinner'
 import { loadStore } from '../store/loadStore'
+import { existsAndIsFolder } from '../utils/file.utils'
 import { isChromeSingleConfig } from '../utils/typeguards'
 import { getChromeDownloadUrl, loadVersions, mapVersions } from '../versions'
 import { FluentDownload } from './download-fluent'
@@ -106,7 +107,7 @@ async function downloadForConfig(config: IChromeConfig): Promise<DownloadReportE
             ? pathJoin(config.downloadFolder, filename)
             : filename
 
-        if (!!config.downloadFolder && !existsSync(config.downloadFolder)) {
+        if (!!config.downloadFolder && !(await existsAndIsFolder(config.downloadFolder))) {
             await mkdir(config.downloadFolder, { recursive: true })
             logger.info(`${config.downloadFolder} created'`)
         }

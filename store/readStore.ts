@@ -1,9 +1,9 @@
-import { existsSync } from 'fs'
 import { readFile } from 'fs/promises'
 
 import { READ_CONFIG } from '../commons/loggerTexts'
 import type { IStoreConfig } from '../interfaces/interfaces'
 import { spinner } from '../log/spinner'
+import { existsAndIsFile } from '../utils/file.utils'
 import { Store } from './Store'
 
 /**
@@ -12,7 +12,7 @@ import { Store } from './Store'
  */
 export async function readStoreFile(config: IStoreConfig): Promise<Store> {
     spinner.start(READ_CONFIG)
-    if (!existsSync(config.url)) {
+    if (!(await existsAndIsFile(config.url))) {
         const reason = 'File does not exist'
         spinner.error(reason)
         throw new Error(reason)
