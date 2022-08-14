@@ -4,9 +4,6 @@
  * @group unit/file/store/downloadStore
  */
 
-import type { MaybeMockedDeep, MaybeMocked } from 'ts-jest/dist/utils/testing'
-import { mocked } from 'ts-jest/utils'
-
 import { fetchLocalStore } from '../api'
 import { LOAD_CONFIG } from '../commons/loggerTexts'
 import { spinner, Spinner } from '../log/spinner'
@@ -18,14 +15,14 @@ jest.mock('../log/spinner')
 jest.mock('../api')
 
 describe('downloadStore', () => {
-    let spinnerMock: MaybeMockedDeep<Spinner>
-    let fetchLocalStoreMock: MaybeMocked<typeof fetchLocalStore>
+    let spinnerMock: jest.MaybeMockedDeep<Spinner>
+    let fetchLocalStoreMock: jest.MaybeMocked<typeof fetchLocalStore>
 
     beforeEach(() => {
-        fetchLocalStoreMock = mocked(fetchLocalStore)
+        fetchLocalStoreMock = jest.mocked(fetchLocalStore)
         fetchLocalStoreMock.mockReset()
 
-        spinnerMock = mocked(spinner, true)
+        spinnerMock = jest.mocked(spinner, true)
         spinnerMock.start.mockReset()
         spinnerMock.success.mockReset()
         spinnerMock.error.mockReset()

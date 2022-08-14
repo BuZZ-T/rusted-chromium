@@ -7,8 +7,6 @@
 import { Response as NodeFetchResponse } from 'node-fetch'
 import { createWriteStream, Stats } from 'node:fs'
 import { mkdir, stat, rmdir, unlink }from 'node:fs/promises'
-import type { MaybeMocked, MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
-import { mocked } from 'ts-jest/utils'
 
 import { fetchChromeZipFile } from '../api'
 import { ComparableVersion } from '../commons/ComparableVersion'
@@ -49,26 +47,26 @@ jest.mock('../utils/file.utils')
 describe('download', () => {
     describe('downloadChromium', () => {
 
-        let loadVersionsMock: MaybeMocked<typeof loadVersions>
-        let loadStoreMock: MaybeMocked<typeof loadStore>
-        let mapVersionsMock: MaybeMocked<typeof mapVersions>
-        let getChromeDownloadUrlMock: MaybeMocked<typeof getChromeDownloadUrl>
+        let loadVersionsMock: jest.MaybeMocked<typeof loadVersions>
+        let loadStoreMock: jest.MaybeMocked<typeof loadStore>
+        let mapVersionsMock: jest.MaybeMocked<typeof mapVersions>
+        let getChromeDownloadUrlMock: jest.MaybeMocked<typeof getChromeDownloadUrl>
 
-        let fetchChromeZipFileMock: MaybeMocked<typeof fetchChromeZipFile>
+        let fetchChromeZipFileMock: jest.MaybeMocked<typeof fetchChromeZipFile>
 
-        let progressConstructorMock: MaybeMocked<typeof Progress>
-        let progressMock: MaybeMockedDeep<ProgressBar>
-        let loggerMock: MaybeMockedDeep<Logger>
-        let spinnerMock: MaybeMockedDeep<Spinner>
+        let progressConstructorMock: jest.MaybeMocked<typeof Progress>
+        let progressMock: jest.MaybeMockedDeep<ProgressBar>
+        let loggerMock: jest.MaybeMockedDeep<Logger>
+        let spinnerMock: jest.MaybeMockedDeep<Spinner>
 
-        let extractMock: MaybeMockedDeep<typeof extract>
+        let extractMock: jest.MaybeMockedDeep<typeof extract>
 
-        let existsAndIsFolderMock: MaybeMocked<typeof existsAndIsFolder>
-        let createWriteStreamMock: MaybeMockedDeep<typeof createWriteStream>
-        let mkdirMock: MaybeMocked<typeof mkdir>
-        let statMock: MaybeMocked<typeof stat>
-        let rmdirMock: MaybeMocked<typeof rmdir>
-        let unlinkMock: MaybeMocked<typeof unlink>
+        let existsAndIsFolderMock: jest.MaybeMocked<typeof existsAndIsFolder>
+        let createWriteStreamMock: jest.MaybeMockedDeep<typeof createWriteStream>
+        let mkdirMock: jest.MaybeMocked<typeof mkdir>
+        let statMock: jest.MaybeMocked<typeof stat>
+        let rmdirMock: jest.MaybeMocked<typeof rmdir>
+        let unlinkMock: jest.MaybeMocked<typeof unlink>
 
         let pipeMock: jest.Mock
         let onMock: jest.Mock
@@ -78,25 +76,25 @@ describe('download', () => {
         let processExitSpy: jest.SpyInstance
 
         beforeAll(() => {
-            loadVersionsMock = mocked(loadVersions)
-            loadStoreMock = mocked(loadStore)
-            mapVersionsMock = mocked(mapVersions)
-            getChromeDownloadUrlMock = mocked(getChromeDownloadUrl)
-            fetchChromeZipFileMock = mocked(fetchChromeZipFile)
+            loadVersionsMock = jest.mocked(loadVersions)
+            loadStoreMock = jest.mocked(loadStore)
+            mapVersionsMock = jest.mocked(mapVersions)
+            getChromeDownloadUrlMock = jest.mocked(getChromeDownloadUrl)
+            fetchChromeZipFileMock = jest.mocked(fetchChromeZipFile)
 
-            progressConstructorMock = mocked(Progress)
-            progressMock = mocked(progress, true)
-            loggerMock = mocked(logger, true)
-            spinnerMock = mocked(spinner, true)
+            progressConstructorMock = jest.mocked(Progress)
+            progressMock = jest.mocked(progress, true)
+            loggerMock = jest.mocked(logger, true)
+            spinnerMock = jest.mocked(spinner, true)
 
-            extractMock = mocked(extract)
+            extractMock = jest.mocked(extract)
 
-            existsAndIsFolderMock = mocked(existsAndIsFolder)
-            createWriteStreamMock = mocked(createWriteStream)
-            mkdirMock = mocked(mkdir)
-            statMock = mocked(stat)
-            rmdirMock = mocked(rmdir)
-            unlinkMock = mocked(unlink)
+            existsAndIsFolderMock = jest.mocked(existsAndIsFolder)
+            createWriteStreamMock = jest.mocked(createWriteStream)
+            mkdirMock = jest.mocked(mkdir)
+            statMock = jest.mocked(stat)
+            rmdirMock = jest.mocked(rmdir)
+            unlinkMock = jest.mocked(unlink)
 
             pipeMock = jest.fn()
             onMock = jest.fn()

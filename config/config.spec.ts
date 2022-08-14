@@ -4,9 +4,6 @@
  * @group unit/file/config
  */
 
-import type { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
-import { mocked } from 'ts-jest/utils'
-
 import { ComparableVersion } from '../commons/ComparableVersion'
 import { DEFAULT_CONFIG_OPTIONS } from '../commons/constants'
 import type { IChromeConfigWrapper, IStoreConfigWrapper, IExportConfigWrapper } from '../interfaces/interfaces'
@@ -23,16 +20,16 @@ jest.mock('../log/logger')
 
 describe('config', () => {
 
-    let programMock: MaybeMockedDeep<typeof program>
-    let loggerMock: MaybeMockedDeep<Logger>
+    let programMock: jest.MaybeMockedDeep<typeof program>
+    let loggerMock: jest.MaybeMockedDeep<Logger>
 
     describe('readConfig', () => {
 
         beforeEach(() => {
-            loggerMock = mocked(logger, true)
+            loggerMock = jest.mocked(logger, true)
             loggerMock.warn.mockClear()
 
-            programMock = mocked(program, true)
+            programMock = jest.mocked(program, true)
             programMock.version.mockClear()
             programMock.option.mockClear()
             programMock.parse.mockClear()

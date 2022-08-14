@@ -4,8 +4,6 @@
  * @group unit/file/download-fluent-single
  */
 
-import { MaybeMocked, mocked } from 'ts-jest/dist/utils/testing'
-
 import { ComparableVersion } from '../commons/ComparableVersion'
 import type { IChromeSingleConfig } from '../interfaces/interfaces'
 import { downloadChromium } from './download'
@@ -29,10 +27,10 @@ describe('download-fluent-single', () => {
 
     let fluentDownloadSingle: FluentDownloadSingleIncomplete
 
-    let downloadChromiumMock: MaybeMocked<typeof downloadChromium>
+    let downloadChromiumMock: jest.MaybeMocked<typeof downloadChromium>
     
     beforeEach(() => {
-        downloadChromiumMock = mocked(downloadChromium)
+        downloadChromiumMock = jest.mocked(downloadChromium)
 
         downloadChromiumMock.mockReset()
         fluentDownloadSingle = new FluentDownloadSingleIncomplete()

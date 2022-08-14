@@ -10,8 +10,6 @@ import * as mockFs from 'mock-fs'
 import * as fetch from 'node-fetch'
 import { readFile, writeFile } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
-import { MaybeMocked } from 'ts-jest/dist/utils/testing'
-import { mocked } from 'ts-jest/utils'
 
 import { rusted } from './rusted'
 import { Store } from './store/Store'
@@ -28,12 +26,12 @@ describe('[int] import store', () => {
 
     const localStoreFile = join(__dirname, 'localstore.json')
 
-    let promptsMock: MaybeMocked<typeof prompts>
-    let nodeFetchMock: MaybeMocked<typeof fetch>
+    let promptsMock: jest.MaybeMocked<typeof prompts>
+    let nodeFetchMock: jest.MaybeMocked<typeof fetch>
 
     beforeAll(async () => {
 
-        promptsMock = mocked(prompts)
+        promptsMock = jest.mocked(prompts)
 
         const jestFolder = await getJestTmpFolder()
         mockFs({
@@ -49,7 +47,7 @@ describe('[int] import store', () => {
         // clear mock-fs
         await writeFile(localStoreFile, JSON.stringify(createStore()), { encoding: 'utf-8' })
 
-        nodeFetchMock = mocked(fetch)
+        nodeFetchMock = jest.mocked(fetch)
         mockNodeFetch(nodeFetchMock)
 
         promptsMock.mockClear()

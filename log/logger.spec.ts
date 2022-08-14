@@ -4,8 +4,6 @@
  * @group unit/file/loger
  */
 
-import type { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
-
 import type { PrinterWriteStream } from '../interfaces/printer.interfaces'
 import { createStdioMock } from '../test/test.utils'
 import { DebugMode, Logger } from './logger'
@@ -18,7 +16,7 @@ jest.mock('chalk', () => ({
 }))
 
 describe('logger', () => {
-    let stdioMock: MaybeMockedDeep<PrinterWriteStream>
+    let stdioMock: jest.MaybeMockedDeep<PrinterWriteStream>
     let logger: Logger
     
     beforeEach(() => {

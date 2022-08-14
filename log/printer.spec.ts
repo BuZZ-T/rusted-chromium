@@ -4,8 +4,6 @@
  * @group unit/file/printer
  */
 
-import type { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
-
 import type { PrinterWriteStream } from '../interfaces/printer.interfaces'
 import { createStdioMock } from '../test/test.utils'
 import { Printer } from './printer'
@@ -42,7 +40,7 @@ class TestPrinter extends Printer<TestPrinter> {
 
 describe('Printer', () => {
 
-    let stdioMock: MaybeMockedDeep<PrinterWriteStream>
+    let stdioMock: jest.MaybeMockedDeep<PrinterWriteStream>
     let testPrinter: TestPrinter
 
     beforeEach(() => {

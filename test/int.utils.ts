@@ -2,7 +2,6 @@ import { Response as NodeFetchResponse, RequestInfo as NodeFetchRequestInfo, Req
 import { readdir, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { PassThrough, Readable } from 'node:stream'
-import { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 
 import { Store } from '../store/Store'
 import { testMetadataResponse } from './test.metadata'
@@ -111,7 +110,7 @@ function getUrlFromRequestInfo(requestInfo: NodeFetchRequestInfo): string {
  * @param nodeFetchMock 
  * @param options
  */
-export function mockNodeFetch(nodeFetchMock: MaybeMockedDeep<any>, { params, config, urls }: IMockOptions = {}): void {
+export function mockNodeFetch(nodeFetchMock: jest.MaybeMockedDeep<any>, { params, config, urls }: IMockOptions = {}): void {
 
     chromeZipStream = new PassThrough()
 

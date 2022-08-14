@@ -6,8 +6,6 @@
 
 import { readFile } from 'node:fs/promises'
 import { join as pathJoin } from 'node:path'
-import type { MaybeMocked } from 'ts-jest/dist/utils/testing'
-import { mocked } from 'ts-jest/utils'
 
 import { createStore } from '../test/test.utils'
 import { existsAndIsFile } from '../utils/file.utils'
@@ -22,12 +20,12 @@ const localPath = pathJoin(__dirname, '..', 'localstore.json')
 
 describe('loadStore', () => {
 
-    let existsSyncMock: MaybeMocked<typeof existsAndIsFile>
-    let readFileMock: MaybeMocked<typeof readFile>
+    let existsSyncMock: jest.MaybeMocked<typeof existsAndIsFile>
+    let readFileMock: jest.MaybeMocked<typeof readFile>
 
     beforeAll(() => {
-        existsSyncMock = mocked(existsAndIsFile)
-        readFileMock = mocked(readFile)
+        existsSyncMock = jest.mocked(existsAndIsFile)
+        readFileMock = jest.mocked(readFile)
     })
 
     beforeEach(() => {

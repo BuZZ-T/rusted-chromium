@@ -4,9 +4,6 @@
  * @group unit/file/select
  */
 
-import type { MaybeMocked, MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
-import { mocked } from 'ts-jest/utils'
-
 import { MappedVersion } from './commons/MappedVersion'
 import { logger } from './log/logger'
 import { userSelectedVersion } from './select'
@@ -19,14 +16,14 @@ jest.mock('prompts')
 jest.mock('./log/logger')
 
 describe('userSelectedVersion', () => {
-    let promptsMock: MaybeMocked<typeof prompts>
-    let loggerMock: MaybeMockedDeep<typeof logger>
+    let promptsMock: jest.MaybeMocked<typeof prompts>
+    let loggerMock: jest.MaybeMockedDeep<typeof logger>
 
     beforeEach(() => {
-        promptsMock = mocked(prompts)
+        promptsMock = jest.mocked(prompts)
         promptsMock.mockClear()
 
-        loggerMock = mocked(logger, true)
+        loggerMock = jest.mocked(logger, true)
         loggerMock.warn.mockClear()
     })
 

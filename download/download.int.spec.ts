@@ -10,8 +10,6 @@ import * as mockFs from 'mock-fs'
 import * as fetch from 'node-fetch'
 import { readFile, writeFile, unlink } from 'node:fs/promises'
 import { join as pathJoin, resolve } from 'node:path'
-import { MaybeMocked } from 'ts-jest/dist/utils/testing'
-import { mocked } from 'ts-jest/utils'
 
 import { MappedVersion } from '../commons/MappedVersion'
 import type { IListStore } from '../interfaces/store.interfaces'
@@ -34,11 +32,11 @@ describe('[int] download chromium', () => {
     const chromeFolder20 = pathJoin(__dirname, 'chrome-linux-x64-20.0.0.0')
     const localStoreFile = pathJoin(__dirname, '../', 'localstore.json')
 
-    let promptsMock: MaybeMocked<typeof prompts>
-    let nodeFetchMock: MaybeMocked<typeof fetch>
+    let promptsMock: jest.MaybeMocked<typeof prompts>
+    let nodeFetchMock: jest.MaybeMocked<typeof fetch>
 
     beforeAll(async () => {
-        promptsMock = mocked(prompts)
+        promptsMock = jest.mocked(prompts)
 
         const jestFolder = await getJestTmpFolder()
         mockFs({
@@ -60,7 +58,7 @@ describe('[int] download chromium', () => {
             await unlink(chromeZip20)
         }
 
-        nodeFetchMock = mocked(fetch)
+        nodeFetchMock = jest.mocked(fetch)
         mockNodeFetch(nodeFetchMock, {
             config: {
                 chromeZip: {

@@ -4,9 +4,6 @@
  * @group unit/file/rusted
  */
 
-import type { MaybeMocked, MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
-import { mocked } from 'ts-jest/utils'
-
 import { readConfig } from './config/config'
 import { downloadChromium } from './download/download'
 import type { ConfigWrapper } from './interfaces/interfaces'
@@ -27,24 +24,24 @@ jest.mock('./store/importStore')
 jest.mock('./store/exportStore')
 
 describe('rusted', () => {
-    let readConfigMock: MaybeMocked<typeof readConfig>
-    let downloadChromiumMock: MaybeMocked<typeof downloadChromium>
-    let importAndMergeLocalstoreMock: MaybeMocked<typeof importAndMergeLocalstore>
-    let exportStoreMock: MaybeMocked<typeof exportStore>
+    let readConfigMock: jest.MaybeMocked<typeof readConfig>
+    let downloadChromiumMock: jest.MaybeMocked<typeof downloadChromium>
+    let importAndMergeLocalstoreMock: jest.MaybeMocked<typeof importAndMergeLocalstore>
+    let exportStoreMock: jest.MaybeMocked<typeof exportStore>
 
-    let loggerMock: MaybeMockedDeep<Logger>
-    let spinnerMock: MaybeMockedDeep<Spinner>
-    let progressMock: MaybeMockedDeep<ProgressBar>
+    let loggerMock: jest.MaybeMockedDeep<Logger>
+    let spinnerMock: jest.MaybeMockedDeep<Spinner>
+    let progressMock: jest.MaybeMockedDeep<ProgressBar>
 
     beforeAll(() => {
-        readConfigMock = mocked(readConfig)
-        downloadChromiumMock = mocked(downloadChromium)
-        importAndMergeLocalstoreMock = mocked(importAndMergeLocalstore)
-        exportStoreMock = mocked(exportStore)
+        readConfigMock = jest.mocked(readConfig)
+        downloadChromiumMock = jest.mocked(downloadChromium)
+        importAndMergeLocalstoreMock = jest.mocked(importAndMergeLocalstore)
+        exportStoreMock = jest.mocked(exportStore)
 
-        loggerMock = mocked(logger, true)
-        spinnerMock = mocked(spinner, true)
-        progressMock = mocked(progress, true)
+        loggerMock = jest.mocked(logger, true)
+        spinnerMock = jest.mocked(spinner, true)
+        progressMock = jest.mocked(progress, true)
     })
 
     beforeEach(() => {

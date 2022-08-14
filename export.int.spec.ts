@@ -11,8 +11,6 @@ import * as fetch from 'node-fetch'
 import { writeFile } from 'node:fs/promises'
 import { join, resolve as pathResolve } from 'node:path'
 import { PassThrough } from 'node:stream'
-import type { MaybeMocked } from 'ts-jest/dist/utils/testing'
-import { mocked } from 'ts-jest/utils'
 
 import { rusted } from './rusted'
 import { exportStore } from './store/exportStore'
@@ -29,12 +27,12 @@ describe('[int] export store', () => {
 
     const localStoreFile = join(__dirname, 'localstore.json')
 
-    let promptsMock: MaybeMocked<typeof prompts>
-    let nodeFetchMock: MaybeMocked<typeof fetch>
+    let promptsMock: jest.MaybeMocked<typeof prompts>
+    let nodeFetchMock: jest.MaybeMocked<typeof fetch>
 
     beforeAll(async () => {
 
-        promptsMock = mocked(prompts)
+        promptsMock = jest.mocked(prompts)
 
         const jestFolder = await getJestTmpFolder()
         mockFs({
@@ -50,7 +48,7 @@ describe('[int] export store', () => {
         // clear mock-fs
         await writeFile(localStoreFile, JSON.stringify(createStore()))
 
-        nodeFetchMock = mocked(fetch)
+        nodeFetchMock = jest.mocked(fetch)
         mockNodeFetch(nodeFetchMock)
 
         promptsMock.mockClear()

@@ -6,8 +6,6 @@
 
 import { readFile, writeFile } from 'node:fs/promises'
 import { join as pathJoin } from 'node:path'
-import type { MaybeMocked, MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
-import { mocked } from 'ts-jest/utils'
 
 import { LOCAL_STORE_FILE } from '../commons/constants'
 import { logger, DebugMode, Logger } from '../log/logger'
@@ -29,24 +27,24 @@ jest.mock('../log/logger')
 describe('importStore', () => {
     describe('importAndMergeLocalstore', () => {
 
-        let existsAndIsFileMock: MaybeMocked<typeof existsAndIsFile>
-        let writeFileMock: MaybeMocked<typeof writeFile>
-        let readFileMock: MaybeMocked<typeof readFile>
+        let existsAndIsFileMock: jest.MaybeMocked<typeof existsAndIsFile>
+        let writeFileMock: jest.MaybeMocked<typeof writeFile>
+        let readFileMock: jest.MaybeMocked<typeof readFile>
 
-        let downloadStoreMock: MaybeMocked<typeof downloadStore>
-        let readStoreFileMock: MaybeMocked<typeof readStoreFile>
+        let downloadStoreMock: jest.MaybeMocked<typeof downloadStore>
+        let readStoreFileMock: jest.MaybeMocked<typeof readStoreFile>
 
-        let loggerMock: MaybeMockedDeep<Logger>
+        let loggerMock: jest.MaybeMockedDeep<Logger>
 
         beforeAll(() => {
-            downloadStoreMock = mocked(downloadStore)
-            readStoreFileMock = mocked(readStoreFile)
+            downloadStoreMock = jest.mocked(downloadStore)
+            readStoreFileMock = jest.mocked(readStoreFile)
 
-            existsAndIsFileMock = mocked(existsAndIsFile)
-            writeFileMock = mocked(writeFile)
-            readFileMock = mocked(readFile)
+            existsAndIsFileMock = jest.mocked(existsAndIsFile)
+            writeFileMock = jest.mocked(writeFile)
+            readFileMock = jest.mocked(readFile)
 
-            loggerMock = mocked(logger, true)
+            loggerMock = jest.mocked(logger, true)
         })
 
         beforeEach(() => {

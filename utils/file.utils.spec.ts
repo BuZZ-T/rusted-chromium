@@ -6,7 +6,6 @@
 
 import type { Stats } from 'node:fs'
 import { stat } from 'node:fs/promises'
-import { mocked } from 'ts-jest/utils'
 
 import { existsAndIsFile, existsAndIsFolder } from './file.utils'
 
@@ -14,7 +13,7 @@ jest.mock('node:fs/promises')
 
 describe('file.utils', () => {
 
-    const statMock = mocked(stat)
+    const statMock = jest.mocked(stat)
 
     beforeEach(() => {
         statMock.mockReset()

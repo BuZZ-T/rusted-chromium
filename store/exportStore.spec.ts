@@ -6,8 +6,6 @@
 
 import { createReadStream, ReadStream } from 'node:fs'
 import { join } from 'node:path'
-import type { MaybeMocked, MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
-import { mocked } from 'ts-jest/utils'
 
 import { LOCAL_STORE_FILE } from '../commons/constants'
 import { logger, Logger, DebugMode } from '../log/logger'
@@ -22,24 +20,24 @@ jest.mock('../utils/file.utils')
 
 describe('exportStore', () => {
 
-    let existsAndIsFileMock: MaybeMocked<typeof existsAndIsFile>
-    let createReadStreamMock: MaybeMocked<typeof createReadStream>
-    let readStreamMock: MaybeMocked<ReadStream>
-    let writeStreamMock: MaybeMocked<NodeJS.WriteStream>
+    let existsAndIsFileMock: jest.MaybeMocked<typeof existsAndIsFile>
+    let createReadStreamMock: jest.MaybeMocked<typeof createReadStream>
+    let readStreamMock: jest.MaybeMocked<ReadStream>
+    let writeStreamMock: jest.MaybeMocked<NodeJS.WriteStream>
 
-    let loggerMock: MaybeMockedDeep<Logger>
+    let loggerMock: jest.MaybeMockedDeep<Logger>
 
     beforeAll(() => {
-        existsAndIsFileMock = mocked(existsAndIsFile)
-        createReadStreamMock = mocked(createReadStream)
+        existsAndIsFileMock = jest.mocked(existsAndIsFile)
+        createReadStreamMock = jest.mocked(createReadStream)
         readStreamMock = {
             pipe: jest.fn()
-        } as unknown as MaybeMocked<ReadStream>
+        } as unknown as jest.MaybeMocked<ReadStream>
         writeStreamMock = {
             write: jest.fn()
-        } as unknown as MaybeMocked<NodeJS.WriteStream>
+        } as unknown as jest.MaybeMocked<NodeJS.WriteStream>
 
-        loggerMock = mocked(logger, true)
+        loggerMock = jest.mocked(logger, true)
     })
 
     beforeEach(() => {

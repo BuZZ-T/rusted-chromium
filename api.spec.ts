@@ -4,9 +4,6 @@
  * @group unit/file/api
  */
 
-import type { MaybeMocked, MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
-import { mocked } from 'ts-jest/utils'
-
 import { fetchChromiumTags, fetchBranchPosition, fetchChromeUrl, fetchChromeZipFile, fetchLocalStore } from './api'
 import type { IOSSettings } from './interfaces/os.interfaces'
 import { spinner, Spinner } from './log/spinner'
@@ -25,12 +22,12 @@ jest.mock('./log/progress')
 
 describe('api', () => {
 
-    let spinnerMock: MaybeMockedDeep<Spinner>
-    let fetchMock: MaybeMocked<typeof fetch>
+    let spinnerMock: jest.MaybeMockedDeep<Spinner>
+    let fetchMock: jest.MaybeMocked<typeof fetch>
 
     beforeAll(() => {
-        fetchMock = mocked(fetch)
-        spinnerMock = mocked(spinner, true)
+        fetchMock = jest.mocked(fetch)
+        spinnerMock = jest.mocked(spinner, true)
     })
 
     beforeEach(() => {

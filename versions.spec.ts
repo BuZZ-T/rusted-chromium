@@ -6,8 +6,6 @@
 
 import { parse } from 'node-html-parser'
 import type { HTMLElement as NodeParserHTMLElement, Node as NodeParserNode } from 'node-html-parser'
-import type { MaybeMockedDeep, MaybeMocked } from 'ts-jest/dist/utils/testing'
-import { mocked } from 'ts-jest/utils'
 
 import { fetchBranchPosition, fetchChromeUrl, fetchChromiumTags } from './api'
 import { ComparableVersion } from './commons/ComparableVersion'
@@ -41,13 +39,13 @@ jest.mock('./utils', () => ({
 
 describe('versions', () => {
     describe('getChromeDownloadUrl', () => {
-        let loggerMock: MaybeMockedDeep<Logger>
-        let spinnerMock: MaybeMockedDeep<Spinner>
-        let detectOperatingSystemMock: MaybeMocked<typeof detectOperatingSystem>
-        let fetchBranchPositionMock: MaybeMocked<typeof fetchBranchPosition>
-        let fetchChromeUrlMock: MaybeMocked<typeof fetchChromeUrl>
-        let userSelectedVersionMock: MaybeMocked<typeof userSelectedVersion>
-        let storeNegativeHitMock: MaybeMocked<typeof storeNegativeHit>
+        let loggerMock: jest.MaybeMockedDeep<Logger>
+        let spinnerMock: jest.MaybeMockedDeep<Spinner>
+        let detectOperatingSystemMock: jest.MaybeMocked<typeof detectOperatingSystem>
+        let fetchBranchPositionMock: jest.MaybeMocked<typeof fetchBranchPosition>
+        let fetchChromeUrlMock: jest.MaybeMocked<typeof fetchChromeUrl>
+        let userSelectedVersionMock: jest.MaybeMocked<typeof userSelectedVersion>
+        let storeNegativeHitMock: jest.MaybeMocked<typeof storeNegativeHit>
 
         let version1: MappedVersion
         let version2: MappedVersion
@@ -76,20 +74,20 @@ describe('versions', () => {
             versionDisabled2 = new MappedVersion(40, 1, 0, 0, true)
             versionDisabled3 = new MappedVersion(40, 2, 0, 0, true)
 
-            loggerMock = mocked(logger, true)
+            loggerMock = jest.mocked(logger, true)
             loggerMock.info.mockClear()
             loggerMock.warn.mockClear()
 
-            spinnerMock = mocked(spinner, true)
+            spinnerMock = jest.mocked(spinner, true)
             spinnerMock.start.mockClear()
             spinnerMock.success.mockClear()
             spinnerMock.error.mockClear()
 
-            detectOperatingSystemMock = mocked(detectOperatingSystem)
-            fetchBranchPositionMock = mocked(fetchBranchPosition)
-            fetchChromeUrlMock = mocked(fetchChromeUrl)
-            userSelectedVersionMock = mocked(userSelectedVersion)
-            storeNegativeHitMock = mocked(storeNegativeHit)
+            detectOperatingSystemMock = jest.mocked(detectOperatingSystem)
+            fetchBranchPositionMock = jest.mocked(fetchBranchPosition)
+            fetchChromeUrlMock = jest.mocked(fetchChromeUrl)
+            userSelectedVersionMock = jest.mocked(userSelectedVersion)
+            storeNegativeHitMock = jest.mocked(storeNegativeHit)
 
             detectOperatingSystemMock.mockReset()
             fetchBranchPositionMock.mockReset()
@@ -843,15 +841,15 @@ describe('versions', () => {
             { text: '10.0.0.1' },
             { text: '10.0.0.3' })
 
-        let fetchChromiumTagsMock: MaybeMocked<typeof fetchChromiumTags>
-        let parseMock: MaybeMocked<typeof parse>
+        let fetchChromiumTagsMock: jest.MaybeMocked<typeof fetchChromiumTags>
+        let parseMock: jest.MaybeMocked<typeof parse>
         let querySelectorMock: jest.Mock
 
         const someHTML = '<html><body><h1>some html</h1></body></html>'
 
         beforeAll(() => {
-            fetchChromiumTagsMock = mocked(fetchChromiumTags)
-            parseMock = mocked(parse)
+            fetchChromiumTagsMock = jest.mocked(fetchChromiumTags)
+            parseMock = jest.mocked(parse)
             querySelectorMock = jest.fn()
         })
 

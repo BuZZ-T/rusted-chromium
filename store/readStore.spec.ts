@@ -5,8 +5,6 @@
  */
 
 import { readFile } from 'node:fs/promises'
-import type { MaybeMockedDeep, MaybeMocked } from 'ts-jest/dist/utils/testing'
-import { mocked } from 'ts-jest/utils'
 
 import { Spinner, spinner } from '../log/spinner'
 import { createStore, createImportConfig } from '../test/test.utils'
@@ -23,15 +21,15 @@ describe('readStore', () => {
 
     describe('readStoreFile', () => {
 
-        let readFileMock: MaybeMocked<typeof readFile>
-        let existsAndIsFileMock: MaybeMocked<typeof existsAndIsFile>
-        let spinnerMock: MaybeMockedDeep<Spinner>
+        let readFileMock: jest.MaybeMocked<typeof readFile>
+        let existsAndIsFileMock: jest.MaybeMocked<typeof existsAndIsFile>
+        let spinnerMock: jest.MaybeMockedDeep<Spinner>
 
         beforeAll(() => {
-            readFileMock = mocked(readFile)
-            existsAndIsFileMock = mocked(existsAndIsFile)
+            readFileMock = jest.mocked(readFile)
+            existsAndIsFileMock = jest.mocked(existsAndIsFile)
 
-            spinnerMock = mocked(spinner, true)
+            spinnerMock = jest.mocked(spinner, true)
         })
 
         beforeEach(() => {

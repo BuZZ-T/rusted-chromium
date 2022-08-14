@@ -1,5 +1,4 @@
 import { HTMLElement as NodeParserHTMLElement, Node as NodeParserNode } from 'node-html-parser'
-import { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 
 import { DEFAULT_FULL_CONFIG, DEFAULT_SINGLE_CONFIG, DEFAULT_CONFIG_OPTIONS } from '../commons/constants'
 import { MappedVersion } from '../commons/MappedVersion'
@@ -75,7 +74,7 @@ export const createNodeParserHTMLElement = (querySelectorAllMock: jest.Mock<any,
     return element
 }
 
-export const createStdioMock = (): MaybeMockedDeep<PrinterWriteStream> => ({
+export const createStdioMock = (): jest.MaybeMockedDeep<PrinterWriteStream> => ({
     write: jest.fn(),
     clearLine: jest.fn(),
     cursorTo: jest.fn(),

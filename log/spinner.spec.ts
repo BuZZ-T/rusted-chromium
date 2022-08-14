@@ -6,8 +6,6 @@
 
 /* eslint-disable-next-line import/no-namespace */
 import * as chalk from 'chalk'
-import type { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
-import { mocked } from 'ts-jest/utils'
 
 import type { PrinterWriteStream } from '../interfaces/printer.interfaces'
 import { createStdioMock } from '../test/test.utils'
@@ -21,7 +19,7 @@ jest.mock('chalk', () => ({
 describe('loggerSpinner', () => {
 
     let spinner: Spinner
-    let stdioMock: MaybeMockedDeep<PrinterWriteStream>
+    let stdioMock: jest.MaybeMockedDeep<PrinterWriteStream>
 
     beforeAll(() => {
         stdioMock = createStdioMock()
@@ -32,7 +30,7 @@ describe('loggerSpinner', () => {
     beforeEach(() => {
         jest.useFakeTimers()
 
-        mocked(chalk, true)
+        jest.mocked(chalk, true)
 
         stdioMock.write.mockReset()
         stdioMock.clearLine.mockReset()

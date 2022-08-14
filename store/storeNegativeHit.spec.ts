@@ -6,8 +6,6 @@
 
 import { writeFile } from 'node:fs/promises'
 import { join as pathJoin } from 'node:path'
-import type { MaybeMocked } from 'ts-jest/dist/utils/testing'
-import { mocked } from 'ts-jest/utils'
 
 import { ComparableVersion } from '../commons/ComparableVersion'
 import { createStore } from '../test/test.utils'
@@ -22,12 +20,12 @@ const localPath = pathJoin(__dirname, '..', 'localstore.json')
 
 describe('storeNegativeHit', () => {
 
-    let writeFileMock: MaybeMocked<typeof writeFile>
-    let loadStoreMock: MaybeMocked<typeof loadStore>
+    let writeFileMock: jest.MaybeMocked<typeof writeFile>
+    let loadStoreMock: jest.MaybeMocked<typeof loadStore>
 
     beforeAll(() => {
-        writeFileMock = mocked(writeFile)
-        loadStoreMock = mocked(loadStore)
+        writeFileMock = jest.mocked(writeFile)
+        loadStoreMock = jest.mocked(loadStore)
     })
 
     beforeEach(() => {
