@@ -4,8 +4,8 @@
  * @group unit/file/store/exportStore
  */
 
-import { createReadStream, ReadStream } from 'fs'
-import { join } from 'path'
+import { createReadStream, ReadStream } from 'node:fs'
+import { join } from 'node:path'
 import type { MaybeMocked, MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
@@ -15,7 +15,7 @@ import { createExportConfig } from '../test/test.utils'
 import { existsAndIsFile } from '../utils/file.utils'
 import { exportStore } from './exportStore'
 
-jest.mock('fs')
+jest.mock('node:fs')
 
 jest.mock('../log/logger')
 jest.mock('../utils/file.utils')

@@ -4,12 +4,12 @@
  * @group int/use-case/importStore
  */
 
-import { readFile, writeFile } from 'fs/promises'
 /* eslint-disable-next-line import/no-namespace */
 import * as mockFs from 'mock-fs'
 /* eslint-disable-next-line import/no-namespace */
 import * as fetch from 'node-fetch'
-import { join, resolve } from 'path'
+import { readFile, writeFile } from 'node:fs/promises'
+import { join, resolve } from 'node:path'
 import { MaybeMocked } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 

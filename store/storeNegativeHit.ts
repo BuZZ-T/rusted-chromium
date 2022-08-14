@@ -1,5 +1,5 @@
-import { writeFile } from 'fs/promises'
-import { join as pathJoin } from 'path'
+import { writeFile } from 'node:fs/promises'
+import { join as pathJoin } from 'node:path'
 
 import type { ComparableVersion } from '../commons/ComparableVersion'
 import { LOCAL_STORE_FILE } from '../commons/constants'

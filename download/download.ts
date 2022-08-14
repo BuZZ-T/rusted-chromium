@@ -1,6 +1,6 @@
-import { createWriteStream } from 'fs'
-import { mkdir, stat, rmdir, unlink } from 'fs/promises'
-import { join as pathJoin } from 'path'
+import { createWriteStream } from 'node:fs'
+import { mkdir, stat, rmdir, unlink } from 'node:fs/promises'
+import { join as pathJoin } from 'node:path'
 
 import { fetchChromeZipFile } from '../api'
 import { DEFAULT_FULL_CONFIG, DEFAULT_SINGLE_CONFIG } from '../commons/constants'

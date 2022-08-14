@@ -1,7 +1,7 @@
-import { readdir, writeFile } from 'fs/promises'
 import { Response as NodeFetchResponse, RequestInfo as NodeFetchRequestInfo, Request as NodeFetchRequest } from 'node-fetch'
-import { join } from 'path'
-import { PassThrough, Readable } from 'stream'
+import { readdir, writeFile } from 'node:fs/promises'
+import { join } from 'node:path'
+import { PassThrough, Readable } from 'node:stream'
 import { MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 
 import { Store } from '../store/Store'

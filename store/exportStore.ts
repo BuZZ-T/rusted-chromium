@@ -1,5 +1,5 @@
-import { createReadStream } from 'fs'
-import { join } from 'path'
+import { createReadStream } from 'node:fs'
+import { join } from 'node:path'
 
 import { LOCAL_STORE_FILE } from '../commons/constants'
 import { NoLocalstoreError } from '../errors'

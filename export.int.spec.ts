@@ -4,13 +4,13 @@
  * @group int/use-case/exportStore
  */
 
-import { writeFile } from 'fs/promises'
 /* eslint-disable-next-line import/no-namespace */
 import * as mockFs from 'mock-fs'
 /* eslint-disable-next-line import/no-namespace */
 import * as fetch from 'node-fetch'
-import { join, resolve as pathResolve } from 'path'
-import { PassThrough } from 'stream'
+import { writeFile } from 'node:fs/promises'
+import { join, resolve as pathResolve } from 'node:path'
+import { PassThrough } from 'node:stream'
 import type { MaybeMocked } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 

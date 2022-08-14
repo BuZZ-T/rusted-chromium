@@ -4,9 +4,9 @@
  * @group unit/file/download
  */
 
-import { createWriteStream, Stats } from 'fs'
-import { mkdir, stat, rmdir, unlink }from 'fs/promises'
 import { Response as NodeFetchResponse } from 'node-fetch'
+import { createWriteStream, Stats } from 'node:fs'
+import { mkdir, stat, rmdir, unlink }from 'node:fs/promises'
 import type { MaybeMocked, MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
@@ -32,8 +32,8 @@ const Progress = require('node-fetch-progress')
 
 const progressOnMock = jest.fn()
 
-jest.mock('fs')
-jest.mock('fs/promises')
+jest.mock('node:fs')
+jest.mock('node:fs/promises')
 jest.mock('node-fetch-progress')
 jest.mock('extract-zip')
 

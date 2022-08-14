@@ -4,7 +4,7 @@
  * @group unit/file/store/readStore
  */
 
-import { readFile } from 'fs/promises'
+import { readFile } from 'node:fs/promises'
 import type { MaybeMockedDeep, MaybeMocked } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
@@ -14,7 +14,7 @@ import { existsAndIsFile } from '../utils/file.utils'
 import { readStoreFile } from './readStore'
 import { Store } from './Store'
 
-jest.mock('fs/promises')
+jest.mock('node:fs/promises')
 
 jest.mock('../utils/file.utils')
 jest.mock('../log/spinner')

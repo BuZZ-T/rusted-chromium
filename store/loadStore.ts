@@ -1,5 +1,5 @@
-import { readFile } from 'fs/promises'
-import { join as pathJoin } from 'path'
+import { readFile } from 'node:fs/promises'
+import { join as pathJoin } from 'node:path'
 
 import { LOCAL_STORE_FILE } from '../commons/constants'
 import type { IListStore } from '../interfaces/store.interfaces'

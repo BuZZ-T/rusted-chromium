@@ -4,8 +4,8 @@
  * @group unit/file/store/loadStore
  */
 
-import { readFile } from 'fs/promises'
-import { join as pathJoin } from 'path'
+import { readFile } from 'node:fs/promises'
+import { join as pathJoin } from 'node:path'
 import type { MaybeMocked } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
@@ -14,7 +14,7 @@ import { existsAndIsFile } from '../utils/file.utils'
 import { loadStore } from './loadStore'
 import { Store } from './Store'
 
-jest.mock('fs/promises')
+jest.mock('node:fs/promises')
 
 jest.mock('../utils/file.utils')
 

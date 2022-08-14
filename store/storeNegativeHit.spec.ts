@@ -4,8 +4,8 @@
  * @group unit/file/store/storeNegativeHit
  */
 
-import { writeFile } from 'fs/promises'
-import { join as pathJoin } from 'path'
+import { writeFile } from 'node:fs/promises'
+import { join as pathJoin } from 'node:path'
 import type { MaybeMocked } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
@@ -15,7 +15,7 @@ import { loadStore } from './loadStore'
 import { Store } from './Store'
 import { storeNegativeHit } from './storeNegativeHit'
 
-jest.mock('fs/promises')
+jest.mock('node:fs/promises')
 jest.mock('./loadStore')
 
 const localPath = pathJoin(__dirname, '..', 'localstore.json')

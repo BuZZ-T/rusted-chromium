@@ -4,12 +4,12 @@
  * @group int/api/downloadChromium
  */
 
-import { writeFile, unlink } from 'fs/promises'
 /* eslint-disable-next-line import/no-namespace */
 import * as mockFs from 'mock-fs'
 /* eslint-disable-next-line import/no-namespace */
 import * as fetch from 'node-fetch'
-import { join as pathJoin, resolve } from 'path'
+import { writeFile, unlink } from 'node:fs/promises'
+import { join as pathJoin, resolve } from 'node:path'
 import { MaybeMocked } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 

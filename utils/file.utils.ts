@@ -1,5 +1,5 @@
-import type { Stats } from 'fs'
-import { stat } from 'fs/promises'
+import type { Stats } from 'node:fs'
+import { stat } from 'node:fs/promises'
 
 async function exists(filename: string): Promise<Stats | false> {
     try {

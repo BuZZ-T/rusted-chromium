@@ -4,8 +4,8 @@
  * @group unit/file/store/importtore
  */
 
-import { readFile, writeFile } from 'fs/promises'
-import { join as pathJoin } from 'path'
+import { readFile, writeFile } from 'node:fs/promises'
+import { join as pathJoin } from 'node:path'
 import type { MaybeMocked, MaybeMockedDeep } from 'ts-jest/dist/utils/testing'
 import { mocked } from 'ts-jest/utils'
 
@@ -18,7 +18,7 @@ import { importAndMergeLocalstore } from './importStore'
 import { readStoreFile } from './readStore'
 import { Store } from './Store'
 
-jest.mock('fs/promises')
+jest.mock('node:fs/promises')
 
 jest.mock('../utils/file.utils')
 jest.mock('../log/spinner')

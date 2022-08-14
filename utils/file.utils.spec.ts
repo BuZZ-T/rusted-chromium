@@ -4,13 +4,13 @@
  * @group unit/utils/files
  */
 
-import { Stats } from 'fs'
-import { stat } from 'fs/promises'
+import type { Stats } from 'node:fs'
+import { stat } from 'node:fs/promises'
 import { mocked } from 'ts-jest/utils'
 
 import { existsAndIsFile, existsAndIsFolder } from './file.utils'
 
-jest.mock('fs/promises')
+jest.mock('node:fs/promises')
 
 describe('file.utils', () => {
 
