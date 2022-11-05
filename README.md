@@ -402,7 +402,7 @@ I'm accepting pull requests and feature requests (no guarantee that i will imple
 
 ### Do you build chromium versions? Do you store chromium binaries/archives? Do you have your own chromium repository?
 
-NO, NO and NO. This CLI basically automates the manual steps mentioned in https://www.chromium.org/getting-involved/download-chromium in the section "Downloading old builds of Chrome / Chromium".
+NO, NO and NO. This CLI basically automates the manual steps mentioned [here](https://www.chromium.org/getting-involved/download-chromium/#downloading-old-builds-of-chrome-chromium).
 So only official chromium APIs are called and only official binaries are downloaded.
 
 So, this project:
