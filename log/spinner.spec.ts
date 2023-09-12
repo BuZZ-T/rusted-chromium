@@ -75,9 +75,9 @@ describe('loggerSpinner', () => {
                 ['⠋ start_text'],
             ])
             expect(stdioMock.clearLine).toHaveBeenCalledTimes(1)
-            expect(stdioMock.clearLine).toBeCalledWith(0)
+            expect(stdioMock.clearLine).toHaveBeenCalledWith(0)
             expect(stdioMock.cursorTo).toHaveBeenCalledTimes(1)
-            expect(stdioMock.cursorTo).toBeCalledWith(0)
+            expect(stdioMock.cursorTo).toHaveBeenCalledWith(0)
         })
 
         it('should surpress if clearLine throws an error', () => {
@@ -144,9 +144,9 @@ describe('loggerSpinner', () => {
                 ['\n']
             ])
             expect(stdioMock.clearLine).toHaveBeenCalledTimes(1)
-            expect(stdioMock.clearLine).toBeCalledWith(0)
+            expect(stdioMock.clearLine).toHaveBeenCalledWith(0)
             expect(stdioMock.cursorTo).toHaveBeenCalledTimes(1)
-            expect(stdioMock.cursorTo).toBeCalledWith(0)
+            expect(stdioMock.cursorTo).toHaveBeenCalledWith(0)
         })
 
         it('should write the success text with dynamic text', () => {
@@ -167,9 +167,9 @@ describe('loggerSpinner', () => {
                 ['\n']
             ])
             expect(stdioMock.clearLine).toHaveBeenCalledTimes(1)
-            expect(stdioMock.clearLine).toBeCalledWith(0)
+            expect(stdioMock.clearLine).toHaveBeenCalledWith(0)
             expect(stdioMock.cursorTo).toHaveBeenCalledTimes(1)
-            expect(stdioMock.cursorTo).toBeCalledWith(0)
+            expect(stdioMock.cursorTo).toHaveBeenCalledWith(0)
         })
 
         it('should ignore the dynamic text on no TextFunction passed', () => {
@@ -190,9 +190,9 @@ describe('loggerSpinner', () => {
                 ['\n']
             ])
             expect(stdioMock.clearLine).toHaveBeenCalledTimes(1)
-            expect(stdioMock.clearLine).toBeCalledWith(0)
+            expect(stdioMock.clearLine).toHaveBeenCalledWith(0)
             expect(stdioMock.cursorTo).toHaveBeenCalledTimes(1)
-            expect(stdioMock.cursorTo).toBeCalledWith(0)
+            expect(stdioMock.cursorTo).toHaveBeenCalledWith(0)
         })
 
         it('should print the success text without dynamic text', () => {
@@ -213,9 +213,9 @@ describe('loggerSpinner', () => {
                 ['\n']
             ])
             expect(stdioMock.clearLine).toHaveBeenCalledTimes(1)
-            expect(stdioMock.clearLine).toBeCalledWith(0)
+            expect(stdioMock.clearLine).toHaveBeenCalledWith(0)
             expect(stdioMock.cursorTo).toHaveBeenCalledTimes(1)
-            expect(stdioMock.cursorTo).toBeCalledWith(0)
+            expect(stdioMock.cursorTo).toHaveBeenCalledWith(0)
         })
     })
 
@@ -238,9 +238,9 @@ describe('loggerSpinner', () => {
                 ['\n']
             ])
             expect(stdioMock.clearLine).toHaveBeenCalledTimes(1)
-            expect(stdioMock.clearLine).toBeCalledWith(0)
+            expect(stdioMock.clearLine).toHaveBeenCalledWith(0)
             expect(stdioMock.cursorTo).toHaveBeenCalledTimes(1)
-            expect(stdioMock.cursorTo).toBeCalledWith(0)
+            expect(stdioMock.cursorTo).toHaveBeenCalledWith(0)
         })
 
         it('should write the fail text with dynamic text', () => {
@@ -261,9 +261,9 @@ describe('loggerSpinner', () => {
                 ['\n']
             ])
             expect(stdioMock.clearLine).toHaveBeenCalledTimes(1)
-            expect(stdioMock.clearLine).toBeCalledWith(0)
+            expect(stdioMock.clearLine).toHaveBeenCalledWith(0)
             expect(stdioMock.cursorTo).toHaveBeenCalledTimes(1)
-            expect(stdioMock.cursorTo).toBeCalledWith(0)
+            expect(stdioMock.cursorTo).toHaveBeenCalledWith(0)
         })
 
         it('should ignore the dynamic text on no TextFunction passed', () => {
@@ -284,9 +284,9 @@ describe('loggerSpinner', () => {
                 ['\n']
             ])
             expect(stdioMock.clearLine).toHaveBeenCalledTimes(1)
-            expect(stdioMock.clearLine).toBeCalledWith(0)
+            expect(stdioMock.clearLine).toHaveBeenCalledWith(0)
             expect(stdioMock.cursorTo).toHaveBeenCalledTimes(1)
-            expect(stdioMock.cursorTo).toBeCalledWith(0)
+            expect(stdioMock.cursorTo).toHaveBeenCalledWith(0)
         })
 
         it('should print the fail text without dynamic text', () => {
@@ -307,9 +307,9 @@ describe('loggerSpinner', () => {
                 ['\n']
             ])
             expect(stdioMock.clearLine).toHaveBeenCalledTimes(1)
-            expect(stdioMock.clearLine).toBeCalledWith(0)
+            expect(stdioMock.clearLine).toHaveBeenCalledWith(0)
             expect(stdioMock.cursorTo).toHaveBeenCalledTimes(1)
-            expect(stdioMock.cursorTo).toBeCalledWith(0)
+            expect(stdioMock.cursorTo).toHaveBeenCalledWith(0)
         })
     })
 
@@ -339,9 +339,9 @@ describe('loggerSpinner', () => {
                 ['⠏ update-text'],
             ])
             expect(stdioMock.clearLine).toHaveBeenCalledTimes(1)
-            expect(stdioMock.clearLine).toBeCalledWith(0)
+            expect(stdioMock.clearLine).toHaveBeenCalledWith(0)
             expect(stdioMock.cursorTo).toHaveBeenCalledTimes(1)
-            expect(stdioMock.cursorTo).toBeCalledWith(0)
+            expect(stdioMock.cursorTo).toHaveBeenCalledWith(0)
         })
 
         it('should update the text on running spinner again', () => {
@@ -361,9 +361,9 @@ describe('loggerSpinner', () => {
                 ['⠏ update-text2'],
             ])
             expect(stdioMock.clearLine).toHaveBeenCalledTimes(2)
-            expect(stdioMock.clearLine).toBeCalledWith(0)
+            expect(stdioMock.clearLine).toHaveBeenCalledWith(0)
             expect(stdioMock.cursorTo).toHaveBeenCalledTimes(2)
-            expect(stdioMock.cursorTo).toBeCalledWith(0)
+            expect(stdioMock.cursorTo).toHaveBeenCalledWith(0)
         })
     })
 })

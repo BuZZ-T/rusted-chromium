@@ -44,8 +44,8 @@ describe('config', () => {
 
             readConfig(['-a -b -c -d'], 'linux')
 
-            expect(programMock.parse).toBeCalledTimes(1)
-            expect(programMock.parse).toBeCalledTimes(1)
+            expect(programMock.parse).toHaveBeenCalledTimes(1)
+            expect(programMock.parse).toHaveBeenCalledTimes(1)
 
         })
 
@@ -212,7 +212,7 @@ describe('config', () => {
                     })
                 }
             
-                expect(loggerMock.warn).toBeCalledTimes(1)
+                expect(loggerMock.warn).toHaveBeenCalledTimes(1)
                 expect(loggerMock.warn).toHaveBeenCalledWith('Setting "--non-interactive" has no effect, when "--decrease-on-fail" is not set!')
             
                 expect(config).toEqual(expectedConfig)
@@ -234,7 +234,7 @@ describe('config', () => {
                     })
                 }
             
-                expect(loggerMock.warn).toBeCalledTimes(0)
+                expect(loggerMock.warn).toHaveBeenCalledTimes(0)
                 expect(config).toEqual(expectedConfig)
             })
 
@@ -270,7 +270,7 @@ describe('config', () => {
                         })
                     }
     
-                    expect(loggerMock.warn).toBeCalledTimes(1)
+                    expect(loggerMock.warn).toHaveBeenCalledTimes(1)
                     expect(loggerMock.warn).toHaveBeenLastCalledWith('Setting "--arch" has no effect, when "--os" is not set!')
     
                     expect(config).toEqual(expectedConfig)
@@ -292,7 +292,7 @@ describe('config', () => {
                         })
                     }
     
-                    expect(loggerMock.warn).toBeCalledTimes(0)
+                    expect(loggerMock.warn).toHaveBeenCalledTimes(0)
                     expect(config).toEqual(expectedConfig)
                 })
     
@@ -416,7 +416,7 @@ describe('config', () => {
                         })
                     }
                 
-                    expect(loggerMock.warn).toBeCalledTimes(0)
+                    expect(loggerMock.warn).toHaveBeenCalledTimes(0)
                     expect(config).toEqual(expectedConfig)
                 })
             })

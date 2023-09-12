@@ -52,9 +52,9 @@ describe('Printer', () => {
     it('shouldn\'t write something on write without text', () => {
         testPrinter.writeEmpty()
 
-        expect(stdioMock.write).toBeCalledTimes(0)
-        expect(stdioMock.clearLine).toBeCalledTimes(0)
-        expect(stdioMock.cursorTo).toBeCalledTimes(0)
+        expect(stdioMock.write).toHaveBeenCalledTimes(0)
+        expect(stdioMock.clearLine).toHaveBeenCalledTimes(0)
+        expect(stdioMock.cursorTo).toHaveBeenCalledTimes(0)
     })
 
     it('should silent all log output', () => {
