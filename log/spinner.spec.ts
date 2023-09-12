@@ -30,7 +30,7 @@ describe('loggerSpinner', () => {
     beforeEach(() => {
         jest.useFakeTimers()
 
-        jest.mocked(chalk, true)
+        jest.mocked(chalk)
 
         stdioMock.write.mockReset()
         stdioMock.clearLine.mockReset()

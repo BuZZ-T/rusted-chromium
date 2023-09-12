@@ -22,7 +22,7 @@ describe('downloadStore', () => {
         fetchLocalStoreMock = jest.mocked(fetchLocalStore)
         fetchLocalStoreMock.mockReset()
 
-        spinnerMock = jest.mocked(spinner, true)
+        spinnerMock = jest.mocked(spinner)
         spinnerMock.start.mockReset()
         spinnerMock.success.mockReset()
         spinnerMock.error.mockReset()

@@ -74,11 +74,11 @@ describe('versions', () => {
             versionDisabled2 = new MappedVersion(40, 1, 0, 0, true)
             versionDisabled3 = new MappedVersion(40, 2, 0, 0, true)
 
-            loggerMock = jest.mocked(logger, true)
+            loggerMock = jest.mocked(logger)
             loggerMock.info.mockClear()
             loggerMock.warn.mockClear()
 
-            spinnerMock = jest.mocked(spinner, true)
+            spinnerMock = jest.mocked(spinner)
             spinnerMock.start.mockClear()
             spinnerMock.success.mockClear()
             spinnerMock.error.mockClear()

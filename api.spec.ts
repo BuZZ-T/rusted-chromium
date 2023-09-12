@@ -27,7 +27,7 @@ describe('api', () => {
 
     beforeAll(() => {
         fetchMock = jest.mocked(fetch)
-        spinnerMock = jest.mocked(spinner, true)
+        spinnerMock = jest.mocked(spinner)
     })
 
     beforeEach(() => {

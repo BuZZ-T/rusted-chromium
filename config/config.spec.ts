@@ -26,10 +26,10 @@ describe('config', () => {
     describe('readConfig', () => {
 
         beforeEach(() => {
-            loggerMock = jest.mocked(logger, true)
+            loggerMock = jest.mocked(logger)
             loggerMock.warn.mockClear()
 
-            programMock = jest.mocked(program, true)
+            programMock = jest.mocked(program)
             programMock.version.mockClear()
             programMock.option.mockClear()
             programMock.parse.mockClear()

@@ -44,7 +44,7 @@ describe('importStore', () => {
             writeFileMock = jest.mocked(writeFile)
             readFileMock = jest.mocked(readFile)
 
-            loggerMock = jest.mocked(logger, true)
+            loggerMock = jest.mocked(logger)
         })
 
         beforeEach(() => {

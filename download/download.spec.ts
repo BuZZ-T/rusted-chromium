@@ -83,9 +83,9 @@ describe('download', () => {
             fetchChromeZipFileMock = jest.mocked(fetchChromeZipFile)
 
             progressConstructorMock = jest.mocked(Progress)
-            progressMock = jest.mocked(progress, true)
-            loggerMock = jest.mocked(logger, true)
-            spinnerMock = jest.mocked(spinner, true)
+            progressMock = jest.mocked(progress)
+            loggerMock = jest.mocked(logger)
+            spinnerMock = jest.mocked(spinner)
 
             extractMock = jest.mocked(extract)
 

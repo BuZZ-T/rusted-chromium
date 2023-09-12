@@ -37,7 +37,7 @@ describe('exportStore', () => {
             write: jest.fn()
         } as unknown as jest.MaybeMocked<NodeJS.WriteStream>
 
-        loggerMock = jest.mocked(logger, true)
+        loggerMock = jest.mocked(logger)
     })
 
     beforeEach(() => {

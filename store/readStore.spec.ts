@@ -29,7 +29,7 @@ describe('readStore', () => {
             readFileMock = jest.mocked(readFile)
             existsAndIsFileMock = jest.mocked(existsAndIsFile)
 
-            spinnerMock = jest.mocked(spinner, true)
+            spinnerMock = jest.mocked(spinner)
         })
 
         beforeEach(() => {

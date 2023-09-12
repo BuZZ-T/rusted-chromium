@@ -23,7 +23,7 @@ describe('userSelectedVersion', () => {
         promptsMock = jest.mocked(prompts)
         promptsMock.mockClear()
 
-        loggerMock = jest.mocked(logger, true)
+        loggerMock = jest.mocked(logger)
         loggerMock.warn.mockClear()
     })
 

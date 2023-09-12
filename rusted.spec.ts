@@ -39,9 +39,9 @@ describe('rusted', () => {
         importAndMergeLocalstoreMock = jest.mocked(importAndMergeLocalstore)
         exportStoreMock = jest.mocked(exportStore)
 
-        loggerMock = jest.mocked(logger, true)
-        spinnerMock = jest.mocked(spinner, true)
-        progressMock = jest.mocked(progress, true)
+        loggerMock = jest.mocked(logger)
+        spinnerMock = jest.mocked(spinner)
+        progressMock = jest.mocked(progress)
     })
 
     beforeEach(() => {
