@@ -35,27 +35,27 @@ export class Logger extends Printer<Logger> {
 
     public info(text: string): Logger {
         return this.clearLine()
-            .write(this.INFO_FN(text))
+            .write(this.infoFn(text))
             .newline()
     }
 
     public error(text: string): Logger {
         return this.clearLine()
-            .write(this.ERROR_FN(text))
+            .write(this.errorFn(text))
             .newline()
 
     }
 
     public warn(text: string): Logger {
         return this.clearLine()
-            .write(this.WARN_FN(text))
+            .write(this.warnFn(text))
             .newline()
     }
 
     public debug(text: string): Logger {
         return this.debugMode !== DebugMode.NONE
             ? this.clearLine()
-                .write(this.DEBUG_FN(text))
+                .write(this.debugFn(text))
                 .newline()
             : this.self()
     }

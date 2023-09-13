@@ -21,7 +21,7 @@ describe('loggerSpinner', () => {
     let spinner: Spinner
     let stdioMock: jest.MaybeMockedDeep<PrinterWriteStream>
 
-    beforeAll(() => {
+    beforeEach(() => {
         stdioMock = createStdioMock()
 
         spinner = new Spinner(stdioMock)
@@ -210,6 +210,30 @@ describe('loggerSpinner', () => {
             expect(stdioMock.write.mock.calls).toEqual([
                 ['⠏ start_text'],
                 ['green: ✔ success_text ()'],
+                ['\n']
+            ])
+            expect(stdioMock.clearLine).toHaveBeenCalledTimes(1)
+            expect(stdioMock.clearLine).toHaveBeenCalledWith(0)
+            expect(stdioMock.cursorTo).toHaveBeenCalledTimes(1)
+            expect(stdioMock.cursorTo).toHaveBeenCalledWith(0)
+        })
+
+        it('should print the success text without color', () => {
+            spinner.noColor()
+            spinner.start({
+                start: 'start_text',
+                fail: 'fail_text',
+                success: text => `success_text (${text})`,
+            })
+
+            expect(stdioMock.write).toHaveBeenCalledTimes(1)
+
+            spinner.success()
+
+            expect(stdioMock.write).toHaveBeenCalledTimes(3)
+            expect(stdioMock.write.mock.calls).toEqual([
+                ['⠏ start_text'],
+                ['✔ success_text ()'],
                 ['\n']
             ])
             expect(stdioMock.clearLine).toHaveBeenCalledTimes(1)

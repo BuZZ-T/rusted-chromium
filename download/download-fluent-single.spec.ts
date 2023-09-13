@@ -5,23 +5,17 @@
  */
 
 import { ComparableVersion } from '../commons/ComparableVersion'
-import type { IChromeSingleConfig } from '../interfaces/interfaces'
+import { createChromeSingleConfig } from '../test/test.utils'
 import { downloadChromium } from './download'
 import { FluentDownloadSingleIncomplete } from './download-fluent-single'
 
 jest.mock('./download')
 
-const allFalseSingleConfig: IChromeSingleConfig = {
-    arch: 'x64',
-    autoUnzip: false,
-    debug: false,
+const allFalseSingleConfig = createChromeSingleConfig({
+    color: false,
     download: false,
-    downloadFolder: null,
-    os: 'linux',
-    quiet: false,
-    single: new ComparableVersion(0, 0, 0, 0),
     store: false,
-}
+})
 
 describe('download-fluent-single', () => {
 

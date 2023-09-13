@@ -5,32 +5,21 @@
  */
 
 import { ComparableVersion } from '../commons/ComparableVersion'
-import type { IChromeFullConfig } from '../interfaces/interfaces'
+import { createChromeFullConfig } from '../test/test.utils'
 import { downloadChromium } from './download'
 import { FluentDownload } from './download-fluent'
 
 jest.mock('./download')
 
-const allFalseConfig: IChromeFullConfig = {
-    arch: 'x64',
-    autoUnzip: false,
-    debug: false,
+const allFalseConfig = createChromeFullConfig({
+    color: false,
     download: false,
-    downloadFolder: null,
-    hideNegativeHits: false,
     interactive: false,
-    inverse: false,
-    list: false,
     max: new ComparableVersion(Infinity, 0, 0, 0),
     min: new ComparableVersion(-Infinity, 0, 0, 0),
-    onFail: 'nothing',
-    onlyNewestMajor: false,
-    os: 'linux',
-    quiet: false,
     results: Infinity,
-    single: null,
     store: false,
-}
+})
 
 describe('download-fluent', () => {
 

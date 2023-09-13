@@ -42,11 +42,11 @@ export class Spinner extends Printer<Spinner> {
         const { start, success, fail } = loggingConfig
         this.runningText = start
         this.successText = isTextFunction(success)
-            ? (text: string) => this.SUCCESS_FN(success(text))
-            : this.SUCCESS_FN(success)
+            ? (text: string) => this.successFn(success(text))
+            : this.successFn(success)
         this.errorText = isTextFunction(fail)
-            ? (text: string) => this.ERROR_FN(fail(text))
-            : this.ERROR_FN(fail)
+            ? (text: string) => this.errorFn(fail(text))
+            : this.errorFn(fail)
 
         this.stop()
         this.count = 0

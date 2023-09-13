@@ -21,6 +21,7 @@ export interface IExportConfigWrapper {
 export type IChromeConfig = IChromeFullConfig | IChromeSingleConfig
 
 export interface IChromeCoreConfig {
+    color: boolean
     arch: Arch
     autoUnzip: boolean
     debug: boolean
@@ -32,6 +33,7 @@ export interface IChromeCoreConfig {
 }
 
 export interface IChromeFullConfig extends IChromeCoreConfig {
+    color: boolean
     hideNegativeHits: boolean
     interactive: boolean
     inverse: boolean
@@ -49,15 +51,17 @@ export interface IChromeSingleConfig extends IChromeCoreConfig {
 }
 
 export interface IStoreConfig {
-    url: string
-    quiet: boolean
+    color: boolean
     debug: boolean
+    quiet: boolean
+    url: string
 }
 
 export interface IExportConfig {
+    color: boolean
+    debug: boolean
     path?: string
     quiet: boolean
-    debug: boolean
 }
 
 export type ConfigWrapper = IStoreConfigWrapper | IChromeConfigWrapper | IExportConfigWrapper

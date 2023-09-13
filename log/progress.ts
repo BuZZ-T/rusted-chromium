@@ -41,7 +41,7 @@ export class ProgressBar extends Printer<ProgressBar> {
         return percent === 1
             ? this.clearLine()
                 .deleteLastLine()
-                .write(this.SUCCESS_FN(config.success))
+                .write(this.successFn(config.success))
                 .stop()
                 .newline()
             : this

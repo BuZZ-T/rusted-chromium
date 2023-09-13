@@ -36,6 +36,7 @@ export function readConfig(args: string[], platform: NodeJS.Platform): ConfigWra
         .option('-v, --inverse', 'Sort the selectable versions ascending', DEFAULT_CONFIG_OPTIONS.inverse)
         .option('-s, --single <version>', 'Download a specific version in non-interactive mode, even if the file is listed in the localstore.json. Several other flags have no effect.')
         .option('--list', 'List versions matching the criteria, doing nothing more', DEFAULT_CONFIG_OPTIONS.list)
+        .option('-c, --no-color', 'Don\'t print colors in the console', DEFAULT_CONFIG_OPTIONS.color)
         .option('-q, --quiet', 'Suppress any logging output', DEFAULT_CONFIG_OPTIONS.quiet)
         .option('--debug', 'Activates the debug mode (extended logging)', DEFAULT_CONFIG_OPTIONS.debug)
         .parse(args)
@@ -57,13 +58,16 @@ export function readConfig(args: string[], platform: NodeJS.Platform): ConfigWra
     const is64Bit = (options.os && options.arch) ? options.arch === 'x64' : true
     const arch = is64Bit ? 'x64' : 'x86'
 
+    const color = options.color
+
     if (options.importStore) {
         return {
             action: 'importStore',
             config: {
-                url: options.importStore,
-                quiet: options.quiet,
+                color,
                 debug: options.debug,
+                quiet: options.quiet,
+                url: options.importStore,
             },
         }
     }
@@ -72,9 +76,10 @@ export function readConfig(args: string[], platform: NodeJS.Platform): ConfigWra
         return {
             action: 'exportStore',
             config: {
+                color,
+                debug: options.debug,
                 path: typeof options.exportStore === 'string' ? options.exportStore : undefined,
                 quiet: options.quiet,
-                debug: options.debug,
             }
         }
     }
@@ -82,14 +87,15 @@ export function readConfig(args: string[], platform: NodeJS.Platform): ConfigWra
     if (options.single) {
         const config: IChromeSingleConfig = {
             arch,
-            os,
             autoUnzip: options.unzip,
-            store: options.store,
+            color,
+            debug: options.debug,
             download: options.download,
             downloadFolder: options.folder || null,
-            single: new ComparableVersion(options.single),
+            os,
             quiet: options.quiet,
-            debug: options.debug,
+            single: new ComparableVersion(options.single),
+            store: options.store,
         }
 
         return {
@@ -103,6 +109,7 @@ export function readConfig(args: string[], platform: NodeJS.Platform): ConfigWra
         config: {
             arch,
             autoUnzip: options.unzip,
+            color,
             debug: options.debug,
             download: options.download,
             downloadFolder: options.folder || null,

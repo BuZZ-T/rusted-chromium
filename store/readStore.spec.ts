@@ -67,7 +67,17 @@ describe('readStore', () => {
             existsAndIsFileMock.mockResolvedValue(true)
             readFileMock.mockResolvedValue('{"Not parseable": "6}')
 
-            await expect(() => readStoreFile(createImportConfig({ url }))).rejects.toThrow(new Error('Unexpected end of JSON input'))
+            const majorNodeVersion = parseInt(process.versions.node.split('.')[0], 10)
+
+            expect.hasAssertions()
+            if (majorNodeVersion < 20) {
+                // eslint-disable-next-line jest/no-conditional-expect
+                await expect(() => readStoreFile(createImportConfig({ url }))).rejects.toThrow(new Error('Unexpected end of JSON input'))
+            } else {
+                // eslint-disable-next-line jest/no-conditional-expect
+                await expect(() => readStoreFile(createImportConfig({ url }))).rejects.toThrow(new Error('Unterminated string in JSON at position 21'))
+            }
+
             expect(spinnerMock.success).toHaveBeenCalledTimes(0)
             expect(spinnerMock.error).toHaveBeenCalledTimes(1)
             expect(spinnerMock.error).toHaveBeenCalledWith('Unable to parse JSON file')
@@ -107,7 +117,17 @@ describe('readStore', () => {
             // trailing comma on purpose
             readFileMock.mockResolvedValue('{"win": {"x64": [], "x86": [],}}')
 
-            await expect(() => readStoreFile(createImportConfig({ url }))).rejects.toThrow(new Error('Unexpected token } in JSON at position 30'))
+            const majorNodeVersion = parseInt(process.versions.node.split('.')[0], 10)
+            
+            expect.hasAssertions()
+            if (majorNodeVersion < 20) {
+                // eslint-disable-next-line jest/no-conditional-expect
+                await expect(() => readStoreFile(createImportConfig({ url }))).rejects.toThrow(new Error('Unexpected token } in JSON at position 30'))
+            } else {
+                // eslint-disable-next-line jest/no-conditional-expect
+                await expect(() => readStoreFile(createImportConfig({ url }))).rejects.toThrow(new Error('Expected double-quoted property name in JSON at position 30'))
+            }
+
             expect(readFileMock).toHaveBeenCalledTimes(1)
             expect(spinnerMock.error).toHaveBeenCalledTimes(1)
             expect(spinnerMock.error).toHaveBeenCalledWith('Unable to parse JSON file')

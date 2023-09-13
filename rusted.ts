@@ -11,9 +11,15 @@ export async function rusted(args: string[], platform: NodeJS.Platform): Promise
     const configWrapper = readConfig(args, platform)
 
     if (configWrapper.config.quiet) {
-        spinner.silent()
         logger.silent()
         progress.silent()
+        spinner.silent()
+    }
+
+    if(!configWrapper.config.color) {
+        logger.noColor()
+        progress.noColor()
+        spinner.noColor()
     }
 
     if (configWrapper.action === 'importStore') {

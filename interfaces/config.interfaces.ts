@@ -30,6 +30,7 @@ export interface IConfigOptions {
     inverse: boolean,
 
     list: boolean,
+    color: boolean,
 
     debug: boolean,
 

@@ -11,13 +11,38 @@ const silentWriteStream: PrinterWriteStream = {
 }
 
 export abstract class Printer<T extends Printer<T>> {
+    protected successFn(msg: string): string {
+        return this.showColors
+            ? chalk.green(`✔ ${msg}`)
+            : `✔ ${msg}`
+    }
 
-    protected readonly SUCCESS_FN = (msg: string): string => chalk.green(`✔ ${msg}`)
-    protected readonly ERROR_FN = (msg: string): string => chalk.red(`✘ ${msg}`)
-    protected readonly WARN_FN = (msg: string): string => chalk.yellow(`! ${msg}`)
-    protected readonly INFO_FN = (msg: string): string => chalk.blue(`➔ ${msg}`)
-    protected readonly DEBUG_FN = (msg: string): string => chalk.magenta(`? ${msg}`)
+    protected errorFn(msg: string): string {
+        return this.showColors
+            ? chalk.red(`✘ ${msg}`)
+            : `✘ ${msg}`
+    }
 
+    protected warnFn(msg: string): string {
+        return this.showColors
+            ? chalk.yellow(`! ${msg}`)
+            : `! ${msg}`
+    }
+
+    protected infoFn(msg: string): string {
+        return this.showColors
+            ? chalk.blue(`➔ ${msg}`)
+            : `➔ ${msg}`
+    }
+
+    protected debugFn(msg: string): string {
+        return this.showColors
+            ? chalk.magenta(`? ${msg}`)
+            : `? ${msg}`
+    }
+    
+    private showColors = true
+    
     protected constructor(private stdio: PrinterWriteStream) {
     }
 
@@ -66,5 +91,12 @@ export abstract class Printer<T extends Printer<T>> {
      */
     public silent(): void {
         this.stdio = silentWriteStream
+    }
+
+    /**
+     * Suppresses all colors on logging output. Can't be undone on a running instance
+     */
+    public noColor(): void {
+        this.showColors = false
     }
 }

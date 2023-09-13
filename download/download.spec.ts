@@ -193,6 +193,7 @@ describe('download', () => {
             const expected: IChromeConfig = {
                 arch: 'x64',
                 autoUnzip: false,
+                color: true,
                 debug: false,
                 download: true,
                 downloadFolder: 'down_folder',
@@ -300,36 +301,9 @@ describe('download', () => {
 
             expect(getChromeDownloadUrlMock).toHaveBeenCalledTimes(1)
 
-            const expected: IChromeConfig = {
-                arch: 'x64',
-                autoUnzip: false,
-                debug: false,
-                download: true,
-                downloadFolder: null,
-                hideNegativeHits: false,
-                interactive: true,
-                inverse: false,
-                max: new ComparableVersion({
-                    major: 10000,
-                    minor: 0,
-                    branch: 0,
-                    patch: 0,
-                }),
-                min: new ComparableVersion({
-                    branch: 0,
-                    major: 0,
-                    minor: 0,
-                    patch: 0,
-                }),
-                onFail: 'nothing',
-                onlyNewestMajor: false,
-                os: 'linux',
-                quiet: false,
-                results: 10,
-                single: null,
-                store: true,
-                list: false,
-            }
+            const expected = createChromeFullConfig({
+                //
+            })
 
             expect(getChromeDownloadUrlMock).toHaveBeenCalledWith(expected, [new MappedVersion(10, 0, 0, 2, false)])
             
