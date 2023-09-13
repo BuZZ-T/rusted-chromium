@@ -86,6 +86,7 @@ node 16+
 |`--only-newest-major` | `-O`| - | - | Show only the newest version for every major version in the user selection. If the newest versions are not available for the current os, they are skipped.
 | `--list` | | - | false | Only log all matching versions to stdout, quit the program afterwards.
 | `--quiet` | `-q` | - | false | Suppress all log output.
+|`--no-color` | `-c` | - | false | Suppress colors in log output.
 | `--debug` | | - | false | Add additional debug logging.
 | `--version`| `-V` | - | - | Show current version.
 | `--help`| `-h` | - | - | Display a help with all available flags.
@@ -220,6 +221,14 @@ rusted-chromium -E
 rusted-chromium --export-store /path/to/file
 # short version
 rusted-chromium -E /path/to/file
+```
+
+##### Suppress colors in log output
+```bash
+# long version
+rusted-chromium --no-color
+# short version
+rusted-chromium -c
 ```
 
 ##### Suppress all log output
