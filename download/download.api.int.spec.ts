@@ -74,6 +74,7 @@ describe('[int] download API', () => {
         const downloadPromise = downloadChromium({
             arch: 'x64',
             autoUnzip: false,
+            color: true,
             download: true,
             hideNegativeHits: false,
             interactive: true,
