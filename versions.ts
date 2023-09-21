@@ -235,11 +235,17 @@ export function mapVersions(versions: string[], config: IChromeConfig, store: St
         : filteredVersions
 
     if (config.onlyNewestMajor) {
-        return versionRegardingInverse.filter((version, index, versionArray) => { 
-            const previous = versionArray[index - 1]
-            const previousMajor = previous?.value?.split('.')[0]
-            const currentMajor = version.value.split('.')[0]
-            return (currentMajor !== previousMajor || previous.disabled) && !version.disabled
+        const addedMajorVersions = new Set<string>()
+
+        return versionRegardingInverse.filter((version) => {
+            const hasMajorVersion = addedMajorVersions.has(version.value.split('.')[0])
+
+            if (!hasMajorVersion && !version.disabled) {
+                addedMajorVersions.add(version.value.split('.')[0])
+
+                return true
+            }
+            return false
         }).slice(0, Number(config.results))
     }
 

@@ -1215,6 +1215,62 @@ describe('versions', () => {
             expect(mapped).toEqual(expectedVersions)
         })
 
+        it('should filter the versions if --only-newest-major is set with version in the middle disabled', () => {
+            const config = createChromeFullConfig({
+                arch: 'x64',
+                os: 'linux',
+                onlyNewestMajor: true,
+                results: 10,
+            })
+
+            const mapped = mapVersions(['119.0.6021.1', '119.0.6010.1', '119.0.6004.1'], config, new Store(createStore({
+                linux: {
+                    x64: ['119.0.6010.1'],
+                    x86: [],
+                },
+            })))
+
+            const expectedVersions = [
+                new MappedVersion({
+                    major: 119,
+                    minor: 0,
+                    branch: 6021,
+                    patch: 1,
+                    disabled: false
+                }),
+            ]
+
+            expect(mapped).toEqual(expectedVersions)
+        })
+
+        it('should filter the versions if --only-newest-major is set with the first version disabled', () => {
+            const config = createChromeFullConfig({
+                arch: 'x64',
+                os: 'linux',
+                onlyNewestMajor: true,
+                results: 10,
+            })
+
+            const mapped = mapVersions(['119.0.6021.1', '119.0.6010.1', '119.0.6004.1'], config, new Store(createStore({
+                linux: {
+                    x64: ['119.0.6021.1'],
+                    x86: [],
+                },
+            })))
+
+            const expectedVersions = [
+                new MappedVersion({
+                    major: 119,
+                    minor: 0,
+                    branch: 6010,
+                    patch: 1,
+                    disabled: false
+                }),
+            ]
+
+            expect(mapped).toEqual(expectedVersions)
+        })
+
         it('should return the provided version on config.single, even if it\'s marked as disabled in the store', () => {
             const config = createChromeSingleConfig({
                 single: new ComparableVersion(10, 1, 2, 3),
