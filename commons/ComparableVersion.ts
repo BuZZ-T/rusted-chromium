@@ -42,10 +42,10 @@ export class ComparableVersion implements IVersion {
         } else {
             const splitVersion = majorInput.split('.')
 
-            this._major = parseInt(splitVersion[0], 10) || 0
-            this._minor = parseInt(splitVersion[1], 10) || 0
-            this._branch = parseInt(splitVersion[2], 10) || 0
-            this._patch = parseInt(splitVersion[3], 10) || 0
+            this._major = parseInt(splitVersion[0] || '0', 10)
+            this._minor = parseInt(splitVersion[1] || '0', 10)
+            this._branch = parseInt(splitVersion[2] || '0', 10)
+            this._patch = parseInt(splitVersion[3] || '0', 10)
         }
     }
 

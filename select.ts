@@ -22,8 +22,12 @@ export async function userSelectedVersion(releases: Release[], config: IChromeFu
     }
 
     if (config.results === 1) {
-        logger.debug(`results is set to 1, returning first version: ${releases[0].version.toString()}`)
-        return releases[0]
+        if (releases[0]) {
+            logger.debug(`results is set to 1, returning first version: ${releases[0].version.toString()}`)
+            return releases[0]
+        }
+        logger.error('results is set to 1, but no version found!')
+        return null
     }
 
     const choices = releases.map((release): prompts.Choice => ({

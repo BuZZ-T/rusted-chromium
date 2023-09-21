@@ -76,9 +76,9 @@ async function continueFetchingChromeUrl({
 
         switch (config.onFail) {
             case 'increase': {
-                if (index > 0) {
-                    selectedRelease = releases[index - 1]
+                selectedRelease = releases[index - 1]
 
+                if (selectedRelease) {
                     logger.info(`Continue with next ${config.inverse ? 'lower' : 'higher'} version "${selectedRelease.version.toString()}"`)
                 } else {
                     return { chromeUrl: undefined, report, selectedRelease: undefined }
@@ -86,8 +86,9 @@ async function continueFetchingChromeUrl({
                 break
             }
             case 'decrease': {
-                if (index < releases.length - 1) {
-                    selectedRelease = releases[index + 1]
+                selectedRelease = releases[index + 1]
+
+                if (selectedRelease) {
 
                     logger.info(`Continue with next ${config.inverse ? 'higher' : 'lower'} version "${selectedRelease.version.toString()}"`)
                 } else {
@@ -129,7 +130,7 @@ async function getChromeUrlForFull(config: IChromeFullConfig, osSetting: OSSetti
 
 async function getChromeUrlForSingle(config: IChromeSingleConfig, oSSetting: OSSetting, releases: Release[]): Promise<GetChromeDownloadUrlReturn> {
     const release = releases[0]
-    const chromeUrl = await fetchChromeUrlForVersion(oSSetting, release)
+    const chromeUrl = release ? await fetchChromeUrlForVersion(oSSetting, release) : undefined
 
     const report: DownloadReportEntry[] = [
         {

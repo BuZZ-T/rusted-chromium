@@ -61,14 +61,14 @@ export function mapApiReleasesToReleases(apiReleases: ApiRelease[], config: IChr
         : filteredVersions
 
     if (config.onlyNewestMajor) {
-        const addedMajorVersions = new Set<string>()
+        const addedMajorVersions = new Set<number>()
 
         return  versionsRegardingInverse.filter((release) => {
-            const majorString = release.version.toString().split('.')[0]
-            const hasMajorVersion = addedMajorVersions.has(majorString)
+            const major = release.version.major
+            const hasMajorVersion = addedMajorVersions.has(major)
 
             if (!hasMajorVersion) {
-                addedMajorVersions.add(majorString)
+                addedMajorVersions.add(major)
 
                 return true
             }

@@ -83,7 +83,7 @@ const apiReleases: Record<string, ApiRelease> = {
     }
 }
 
-const releaseResponse = (releases: string[]): ApiRelease[] => releases.map(release => apiReleases[release])
+const releaseResponse = (releases: string[]): Array<ApiRelease | undefined> => releases.map(release => apiReleases[release])
 
 const mocks: IMock[] = [
     {
