@@ -28,8 +28,7 @@ jest.mock('prompts')
 describe('[int] download chromium', () => {
     const chromeZip10 = pathJoin(__dirname, '../', 'chrome-linux-x64-10.0.0.0.zip')
     const chromeZip20 = pathJoin(__dirname, '../', 'chrome-linux-x64-20.0.0.0.zip')
-    // TODO: why no "../" here?
-    const chromeFolder20 = pathJoin(__dirname, 'chrome-linux-x64-20.0.0.0')
+    const chromeFolder20 = pathJoin(__dirname, '../', 'chrome-linux-x64-20.0.0.0')
     const localStoreFile = pathJoin(__dirname, '../', 'localstore.json')
 
     let promptsMock: jest.MaybeMocked<typeof prompts>

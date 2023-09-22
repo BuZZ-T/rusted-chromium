@@ -57,7 +57,7 @@ function enrichAdditionalConfig(additionalConfig: Partial<IChromeConfig> = {}): 
 async function extractZip(downloadPath: string) {
     try {
         spinner.start(EXTRACT_ZIP)
-        await extract(`${downloadPath}.zip`, { dir: pathJoin(__dirname, downloadPath), onEntry: function(file: {fileName: string}) {
+        await extract(`${downloadPath}.zip`, { dir: pathJoin(process.cwd(), downloadPath), onEntry: function(file: {fileName: string}) {
             spinner.update(`Extracting: ${file.fileName}`)
         } })
         spinner.success(downloadPath)
