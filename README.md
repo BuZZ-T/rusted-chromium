@@ -150,7 +150,6 @@ rusted-chromium -r 1
 ```
 
 ##### Automatically unzip the downloaded archive
-*NOTE: This is using `unzipper` which loses executable flags for binaries*
 ```bash
 # long version
 rusted-chromium --unzip
