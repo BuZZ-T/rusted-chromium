@@ -12,7 +12,6 @@ import { fetchChromeZipFile } from '../api'
 import { ComparableVersion } from '../commons/ComparableVersion'
 import { MappedVersion } from '../commons/MappedVersion'
 import { NoChromiumDownloadError } from '../errors'
-import { IChromeConfig } from '../interfaces/interfaces'
 import { Logger, logger, DebugMode } from '../log/logger'
 import { progress, ProgressBar } from '../log/progress'
 import { spinner, Spinner } from '../log/spinner'
@@ -46,7 +45,6 @@ jest.mock('../utils/file.utils')
 
 describe('download', () => {
     describe('downloadChromium', () => {
-
         let loadVersionsMock: jest.MaybeMocked<typeof loadVersions>
         let loadStoreMock: jest.MaybeMocked<typeof loadStore>
         let mapVersionsMock: jest.MaybeMocked<typeof mapVersions>
@@ -175,6 +173,9 @@ describe('download', () => {
                 downloadFolder: 'down_folder',
             })
             await downloadChromium(config)
+
+            expect(loadStoreMock).toHaveBeenCalledTimes(1)
+
             expect(existsAndIsFolderMock).toHaveBeenCalledTimes(1)
             expect(existsAndIsFolderMock).toHaveBeenCalledWith('down_folder')
             expect(mkdirMock).toHaveBeenCalledTimes(1)
@@ -190,37 +191,9 @@ describe('download', () => {
 
             expect(getChromeDownloadUrlMock).toHaveBeenCalledTimes(1)
 
-            const expected: IChromeConfig = {
-                arch: 'x64',
-                autoUnzip: false,
-                color: true,
-                debug: false,
-                download: true,
+            const expected = createChromeFullConfig({
                 downloadFolder: 'down_folder',
-                hideNegativeHits: false,
-                interactive: true,
-                inverse: false,
-                max: new ComparableVersion({
-                    major: 10000,
-                    minor: 0,
-                    branch: 0,
-                    patch: 0,
-                }),
-                min: new ComparableVersion({
-                    branch: 0,
-                    major: 0,
-                    minor: 0,
-                    patch: 0,
-                }),
-                onFail: 'nothing',
-                onlyNewestMajor: false,
-                os: 'linux',
-                quiet: false,
-                results: 10,
-                single: null,
-                store: true,
-                list: false,
-            }
+            })
 
             expect(getChromeDownloadUrlMock).toHaveBeenCalledWith(expected, [new MappedVersion(10, 0, 0, 1, false)])
         })
@@ -237,6 +210,7 @@ describe('download', () => {
                 downloadFolder: 'down_folder',
             })
             await downloadChromium(config)
+
             expect(existsAndIsFolderMock).toHaveBeenCalledTimes(1)
             expect(existsAndIsFolderMock).toHaveBeenCalledWith('down_folder')
             expect(mkdirMock).toHaveBeenCalledTimes(1)
@@ -263,7 +237,6 @@ describe('download', () => {
                 autoUnzip: false,
                 downloadFolder: 'down_folder',
             })
-
             await downloadChromium(config)
 
             expect(mkdirMock).toHaveBeenCalledTimes(0)
@@ -301,12 +274,9 @@ describe('download', () => {
 
             expect(getChromeDownloadUrlMock).toHaveBeenCalledTimes(1)
 
-            const expected = createChromeFullConfig({
-                //
-            })
+            const expected = createChromeFullConfig()
 
             expect(getChromeDownloadUrlMock).toHaveBeenCalledWith(expected, [new MappedVersion(10, 0, 0, 2, false)])
-
         })
 
         it('should fetch the zip with defaults for single', async () => {
@@ -617,8 +587,6 @@ describe('download', () => {
         })
 
         it('should stop the spinner with error on error extracting', async () => {
-            // download.ts:70
-
             getChromeDownloadUrlMock.mockResolvedValue(createGetChromeDownloadUrlReturn({
                 selectedVersion: new MappedVersion({
                     major: 11,
@@ -842,6 +810,22 @@ describe('download', () => {
             expect(loggerMock.warn).toHaveBeenCalledTimes(1)
             expect(loggerMock.info.mock.calls).toEqual([['versions:'], ['10.0.0.1']])
             expect(loggerMock.warn).toHaveBeenCalledWith('20.0.0.1')
+        })
+
+        it('should not load the store on config.ignoreStore', async () => {
+            mapVersionsMock.mockReturnValue([new MappedVersion(20, 0, 0, 1, true), new MappedVersion(10, 0, 0, 1, false)])
+            getChromeDownloadUrlMock.mockResolvedValue(createGetChromeDownloadUrlReturn())
+
+            fetchChromeZipFileMock.mockResolvedValue(zipFileResource)
+            existsAndIsFolderMock.mockResolvedValue(false)
+
+            // Act
+            const config = createChromeFullConfig({
+                ignoreStore: true
+            })
+            await downloadChromium(config)
+
+            expect(loadStoreMock).toHaveBeenCalledTimes(0)
         })
     })
 })

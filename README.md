@@ -81,6 +81,8 @@ node 16+
 |`--no-download` | `-l` | - | - | Don't download the binary if it's found.
 |`--import-store` | `-I` | URL/File path | - | Download the store file "localstore.json" from a given URL or load it from a given path of the filesystem. Merges the import with an already existing store.
 |`--export-store` | `-E` | (optional) File path | - | Exports the "localstore.json" file to stdout. Optionally add a path where to find it. Uses "localstore.json" in the current folder of the rusted-chromium executable as default.
+|`--no-store` | `-t` | - | false | Don't add negative hits to the existing store
+|`--ignore-store`| `-S` | - | false | Don't use the store to disable already known negative hits
 |`--hide-negative-hits` | `-H` | - | false | Hide negative hits in the CLI prompt
 |`--folder` | `-f` | `path/to/folder` | Current folder executing the command | Set the folder to which the archive of the chromium binary or the extracted folder (if the flag `--unzip` is set)
 |`--only-newest-major` | `-O`| - | - | Show only the newest version for every major version in the user selection. If the newest versions are not available for the current os, they are skipped.
@@ -326,10 +328,12 @@ import { ComparableVersion, downloadChromium } from 'rusted-chromium';
 downloadChromium({
     arch: 'x64',
     autoUnzip: false,
+    color: true,
     debug: false,
     download: true,
     downloadFolder: null,
     hideNegativeHits: false,
+    ignoreStore: false,
     interactive: true,
     inverse: false,
     list: false,

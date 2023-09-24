@@ -45,8 +45,7 @@ describe('config', () => {
             readConfig(['-a -b -c -d'], 'linux')
 
             expect(programMock.parse).toHaveBeenCalledTimes(1)
-            expect(programMock.parse).toHaveBeenCalledTimes(1)
-
+            expect(programMock.parse).toHaveBeenCalledWith(['-a -b -c -d'])
         })
 
         describe('loadChrome', () => {
@@ -249,6 +248,57 @@ describe('config', () => {
                     action: 'loadChrome',
                     config: createChromeFullConfig({
                         debug: true,
+                    })
+                }
+
+                expect(config).toEqual(expectedConfig)
+            })
+
+            it('should set quiet on --quiet', () => {
+                programMock.opts.mockReturnValue(createChromeOptions({
+                    quiet: true,
+                }))
+
+                const config = readConfig([''], 'linux')
+
+                const expectedConfig: IChromeConfigWrapper = {
+                    action: 'loadChrome',
+                    config: createChromeFullConfig({
+                        quiet: true,
+                    })
+                }
+
+                expect(config).toEqual(expectedConfig)
+            })
+
+            it('should set store=false on --no-store', () => {
+                programMock.opts.mockReturnValue(createChromeOptions({
+                    store: false,
+                }))
+
+                const config = readConfig([''], 'linux')
+
+                const expectedConfig: IChromeConfigWrapper = {
+                    action: 'loadChrome',
+                    config: createChromeFullConfig({
+                        store: false,
+                    })
+                }
+
+                expect(config).toEqual(expectedConfig)
+            })
+
+            it('should set ignoreStore on --ignore-store', () => {
+                programMock.opts.mockReturnValue(createChromeOptions({
+                    ignoreStore: true,
+                }))
+
+                const config = readConfig([''], 'linux')
+
+                const expectedConfig: IChromeConfigWrapper = {
+                    action: 'loadChrome',
+                    config: createChromeFullConfig({
+                        ignoreStore: true,
                     })
                 }
 

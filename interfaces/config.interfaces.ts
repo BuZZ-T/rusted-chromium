@@ -19,6 +19,7 @@ export interface IConfigOptions {
 
     unzip: boolean
     store: boolean
+    ignoreStore: boolean,
     download: boolean
     loadStore?: string,
 

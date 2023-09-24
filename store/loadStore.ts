@@ -9,7 +9,7 @@ import { Store } from './Store'
 
 const STORE_FILE = pathJoin(__dirname, '..', LOCAL_STORE_FILE)
 
-const EMPTY_STORE: IListStore = {
+export const EMPTY_STORE: IListStore = {
     linux: {
         x64: [],
         x86: [],

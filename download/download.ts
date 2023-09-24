@@ -10,7 +10,8 @@ import type { DownloadReportEntry, IChromeConfig } from '../interfaces/interface
 import { DebugMode, logger } from '../log/logger'
 import { progress } from '../log/progress'
 import { spinner } from '../log/spinner'
-import { loadStore } from '../store/loadStore'
+import { EMPTY_STORE, loadStore } from '../store/loadStore'
+import { Store } from '../store/Store'
 import { existsAndIsFolder } from '../utils/file.utils'
 import { isChromeSingleConfig } from '../utils/typeguards'
 import { getChromeDownloadUrl, loadVersions, mapVersions } from '../versions'
@@ -81,7 +82,7 @@ async function downloadForConfig(config: IChromeConfig): Promise<DownloadReportE
     }
 
     const versions = await loadVersions()
-    const store = await loadStore()
+    const store = config.single || config.ignoreStore ? new Store(EMPTY_STORE) : await loadStore()
 
     const mappedVersions = mapVersions(versions, config, store)
 

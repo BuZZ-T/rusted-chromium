@@ -27,6 +27,7 @@ export function readConfig(args: string[], platform: NodeJS.Platform): ConfigWra
         .option('-z, --unzip', 'Directly unzip the downloaded zip-file and delete the .zip afterwards', DEFAULT_CONFIG_OPTIONS.unzip)
         .option('-n, --non-interactive', 'Don\'t show the selection menu. Automatically select the newest version. Only works when --decrease-on-fail is also set.', false)
         .option('-t, --no-store', 'Don\'t store negative hits in the local store file.', DEFAULT_CONFIG_OPTIONS.store)
+        .option('-S, --ignore-store', 'Ignore the local store file and always try to download the binary', DEFAULT_CONFIG_OPTIONS.ignoreStore)
         .option('-l, --no-download', 'Don\'t download the binary. It also continues with the next version, if --decrease-on-fail or --increase-on-fail is set. Useful to build up the negative hit store', DEFAULT_CONFIG_OPTIONS.download)
         .option('-I, --import-store <url>', 'Imports a localstore.json file either by URL (starting with "http://" or "https://" or by local file')
         .option('-E, --export-store [path]', 'Exports the localstore.json file to stdout')
@@ -114,6 +115,7 @@ export function readConfig(args: string[], platform: NodeJS.Platform): ConfigWra
             download: options.download,
             downloadFolder: options.folder || null,
             hideNegativeHits: options.hideNegativeHits,
+            ignoreStore: options.ignoreStore,
             interactive: !options.nonInteractive,
             inverse: options.inverse,
             list: options.list,
