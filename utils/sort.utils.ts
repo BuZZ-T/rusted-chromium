@@ -4,7 +4,7 @@ import { Compared } from '../interfaces/enums'
 import type { IListStore } from '../interfaces/store.interfaces'
 
 /**
- * Ascending sort comparator for ComparableVersion 
+ * Ascending sort comparator for ComparableVersion
  */
 export function sortAscendingComparableVersions(a: ComparableVersion, b: ComparableVersion): -1 | 0 | 1 {
     const compared = ComparableVersion.compare(a, b)
@@ -20,7 +20,7 @@ export function sortAscendingComparableVersions(a: ComparableVersion, b: Compara
 }
 
 /**
- * Descending sort comparator for ComparableVersion 
+ * Descending sort comparator for ComparableVersion
  */
 export function sortDescendingComparableVersions(a: ComparableVersion, b: ComparableVersion): -1 | 0 | 1 {
     const compared = ComparableVersion.compare(a, b)

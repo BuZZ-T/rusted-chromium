@@ -1,6 +1,6 @@
 /**
  * Tests rusted file
- * 
+ *
  * @group unit/class/Store
  */
 

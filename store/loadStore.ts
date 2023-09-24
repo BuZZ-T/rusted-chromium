@@ -27,7 +27,7 @@ const EMPTY_STORE: IListStore = {
 export async function loadStore(): Promise<Store> {
 
     logger.debug(`using store file: ${STORE_FILE}`)
-    
+
     const currentStoreJson = await existsAndIsFile(STORE_FILE)
         ? await readFile(STORE_FILE, 'utf8')
         : JSON.stringify(EMPTY_STORE)

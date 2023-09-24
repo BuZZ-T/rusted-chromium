@@ -58,23 +58,23 @@ export class ComparableVersion implements IVersion {
      * if version < other, the result is Compared.LESS
      * if version > other, the result is Compared.GREATER
      * if version === other, the result is Compared.EQUAL
-     * 
-     * @param version 
-     * @param other 
+     *
+     * @param version
+     * @param other
      */
     public static compare(version: ComparableVersion, other: ComparableVersion): Compared {
         if (version.major > other.major) { return Compared.GREATER }
         if (version.major < other.major) { return Compared.LESS }
-    
+
         if (version.minor > other.minor) { return Compared.GREATER }
         if (version.minor < other.minor) { return Compared.LESS }
-    
+
         if (version.branch > other.branch) { return Compared.GREATER }
         if (version.branch < other.branch) { return Compared.LESS }
-    
+
         if (version.patch > other.patch) { return Compared.GREATER }
         if (version.patch < other.patch) { return Compared.LESS }
-    
+
         return Compared.EQUAL
     }
 

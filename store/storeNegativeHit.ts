@@ -11,7 +11,7 @@ const STORE_FILE = pathJoin(__dirname, '..', LOCAL_STORE_FILE)
 
 export async function storeNegativeHit(version: ComparableVersion, os: OS, arch: Arch): Promise<void> {
     const currentStore = await loadStore()
-    
+
     if (!currentStore.has(os, arch, version)) {
         currentStore.add(os, arch, version)
 

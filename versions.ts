@@ -101,7 +101,7 @@ async function continueFetchingChromeUrl({
                     if (!selectedVersion.disabled) {
 
                         const higherLower = config.inverse ? 'higher' : 'lower'
-                        
+
                         logger.info(`Continue with next ${higherLower} version "${selectedVersion.value}"`)
                     }
                 } else {

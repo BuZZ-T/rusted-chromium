@@ -1,6 +1,6 @@
 /**
  * Tests downloadStore file
- * 
+ *
  * @group unit/file/store/downloadStore
  */
 

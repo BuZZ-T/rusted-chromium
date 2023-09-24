@@ -1,6 +1,6 @@
 /**
  * Integration tests for exporting the store
- * 
+ *
  * @group int/use-case/exportStore
  */
 
@@ -77,7 +77,7 @@ describe('[int] export store', () => {
                 x86: [],
             }
         })
-        
+
         await writeFile(localStoreFile, JSON.stringify(expectedStore, null, 4))
 
         const pass = new PassThrough()

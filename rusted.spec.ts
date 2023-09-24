@@ -1,6 +1,6 @@
 /**
  * Tests rusted file
- * 
+ *
  * @group unit/file/rusted
  */
 
@@ -187,6 +187,6 @@ describe('rusted', () => {
         expect(spinnerMock.noColor).toHaveBeenCalledTimes(1)
         expect(spinnerMock.noColor).toHaveBeenCalledWith()
         expect(progressMock.noColor).toHaveBeenCalledTimes(1)
-        expect(progressMock.noColor).toHaveBeenCalledWith()        
+        expect(progressMock.noColor).toHaveBeenCalledWith()
     })
 })

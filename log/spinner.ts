@@ -52,7 +52,7 @@ export class Spinner extends Printer<Spinner> {
         this.count = 0
         this.timer = setInterval(() => {
             this.increaseCount()
-            
+
             this.writeLine()
         }, 100)
 
@@ -78,14 +78,14 @@ export class Spinner extends Printer<Spinner> {
                 : this.errorText)
             .newline()
     }
-    
+
     public update(text: string): Spinner {
         if (this.timer) {
             // only update with running spinner
             this.runningText = text
             return this.writeLine()
         }
-        
+
         return this
     }
 }

@@ -16,7 +16,7 @@ export class Logger extends Printer<Logger> {
     }
 
     private debugMode = DebugMode.NONE
-    
+
     protected self(): Logger {
         return this
     }

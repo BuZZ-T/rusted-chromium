@@ -22,7 +22,7 @@ export async function importAndMergeLocalstore(config: IStoreConfig): Promise<St
     const store = isURL
         ? await downloadStore(config, LOCAL_STORE_FILE)
         : await readStoreFile(config)
-        
+
     if (await existsAndIsFile(localStoreFilePath)) {
         const localStore = await readFile(LOCAL_STORE_FILE, { encoding: 'utf-8' })
 

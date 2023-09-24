@@ -1,6 +1,6 @@
 /**
  * Tests readStore file
- * 
+ *
  * @group unit/file/store/readStore
  */
 
@@ -118,7 +118,7 @@ describe('readStore', () => {
             readFileMock.mockResolvedValue('{"win": {"x64": [], "x86": [],}}')
 
             const majorNodeVersion = parseInt(process.versions.node.split('.')[0], 10)
-            
+
             expect.hasAssertions()
             if (majorNodeVersion < 20) {
                 // eslint-disable-next-line jest/no-conditional-expect

@@ -1,6 +1,6 @@
 /**
  * Tests versions file
- * 
+ *
  * @group unit/file/versions
  */
 
@@ -372,7 +372,7 @@ describe('versions', () => {
                 download: true,
                 inverse: true,
             })
-            userSelectedVersionMock.mockResolvedValue(versionDisabled   )
+            userSelectedVersionMock.mockResolvedValue(versionDisabled )
 
             await getChromeDownloadUrl(config, [versionDisabled, version1])
             expect(loggerMock.info).toHaveBeenCalledWith('Continue with next higher version "10.0.0.0"')
@@ -450,7 +450,7 @@ describe('versions', () => {
                 arch: 'x64',
                 store: true,
             })
-            
+
             const version = new MappedVersion(20, 0, 0, 0, false)
 
             const expectedSettings: GetChromeDownloadUrlReturn = {
@@ -781,7 +781,7 @@ describe('versions', () => {
                 filenameOS: FILENAME_OS,
                 report: [{
                     binaryExists: false,
-                    download: true, 
+                    download: true,
                     version: new MappedVersion(singleVersion, true)
                 }],
                 selectedVersion: mappedSingleVersion,

@@ -168,7 +168,7 @@ const fluentSingle = new FluentDownloadSingleIncomplete()
 
 export const downloadChromium = Object.assign(
     downloadForConfig,
-    { 
+    {
         /**
          * Allows to setup the configuration for downloading rusted-chromium via a fluent interface.
          * If a value is not set, it defaults to "false".
@@ -177,7 +177,7 @@ export const downloadChromium = Object.assign(
         with: fluent,
         withSingle: fluentSingle,
         /**
-         * Downloads a chromium zip file with default config, which can be partially overridden 
+         * Downloads a chromium zip file with default config, which can be partially overridden
          * @param config IChromeConfig to override the default config. May omit fields and can be ommited entirely
          */
         withDefaults: (config: Partial<IChromeConfig> = {}) => downloadForConfig(enrichAdditionalConfig(config)),

@@ -1,6 +1,6 @@
 /**
  * Tests errors file
- * 
+ *
  * @group unit/file/errors
  */
 
@@ -12,7 +12,7 @@ describe('errors', () => {
             const pResponse: Partial<Response> = {
                 status: 400,
             }
-            
+
             expect(() => findAndThrowError(pResponse as Response)).toThrow(new Error('400 BadRequest'))
         })
 
@@ -20,7 +20,7 @@ describe('errors', () => {
             const pResponse: Partial<Response> = {
                 status: 401,
             }
-            
+
             expect(() => findAndThrowError(pResponse as Response)).toThrow(new Error('401 Unauthorized'))
         })
 
@@ -28,7 +28,7 @@ describe('errors', () => {
             const pResponse: Partial<Response> = {
                 status: 403,
             }
-            
+
             expect(() => findAndThrowError(pResponse as Response)).toThrow(new Error('403 Forbidden'))
         })
 
@@ -36,7 +36,7 @@ describe('errors', () => {
             const pResponse: Partial<Response> = {
                 status: 404,
             }
-            
+
             expect(() => findAndThrowError(pResponse as Response)).toThrow(new Error('404 NotFound'))
         })
     })

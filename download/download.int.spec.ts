@@ -1,6 +1,6 @@
 /**
  * Integration tests for downloading chromium
- * 
+ *
  * @group int/use-case/downloadChromium
  */
 
@@ -213,7 +213,7 @@ describe('[int] download chromium', () => {
 
         const rustedPromise = rusted(['/some/path/to/node', '/some/path/to/rusted-chromium'], 'linux')
         chromeZipStream.end()
-        await rustedPromise 
+        await rustedPromise
 
         expect(await existsAndIsFile(chromeZip10)).toBe(false)
 
@@ -267,7 +267,7 @@ describe('[int] download chromium', () => {
         promptsMock.mockReturnValue({ version: '10.0.0.0' })
 
         const rustedPromise = rusted(['/some/path/to/node', '/some/path/to/rusted-chromium'], 'linux')
-        
+
         chromeZipStream.end()
 
         await rustedPromise

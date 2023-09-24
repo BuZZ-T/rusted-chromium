@@ -9,9 +9,9 @@ import { logger } from './log/logger'
 /**
  * Lets the user select a version via CLI prompt and returns it.
  * If the amount of results in the config is set to 1, the first version is returned
- * 
+ *
  * @param versions A decensding sorted Array of versions
- * @param config 
+ * @param config
  */
 export async function userSelectedVersion(versions: MappedVersion[], config: IChromeFullConfig): Promise<Nullable<MappedVersion>> {
     if (versions.every(version => version.disabled)) {

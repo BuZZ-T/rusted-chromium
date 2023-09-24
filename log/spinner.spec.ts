@@ -1,6 +1,6 @@
 /**
  * Tests spinner file
- * 
+ *
  * @group unit/file/spinner
  */
 

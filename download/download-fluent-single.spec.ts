@@ -1,6 +1,6 @@
 /**
  * Test download-fluent-single file
- * 
+ *
  * @group unit/file/download-fluent-single
  */
 
@@ -22,14 +22,14 @@ describe('download-fluent-single', () => {
     let fluentDownloadSingle: FluentDownloadSingleIncomplete
 
     let downloadChromiumMock: jest.MaybeMocked<typeof downloadChromium>
-    
+
     beforeEach(() => {
         downloadChromiumMock = jest.mocked(downloadChromium)
 
         downloadChromiumMock.mockReset()
         fluentDownloadSingle = new FluentDownloadSingleIncomplete()
     })
-    
+
     it('should call downloadChromium with the default values', () => {
         fluentDownloadSingle
             .single('10.0.0.0')
@@ -41,7 +41,7 @@ describe('download-fluent-single', () => {
             single: new ComparableVersion('10.0.0.0'),
         })
     })
-          
+
     it('should call downloadChromium with the default values as ComparableVersion', () => {
         fluentDownloadSingle
             .single(new ComparableVersion('10.0.0.0'))
@@ -53,7 +53,7 @@ describe('download-fluent-single', () => {
             single: new ComparableVersion('10.0.0.0'),
         })
     })
-  
+
     it('should call downloadChromium with arch set', () => {
         fluentDownloadSingle
             .arch('arm')
@@ -67,7 +67,7 @@ describe('download-fluent-single', () => {
             single: new ComparableVersion('10.0.0.0'),
         })
     })
-        
+
     it('should call downloadChromium with autoUnzip set', () => {
         fluentDownloadSingle
             .autoUnzip()
@@ -81,7 +81,7 @@ describe('download-fluent-single', () => {
             single: new ComparableVersion('10.0.0.0'),
         })
     })
-        
+
     it('should call downloadChromium with debug set', () => {
         fluentDownloadSingle
             .debug()
@@ -95,7 +95,7 @@ describe('download-fluent-single', () => {
             single: new ComparableVersion('10.0.0.0'),
         })
     })
-        
+
     it('should call downloadChromium with download set', () => {
         fluentDownloadSingle
             .download()
@@ -109,7 +109,7 @@ describe('download-fluent-single', () => {
             single: new ComparableVersion('10.0.0.0'),
         })
     })
-        
+
     it('should call downloadChromium with downloadFolder set', () => {
         fluentDownloadSingle
             .downloadFolder('d-fold')
@@ -123,7 +123,7 @@ describe('download-fluent-single', () => {
             single: new ComparableVersion('10.0.0.0'),
         })
     })
-        
+
     it('should call downloadChromium with os set', () => {
         fluentDownloadSingle
             .os('win')
@@ -137,7 +137,7 @@ describe('download-fluent-single', () => {
             single: new ComparableVersion('10.0.0.0'),
         })
     })
-        
+
     it('should call downloadChromium with quiet set', () => {
         fluentDownloadSingle
             .quiet()
@@ -151,7 +151,7 @@ describe('download-fluent-single', () => {
             single: new ComparableVersion('10.0.0.0'),
         })
     })
-        
+
     it('should call downloadChromium with store set', () => {
         fluentDownloadSingle
             .store()
@@ -165,7 +165,7 @@ describe('download-fluent-single', () => {
             single: new ComparableVersion('10.0.0.0'),
         })
     })
-            
+
     it('should set store after setting single', () => {
         fluentDownloadSingle
             .single('10.0.0.0')

@@ -102,12 +102,12 @@ function getUrlFromRequestInfo(requestInfo: NodeFetchRequestInfo): string {
 
 /**
  * Mocks all requests of node-fetch
- * Allows to pass params and config to the mock. 
- * 
+ * Allows to pass params and config to the mock.
+ *
  * - Using params, the function returning the mock data can be parameterized.
  * - Using config, the mocked node-fetch itself can be configured (e.g. headers can be added to the response)
  * - Using urls, addiotional URLs can be mocked
- * @param nodeFetchMock 
+ * @param nodeFetchMock
  * @param options
  */
 export function mockNodeFetch(nodeFetchMock: jest.MaybeMockedDeep<any>, { params, config, urls }: IMockOptions = {}): void {
@@ -170,7 +170,7 @@ export function mockNodeFetch(nodeFetchMock: jest.MaybeMockedDeep<any>, { params
  * Updates the localstore for integration tests. Don't ever call this in unit tests,
  * as it will update the actual localstore.json (as fs is not mocked there...)
  * @param store
- * @returns 
+ * @returns
  */
 export function setLocalstore(store: Store): Promise<void> {
     return writeFile(join(__dirname, 'localstore.json'), store.toFormattedString())

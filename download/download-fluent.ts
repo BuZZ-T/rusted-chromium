@@ -82,11 +82,11 @@ export class FluentDownload {
     public onlyNewestMajor(): FluentDownload {
         return this.addToConfig({ onlyNewestMajor: true })
     }
-    
+
     public os(os: OS): FluentDownload {
         return this.addToConfig({ os })
     }
-    
+
     public quiet(): FluentDownload {
         return this.addToConfig({ quiet: true })
     }
@@ -94,7 +94,7 @@ export class FluentDownload {
     public results(results: number): FluentDownload {
         return this.addToConfig({ results })
     }
-    
+
     public store(): FluentDownload {
         return this.addToConfig({ store: true })
     }

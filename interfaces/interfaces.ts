@@ -103,7 +103,7 @@ export interface LoggerConfig<Success extends string | TextFunction, Fail extend
     fail: Fail
 }
 
-export type StringLoggerConfig = LoggerConfig<string, string> 
+export type StringLoggerConfig = LoggerConfig<string, string>
 
 export type AnyLoggerConfig = LoggerConfig<string | TextFunction, string | TextFunction>
 

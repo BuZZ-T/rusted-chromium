@@ -7,11 +7,11 @@ import { Store } from './Store'
 /**
  * Downloads the localstore.json file an places it in the work directory of rusted chromium.
  * Adds "localstore.json" to the URL if it's not present
- * @param url 
+ * @param url
  */
 export async function downloadStore(config: IStoreConfig, destinationPath: string): Promise<Store> {
     let url = config.url
-    
+
     if (!url.endsWith(destinationPath)) {
         if (!url.endsWith('/')) {
             url += '/'

@@ -40,9 +40,9 @@ export abstract class Printer<T extends Printer<T>> {
             ? chalk.magenta(`? ${msg}`)
             : `? ${msg}`
     }
-    
+
     private showColors = true
-    
+
     protected constructor(private stdio: PrinterWriteStream) {
     }
 
@@ -52,8 +52,8 @@ export abstract class Printer<T extends Printer<T>> {
 
     /**
      * Writes the given text to stdio. Does nothing, if no text is provided
-     * @param text 
-     * @returns 
+     * @param text
+     * @returns
      */
     protected write(text?: string): T {
         if (text) {

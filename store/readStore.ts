@@ -8,7 +8,7 @@ import { Store } from './Store'
 
 /**
  * Reads a store file from a given path on the local file system
- * @param config 
+ * @param config
  */
 export async function readStoreFile(config: IStoreConfig): Promise<Store> {
     spinner.start(READ_CONFIG)

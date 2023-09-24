@@ -1,6 +1,6 @@
 /**
  * Tests MappedVersion class
- * 
+ *
  * @group unit/class/MappedVersion
  */
 

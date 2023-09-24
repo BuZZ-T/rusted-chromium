@@ -1,6 +1,6 @@
 /**
  * Tests utils file
- * 
+ *
  * @group unit/file/utils
  */
 

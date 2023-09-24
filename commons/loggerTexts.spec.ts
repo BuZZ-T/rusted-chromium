@@ -1,6 +1,6 @@
 /**
  * Tests constants file
- * 
+ *
  * @group unit/file/loggerTexts
  */
 

@@ -33,7 +33,7 @@ export function findAndThrowError(response: Response): never | void {
 export class HttpError extends Error {
 
     protected static statusCode: number
-    
+
     public constructor(errorStatus: ErrorStatus) {
         super(`${errorStatus.statusCode} ${errorStatus.status}`)
         this.name = 'Http Error'
@@ -41,7 +41,7 @@ export class HttpError extends Error {
 }
 
 export class BadRequestError extends HttpError {
-    
+
     private path: string
 
     public constructor(response: Response) {
@@ -56,7 +56,7 @@ export class BadRequestError extends HttpError {
 
 export class UnauthorizedError extends HttpError {
     private path: string
-    
+
     public constructor(response: Response) {
         super(errors.Unauthorized)
         this.name = errors.Unauthorized.status
@@ -70,7 +70,7 @@ export class UnauthorizedError extends HttpError {
 
 export class ForbiddenError extends HttpError {
     private path: string
-    
+
     public constructor(response: Response) {
         super(errors.Forbidden)
         this.name = errors.Forbidden.status

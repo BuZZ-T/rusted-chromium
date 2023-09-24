@@ -1,6 +1,6 @@
 /**
  * Tests printer file
- * 
+ *
  * @group unit/file/printer
  */
 
@@ -13,11 +13,11 @@ jest.mock('chalk', () => ({
 }))
 
 class TestPrinter extends Printer<TestPrinter> {
-    
+
     public constructor(stdio: PrinterWriteStream) {
         super(stdio)
     }
-    
+
     protected self(): TestPrinter {
         return this
     }

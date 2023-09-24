@@ -1,6 +1,6 @@
 /**
  * Tests select file
- * 
+ *
  * @group unit/file/select
  */
 

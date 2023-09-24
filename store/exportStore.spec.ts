@@ -1,6 +1,6 @@
 /**
  * Tests exportStore file
- * 
+ *
  * @group unit/file/store/exportStore
  */
 

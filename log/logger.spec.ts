@@ -1,6 +1,6 @@
 /**
  * Tests logger file
- * 
+ *
  * @group unit/file/loger
  */
 
@@ -18,7 +18,7 @@ jest.mock('chalk', () => ({
 describe('logger', () => {
     let stdioMock: jest.MaybeMockedDeep<PrinterWriteStream>
     let logger: Logger
-    
+
     beforeEach(() => {
         stdioMock = createStdioMock()
         logger = new Logger(stdioMock)

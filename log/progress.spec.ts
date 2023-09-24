@@ -1,6 +1,6 @@
 /**
  * Tests progress file
- * 
+ *
  * @group unit/file/progress
  */
 
@@ -70,7 +70,7 @@ describe('ProgressBar', () => {
         expect(stdioMock.cursorTo).toHaveBeenCalledTimes(1)
         expect(stdioMock.cursorTo).toHaveBeenCalledWith(0)
     })
-    
+
     it('should init the progress bar with numbers and unit', () => {
         progress.start({
             barLength: 20,

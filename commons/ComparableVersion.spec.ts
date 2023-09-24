@@ -1,6 +1,6 @@
 /**
  * Tests ComparableVersion class
- * 
+ *
  * @group unit/class/ComparableVersion
  */
 
@@ -15,7 +15,7 @@ describe('ComparableVersion', () => {
             const versionObject = {
                 major: 10,
                 minor: 0,
-                branch: 1, 
+                branch: 1,
                 patch: 2,
             }
             const cVersion = new ComparableVersion(versionObject)
@@ -33,7 +33,7 @@ describe('ComparableVersion', () => {
             const versionObject = {
                 major: 10,
                 minor: 20,
-                branch: 30, 
+                branch: 30,
                 patch: 40,
             }
             const cVersion = new ComparableVersion(versionObject)
@@ -51,7 +51,7 @@ describe('ComparableVersion', () => {
             const versionObject = {
                 major: 10,
                 minor: 0,
-                branch: 1000, 
+                branch: 1000,
                 patch: 2,
             }
             const cVersion = new ComparableVersion(versionObject)
@@ -87,7 +87,7 @@ describe('ComparableVersion', () => {
             const versionObject = {
                 major: 100,
                 minor: 0,
-                branch: 0, 
+                branch: 0,
                 patch: 1,
             }
             const cVersion = new ComparableVersion(versionObject)
@@ -105,10 +105,10 @@ describe('ComparableVersion', () => {
             const oldComparable = new ComparableVersion({
                 major: 100,
                 minor: 0,
-                branch: 0, 
+                branch: 0,
                 patch: 1,
             })
-            
+
             const cVersion = new ComparableVersion(oldComparable)
             expect(cVersion.major).toEqual(100)
             expect(cVersion.minor).toEqual(0)

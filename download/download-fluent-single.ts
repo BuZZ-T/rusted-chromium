@@ -11,7 +11,7 @@ type PickOne<T> = { [P in keyof T]: Record<P, T[P]> & Partial<Record<Exclude<key
 export abstract class FluentDownloadSingle<T> {
 
     protected config: IChromeSingleConfig
-    
+
     constructor(config?: IChromeSingleConfig) {
         this.config = {
             ...ALL_FALSE_SINGLE_CONFIG,
@@ -38,7 +38,7 @@ export abstract class FluentDownloadSingle<T> {
 
     public autoUnzip(): T {
         this.config.autoUnzip = true
-        
+
         return this.self()
     }
 
@@ -57,7 +57,7 @@ export abstract class FluentDownloadSingle<T> {
         this.config.downloadFolder = downloadFolder
         return this.self()
     }
-    
+
     public os(os: OS): T {
         this.config.os = os
 
@@ -68,7 +68,7 @@ export abstract class FluentDownloadSingle<T> {
         this.config.quiet = true
         return this.self()
     }
-    
+
     public store(): T {
         this.config.store = true
         return this.self()
@@ -102,7 +102,7 @@ export class FluentDownloadSingleComplete extends FluentDownloadSingle<FluentDow
     protected self(): FluentDownloadSingleComplete {
         return this
     }
-    
+
     public start(): Promise<DownloadReportEntry[]> {
         return downloadChromium(this.config)
     }

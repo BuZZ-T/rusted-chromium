@@ -1,6 +1,6 @@
 /**
  * Tests importStore file
- * 
+ *
  * @group unit/file/store/importtore
  */
 

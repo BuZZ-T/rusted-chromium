@@ -1,6 +1,6 @@
 /**
  * Tests download file
- * 
+ *
  * @group unit/file/download
  */
 
@@ -113,7 +113,7 @@ describe('download', () => {
         beforeEach(() => {
             loadVersionsMock.mockReset()
             loadVersionsMock.mockResolvedValue(['10.0.0.0', '11.0.0.0', '12.0.0.0', '13.0.0.0', '14.0.0.0', '15.0.0.0'])
-            
+
             loadStoreMock.mockReset()
             loadStoreMock.mockResolvedValue(new Store(createStore()))
 
@@ -122,30 +122,30 @@ describe('download', () => {
 
             getChromeDownloadUrlMock.mockReset()
             fetchChromeZipFileMock.mockReset()
-            
+
             progressMock.start.mockReset()
             progressMock.fraction.mockReset()
 
             loggerMock.info.mockReset()
             loggerMock.setDebugMode.mockReset()
-            
+
             spinnerMock.start.mockReset()
             spinnerMock.success.mockReset()
             spinnerMock.error.mockReset()
             spinnerMock.update.mockReset()
-            
+
             extractMock.mockReset()
-            
+
             existsAndIsFolderMock.mockReset()
             createWriteStreamMock.mockReset()
             mkdirMock.mockReset()
             statMock.mockReset()
             rmdirMock.mockReset()
             unlinkMock.mockReset()
-            
+
             pipeMock.mockReset()
             progressOnMock.mockReset()
-            
+
             processOnSpy.mockReset()
             processExitSpy.mockReset()
 
@@ -153,7 +153,7 @@ describe('download', () => {
             progressConstructorMock.mockReturnValue({
                 on: progressOnMock,
             })
-            
+
             onMock.mockClear()
             onMock.mockImplementation((eventName: string, callback: () => void) => {
                 if (eventName === 'end') {
@@ -178,13 +178,13 @@ describe('download', () => {
             expect(existsAndIsFolderMock).toHaveBeenCalledTimes(1)
             expect(existsAndIsFolderMock).toHaveBeenCalledWith('down_folder')
             expect(mkdirMock).toHaveBeenCalledTimes(1)
-    
+
             expect(progressConstructorMock).toHaveBeenCalledTimes(1)
             expect(progressConstructorMock).toHaveBeenCalledWith(zipFileResource, { throttle: 100 })
-    
+
             expect(progressMock.start).toHaveBeenCalledTimes(0)
             expect(progressMock.fraction).toHaveBeenCalledTimes(0)
-    
+
             expect(fetchChromeZipFileMock).toHaveBeenCalledTimes(1)
             expect(fetchChromeZipFileMock).toHaveBeenCalledWith('chromeUrl')
 
@@ -221,7 +221,7 @@ describe('download', () => {
                 store: true,
                 list: false,
             }
-            
+
             expect(getChromeDownloadUrlMock).toHaveBeenCalledWith(expected, [new MappedVersion(10, 0, 0, 1, false)])
         })
 
@@ -240,13 +240,13 @@ describe('download', () => {
             expect(existsAndIsFolderMock).toHaveBeenCalledTimes(1)
             expect(existsAndIsFolderMock).toHaveBeenCalledWith('down_folder')
             expect(mkdirMock).toHaveBeenCalledTimes(1)
-    
+
             expect(progressConstructorMock).toHaveBeenCalledTimes(1)
             expect(progressConstructorMock).toHaveBeenCalledWith(zipFileResource, { throttle: 100 })
-    
+
             expect(progressMock.start).toHaveBeenCalledTimes(0)
             expect(progressMock.fraction).toHaveBeenCalledTimes(0)
-    
+
             expect(fetchChromeZipFileMock).toHaveBeenCalledTimes(1)
             expect(fetchChromeZipFileMock).toHaveBeenCalledWith('chromeUrl')
         })
@@ -306,7 +306,7 @@ describe('download', () => {
             })
 
             expect(getChromeDownloadUrlMock).toHaveBeenCalledWith(expected, [new MappedVersion(10, 0, 0, 2, false)])
-            
+
         })
 
         it('should fetch the zip with defaults for single', async () => {
@@ -572,7 +572,7 @@ describe('download', () => {
             fetchChromeZipFileMock.mockResolvedValue(zipFileResource)
 
             unlinkMock.mockRejectedValue(new Error('unlink-error'))
-            
+
             // Act
             const config = createChromeFullConfig({
                 autoUnzip: true,
@@ -824,7 +824,7 @@ describe('download', () => {
             expect(loggerMock.setDebugMode).toHaveBeenCalledTimes(1)
             expect(loggerMock.setDebugMode).toHaveBeenCalledWith(DebugMode.DEBUG)
         })
-        
+
         it('should log the files and quit on config.list', async () => {
             mapVersionsMock.mockReturnValue([new MappedVersion(20, 0, 0, 1, true), new MappedVersion(10, 0, 0, 1, false)])
             getChromeDownloadUrlMock.mockResolvedValue(createGetChromeDownloadUrlReturn())

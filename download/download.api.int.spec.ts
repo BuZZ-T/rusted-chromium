@@ -1,6 +1,6 @@
 /**
  * Integration tests for the API to download chromium
- * 
+ *
  * @group int/api/downloadChromium
  */
 
@@ -53,7 +53,7 @@ describe('[int] download API', () => {
         if (await existsAndIsFile(chromeZip20)) {
             await unlink(chromeZip20)
         }
-        
+
         nodeFetchMock = jest.mocked(fetch)
         mockNodeFetch(nodeFetchMock, {
             config: {
@@ -62,7 +62,7 @@ describe('[int] download API', () => {
                 }
             }
         })
-        
+
         promptsMock.mockClear()
     })
 

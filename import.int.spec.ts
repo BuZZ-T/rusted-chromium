@@ -1,6 +1,6 @@
 /**
  * Integration tests for exporting the store
- * 
+ *
  * @group int/use-case/importStore
  */
 

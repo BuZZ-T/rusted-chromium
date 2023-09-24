@@ -1,6 +1,6 @@
 /**
  * Test download-fluent file
- * 
+ *
  * @group unit/file/download-fluent
  */
 
@@ -25,7 +25,7 @@ describe('download-fluent', () => {
 
     let fluentDownload: FluentDownload
     let downloadChromiumMock: jest.MaybeMocked<typeof downloadChromium>
-    
+
     beforeEach(() => {
         fluentDownload = new FluentDownload()
         downloadChromiumMock = jest.mocked(downloadChromium)
