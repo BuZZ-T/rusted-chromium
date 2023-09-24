@@ -20,21 +20,28 @@ export interface IExportConfigWrapper {
 
 export type IChromeConfig = IChromeFullConfig | IChromeSingleConfig
 
-export interface IChromeCoreConfig {
-    channel: Channel
+/**
+ * Configuration, which is not passed to the three actions (importAndMerge, download and export),
+ * as it's interpreted beforehands.
+ */
+export interface IChromeGeneralConfig {
     color: boolean
+    debug: boolean
+    progress: boolean
+    quiet: boolean
+}
+
+export interface IChromeCoreConfig extends IChromeGeneralConfig {
     arch: Arch
     autoUnzip: boolean
-    debug: boolean
+    channel: Channel
     download: boolean
     downloadFolder: string | null
     os: OS
-    quiet: boolean
     store: boolean
 }
 
 export interface IChromeFullConfig extends IChromeCoreConfig {
-    color: boolean
     hideNegativeHits: boolean
     ignoreStore: boolean
     interactive: boolean
@@ -52,18 +59,12 @@ export interface IChromeSingleConfig extends IChromeCoreConfig {
     single: ComparableVersion
 }
 
-export interface IStoreConfig {
-    color: boolean
-    debug: boolean
-    quiet: boolean
+export interface IStoreConfig extends IChromeGeneralConfig {
     url: string
 }
 
-export interface IExportConfig {
-    color: boolean
-    debug: boolean
+export interface IExportConfig extends IChromeGeneralConfig {
     path?: string
-    quiet: boolean
 }
 
 export type ConfigWrapper = IStoreConfigWrapper | IChromeConfigWrapper | IExportConfigWrapper

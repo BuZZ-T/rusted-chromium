@@ -22,6 +22,7 @@ export const ALL_FALSE_FULL_CONFIG: IChromeFullConfig = {
     onFail: 'nothing',
     onlyNewestMajor: false,
     os: 'linux',
+    progress: false,
     quiet: false,
     results: Infinity,
     single: null,
@@ -37,6 +38,7 @@ export const ALL_FALSE_SINGLE_CONFIG: IChromeSingleConfig = {
     download: false,
     downloadFolder: null,
     os: 'linux',
+    progress: false,
     quiet: false,
     single: new ComparableVersion(0, 0, 0, 0),
     store: false,
@@ -44,24 +46,23 @@ export const ALL_FALSE_SINGLE_CONFIG: IChromeSingleConfig = {
 
 export const DEFAULT_CONFIG_OPTIONS: IConfigOptions = {
     channel: 'Stable',
-
-    min: '0',
-    max: '10000',
-
+    color: true,
     debug: false,
     decreaseOnFail: false,
     download: true,
     hideNegativeHits: false,
+    ignoreStore: false,
     increaseOnFail: false,
     inverse: false,
-    ignoreStore: false,
     list: false,
+    max: '10000',
+    min: '0',
     nonInteractive: false,
     onlyNewestMajor: false,
+    progress: true,
     quiet: false,
     store: true,
     unzip: false,
-    color: true,
 }
 
 export const DEFAULT_FULL_CONFIG: IChromeFullConfig = {
@@ -82,6 +83,7 @@ export const DEFAULT_FULL_CONFIG: IChromeFullConfig = {
     onFail: 'nothing',
     onlyNewestMajor: false,
     os: 'linux',
+    progress: true,
     quiet: false,
     results: 10,
     single: null,
@@ -97,6 +99,7 @@ export const DEFAULT_SINGLE_CONFIG: IChromeSingleConfig = {
     download: true,
     downloadFolder: null,
     os: 'linux',
+    progress: true,
     quiet: false,
     single: new ComparableVersion(10, 0, 0, 0),
     store: true,

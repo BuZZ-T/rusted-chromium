@@ -18,16 +18,18 @@ export const createChromeSingleConfig = (config?: Partial<IChromeSingleConfig>):
 })
 
 export const createImportConfig = (config?: Partial<IStoreConfig>): IStoreConfig => ({
-    color: true,
     debug: false,
+    color: true,
+    progress: true,
     quiet: false,
     url: 'some-url',
     ...config,
 })
 
 export const createExportConfig = (config?: Partial<IExportConfig>): IExportConfig => ({
-    color: true,
     debug: false,
+    color: true,
+    progress: true,
     quiet: false,
     ...config,
 })

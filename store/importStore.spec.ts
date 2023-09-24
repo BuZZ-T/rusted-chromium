@@ -209,5 +209,47 @@ describe('importStore', () => {
             expect(loggerMock.setDebugMode).toHaveBeenCalledTimes(1)
             expect(loggerMock.setDebugMode).toHaveBeenCalledWith(DebugMode.DEBUG)
         })
+
+        it('should silent the logger on config.quiet', async () => {
+            const anyStore = new Store(createStore({ linux: { x64: ['10.11.12.13'], x86: [] } }))
+
+            existsAndIsFileMock.mockResolvedValue(false)
+            downloadStoreMock.mockResolvedValue(anyStore)
+
+            const config = createImportConfig({ quiet: true, url: 'https://some.url.de' })
+
+            await importAndMergeLocalstore(config)
+
+            expect(loggerMock.silent).toHaveBeenCalledTimes(1)
+            expect(loggerMock.silent).toHaveBeenCalledWith()
+        })
+
+        it('should remove the color from the logger on config.color === false', async () => {
+            const anyStore = new Store(createStore({ linux: { x64: ['10.11.12.13'], x86: [] } }))
+
+            existsAndIsFileMock.mockResolvedValue(false)
+            downloadStoreMock.mockResolvedValue(anyStore)
+
+            const config = createImportConfig({ color: false, url: 'https://some.url.de' })
+
+            await importAndMergeLocalstore(config)
+
+            expect(loggerMock.noColor).toHaveBeenCalledTimes(1)
+            expect(loggerMock.noColor).toHaveBeenCalledWith()
+        })
+
+        it('should remove the progress bar from the logger on config.progress === false', async () => {
+            const anyStore = new Store(createStore({ linux: { x64: ['10.11.12.13'], x86: [] } }))
+
+            existsAndIsFileMock.mockResolvedValue(false)
+            downloadStoreMock.mockResolvedValue(anyStore)
+
+            const config = createImportConfig({ progress: false, url: 'https://some.url.de' })
+
+            await importAndMergeLocalstore(config)
+
+            expect(loggerMock.noProgress).toHaveBeenCalledTimes(1)
+            expect(loggerMock.noProgress).toHaveBeenCalledWith()
+        })
     })
 })

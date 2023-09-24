@@ -204,4 +204,31 @@ describe('ProgressBar', () => {
         expect(stdioMock.cursorTo).toHaveBeenCalledTimes(0)
         expect(stdioMock.clearLine).toHaveBeenCalledTimes(0)
     })
+
+    it('should not print the progress bar on noProgress', () => {
+        progress
+            .noProgress()
+            .start({
+                barLength: 20,
+                success: 'success_text',
+                fail: 'fail_text',
+                start: 'start_text',
+                showNumeric: true,
+                steps: 4,
+                unit: 'unit_text',
+            })
+            .fraction(0.3)
+            .fraction(1)
+
+        expect(stdioMock.write).toHaveBeenCalledTimes(7)
+        expect(stdioMock.write.mock.calls).toEqual([
+            ['start_text'],
+            ['\n'],
+            ['0/4 unit_text'],
+            ['1/4 unit_text'],
+            ['4/4 unit_text'],
+            ['green: ✔ success_text'],
+            ['\n']
+        ])
+    })
 })

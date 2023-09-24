@@ -9,7 +9,7 @@ import { DEFAULT_CONFIG_OPTIONS } from '../commons/constants'
 import type { IChromeConfigWrapper, IStoreConfigWrapper, IExportConfigWrapper } from '../interfaces/interfaces'
 import type { OS } from '../interfaces/os.interfaces'
 import { Logger, logger } from '../log/logger'
-import { createChromeFullConfig, createChromeOptions, createImportConfig, createExportConfig, createChromeSingleConfig } from '../test/test.utils'
+import { createChromeOptions, createExportConfig, createImportConfig, createChromeSingleConfig, createChromeFullConfig } from '../test/test.utils'
 import { readConfig } from './config'
 
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */

@@ -6,8 +6,9 @@ import { fetchChromeZipFile } from '../api'
 import { DEFAULT_FULL_CONFIG, DEFAULT_SINGLE_CONFIG } from '../commons/constants'
 import { DOWNLOAD_ZIP, EXTRACT_ZIP } from '../commons/loggerTexts'
 import { NoChromiumDownloadError } from '../errors'
-import type { DownloadReportEntry, IChromeConfig } from '../interfaces/interfaces'
-import { DebugMode, logger } from '../log/logger'
+import type { DownloadReportEntry, IChromeConfig, IChromeGeneralConfig } from '../interfaces/interfaces'
+import { logger } from '../log/logger'
+import { applyConfigToLoggers } from '../log/logger.utils'
 import { progress } from '../log/progress'
 import { spinner } from '../log/spinner'
 import { loadReleases, mapApiReleasesToReleases } from '../releases/releases'
@@ -44,7 +45,7 @@ function registerSigIntHandler(path: string): void {
     })
 }
 
-function enrichAdditionalConfig(additionalConfig: Partial<IChromeConfig> = {}): IChromeConfig {
+function enrichAdditionalConfig(additionalConfig: Partial<IChromeConfig> = {}): IChromeGeneralConfig & IChromeConfig {
     if (isChromeSingleConfig(additionalConfig)) {
         return {
             ...DEFAULT_SINGLE_CONFIG,
@@ -79,10 +80,8 @@ async function extractZip(downloadPath: string) {
  * @see DEFAULT_SINGLE_CONFIG
  * @param additionalConfig Manually set config, which will override the settings in the default config
  */
-async function downloadForConfig(config: IChromeConfig): Promise<DownloadReportEntry[]> {
-    if(config.debug) {
-        logger.setDebugMode(DebugMode.DEBUG)
-    }
+async function downloadForConfig(config: IChromeGeneralConfig & IChromeConfig): Promise<DownloadReportEntry[]> {
+    applyConfigToLoggers(config)
 
     const store = config.single || config.ignoreStore ? new Store(EMPTY_STORE) : await loadStore()
 
@@ -126,12 +125,12 @@ async function downloadForConfig(config: IChromeConfig): Promise<DownloadReportE
             if (isFirstProgress) {
                 progress.start({
                     barLength: 40,
-                    steps: Math.round(p.total / 1024 / 1024),
-                    unit: 'MB',
+                    fail: DOWNLOAD_ZIP.fail,
                     showNumeric: true,
                     start: DOWNLOAD_ZIP.start,
+                    steps: Math.round(p.total / 1024 / 1024),
                     success: DOWNLOAD_ZIP.success(downloadPath),
-                    fail: DOWNLOAD_ZIP.fail,
+                    unit: 'MB',
                 })
                 isFirstProgress = false
             } else {

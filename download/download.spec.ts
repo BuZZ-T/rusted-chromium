@@ -851,6 +851,69 @@ describe('download', () => {
             expect(loggerMock.setDebugMode).toHaveBeenCalledWith(DebugMode.DEBUG)
         })
 
+        it('should silent the logger on config.quiet', async () => {
+            mapApiReleasesToReleasesMock.mockReturnValue([{
+                branchPosition: 123,
+                version: new MappedVersion(10, 0, 0, 1, false),
+            }])
+
+            getChromeDownloadUrlMock.mockResolvedValue(createGetChromeDownloadUrlReturn())
+
+            fetchChromeZipFileMock.mockResolvedValue(zipFileResource)
+            existsAndIsFolderMock.mockResolvedValue(false)
+
+            // Act
+            const config = createChromeFullConfig({
+                quiet: true,
+            })
+            await downloadChromium(config)
+
+            expect(loggerMock.silent).toHaveBeenCalledTimes(1)
+            expect(loggerMock.silent).toHaveBeenCalledWith()
+        })
+
+        it('should remove the color from the logger on config.color === false', async () => {
+            mapApiReleasesToReleasesMock.mockReturnValue([{
+                branchPosition: 123,
+                version: new MappedVersion(10, 0, 0, 1, false),
+            }])
+
+            getChromeDownloadUrlMock.mockResolvedValue(createGetChromeDownloadUrlReturn())
+
+            fetchChromeZipFileMock.mockResolvedValue(zipFileResource)
+            existsAndIsFolderMock.mockResolvedValue(false)
+
+            // Act
+            const config = createChromeFullConfig({
+                color: false,
+            })
+            await downloadChromium(config)
+
+            expect(loggerMock.noColor).toHaveBeenCalledTimes(1)
+            expect(loggerMock.noColor).toHaveBeenCalledWith()
+        })
+
+        it('should remove the progress bar from the logger on config.progress === false', async () => {
+            mapApiReleasesToReleasesMock.mockReturnValue([{
+                branchPosition: 123,
+                version: new MappedVersion(10, 0, 0, 1, false),
+            }])
+
+            getChromeDownloadUrlMock.mockResolvedValue(createGetChromeDownloadUrlReturn())
+
+            fetchChromeZipFileMock.mockResolvedValue(zipFileResource)
+            existsAndIsFolderMock.mockResolvedValue(false)
+
+            // Act
+            const config = createChromeFullConfig({
+                progress: false,
+            })
+            await downloadChromium(config)
+
+            expect(loggerMock.noProgress).toHaveBeenCalledTimes(1)
+            expect(loggerMock.noProgress).toHaveBeenCalledWith()
+        })
+
         it('should log the files and quit on config.list', async () => {
             mapApiReleasesToReleasesMock.mockReturnValue([
                 {

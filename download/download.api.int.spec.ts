@@ -89,6 +89,7 @@ describe.skip('[int] download API', () => {
             onFail: 'nothing',
             onlyNewestMajor: false,
             os: 'linux',
+            progress: true,
             quiet: false,
             results: 1,
             single: null,

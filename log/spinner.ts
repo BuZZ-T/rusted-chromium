@@ -5,7 +5,9 @@ import { Printer } from './printer'
 
 export class Spinner extends Printer<Spinner> {
 
-    private readonly SPINNER_STATES = '⠏⠋⠙⠹⠸⠼⠴⠦⠧⠇'
+    private static readonly SPINNER_STATES = '⠏⠋⠙⠹⠸⠼⠴⠦⠧⠇'
+
+    private spinnerStates = ' '
 
     private runningText: string | undefined
     private successText: string | undefined | TextFunction
@@ -13,17 +15,19 @@ export class Spinner extends Printer<Spinner> {
     private timer: ReturnType<typeof setTimeout> | null = null
     private count = 0
 
-    public constructor(stdio: PrinterWriteStream) {
+    public constructor(stdio: PrinterWriteStream, spinnerStates = Spinner.SPINNER_STATES) {
         super(stdio)
+
+        this.spinnerStates = spinnerStates
     }
 
     private increaseCount(): void {
-        this.count = (this.count + 1) % (this.SPINNER_STATES.length - 1)
+        this.count = (this.count + 1) % (this.spinnerStates.length - 1)
     }
 
     private writeLine(): Spinner {
         return this.clearLine()
-            .write(`${this.SPINNER_STATES[this.count]} ${this.runningText}`)
+            .write(`${this.spinnerStates[this.count]} ${this.runningText}`)
     }
 
     protected self(): Spinner {
@@ -56,7 +60,7 @@ export class Spinner extends Printer<Spinner> {
             this.writeLine()
         }, 100)
 
-        this.write(`${this.SPINNER_STATES[0]} ${this.runningText}`)
+        this.write(`${this.spinnerStates[0]} ${this.runningText}`)
 
         return this
     }
