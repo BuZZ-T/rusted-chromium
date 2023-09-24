@@ -5,14 +5,19 @@
  */
 
 import { ComparableVersion } from '../commons/ComparableVersion'
+import { logger } from '../log/logger'
+import { progress } from '../log/progress'
+import { spinner } from '../log/spinner'
 import { createChromeSingleConfig } from '../test/test.utils'
 import { downloadChromium } from './download'
 import { FluentDownloadSingleIncomplete } from './download-fluent-single'
 
 jest.mock('./download')
+jest.mock('../log/logger')
+jest.mock('../log/progress')
+jest.mock('../log/spinner')
 
 const allFalseSingleConfig = createChromeSingleConfig({
-    color: false,
     download: false,
     store: false,
 })
@@ -22,11 +27,18 @@ describe('download-fluent-single', () => {
     let fluentDownloadSingle: FluentDownloadSingleIncomplete
 
     let downloadChromiumMock: jest.MaybeMocked<typeof downloadChromium>
+    const loggerMock = jest.mocked(logger)
+    const spinnerMock = jest.mocked(spinner)
+    const progressMock = jest.mocked(progress)
 
     beforeEach(() => {
         downloadChromiumMock = jest.mocked(downloadChromium)
 
         downloadChromiumMock.mockReset()
+        loggerMock.silent.mockReset()
+        spinnerMock.silent.mockReset()
+        progressMock.silent.mockReset()
+
         fluentDownloadSingle = new FluentDownloadSingleIncomplete()
     })
 
@@ -138,7 +150,7 @@ describe('download-fluent-single', () => {
         })
     })
 
-    it('should call downloadChromium with quiet set', () => {
+    it('should silent the loggers with quiet set', () => {
         fluentDownloadSingle
             .quiet()
             .single('10.0.0.0')
@@ -147,9 +159,51 @@ describe('download-fluent-single', () => {
         expect(downloadChromiumMock).toHaveBeenCalledTimes(1)
         expect(downloadChromiumMock).toHaveBeenCalledWith({
             ...allFalseSingleConfig,
-            quiet: true,
             single: new ComparableVersion('10.0.0.0'),
         })
+        expect(logger.silent).toHaveBeenCalledTimes(1)
+        expect(logger.silent).toHaveBeenCalledWith()
+        expect(progress.silent).toHaveBeenCalledTimes(1)
+        expect(progress.silent).toHaveBeenCalledWith()
+        expect(spinner.silent).toHaveBeenCalledTimes(1)
+        expect(spinner.silent).toHaveBeenCalledWith()
+    })
+
+    it('should noColor the loggers with noColor set', () => {
+        fluentDownloadSingle
+            .noColor()
+            .single('10.0.0.0')
+            .start()
+
+        expect(downloadChromiumMock).toHaveBeenCalledTimes(1)
+        expect(downloadChromiumMock).toHaveBeenCalledWith({
+            ...allFalseSingleConfig,
+        })
+        expect(logger.noColor).toHaveBeenCalledTimes(1)
+        expect(logger.noColor).toHaveBeenCalledWith()
+        expect(progress.noColor).toHaveBeenCalledTimes(1)
+        expect(progress.noColor).toHaveBeenCalledWith()
+        expect(spinner.noColor).toHaveBeenCalledTimes(1)
+        expect(spinner.noColor).toHaveBeenCalledWith()
+    })
+
+    it('should noProgress the loggers with noProgress set', () => {
+        fluentDownloadSingle
+            .noProgress()
+            .single('10.0.0.0')
+            .start()
+
+        expect(downloadChromiumMock).toHaveBeenCalledTimes(1)
+        expect(downloadChromiumMock).toHaveBeenCalledWith({
+            ...allFalseSingleConfig,
+            single: new ComparableVersion('10.0.0.0'),
+        })
+        expect(logger.noProgress).toHaveBeenCalledTimes(1)
+        expect(logger.noProgress).toHaveBeenCalledWith()
+        expect(progress.noProgress).toHaveBeenCalledTimes(1)
+        expect(progress.noProgress).toHaveBeenCalledWith()
+        expect(spinner.noProgress).toHaveBeenCalledTimes(1)
+        expect(spinner.noProgress).toHaveBeenCalledWith()
     })
 
     it('should call downloadChromium with store set', () => {

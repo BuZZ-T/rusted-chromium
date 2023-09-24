@@ -149,44 +149,6 @@ describe('rusted', () => {
         expect(importAndMergeLocalstoreMock).toHaveBeenCalledTimes(0)
 
         expect(loggerMock.error).toHaveBeenCalledTimes(1)
-        expect(loggerMock.error).toHaveBeenCalledWith('Failed to read config: {"action":"something","config":{"color":true,"debug":false,"quiet":false,"url":"something"}}')
-    })
-
-    it('should set the logger to silent on config.quiet', async () => {
-        const configWrapper: ConfigWrapper = {
-            action: 'loadChrome',
-            config: createChromeFullConfig({
-                quiet: true,
-            }),
-        }
-        readConfigMock.mockReturnValue(configWrapper)
-
-        await rusted(['test-param'], 'linux')
-
-        expect(loggerMock.silent).toHaveBeenCalledTimes(1)
-        expect(loggerMock.silent).toHaveBeenCalledWith()
-        expect(spinnerMock.silent).toHaveBeenCalledTimes(1)
-        expect(spinnerMock.silent).toHaveBeenCalledWith()
-        expect(progressMock.silent).toHaveBeenCalledTimes(1)
-        expect(progressMock.silent).toHaveBeenCalledWith()
-    })
-
-    it('should set the logger to no-color on !config.color', async () => {
-        const configWrapper: ConfigWrapper = {
-            action: 'loadChrome',
-            config: createChromeFullConfig({
-                color: false,
-            }),
-        }
-        readConfigMock.mockReturnValue(configWrapper)
-
-        await rusted(['test-param'], 'linux')
-
-        expect(loggerMock.noColor).toHaveBeenCalledTimes(1)
-        expect(loggerMock.noColor).toHaveBeenCalledWith()
-        expect(spinnerMock.noColor).toHaveBeenCalledTimes(1)
-        expect(spinnerMock.noColor).toHaveBeenCalledWith()
-        expect(progressMock.noColor).toHaveBeenCalledTimes(1)
-        expect(progressMock.noColor).toHaveBeenCalledWith()
+        expect(loggerMock.error).toHaveBeenCalledWith('Failed to read config: {"action":"something","config":{"debug":false,"color":true,"progress":true,"quiet":false,"url":"something"}}')
     })
 })

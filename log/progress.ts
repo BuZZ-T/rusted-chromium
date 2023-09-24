@@ -23,10 +23,11 @@ export class ProgressBar extends Printer<ProgressBar> {
         return this
     }
 
-    private static calcNumeric(config: ProgressConfig, percent: number): string {
+    private calcNumeric(config: ProgressConfig, percent: number): string {
         const steps: number = config.steps as number
         const fracture = Math.round(percent * steps).toString().padStart(steps.toString().length, ' ')
-        return `(${fracture}/${steps}${config.unit ? (' ' + config.unit) : ''})`
+        const numeric = `${fracture}/${steps}${config.unit ? (' ' + config.unit) : ''}`
+        return this.showProgress ? `(${numeric})` : numeric
     }
 
     private setConfig(config: ProgressConfig): ProgressBar {
@@ -67,8 +68,10 @@ export class ProgressBar extends Printer<ProgressBar> {
         const doneAmount = Math.floor(barLength * fraction)
         const restAmount = barLength - doneAmount
 
+        const progressBar = this.showProgress ? `[${chalk.bgWhite(' ').repeat(doneAmount)}${chalk.grey('.').repeat(restAmount)}]` : ''
+
         return this.clearLine()
-            .write(`[${chalk.bgWhite(' ').repeat(doneAmount)}${chalk.grey('.').repeat(restAmount)}]${this.config.showNumeric ? ProgressBar.calcNumeric(this.config, fraction) : ''}`)
+            .write(`${progressBar}${this.config.showNumeric ? this.calcNumeric(this.config, fraction) : ''}`)
             .checkForComplete(this.config, fraction)
     }
 }

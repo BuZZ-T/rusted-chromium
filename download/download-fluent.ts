@@ -4,6 +4,9 @@ import type { IChromeFullConfig } from '../interfaces/interfaces'
 import type { DownloadReportEntry } from '../interfaces/interfaces'
 import type { Channel, OS } from '../interfaces/os.interfaces'
 import type { Arch } from '../interfaces/store.interfaces'
+import { logger } from '../log/logger'
+import { progress } from '../log/progress'
+import { spinner } from '../log/spinner'
 import { downloadChromium } from './download'
 
 /**
@@ -92,7 +95,24 @@ export class FluentDownload {
     }
 
     public quiet(): FluentDownload {
-        return this.addToConfig({ quiet: true })
+        logger.silent()
+        spinner.silent()
+        progress.silent()
+        return this
+    }
+
+    public noColor(): FluentDownload {
+        logger.noColor()
+        spinner.noColor()
+        progress.noColor()
+        return this
+    }
+
+    public noProgress(): FluentDownload {
+        logger.noProgress()
+        spinner.noProgress()
+        progress.noProgress()
+        return this
     }
 
     public results(results: number): FluentDownload {

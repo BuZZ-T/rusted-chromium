@@ -5,14 +5,19 @@
  */
 
 import { ComparableVersion } from '../commons/ComparableVersion'
+import { logger } from '../log/logger'
+import { progress } from '../log/progress'
+import { spinner } from '../log/spinner'
 import { createChromeFullConfig } from '../test/test.utils'
 import { downloadChromium } from './download'
 import { FluentDownload } from './download-fluent'
 
 jest.mock('./download')
+jest.mock('../log/logger')
+jest.mock('../log/progress')
+jest.mock('../log/spinner')
 
 const allFalseConfig = createChromeFullConfig({
-    color: false,
     download: false,
     interactive: false,
     max: new ComparableVersion(Infinity, 0, 0, 0),
@@ -25,12 +30,19 @@ describe('download-fluent', () => {
 
     let fluentDownload: FluentDownload
     let downloadChromiumMock: jest.MaybeMocked<typeof downloadChromium>
+    const loggerMock = jest.mocked(logger)
+    const progressMock = jest.mocked(progress)
+    const spinnerMock = jest.mocked(spinner)
 
     beforeEach(() => {
         fluentDownload = new FluentDownload()
         downloadChromiumMock = jest.mocked(downloadChromium)
 
         downloadChromiumMock.mockReset()
+
+        loggerMock.silent.mockReset()
+        progressMock.silent.mockReset()
+        spinnerMock.silent.mockReset()
     })
 
     it('should call downloadChromium with the default values', () => {
@@ -220,7 +232,7 @@ describe('download-fluent', () => {
         })
     })
 
-    it('should call downloadChromium with quiet set', () => {
+    it('should silent the loggers with quiet set', () => {
         fluentDownload
             .quiet()
             .start()
@@ -228,8 +240,47 @@ describe('download-fluent', () => {
         expect(downloadChromiumMock).toHaveBeenCalledTimes(1)
         expect(downloadChromiumMock).toHaveBeenCalledWith({
             ...allFalseConfig,
-            quiet: true,
         })
+        expect(logger.silent).toHaveBeenCalledTimes(1)
+        expect(logger.silent).toHaveBeenCalledWith()
+        expect(progress.silent).toHaveBeenCalledTimes(1)
+        expect(progress.silent).toHaveBeenCalledWith()
+        expect(spinner.silent).toHaveBeenCalledTimes(1)
+        expect(spinner.silent).toHaveBeenCalledWith()
+    })
+
+    it('should noColor the loggers with noColor set', () => {
+        fluentDownload
+            .noColor()
+            .start()
+
+        expect(downloadChromiumMock).toHaveBeenCalledTimes(1)
+        expect(downloadChromiumMock).toHaveBeenCalledWith({
+            ...allFalseConfig,
+        })
+        expect(logger.noColor).toHaveBeenCalledTimes(1)
+        expect(logger.noColor).toHaveBeenCalledWith()
+        expect(progress.noColor).toHaveBeenCalledTimes(1)
+        expect(progress.noColor).toHaveBeenCalledWith()
+        expect(spinner.noColor).toHaveBeenCalledTimes(1)
+        expect(spinner.noColor).toHaveBeenCalledWith()
+    })
+
+    it('should noProgress the loggers with noProgress set', () => {
+        fluentDownload
+            .noProgress()
+            .start()
+
+        expect(downloadChromiumMock).toHaveBeenCalledTimes(1)
+        expect(downloadChromiumMock).toHaveBeenCalledWith({
+            ...allFalseConfig,
+        })
+        expect(logger.noProgress).toHaveBeenCalledTimes(1)
+        expect(logger.noProgress).toHaveBeenCalledWith()
+        expect(progress.noProgress).toHaveBeenCalledTimes(1)
+        expect(progress.noProgress).toHaveBeenCalledWith()
+        expect(spinner.noProgress).toHaveBeenCalledTimes(1)
+        expect(spinner.noProgress).toHaveBeenCalledWith()
     })
 
     it('should call downloadChromium with results set', () => {

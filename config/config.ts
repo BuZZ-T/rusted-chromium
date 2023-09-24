@@ -41,6 +41,7 @@ export function readConfig(args: string[], platform: NodeJS.Platform): ConfigWra
         .option('-s, --single <version>', 'Download a specific version in non-interactive mode, even if the file is listed in the localstore.json. Several other flags have no effect.')
         .option('--list', 'List versions matching the criteria, doing nothing more', DEFAULT_CONFIG_OPTIONS.list)
         .option('-c, --no-color', 'Don\'t print colors in the console', DEFAULT_CONFIG_OPTIONS.color)
+        .option('-P --no-progress', 'Don\'t show visual progress updates', DEFAULT_CONFIG_OPTIONS.progress)
         .option('-q, --quiet', 'Suppress any logging output', DEFAULT_CONFIG_OPTIONS.quiet)
         .option('--debug', 'Activates the debug mode (extended logging)', DEFAULT_CONFIG_OPTIONS.debug)
         .parse(args)
@@ -80,6 +81,7 @@ export function readConfig(args: string[], platform: NodeJS.Platform): ConfigWra
                 color,
                 debug: options.debug,
                 quiet: options.quiet,
+                progress: options.progress,
                 url: options.importStore,
             },
         }
@@ -92,6 +94,7 @@ export function readConfig(args: string[], platform: NodeJS.Platform): ConfigWra
                 color,
                 debug: options.debug,
                 path: typeof options.exportStore === 'string' ? options.exportStore : undefined,
+                progress: options.progress,
                 quiet: options.quiet,
             }
         }
@@ -107,6 +110,7 @@ export function readConfig(args: string[], platform: NodeJS.Platform): ConfigWra
             download: options.download,
             downloadFolder: options.folder || null,
             os,
+            progress: options.progress,
             quiet: options.quiet,
             single: new ComparableVersion(options.single),
             store: options.store,
@@ -138,6 +142,7 @@ export function readConfig(args: string[], platform: NodeJS.Platform): ConfigWra
             onFail: options.increaseOnFail ? 'increase' : options.decreaseOnFail ? 'decrease' : 'nothing',
             onlyNewestMajor: options.onlyNewestMajor,
             os,
+            progress: options.progress,
             quiet: options.quiet,
             results: minIsSet && !maxResultsIsSet ? Infinity : (parseInt(options.maxResults as string, 10) || 10),
             single: null,

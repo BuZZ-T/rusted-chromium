@@ -43,6 +43,8 @@ export abstract class Printer<T extends Printer<T>> {
 
     private showColors = true
 
+    protected showProgress = true
+
     protected constructor(private stdio: PrinterWriteStream) {
     }
 
@@ -89,14 +91,27 @@ export abstract class Printer<T extends Printer<T>> {
     /**
      * Suppresses all log output. Can't be undone on a running instance
      */
-    public silent(): void {
+    public silent(): T {
         this.stdio = silentWriteStream
+
+        return this.self()
     }
 
     /**
      * Suppresses all colors on logging output. Can't be undone on a running instance
      */
-    public noColor(): void {
+    public noColor(): T {
         this.showColors = false
+
+        return this.self()
+    }
+
+    /**
+     * Suppresses all output of progress bars. Can't be undone on a running instance
+     */
+    public noProgress(): T {
+        this.showProgress = false
+
+        return this.self()
     }
 }

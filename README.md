@@ -111,6 +111,7 @@ docker build -t rusted-chromium .
 | `--list` | | - | false | Only log all matching versions to stdout, quit the program afterwards.
 | `--quiet` | `-q` | - | false | Suppress all log output.
 |`--no-color` | `-c` | - | false | Suppress colors in log output.
+|`--no-progress` | `-P` | - | false | Suppress progress bar log output.
 | `--debug` | | - | false | Add additional debug logging.
 | `--version`| `-V` | - | - | Show current version.
 | `--help`| `-h` | - | - | Display a help with all available flags.
@@ -254,6 +255,14 @@ rusted-chromium --no-color
 rusted-chromium -c
 ```
 
+##### Suppress progress bars in log output
+```bash
+# long version
+rusted-chromium --no-progress
+# short version
+rusted-chromium -P
+```
+
 ##### Suppress all log output
 ```bash
 # long version
@@ -337,8 +346,26 @@ To import a store file, use `importAndMergeStore`:
 import { importAndMergeLocalstore } from 'rusted-chromium';
 
 importAndMergeLocalstore({
+    color: true,
+    debug: false,
+    progress: true,
+    quiet: false,
     url: '...', // File or URL
 });
+```
+
+### Export store
+
+To export a store file, use `exportStore`:
+```ts
+import { exportStore } from 'rusted-chromium'
+
+exportStore({
+    color: true,
+    debug: false,
+    progress: true,
+    quiet: false,
+}, process.stdout)
 ```
 
 ### Download chromium
@@ -364,6 +391,7 @@ downloadChromium({
     onFail: 'nothing',
     onlyNewestMajor: false,
     os: 'linux',
+    progress: true,
     quiet: false,
     results: 10,
     single: null,
@@ -421,7 +449,7 @@ downloadChromium.withSingle
 	.start()
 ```
 
-Be aware that `.start()` is only available, after `single(...)` has been used.
+Be aware that `.start()` is only available, after `.single(...)` has been used.
 
 **See more examples to use the API [here](https://github.com/BuZZ-T/rusted-chromium/blob/main/examples/README.md).**
 

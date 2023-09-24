@@ -34,6 +34,7 @@ export interface IConfigOptions {
 
     list: boolean,
     color: boolean,
+    progress: boolean,
 
     debug: boolean,
 

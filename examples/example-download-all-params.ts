@@ -18,6 +18,7 @@ downloadChromium({
     onFail: 'nothing',
     onlyNewestMajor: false,
     os: 'linux',
+    progress: true,
     quiet: false,
     results: 10,
     single: null,

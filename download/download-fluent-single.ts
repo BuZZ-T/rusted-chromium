@@ -3,6 +3,9 @@ import { ALL_FALSE_SINGLE_CONFIG } from '../commons/constants'
 import type { DownloadReportEntry, IChromeSingleConfig } from '../interfaces/interfaces'
 import type { Channel, OS } from '../interfaces/os.interfaces'
 import type { Arch } from '../interfaces/store.interfaces'
+import { logger } from '../log/logger'
+import { progress } from '../log/progress'
+import { spinner } from '../log/spinner'
 import { downloadChromium } from './download'
 
 // https://stackoverflow.com/questions/56933109/pick-one-key-value-pair-from-type
@@ -48,6 +51,7 @@ export abstract class FluentDownloadSingle<T> {
         return this.self()
     }
 
+    // TODO: directly set debug mode?
     public debug(): T {
         this.config.debug = true
 
@@ -71,7 +75,23 @@ export abstract class FluentDownloadSingle<T> {
     }
 
     public quiet(): T {
-        this.config.quiet = true
+        logger.silent()
+        spinner.silent()
+        progress.silent()
+        return this.self()
+    }
+
+    public noColor(): T {
+        logger.noColor()
+        spinner.noColor()
+        progress.noColor()
+        return this.self()
+    }
+
+    public noProgress(): T {
+        logger.noProgress()
+        spinner.noProgress()
+        progress.noProgress()
         return this.self()
     }
 
