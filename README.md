@@ -13,6 +13,7 @@ This cli tool can be used to download old (and therefore unsupported) versions o
 
 * [Disclaimer](#disclaimer-)
 * [Installation](#installation)
+* [Build on your own](#build-on-your-own)
 * [Supported node versions](#supported-node-versions)
 * [All available flags](#all-available-flags)
 * [Examples](#examples)
@@ -44,9 +45,19 @@ npm install -g rusted-chromium
 rusted-chromium --help
 ```
 
-#### via github
+#### via docker
 
+```sh
+docker pull buzztt/rusted-chromium
+
+mkdir out
+docker run -ti --mount type=bind,source="$(pwd)/out",target=/app/out-dir rusted-chromium --folder out-dir
 ```
+
+## Build on your own
+
+#### using npm
+```sh
 git clone https://github.com/BuZZ-T/rusted-chromium
 cd rusted-chromium
 npm install
@@ -60,9 +71,17 @@ npm run build
 
 ```
 
+#### using docker
+```sh
+git clone https://github.com/BuZZ-T/rusted-chromium
+
+cd rusted-chromium
+docker build -t rusted-chromium .
+```
+
 ## Supported node versions
 
-node 16+
+16.x, 18.x, 20.x
 
 ## All available flags
 
