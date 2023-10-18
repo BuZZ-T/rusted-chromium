@@ -73,9 +73,12 @@ describe('readStore', () => {
             if (majorNodeVersion < 20) {
                 // eslint-disable-next-line jest/no-conditional-expect
                 await expect(() => readStoreFile(createImportConfig({ url }))).rejects.toThrow(new Error('Unexpected end of JSON input'))
-            } else {
+            } else if (majorNodeVersion < 21) {
                 // eslint-disable-next-line jest/no-conditional-expect
                 await expect(() => readStoreFile(createImportConfig({ url }))).rejects.toThrow(new Error('Unterminated string in JSON at position 21'))
+            } else {
+                // eslint-disable-next-line jest/no-conditional-expect
+                await expect(() => readStoreFile(createImportConfig({ url }))).rejects.toThrow(new Error('Unterminated string in JSON at position 21 (line 1 column 22)'))
             }
 
             expect(spinnerMock.success).toHaveBeenCalledTimes(0)
@@ -123,9 +126,12 @@ describe('readStore', () => {
             if (majorNodeVersion < 20) {
                 // eslint-disable-next-line jest/no-conditional-expect
                 await expect(() => readStoreFile(createImportConfig({ url }))).rejects.toThrow(new Error('Unexpected token } in JSON at position 30'))
-            } else {
+            } else if (majorNodeVersion < 21) {
                 // eslint-disable-next-line jest/no-conditional-expect
                 await expect(() => readStoreFile(createImportConfig({ url }))).rejects.toThrow(new Error('Expected double-quoted property name in JSON at position 30'))
+            } else {
+                // eslint-disable-next-line jest/no-conditional-expect
+                await expect(() => readStoreFile(createImportConfig({ url }))).rejects.toThrow(new Error('Expected double-quoted property name in JSON at position 30 (line 1 column 31)'))
             }
 
             expect(readFileMock).toHaveBeenCalledTimes(1)
