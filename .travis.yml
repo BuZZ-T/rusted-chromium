@@ -6,6 +6,7 @@ node_js:
     - 16
     - 18
     - 20
+    - 21
 
 script:
     - npm run lint
