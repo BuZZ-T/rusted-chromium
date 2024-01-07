@@ -1,4 +1,5 @@
 import { HTMLElement as NodeParserHTMLElement, Node as NodeParserNode } from 'node-html-parser'
+import Matcher from 'node-html-parser/dist/matcher'
 
 import { DEFAULT_FULL_CONFIG, DEFAULT_SINGLE_CONFIG, DEFAULT_CONFIG_OPTIONS } from '../commons/constants'
 import { MappedVersion } from '../commons/MappedVersion'
@@ -68,7 +69,7 @@ export const createGetChromeDownloadUrlReturn = (settings?: Partial<GetChromeDow
     ...settings,
 })
 
-export const createNodeParserHTMLElement = (querySelectorAllMock: jest.Mock<any, any>): NodeParserHTMLElement & { valid: boolean } => {
+export const createNodeParserHTMLElement = <T extends NodeParserHTMLElement[], U extends [selector: string | Matcher]>(querySelectorAllMock: jest.Mock<T, U>): NodeParserHTMLElement & { valid: boolean } => {
     const element = new NodeParserHTMLElement('html', {}) as NodeParserHTMLElement & { valid: boolean }
     element.valid = true
     element.querySelectorAll = querySelectorAllMock
