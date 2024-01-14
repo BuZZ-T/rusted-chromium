@@ -1,6 +1,6 @@
 {
   "name": "rusted-chromium",
-  "version": "0.0.20",
+  "version": "0.0.21",
   "description": "Download legacy versions of chromium with a command-line tool",
   "main": "public_api.js",
   "scripts": {
