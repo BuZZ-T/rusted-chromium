@@ -2,7 +2,7 @@
 
 [![NPM Version](https://img.shields.io/npm/v/rusted-chromium.svg)](https://www.npmjs.com/package/rusted-chromium) [![Package License](https://img.shields.io/npm/l/rusted-chromium.svg)](https://www.npmjs.com/package/rusted-chromium) [![Build Status](https://travis-ci.com/BuZZ-T/rusted-chromium.svg?branch=master)](https://travis-ci.com/github/BuZZ-T/rusted-chromium)
 
-** ⓘ rusted-chromium is currently not working, as the chromium project has disabled the API used by rusted-chromium, see: [https://omahaproxy.appspot.com/](https://omahaproxy.appspot.com/) **
+**ⓘ rusted-chromium is currently not working, as the chromium project has disabled the API used by rusted-chromium, see: [https://omahaproxy.appspot.com/](https://omahaproxy.appspot.com/)**
 
 | Test | Coverage | Report
 |-|-|-|
