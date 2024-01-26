@@ -30,12 +30,6 @@ export const READ_CONFIG: LoggerConfig<string, TextFunction> = {
     fail: reason => `Error loading localstore.json from filesystem: ${reason}`,
 }
 
-export const RESOLVE_VERSION: StringLoggerConfig = {
-    start: 'Resolving version to branch position...',
-    success: 'Version resolved!',
-    fail: 'Error resolving version!',
-}
-
 export const SEARCH_BINARY: StringLoggerConfig = {
     start: 'Searching for binary...',
     success: 'Binary found.',

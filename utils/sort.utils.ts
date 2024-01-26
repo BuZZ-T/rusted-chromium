@@ -2,6 +2,7 @@ import { ComparableVersion } from '../commons/ComparableVersion'
 import type { MappedVersion } from '../commons/MappedVersion'
 import { Compared } from '../interfaces/enums'
 import type { IListStore } from '../interfaces/store.interfaces'
+import type { Release } from '../releases/release.types'
 
 /**
  * Ascending sort comparator for ComparableVersion
@@ -64,3 +65,5 @@ export function sortStoreEntries(store: IListStore): IListStore {
         },
     }
 }
+
+export const sortDescendingReleases = (a: Release, b: Release): -1 | 0 | 1 => sortDescendingComparableVersions(a.version.comparable, b.version.comparable)

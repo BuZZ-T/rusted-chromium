@@ -1,7 +1,7 @@
 import { ComparableVersion } from '../commons/ComparableVersion'
 import { ALL_FALSE_SINGLE_CONFIG } from '../commons/constants'
 import type { DownloadReportEntry, IChromeSingleConfig } from '../interfaces/interfaces'
-import type { OS } from '../interfaces/os.interfaces'
+import type { Channel, OS } from '../interfaces/os.interfaces'
 import type { Arch } from '../interfaces/store.interfaces'
 import { downloadChromium } from './download'
 
@@ -38,6 +38,12 @@ export abstract class FluentDownloadSingle<T> {
 
     public autoUnzip(): T {
         this.config.autoUnzip = true
+
+        return this.self()
+    }
+
+    public channel(channel: Channel): T {
+        this.config.channel = channel
 
         return this.self()
     }

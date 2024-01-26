@@ -2,6 +2,7 @@
 /* eslint-disable-next-line import/no-namespace */
 import * as program from 'commander'
 
+import { checkValidChannel } from '../channel/checkValidChannel'
 import { ComparableVersion } from '../commons/ComparableVersion'
 import { DEFAULT_CONFIG_OPTIONS } from '../commons/constants'
 import type { IConfigOptions } from '../interfaces/config.interfaces'
@@ -9,6 +10,7 @@ import type { ConfigWrapper, IChromeSingleConfig } from '../interfaces/interface
 import { logger } from '../log/logger'
 /* eslint-disable-next-line import/no-namespace */
 import * as packageJson from '../package.json'
+import { mapOsToPlatform } from '../releases/releases'
 import { mapOS } from '../utils'
 
 /**
@@ -17,6 +19,7 @@ import { mapOS } from '../utils'
 export function readConfig(args: string[], platform: NodeJS.Platform): ConfigWrapper {
     program
         .version(packageJson.version)
+        .option('-c, --channel <channel>', 'The channel to download from. Valid values are "stable", "beta", "dev" and "canary"', DEFAULT_CONFIG_OPTIONS.channel)
         .option('-m, --min <version>', 'The minimum version', DEFAULT_CONFIG_OPTIONS.min)
         .option('-M, --max <version>', 'The maximum version. Newest version if not specificied', DEFAULT_CONFIG_OPTIONS.max)
         .option('-r, --max-results <results>', 'The maximum amount of results to choose from', null)
@@ -48,6 +51,14 @@ export function readConfig(args: string[], platform: NodeJS.Platform): ConfigWra
     const maxResultsIsSet = !!options.maxResults
 
     const os = mapOS(options.os || platform)
+    const chromePlatform = mapOsToPlatform(os)
+
+    const {channel} = options
+
+    if (!checkValidChannel(channel, chromePlatform)) {
+        logger.error(`Channel "${channel}" is not valid for ${chromePlatform}`)
+        process.exit(1)
+    }
 
     if (!options.os && options.arch) {
         logger.warn('Setting "--arch" has no effect, when "--os" is not set!')
@@ -89,6 +100,7 @@ export function readConfig(args: string[], platform: NodeJS.Platform): ConfigWra
         const config: IChromeSingleConfig = {
             arch,
             autoUnzip: options.unzip,
+            channel: options.channel,
             color,
             debug: options.debug,
             download: options.download,
@@ -110,6 +122,7 @@ export function readConfig(args: string[], platform: NodeJS.Platform): ConfigWra
         config: {
             arch,
             autoUnzip: options.unzip,
+            channel: options.channel,
             color,
             debug: options.debug,
             download: options.download,

@@ -3,6 +3,7 @@ import { readdir, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { PassThrough, Readable } from 'node:stream'
 
+import { ApiRelease } from '../releases/release.types'
 import { Store } from '../store/Store'
 import { testMetadataResponse } from './test.metadata'
 
@@ -12,7 +13,7 @@ export interface IMocks {
     mockStream: PassThrough | Readable
 }
 
-export type MockNames = 'chromeZip' | 'tags' | 'branchPosition' | 'chromeUrl'
+export type MockNames = 'chromeZip' | 'chromeUrl' | 'releases'
 
 export type MockParams = {
     [key in MockNames]?: any
@@ -59,8 +60,17 @@ export interface IMockDifferent {
 }
 
 export let chromeZipStream: PassThrough
-const tagsResponse = (tags: string[] = ['10.0.0.0']): string => `<html><body><h3>Tags</h3><span>${tags.map(tag => `<span>${tag}</span>`).join('')}</span></body></html>`
-export const branchPositionResponse = (branchPosition = '12345'): string => branchPosition ? `{"chromium_base_position": "${branchPosition}"}` : ''
+
+const releaseResponse = (): ApiRelease[] => [{
+    channel: 'Beta',
+    chromium_main_branch_position: 123,
+    hashes: {},
+    milestone: 1,
+    platform: 'Linux',
+    previous_version: '10.0.0.0',
+    time: 2,
+    version: '11.0.0.0',
+}]
 
 const mocks: IMock[] = [
     {
@@ -69,14 +79,10 @@ const mocks: IMock[] = [
         mock: () => chromeZipStream,
     },
     {
-        name: 'tags',
-        url: 'https://chromium.googlesource.com/chromium/src/+refs',
-        mock: ({ tags }: MockParams) => tagsResponse(tags),
-    },
-    {
-        name: 'branchPosition',
-        url: 'https://omahaproxy.appspot.com/deps.json',
-        mock: ({ branchPosition }: MockParams) => branchPositionResponse(branchPosition),
+        name: 'releases',
+        url: 'https://chromiumdash.appspot.com/fetch_releases?channel=Stable&platform=Linux&num=100&offset=0',
+        mock: () => JSON.stringify(releaseResponse()),
+
     },
     {
         name: 'chromeUrl',

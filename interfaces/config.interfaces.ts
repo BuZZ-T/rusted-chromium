@@ -1,6 +1,8 @@
-import type { ExtendedOS } from './os.interfaces'
+import type { Channel, ExtendedOS } from './os.interfaces'
 
 export interface IConfigOptions {
+    channel: Channel
+
     min: string
     max: string
 

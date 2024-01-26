@@ -4,9 +4,10 @@
  * @group unit/file/api
  */
 
-import { fetchChromiumTags, fetchBranchPosition, fetchChromeUrl, fetchChromeZipFile, fetchLocalStore } from './api'
+import { fetchChromiumTags, fetchChromeUrl, fetchChromeZipFile, fetchLocalStore } from './api'
 import type { IOSSettings } from './interfaces/os.interfaces'
 import { spinner, Spinner } from './log/spinner'
+import { Release } from './releases/release.types'
 
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */
 const fetch = require('node-fetch')
@@ -60,11 +61,12 @@ describe('api', () => {
 
             fetchMock.mockResolvedValue({
                 ok: false,
+                url: 'some-url',
                 status: 400,
                 error: 'some-error-message',
             })
 
-            await expect(() => fetchLocalStore(url)).rejects.toThrow(new Error('Status Code: 400 some-error-message'))
+            await expect(() => fetchLocalStore(url)).rejects.toThrow(new Error('Status Code: 400 some-url some-error-message'))
 
             expect(fetchMock.mock.calls.length).toBe(1)
             expect(fetch).toHaveBeenCalledWith(url)
@@ -88,57 +90,18 @@ describe('api', () => {
         it('should throw an error on non-ok http response', async () => {
             fetchMock.mockResolvedValue({
                 ok: false,
+                url: 'some-url',
                 status: 400,
                 error: 'some-error-message',
             })
 
-            await expect(() => fetchChromiumTags()).rejects.toThrow(new Error('Status Code: 400 some-error-message'))
-        })
-    })
-
-    describe('fetchBranchPosition', () => {
-        it('should fetch the branch position', async () => {
-            fetchMock.mockResolvedValue({
-                ok: true,
-                json() {
-                    return Promise.resolve({ chromium_base_position: 3 })
-                }
-            })
-
-            expect(await fetchBranchPosition('any-version')).toEqual(3)
-            expect(fetch).toHaveBeenLastCalledWith('https://omahaproxy.appspot.com/deps.json?version=any-version')
-            expect(spinnerMock.success).toHaveBeenCalledTimes(1)
-            expect(spinnerMock.error).toHaveBeenCalledTimes(0)
-
-        })
-
-        it('should throw an error on non-ok http response', async () => {
-            fetchMock.mockResolvedValue({
-                ok: false,
-                status: 400,
-                error: 'some-error-message',
-            })
-
-            await expect(() => fetchChromiumTags()).rejects.toThrow(new Error('Status Code: 400 some-error-message'))
-        })
-
-        it('should log an error on no branch position', async () => {
-            fetchMock.mockResolvedValue({
-                ok: true,
-                json() {
-                    return Promise.resolve({})
-                }
-            })
-
-            expect(await fetchBranchPosition('any-version')).toEqual(undefined)
-            expect(spinnerMock.error).toHaveBeenCalledTimes(1)
-            expect(spinnerMock.success).toHaveBeenCalledTimes(0)
+            await expect(() => fetchChromiumTags()).rejects.toThrow(new Error('Status Code: 400 some-url some-error-message'))
         })
     })
 
     describe('fetchChromeUrl', () => {
         it('should fetch the chrome url', async () => {
-            const branchPosition = 'branch-position'
+            const branchPosition: Release['branchPosition'] = 123
             const osSettings: IOSSettings = {
                 url: 'Linux_x64',
                 filename: 'linux',
@@ -150,7 +113,7 @@ describe('api', () => {
                     return Promise.resolve({
                         items: [
                             {
-                                name: 'Linux_x64/branch-position/chrome-linux.zip',
+                                name: 'Linux_x64/123/chrome-linux.zip',
                                 mediaLink: 'media-link',
                             },
                             {
@@ -173,15 +136,16 @@ describe('api', () => {
 
             fetchMock.mockResolvedValue({
                 ok: false,
+                url: 'some-url',
                 status: 400,
                 error: 'some-error-message',
             })
 
-            await expect(() => fetchChromeUrl('', osSettings)).rejects.toThrow(new Error('Status Code: 400 some-error-message'))
+            await expect(() => fetchChromeUrl(0, osSettings)).rejects.toThrow(new Error('Status Code: 400 some-url some-error-message'))
         })
 
         it('should resolve undefined if metadata contains no items', async () => {
-            const branchPosition = 'branch-position'
+            const branchPosition: Release['branchPosition'] = 123
             const osSettings: IOSSettings = {
                 url: 'Linux_x64',
                 filename: 'linux',
@@ -198,7 +162,7 @@ describe('api', () => {
         })
 
         it('should resolve undefined if items contain no medialink', async () => {
-            const branchPosition = 'branch-position'
+            const branchPosition: Release['branchPosition'] = 123
             const osSettings: IOSSettings = {
                 url: 'Linux_x64',
                 filename: 'linux',
@@ -240,11 +204,12 @@ describe('api', () => {
 
             fetchMock.mockResolvedValue({
                 ok: false,
+                url: 'some-url',
                 status: 400,
                 error: 'some-error-message',
             })
 
-            await expect(() => fetchChromeZipFile(url)).rejects.toThrow(new Error('Status Code: 400 some-error-message'))
+            await expect(() => fetchChromeZipFile(url)).rejects.toThrow(new Error('Status Code: 400 some-url some-error-message'))
         })
     })
 })

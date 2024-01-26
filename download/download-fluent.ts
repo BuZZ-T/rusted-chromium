@@ -2,7 +2,7 @@ import { ComparableVersion } from '../commons/ComparableVersion'
 import { ALL_FALSE_FULL_CONFIG } from '../commons/constants'
 import type { IChromeFullConfig } from '../interfaces/interfaces'
 import type { DownloadReportEntry } from '../interfaces/interfaces'
-import type { OS } from '../interfaces/os.interfaces'
+import type { Channel, OS } from '../interfaces/os.interfaces'
 import type { Arch } from '../interfaces/store.interfaces'
 import { downloadChromium } from './download'
 
@@ -35,6 +35,10 @@ export class FluentDownload {
 
     public autoUnzip(): FluentDownload {
         return this.addToConfig({ autoUnzip: true })
+    }
+
+    public channel(channel: Channel): FluentDownload {
+        return this.addToConfig({ channel })
     }
 
     public debug(): FluentDownload {

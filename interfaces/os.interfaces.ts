@@ -23,3 +23,18 @@ export interface WindowsSetting extends IOSSettings {
 }
 
 export type OSSetting = LinuxSetting | WindowsSetting | MacSetting
+
+export type Platform =
+    | 'Android'
+    | 'FuchsiaWebEngine'
+    | 'Lacros'
+    | 'Linux'
+    | 'Mac'
+    | 'Windows'
+    | 'iOS'
+
+/**
+ * All possible channel. Be aware that not all platforms support all channels
+ * @see {checkValidChannel}
+ */
+export type Channel = 'Canary' | 'Dev' | 'Beta' | 'Stable' | 'Extended'

@@ -3,6 +3,7 @@ import { ComparableVersion, downloadChromium } from 'rusted-chromium'
 downloadChromium({
     arch: 'x64',
     autoUnzip: false,
+    channel: 'Stable',
     color: true,
     debug: false,
     download: true,

@@ -14,7 +14,7 @@ import { join as pathJoin, resolve } from 'node:path'
 import { MappedVersion } from '../commons/MappedVersion'
 import type { IListStore } from '../interfaces/store.interfaces'
 import { rusted } from '../rusted'
-import { mockNodeFetch, chromeZipStream, branchPositionResponse, getJestTmpFolder, minimalValidZipfile } from '../test/int.utils'
+import { mockNodeFetch, chromeZipStream, getJestTmpFolder, minimalValidZipfile } from '../test/int.utils'
 import { createStore } from '../test/test.utils'
 import { popArray } from '../utils'
 import { existsAndIsFile, existsAndIsFolder } from '../utils/file.utils'
@@ -298,7 +298,7 @@ describe('[int] download chromium', () => {
                     once: true,
                     name: 'branchPosition',
                     gen: () => gen.next(),
-                    mock: (position: string) => branchPositionResponse(position),
+                    mock: (position: string) => `pos. ${position}`,
                 }
             ]
         })
@@ -327,7 +327,7 @@ describe('[int] download chromium', () => {
                     once: true,
                     name: 'branchPosition',
                     gen: () => gen.next(),
-                    mock: (position: string) => branchPositionResponse(position),
+                    mock: (position: string) => `pos. ${position}`,
                 }
             ]
         })
@@ -356,7 +356,7 @@ describe('[int] download chromium', () => {
                     once: true,
                     name: 'branchPosition',
                     gen: () => gen.next(),
-                    mock: (position: string) => branchPositionResponse(position),
+                    mock: (position: string) => `pos. ${position}`,
                 }
             ]
         })

@@ -1,6 +1,6 @@
 import type { ComparableVersion } from '../commons/ComparableVersion'
-import { MappedVersion } from '../commons/MappedVersion'
-import type { OS } from './os.interfaces'
+import type { Release } from '../releases/release.types'
+import type { Channel, OS } from './os.interfaces'
 import type { Arch } from './store.interfaces'
 
 export interface IStoreConfigWrapper {
@@ -21,6 +21,7 @@ export interface IExportConfigWrapper {
 export type IChromeConfig = IChromeFullConfig | IChromeSingleConfig
 
 export interface IChromeCoreConfig {
+    channel: Channel
     color: boolean
     arch: Arch
     autoUnzip: boolean
@@ -136,5 +137,5 @@ export type Nullable<T> = T | undefined | null
 export interface DownloadReportEntry {
     binaryExists: boolean
     download: boolean
-    version: Nullable<MappedVersion>
+    release: Nullable<Release>
 }

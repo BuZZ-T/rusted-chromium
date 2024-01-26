@@ -1,10 +1,9 @@
 import { Response as NodeFetchResponse } from 'node-fetch'
 
-import { RESOLVE_VERSION } from './commons/loggerTexts'
 import type { IMetadataResponse } from './interfaces/interfaces'
-import type { IOSSettings } from './interfaces/os.interfaces'
+import type { Channel, IOSSettings, Platform } from './interfaces/os.interfaces'
 import type { IListStore } from './interfaces/store.interfaces'
-import { spinner } from './log/spinner'
+import type { ApiRelease } from './releases/release.types'
 
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */
 const fetch = require('node-fetch')
@@ -14,7 +13,7 @@ const CHROMIUM_TAGS_URL = 'https://chromium.googlesource.com/chromium/src/+refs'
 function checkStatus(response: NodeFetchResponse) {
     if (!response.ok) {
         // TODO: check of response.error is correct
-        throw new Error(`Status Code: ${response.status} ${(response as (NodeFetchResponse & { error: string })).error}`)
+        throw new Error(`Status Code: ${response.status} ${response.url} ${(response as (NodeFetchResponse & { error: string })).error}`)
     }
     return response
 }
@@ -38,26 +37,8 @@ export async function fetchChromiumTags(): Promise<string> {
         .then(toText)
 }
 
-export async function fetchBranchPosition(version: string): Promise<string> {
-    spinner.start(RESOLVE_VERSION)
-
-    return fetch(`https://omahaproxy.appspot.com/deps.json?version=${version}`)
-        .then(checkStatus)
-        .then(toJson)
-        .then((response: { chromium_base_position?: string }) => response.chromium_base_position)
-        .then((resolvedVersion: string | undefined) => {
-            if (resolvedVersion) {
-                spinner.success()
-            } else {
-                spinner.error()
-            }
-            return resolvedVersion
-        })
-}
-
-export async function fetchChromeUrl(branchPosition: string, osSettings: IOSSettings): Promise<string | undefined> {
-    const snapshotUrl = `https://www.googleapis.com/storage/v1/b/chromium-browser-snapshots/o?delimiter=/&prefix=${osSettings.url}/${branchPosition}/&fields=items(kind,mediaLink,metadata,name,size,updated),kind,prefixes,nextPageToken`
-    // TODO: adjust field in request
+export async function fetchChromeUrl(branchPosition: number, osSettings: IOSSettings): Promise<string | undefined> {
+    const snapshotUrl = `https://www.googleapis.com/storage/v1/b/chromium-browser-snapshots/o?delimiter=/&prefix=${osSettings.url}/${branchPosition}/&fields=items(mediaLink,name)`
     const chromeMetadataResponse: IMetadataResponse = await fetch(snapshotUrl)
         .then(checkStatus)
         .then(toJson)
@@ -68,4 +49,10 @@ export async function fetchChromeUrl(branchPosition: string, osSettings: IOSSett
 export async function fetchChromeZipFile(url: string): Promise<NodeFetchResponse> {
     const response = await fetch(url)
     return checkStatus(response)
+}
+
+export async function fetchReleases(platform: Platform, channel: Channel, amount = 100): Promise<ApiRelease[]> {
+    return fetch(`https://chromiumdash.appspot.com/fetch_releases?channel=${channel}&platform=${platform}&num=${amount}&offset=0`)
+        .then(checkStatus)
+        .then(toJson)
 }

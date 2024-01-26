@@ -1,6 +1,4 @@
-import { parse, HTMLElement as NodeParserHTMLElement } from 'node-html-parser'
-
-import { fetchBranchPosition, fetchChromeUrl, fetchChromiumTags } from './api'
+import { fetchChromeUrl } from './api'
 import { ComparableVersion } from './commons/ComparableVersion'
 import { SEARCH_BINARY } from './commons/loggerTexts'
 import { MappedVersion } from './commons/MappedVersion'
@@ -13,50 +11,51 @@ import type { IOSSettings } from './interfaces/os.interfaces'
 import type { OSSetting } from './interfaces/os.interfaces'
 import { logger } from './log/logger'
 import { spinner } from './log/spinner'
+import { Release } from './releases/release.types'
 import { userSelectedVersion } from './select'
 import { Store } from './store/Store'
 import { storeNegativeHit } from './store/storeNegativeHit'
 import { detectOperatingSystem } from './utils'
 import { sortDescendingMappedVersions } from './utils/sort.utils'
 
-export async function getChromeDownloadUrl(config: IChromeConfig, mappedVersions: MappedVersion[]): Promise<GetChromeDownloadUrlReturn> {
+export async function getChromeDownloadUrl(config: IChromeConfig, releases: Release[]): Promise<GetChromeDownloadUrlReturn> {
     const oSSetting = detectOperatingSystem(config)
 
     if (config.single !== null) {
-        return getChromeUrlForSingle(config, oSSetting, mappedVersions[0])
+        return getChromeUrlForSingle(config, oSSetting, releases)
     } else {
-        return getChromeUrlForFull(config, oSSetting, mappedVersions)
+        return getChromeUrlForFull(config, oSSetting, releases)
     }
 }
 
 async function continueFetchingChromeUrl({
     config,
-    mappedVersions,
+    releases,
     osSetting,
-    version: selectedVersion,
+    selectedRelease,
 }: ContinueFetchingChromeUrlParams): Promise<ContinueFetchingChromeUrlReturn> {
 
     let chromeUrl: string | undefined
     const report: DownloadReportEntry[] = []
 
     do {
-        if (!selectedVersion) {
+        if (!selectedRelease) {
             // no version to check for binary available, exiting...
             break
         }
 
-        if (!selectedVersion.disabled) {
-            chromeUrl = await fetchChromeUrlForVersion(config, osSetting, selectedVersion)
+        if (!selectedRelease.version.disabled) {
+            chromeUrl = await fetchChromeUrlForVersion(config, osSetting, selectedRelease)
 
             report.push({
                 binaryExists: !!chromeUrl,
                 download: config.download,
-                version: selectedVersion,
+                release: selectedRelease,
             })
 
             if (chromeUrl) {
                 if (config.download) {
-                    return { chromeUrl, report, selectedVersion }
+                    return { chromeUrl, report, selectedRelease }
                 }
             }
         } else {
@@ -64,13 +63,13 @@ async function continueFetchingChromeUrl({
             report.push({
                 binaryExists: false,
                 download: config.download,
-                version: selectedVersion,
+                release: selectedRelease,
             })
         }
 
-        await storeIfNoBinary(config, chromeUrl, selectedVersion)
+        await storeIfNoBinary(config, chromeUrl, selectedRelease.version)
 
-        if (!chromeUrl && !selectedVersion.disabled) {
+        if (!chromeUrl && !selectedRelease.version.disabled) {
             spinner.error()
         }
 
@@ -79,72 +78,73 @@ async function continueFetchingChromeUrl({
             logger.warn('Not downloading binary.')
         }
 
-        const sVersion: MappedVersion = selectedVersion
-        const index = mappedVersions.findIndex(mappedVersion => mappedVersion.value === sVersion.value)
+        const sRelease: Release = selectedRelease
+        const index = releases.findIndex(release => release.version.value === sRelease.version.value)
 
         switch (config.onFail) {
             case 'increase': {
                 if (index > 0) {
-                    selectedVersion = mappedVersions[index - 1]
-                    if (!selectedVersion.disabled) {
+                    selectedRelease = releases[index - 1]
+                    if (!selectedRelease.version.disabled) {
                         const higherLower = config.inverse ? 'lower' : 'higher'
-                        logger.info(`Continue with next ${higherLower} version "${selectedVersion.value}"`)
+                        logger.info(`Continue with next ${higherLower} version "${selectedRelease.version.value}"`)
                     }
                 } else {
-                    return { chromeUrl: undefined, report, selectedVersion: undefined }
+                    return { chromeUrl: undefined, report, selectedRelease: undefined }
                 }
                 break
             }
             case 'decrease': {
-                if (index < mappedVersions.length - 1) {
-                    selectedVersion = mappedVersions[index + 1]
-                    if (!selectedVersion.disabled) {
+                if (index < releases.length - 1) {
+                    selectedRelease = releases[index + 1]
+                    if (!selectedRelease.version.disabled) {
 
                         const higherLower = config.inverse ? 'higher' : 'lower'
 
-                        logger.info(`Continue with next ${higherLower} version "${selectedVersion.value}"`)
+                        logger.info(`Continue with next ${higherLower} version "${selectedRelease.version.value}"`)
                     }
                 } else {
-                    return { chromeUrl: undefined, report, selectedVersion: undefined }
+                    return { chromeUrl: undefined, report, selectedRelease: undefined }
                 }
                 break
             }
             case 'nothing': {
-                selectedVersion = await userSelectedVersion(mappedVersions, config)
+                selectedRelease = await userSelectedVersion(releases, config)
             }
         }
     } while (!chromeUrl || !config.download)
 
-    return { chromeUrl, report, selectedVersion }
+    return { chromeUrl, report, selectedRelease }
 }
 
-async function getChromeUrlForFull(config: IChromeFullConfig, osSetting: OSSetting, mappedVersions: MappedVersion[]): Promise<GetChromeDownloadUrlReturn> {
+async function getChromeUrlForFull(config: IChromeFullConfig, osSetting: OSSetting, releases: Release[]): Promise<GetChromeDownloadUrlReturn> {
 
     const isAutoSearch = !config.interactive && config.onFail === 'decrease'
 
-    const version = isAutoSearch
-        ? mappedVersions[0]
-        : await userSelectedVersion(mappedVersions, config)
+    const release = isAutoSearch
+        ? releases[0]
+        : await userSelectedVersion(releases, config)
 
-    if (isAutoSearch && !!version) {
-        logger.info(`Auto-searching with version ${version.value}`)
+    if (isAutoSearch && !!release) {
+        logger.info(`Auto-searching with version ${release.version.value}`)
     }
 
-    const { chromeUrl, report, selectedVersion } = await continueFetchingChromeUrl({config, osSetting, version, mappedVersions})
+    const { chromeUrl, report, selectedRelease } = await continueFetchingChromeUrl({config, osSetting, selectedRelease: release, releases})
 
-    return { chromeUrl, selectedVersion, filenameOS: osSetting.filename, report }
+    return { chromeUrl, selectedRelease: selectedRelease, filenameOS: osSetting.filename, report }
 }
 
-async function getChromeUrlForSingle(config: IChromeSingleConfig, oSSetting: OSSetting, selectedVersion: MappedVersion): Promise<GetChromeDownloadUrlReturn> {
-    const chromeUrl = await fetchChromeUrlForVersion(config, oSSetting, selectedVersion)
+async function getChromeUrlForSingle(config: IChromeSingleConfig, oSSetting: OSSetting, releases: Release[]): Promise<GetChromeDownloadUrlReturn> {
+    const release = releases[0]
+    const chromeUrl = await fetchChromeUrlForVersion(config, oSSetting, release)
 
-    await storeIfNoBinary(config, chromeUrl, selectedVersion)
+    await storeIfNoBinary(config, chromeUrl, release.version)
 
     const report: DownloadReportEntry[] = [
         {
             binaryExists: !!chromeUrl,
             download: config.download,
-            version: selectedVersion,
+            release
         }
     ]
 
@@ -152,21 +152,19 @@ async function getChromeUrlForSingle(config: IChromeSingleConfig, oSSetting: OSS
         chromeUrl,
         filenameOS: oSSetting.filename,
         report,
-        selectedVersion,
+        selectedRelease: release,
     }
 }
 
-async function fetchChromeUrlForVersion(config: IChromeConfig, osSettings: IOSSettings, version: MappedVersion): Promise<string | undefined> {
-    const branchPosition = await fetchBranchPosition(version.value)
+async function fetchChromeUrlForVersion(config: IChromeConfig, osSettings: IOSSettings, release: Release): Promise<string | undefined> {
     spinner.start(SEARCH_BINARY)
-    const chromeUrl = await fetchChromeUrl(branchPosition, osSettings)
+    const chromeUrl = await fetchChromeUrl(release.branchPosition, osSettings)
 
     if (chromeUrl && config.download) {
         spinner.success()
     }
 
     return chromeUrl
-
 }
 
 async function storeIfNoBinary(config: IChromeConfig, chromeUrl: string | undefined, version: MappedVersion): Promise<void> {
@@ -179,41 +177,6 @@ async function storeIfNoBinary(config: IChromeConfig, chromeUrl: string | undefi
             await storeNegativeHit(version.comparable, config.os, config.arch)
         }
     }
-}
-
-/**
- * Parses the chromium tags and returns all chromium versions
- */
-export async function loadVersions(): Promise<string[]> {
-    const tags = await fetchChromiumTags()
-
-    const parsedTags = parse(tags) as (NodeParserHTMLElement & { valid: boolean })
-
-    const h3s = parsedTags.querySelectorAll('h3')
-
-    let tagsHeadline: NodeParserHTMLElement | undefined
-    h3s.forEach((h3: NodeParserHTMLElement) => {
-        if (h3.innerHTML === 'Tags') {
-            tagsHeadline = h3
-        }
-    })
-
-    if (!tagsHeadline) {
-        throw new Error('Tags headline not found in HTML')
-    }
-
-    const tagsList = tagsHeadline.parentNode?.childNodes?.[1]
-
-    if (!tagsList) {
-        throw new Error('No list of tags found under tags headline')
-    }
-
-    const versions: string[] = []
-    tagsList.childNodes.forEach(tag => {
-        versions.push(tag.text)
-    })
-
-    return versions
 }
 
 export function mapVersions(versions: string[], config: IChromeConfig, store: Store): MappedVersion[] {

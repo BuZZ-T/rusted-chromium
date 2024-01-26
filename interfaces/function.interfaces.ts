@@ -1,23 +1,23 @@
-import type { MappedVersion } from '../commons/MappedVersion'
+import type { Release } from '../releases/release.types'
 import type { DownloadReportEntry, IChromeFullConfig, Nullable } from './interfaces'
-import { OSSetting } from './os.interfaces'
+import type { OSSetting } from './os.interfaces'
 
 export interface ContinueFetchingChromeUrlReturn {
     chromeUrl: Nullable<string>
     report: DownloadReportEntry[]
-    selectedVersion: Nullable<MappedVersion>
+    selectedRelease: Nullable<Release>
 }
 
 export interface GetChromeDownloadUrlReturn {
     chromeUrl: Nullable<string>
-    selectedVersion: Nullable<MappedVersion>
     filenameOS: string
     report: DownloadReportEntry[]
+    selectedRelease: Nullable<Release>
 }
 
 export interface ContinueFetchingChromeUrlParams {
     config: IChromeFullConfig
-    mappedVersions: MappedVersion[]
+    releases: Release[]
     osSetting: OSSetting
-    version: Nullable<MappedVersion>
+    selectedRelease: Nullable<Release>
 }

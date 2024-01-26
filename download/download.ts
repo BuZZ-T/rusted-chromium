@@ -10,11 +10,12 @@ import type { DownloadReportEntry, IChromeConfig } from '../interfaces/interface
 import { DebugMode, logger } from '../log/logger'
 import { progress } from '../log/progress'
 import { spinner } from '../log/spinner'
+import { loadReleases, mapApiReleasesToReleases } from '../releases/releases'
 import { EMPTY_STORE, loadStore } from '../store/loadStore'
 import { Store } from '../store/Store'
 import { existsAndIsFolder } from '../utils/file.utils'
 import { isChromeSingleConfig } from '../utils/typeguards'
-import { getChromeDownloadUrl, loadVersions, mapVersions } from '../versions'
+import { getChromeDownloadUrl } from '../versions'
 import { FluentDownload } from './download-fluent'
 import { FluentDownloadSingleIncomplete } from './download-fluent-single'
 
@@ -81,29 +82,31 @@ async function downloadForConfig(config: IChromeConfig): Promise<DownloadReportE
         logger.setDebugMode(DebugMode.DEBUG)
     }
 
-    const versions = await loadVersions()
     const store = config.single || config.ignoreStore ? new Store(EMPTY_STORE) : await loadStore()
 
-    const mappedVersions = mapVersions(versions, config, store)
+    // no need to fetch all releases on single-mode, directly using passed version
+    const apiReleases = config.single !== null ? [] : await loadReleases(config.os, config.channel)
+
+    const mappedReleases = mapApiReleasesToReleases(apiReleases, config, store)
 
     if (!isChromeSingleConfig(config) && config.list) {
         logger.info('versions:')
-        mappedVersions.forEach(v => {
-            if (v.disabled) {
-                logger.warn(v.value)
+        mappedReleases.forEach(r => {
+            if (r.version.disabled) {
+                logger.warn(r.version.value)
             } else {
-                logger.info(v.value)
+                logger.info(r.version.value)
             }
         })
         return []
     }
 
-    logger.debug(`total number of versions: ${versions.length}, filtered versions: ${mappedVersions.length}`)
+    logger.debug(`total number of versions: ${mappedReleases.length}, filtered versions: ${mappedReleases.length}`)
 
-    const { chromeUrl, filenameOS, report, selectedVersion } = await getChromeDownloadUrl(config, mappedVersions)
+    const { chromeUrl, filenameOS, report, selectedRelease: release } = await getChromeDownloadUrl(config, mappedReleases)
 
-    if (chromeUrl && selectedVersion && config.download) {
-        const filename = `chrome-${filenameOS}-${config.arch}-${selectedVersion.value}`
+    if (chromeUrl && release && config.download) {
+        const filename = `chrome-${filenameOS}-${config.arch}-${release.version.value}`
         const downloadPath = config.downloadFolder
             ? pathJoin(config.downloadFolder, filename)
             : filename

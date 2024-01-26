@@ -7,14 +7,15 @@ export const LOCAL_STORE_FILE = 'localstore.json'
 export const ALL_FALSE_FULL_CONFIG: IChromeFullConfig = {
     arch: 'x64',
     autoUnzip: false,
+    channel: 'Stable',
     color: false,
     debug: false,
     download: false,
     downloadFolder: null,
     hideNegativeHits: false,
+    ignoreStore: false,
     interactive: false,
     inverse: false,
-    ignoreStore: false,
     list: false,
     max: new ComparableVersion(Infinity, 0, 0, 0),
     min: new ComparableVersion(-Infinity, 0, 0, 0),
@@ -30,6 +31,7 @@ export const ALL_FALSE_FULL_CONFIG: IChromeFullConfig = {
 export const ALL_FALSE_SINGLE_CONFIG: IChromeSingleConfig = {
     arch: 'x64',
     autoUnzip: false,
+    channel: 'Stable',
     color: false,
     debug: false,
     download: false,
@@ -41,6 +43,8 @@ export const ALL_FALSE_SINGLE_CONFIG: IChromeSingleConfig = {
 }
 
 export const DEFAULT_CONFIG_OPTIONS: IConfigOptions = {
+    channel: 'Stable',
+
     min: '0',
     max: '10000',
 
@@ -63,6 +67,7 @@ export const DEFAULT_CONFIG_OPTIONS: IConfigOptions = {
 export const DEFAULT_FULL_CONFIG: IChromeFullConfig = {
     arch: 'x64',
     autoUnzip: false,
+    channel: 'Stable',
     color: true,
     debug: false,
     download: true,
@@ -86,6 +91,7 @@ export const DEFAULT_FULL_CONFIG: IChromeFullConfig = {
 export const DEFAULT_SINGLE_CONFIG: IChromeSingleConfig = {
     arch: 'x64',
     autoUnzip: false,
+    channel: 'Stable',
     color: true,
     debug: false,
     download: true,
