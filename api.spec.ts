@@ -4,7 +4,7 @@
  * @group unit/file/api
  */
 
-import { fetchChromiumTags, fetchChromeUrl, fetchChromeZipFile, fetchLocalStore } from './api'
+import { fetchChromeUrl, fetchChromeZipFile, fetchLocalStore } from './api'
 import type { IOSSettings } from './interfaces/os.interfaces'
 import { spinner, Spinner } from './log/spinner'
 import { Release } from './releases/release.types'
@@ -70,32 +70,6 @@ describe('api', () => {
 
             expect(fetchMock.mock.calls.length).toBe(1)
             expect(fetch).toHaveBeenCalledWith(url)
-        })
-    })
-
-    describe('fetchChromiumTags', () => {
-        it('should fetch chromium tags as text', async () => {
-            fetchMock.mockResolvedValue({
-                ok: true,
-                text() {
-                    return Promise.resolve('some-html')
-                }
-            })
-
-            expect(await fetchChromiumTags()).toEqual('some-html')
-            expect(fetch).toHaveBeenLastCalledWith('https://chromium.googlesource.com/chromium/src/+refs')
-            expect(fetchMock.mock.calls.length).toBe(1)
-        })
-
-        it('should throw an error on non-ok http response', async () => {
-            fetchMock.mockResolvedValue({
-                ok: false,
-                url: 'some-url',
-                status: 400,
-                error: 'some-error-message',
-            })
-
-            await expect(() => fetchChromiumTags()).rejects.toThrow(new Error('Status Code: 400 some-url some-error-message'))
         })
     })
 

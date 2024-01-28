@@ -11,6 +11,11 @@ const validChannels: Record<Platform, Set<Channel>> = {
     Windows: new Set(['Canary', 'Dev', 'Beta', 'Stable', 'Extended']),
 }
 
-export function checkValidChannel(channel: Channel, platform: Platform): boolean {
-    return validChannels[platform].has(channel)
+export function checkValidChannel(channel: Channel, platform: Platform): {valid: boolean, validChannels: Array<Channel>} {
+    const isValid = validChannels[platform].has(channel)
+    if (isValid) {
+        return {valid: true, validChannels: [] }
+    }
+
+    return { valid: validChannels[platform].has(channel), validChannels: Array.from(validChannels[platform])}
 }

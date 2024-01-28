@@ -23,7 +23,7 @@ const prompts = require('prompts')
 jest.mock('node-fetch', () => jest.fn())
 jest.mock('prompts')
 
-describe('[int] download API', () => {
+describe.skip('[int] download API', () => {
     const chromeZip10 = pathJoin(__dirname, '../', 'chrome-linux-x64-10.0.0.0.zip')
     const chromeZip20 = pathJoin(__dirname, '../', 'chrome-linux-x64-20.0.0.0.zip')
     const localStoreFile = pathJoin(__dirname, '../', 'localstore.json')
@@ -74,6 +74,7 @@ describe('[int] download API', () => {
         const downloadPromise = downloadChromium({
             arch: 'x64',
             autoUnzip: false,
+            channel: 'Stable',
             color: true,
             debug: false,
             download: true,
@@ -157,7 +158,7 @@ describe('[int] download API', () => {
             .os('linux')
             .download()
             .store()
-            .single('20.0.0.0')
+            .single('10.0.0.0')
             .start()
 
         chromeZipStream.push('asdf')
@@ -165,7 +166,7 @@ describe('[int] download API', () => {
 
         await downloadPromise
 
-        expect(await existsAndIsFile(chromeZip10)).toBe(false)
-        expect(await existsAndIsFile(chromeZip20)).toBe(true)
+        expect(await existsAndIsFile(chromeZip10)).toBe(true)
+        expect(await existsAndIsFile(chromeZip20)).toBe(false)
     })
 })

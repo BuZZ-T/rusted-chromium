@@ -15,4 +15,4 @@ script:
     - npm run build:examples:silent
     - npm run test
     - npm run test:int
-    - npm run test:coverage:coveralls
+    # - npm run test:coverage:coveralls

@@ -1,8 +1,6 @@
 import { fetchChromeUrl } from './api'
-import { ComparableVersion } from './commons/ComparableVersion'
 import { SEARCH_BINARY } from './commons/loggerTexts'
 import { MappedVersion } from './commons/MappedVersion'
-import { Compared } from './interfaces/enums'
 import type { ContinueFetchingChromeUrlReturn, GetChromeDownloadUrlReturn } from './interfaces/function.interfaces'
 import { ContinueFetchingChromeUrlParams } from './interfaces/function.interfaces'
 import type { IChromeFullConfig, IChromeSingleConfig, IChromeConfig } from './interfaces/interfaces'
@@ -13,10 +11,8 @@ import { logger } from './log/logger'
 import { spinner } from './log/spinner'
 import { Release } from './releases/release.types'
 import { userSelectedVersion } from './select'
-import { Store } from './store/Store'
 import { storeNegativeHit } from './store/storeNegativeHit'
 import { detectOperatingSystem } from './utils'
-import { sortDescendingMappedVersions } from './utils/sort.utils'
 
 export async function getChromeDownloadUrl(config: IChromeConfig, releases: Release[]): Promise<GetChromeDownloadUrlReturn> {
     const oSSetting = detectOperatingSystem(config)
@@ -68,10 +64,6 @@ async function continueFetchingChromeUrl({
         }
 
         await storeIfNoBinary(config, chromeUrl, selectedRelease.version)
-
-        if (!chromeUrl && !selectedRelease.version.disabled) {
-            spinner.error()
-        }
 
         if (chromeUrl && !config.download) {
             chromeUrl = undefined
@@ -157,19 +149,22 @@ async function getChromeUrlForSingle(config: IChromeSingleConfig, oSSetting: OSS
 }
 
 async function fetchChromeUrlForVersion(config: IChromeConfig, osSettings: IOSSettings, release: Release): Promise<string | undefined> {
+    logger.debug(`fetching chrome url for version ${release.version.value} (${release.branchPosition})`)
     spinner.start(SEARCH_BINARY)
-    const chromeUrl = await fetchChromeUrl(release.branchPosition, osSettings)
-
-    if (chromeUrl && config.download) {
-        spinner.success()
-    }
-
-    return chromeUrl
+    return fetchChromeUrl(release.branchPosition, osSettings)
+        .then((chromeUrl) => {
+            if (chromeUrl) {
+                spinner.success()
+            } else {
+                spinner.error()
+            }
+            return chromeUrl
+        })
+        .catch(() => (spinner.error(), undefined))
 }
 
 async function storeIfNoBinary(config: IChromeConfig, chromeUrl: string | undefined, version: MappedVersion): Promise<void> {
     if (!chromeUrl && !version.disabled) {
-        spinner.error()
         // disable the version in the prompt
         version.disable()
         if (config.store) {
@@ -177,40 +172,4 @@ async function storeIfNoBinary(config: IChromeConfig, chromeUrl: string | undefi
             await storeNegativeHit(version.comparable, config.os, config.arch)
         }
     }
-}
-
-export function mapVersions(versions: string[], config: IChromeConfig, store: Store): MappedVersion[] {
-    if (config.single !== null) {
-        return [new MappedVersion(config.single, false)]
-    }
-
-    const versionSet = store.getBy(config.os, config.arch)
-
-    const filteredVersions = versions
-        .map(version => new MappedVersion(version, versionSet.has(version)))
-        .filter(version => !config.hideNegativeHits || !version.disabled)
-        .filter(version => ComparableVersion.compare(version.comparable, config.min) !== Compared.LESS
-            && ComparableVersion.compare(version.comparable, config.max) !== Compared.GREATER)
-        .sort(sortDescendingMappedVersions)
-
-    const versionRegardingInverse = config.inverse
-        ? filteredVersions.reverse()
-        : filteredVersions
-
-    if (config.onlyNewestMajor) {
-        const addedMajorVersions = new Set<string>()
-
-        return versionRegardingInverse.filter((version) => {
-            const hasMajorVersion = addedMajorVersions.has(version.value.split('.')[0])
-
-            if (!hasMajorVersion && !version.disabled) {
-                addedMajorVersions.add(version.value.split('.')[0])
-
-                return true
-            }
-            return false
-        }).slice(0, Number(config.results))
-    }
-
-    return versionRegardingInverse.slice(0, Number(config.results))
 }

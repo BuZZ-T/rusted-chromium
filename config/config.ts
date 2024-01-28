@@ -53,10 +53,11 @@ export function readConfig(args: string[], platform: NodeJS.Platform): ConfigWra
     const os = mapOS(options.os || platform)
     const chromePlatform = mapOsToPlatform(os)
 
-    const {channel} = options
+    const { channel } = options
 
-    if (!checkValidChannel(channel, chromePlatform)) {
-        logger.error(`Channel "${channel}" is not valid for ${chromePlatform}`)
+    const { valid, validChannels } = checkValidChannel(channel, chromePlatform)
+    if (!valid) {
+        logger.error(`Channel "${channel}" is not valid for ${chromePlatform}. Valid options are: ${validChannels.join(', ')}`)
         process.exit(1)
     }
 

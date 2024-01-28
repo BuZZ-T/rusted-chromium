@@ -2,8 +2,6 @@
 
 [![NPM Version](https://img.shields.io/npm/v/rusted-chromium.svg)](https://www.npmjs.com/package/rusted-chromium) [![Package License](https://img.shields.io/npm/l/rusted-chromium.svg)](https://www.npmjs.com/package/rusted-chromium) [![Build Status](https://travis-ci.com/BuZZ-T/rusted-chromium.svg?branch=master)](https://travis-ci.com/github/BuZZ-T/rusted-chromium)
 
-**ⓘ rusted-chromium is currently not working, as the chromium project has disabled the API used by rusted-chromium, see: [https://omahaproxy.appspot.com/](https://omahaproxy.appspot.com/)**
-
 | Test | Coverage | Report
 |-|-|-|
 |Unit tests|  [![Coverage Status](https://coveralls.io/repos/github/BuZZ-T/rusted-chromium/badge.svg?branch=master)](https://coveralls.io/github/BuZZ-T/rusted-chromium?branch=main) | [coverage](https://rusted.buzz-t.eu/coverage/lcov-report/index.html)
@@ -39,6 +37,9 @@ To be explicit:
 **⚠️ The downloaded versions are *OUTDATED* and *UNSUPPORTED*! Some known and exploitable bugs, that are already fixed on newer versions, still exist. That's why new versions were released! Use this only for debugging purposes for websites YOU CONTROL! NEVER use these versions for browsing! NEVER EVER enter private data in these browser versions and NEVER EVER login to accounts with these browser versions!!! ⚠️**
 
 ## Installation
+
+**ⓘ Versions older than 0.1.0 are not working anymore. Please see the [FAQ](#rusted-chromium-is-not-working-anymore-i-get-a-410-gone-http-statuscode-from-a-chrome-api) and upgrade.**
+
 
 #### via npm
 
@@ -451,3 +452,8 @@ There are two possible solutions for this:
 
 * Make sure to first close all running instances of chrom(e/ium)!
 * Start your downloaded version of chromium with the flag `--user-data-dir=<folder>`. See [chromium.googlesource.com](https://chromium.googlesource.com/chromium/src.git/+/master/docs/user_data_dir.md#overriding-the-user-data-directory) for more information.
+
+### rusted-chromium is not working anymore. I get a 410 Gone HTTP-Statuscode from a chrome API...
+
+The  [OmahaProxy](https://omahaproxy.appspot.com/), which API was used by rusted-chromium, has been switched off. Which version 0.1.0, rusted-chromium migrated to [ChromiumDash](https://chromiumdash.appspot.com/) and is functional again. But earlier versions, which version number "0.0.X" are not usable anymore. Be sure to install version 0.1.0 or later!
+

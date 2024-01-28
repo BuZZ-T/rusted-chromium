@@ -19,6 +19,7 @@ export async function userSelectedVersion(releases: Release[], config: IChromeFu
         return null
     }
     if (config.results === 1) {
+        logger.debug(`results is set to 1, returning first version: ${releases[0].version.value}`)
         return releases[0]
     }
 

@@ -8,8 +8,6 @@ import type { ApiRelease } from './releases/release.types'
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */
 const fetch = require('node-fetch')
 
-const CHROMIUM_TAGS_URL = 'https://chromium.googlesource.com/chromium/src/+refs'
-
 function checkStatus(response: NodeFetchResponse) {
     if (!response.ok) {
         // TODO: check of response.error is correct
@@ -20,21 +18,10 @@ function checkStatus(response: NodeFetchResponse) {
 
 const toJson = (response: Response): Promise<unknown> => response.json()
 
-const toText = (response: Response): Promise<string> => response.text()
-
 export async function fetchLocalStore(url: string): Promise<IListStore> {
     return fetch(url)
         .then(checkStatus)
         .then(toJson)
-}
-
-/**
- * Fetch all chromium tags (containing the version) via googlesource url
- */
-export async function fetchChromiumTags(): Promise<string> {
-    return fetch(CHROMIUM_TAGS_URL)
-        .then(checkStatus)
-        .then(toText)
 }
 
 export async function fetchChromeUrl(branchPosition: number, osSettings: IOSSettings): Promise<string | undefined> {

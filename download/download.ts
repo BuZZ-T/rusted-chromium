@@ -84,8 +84,7 @@ async function downloadForConfig(config: IChromeConfig): Promise<DownloadReportE
 
     const store = config.single || config.ignoreStore ? new Store(EMPTY_STORE) : await loadStore()
 
-    // no need to fetch all releases on single-mode, directly using passed version
-    const apiReleases = config.single !== null ? [] : await loadReleases(config.os, config.channel)
+    const apiReleases = await loadReleases(config.os, config.channel)
 
     const mappedReleases = mapApiReleasesToReleases(apiReleases, config, store)
 
@@ -116,6 +115,7 @@ async function downloadForConfig(config: IChromeConfig): Promise<DownloadReportE
             logger.info(`${config.downloadFolder} created'`)
         }
 
+        logger.debug(`Downloading version: ${release.version.value}`)
         const zipFileResponse = await fetchChromeZipFile(chromeUrl)
 
         let isFirstProgress = true

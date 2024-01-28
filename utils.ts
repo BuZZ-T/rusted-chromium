@@ -74,14 +74,6 @@ export function setStoreToListStore(setStore: ISetStore): IListStore {
     }
 }
 
-export async function waitFor(milliseconds: number): Promise<void> {
-    return new Promise(resolve => {
-        setTimeout(() => {
-            resolve()
-        }, milliseconds)
-    })
-}
-
 export function* popArray<T>(array: T[]): Generator<T, void, void> {
     for(const element of array) {
         yield element

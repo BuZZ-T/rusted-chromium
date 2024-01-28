@@ -61,16 +61,30 @@ export interface IMockDifferent {
 
 export let chromeZipStream: PassThrough
 
-const releaseResponse = (): ApiRelease[] => [{
-    channel: 'Beta',
-    chromium_main_branch_position: 123,
-    hashes: {},
-    milestone: 1,
-    platform: 'Linux',
-    previous_version: '10.0.0.0',
-    time: 2,
-    version: '11.0.0.0',
-}]
+const apiReleases: Record<string, ApiRelease> = {
+    '10.0.0.0': {
+        channel: 'Beta',
+        chromium_main_branch_position: 12345,
+        hashes: {},
+        milestone: 1,
+        platform: 'Linux',
+        previous_version: '9.0.0.0',
+        time: 2,
+        version: '10.0.0.0'
+    },
+    '20.0.0.0': {
+        channel: 'Beta',
+        chromium_main_branch_position: 12345,
+        hashes: {},
+        milestone: 1,
+        platform: 'Linux',
+        previous_version: '19.0.0.0',
+        time: 3,
+        version: '20.0.0.0',
+    }
+}
+
+const releaseResponse = (releases: string[]): ApiRelease[] => releases.map(release => apiReleases[release])
 
 const mocks: IMock[] = [
     {
@@ -81,7 +95,7 @@ const mocks: IMock[] = [
     {
         name: 'releases',
         url: 'https://chromiumdash.appspot.com/fetch_releases?channel=Stable&platform=Linux&num=100&offset=0',
-        mock: () => JSON.stringify(releaseResponse()),
+        mock: ({releases}) => JSON.stringify(releaseResponse(releases)),
 
     },
     {
@@ -157,7 +171,6 @@ export function mockNodeFetch(nodeFetchMock: jest.MaybeMockedDeep<any>, { params
 
         for (const mock of mocks) {
             if (stringUrl.startsWith(mock.url)) {
-
                 const mockConfig = config?.[mock.name]
 
                 const response = mockConfig?.contentLength

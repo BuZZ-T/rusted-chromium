@@ -49,6 +49,10 @@ export class ComparableVersion implements IVersion {
         }
     }
 
+    public compare(other: ComparableVersion): Compared {
+        return ComparableVersion.compare(this, other)
+    }
+
     public toString(): string {
         return `${this.major}.${this.minor}.${this.branch}.${this.patch}`
     }
