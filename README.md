@@ -483,7 +483,7 @@ There are two possible solutions for this:
 
 ### rusted-chromium is not working anymore. I get a 410 Gone HTTP-Statuscode from a chrome API...
 
-The  [OmahaProxy](https://omahaproxy.appspot.com/), which API was used by rusted-chromium, has been switched off. Which version 0.1.0, rusted-chromium migrated to [ChromiumDash](https://chromiumdash.appspot.com/) and is functional again. But earlier versions, which version number "0.0.X" are not usable anymore. Be sure to install version 0.1.0 or later!
+The  [OmahaProxy](https://omahaproxy.appspot.com/), which API was used by rusted-chromium, has been switched off. With version 0.1.0, rusted-chromium migrated to [ChromiumDash](https://chromiumdash.appspot.com/) and is functional again. But earlier versions, with version number "0.0.X" are not usable anymore. Be sure to install version 0.1.0 or later!
 
 ### What is new / has changed?
 
