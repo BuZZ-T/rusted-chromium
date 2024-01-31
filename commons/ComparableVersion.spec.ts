@@ -240,54 +240,27 @@ describe('ComparableVersion', () => {
 
     describe('compare', () => {
         it('should compare major versions', () => {
-            expect(ComparableVersion.compare(
-                new ComparableVersion(10, 0, 0, 0),
-                new ComparableVersion(20, 0, 0, 0)
-            )).toEqual(Compared.LESS)
-            expect(ComparableVersion.compare(
-                new ComparableVersion(20, 0, 0, 0),
-                new ComparableVersion(10, 0, 0, 0)
-            )).toEqual(Compared.GREATER)
+            expect(new ComparableVersion(10, 0, 0, 0).compare(new ComparableVersion(20, 0, 0, 0))).toEqual(Compared.LESS)
+            expect(new ComparableVersion(20, 0, 0, 0).compare(new ComparableVersion(10, 0, 0, 0))).toEqual(Compared.GREATER)
         })
 
         it('should compare minor versions', () => {
-            expect(ComparableVersion.compare(
-                new ComparableVersion(10, 0, 0, 0),
-                new ComparableVersion(10, 1, 0, 0)
-            )).toEqual(Compared.LESS)
-            expect(ComparableVersion.compare(
-                new ComparableVersion(10, 1, 0, 0),
-                new ComparableVersion(10, 0, 0, 0)
-            )).toEqual(Compared.GREATER)
+            expect(new ComparableVersion(10, 0, 0, 0).compare(new ComparableVersion(10, 1, 0, 0))).toEqual(Compared.LESS)
+            expect(new ComparableVersion(10, 1, 0, 0).compare(new ComparableVersion(10, 0, 0, 0))).toEqual(Compared.GREATER)
         })
 
         it('should compare branch versions', () => {
-            expect(ComparableVersion.compare(
-                new ComparableVersion(10, 0, 0, 0),
-                new ComparableVersion(10, 0, 1, 0)
-            )).toEqual(Compared.LESS)
-            expect(ComparableVersion.compare(
-                new ComparableVersion(10, 0, 1, 0),
-                new ComparableVersion(10, 0, 0, 0)
-            )).toEqual(Compared.GREATER)
+            expect(new ComparableVersion(10, 0, 0, 0).compare(new ComparableVersion(10, 0, 1, 0))).toEqual(Compared.LESS)
+            expect(new ComparableVersion(10, 0, 1, 0).compare(new ComparableVersion(10, 0, 0, 0))).toEqual(Compared.GREATER)
         })
 
         it('should compare patch versions', () => {
-            expect(ComparableVersion.compare(
-                new ComparableVersion(10, 0, 0, 0),
-                new ComparableVersion(10, 0, 0, 1)
-            )).toEqual(Compared.LESS)
-            expect(ComparableVersion.compare(
-                new ComparableVersion(10, 0, 0, 1),
-                new ComparableVersion(10, 0, 0, 0)
-            )).toEqual(Compared.GREATER)
+            expect(new ComparableVersion(10, 0, 0, 0).compare(new ComparableVersion(10, 0, 0, 1))).toEqual(Compared.LESS)
+            expect(new ComparableVersion(10, 0, 0, 1).compare(new ComparableVersion(10, 0, 0, 0))).toEqual(Compared.GREATER)
         })
 
         it('should compare equal versions', () => {
-            expect(ComparableVersion.compare(
-                new ComparableVersion(10, 1, 2, 3),
-                new ComparableVersion(10, 1, 2, 3)
-            )).toEqual(Compared.EQUAL)
+            expect(new ComparableVersion(10, 1, 2, 3).compare(new ComparableVersion(10, 1, 2, 3))).toEqual(Compared.EQUAL)
         })
     })
 
@@ -355,12 +328,12 @@ describe('ComparableVersion', () => {
 
     describe('nextMajorVersion', () => {
         it('should go to the next major version', () => {
-            expect(ComparableVersion.nextMajorVersion(new ComparableVersion({
+            expect(new ComparableVersion({
                 major: 10,
                 minor: 11,
                 branch: 12,
                 patch: 13,
-            }))).toEqual(new ComparableVersion({
+            }).nextMajorVersion()).toEqual(new ComparableVersion({
                 major: 11,
                 minor: 0,
                 branch: 0,
@@ -369,12 +342,12 @@ describe('ComparableVersion', () => {
         })
 
         it('should go to five major versions up', () => {
-            expect(ComparableVersion.nextMajorVersion(new ComparableVersion({
+            expect(new ComparableVersion({
                 major: 10,
                 minor: 11,
                 branch: 12,
                 patch: 13,
-            }), 5)).toEqual(new ComparableVersion({
+            }).nextMajorVersion(5)).toEqual(new ComparableVersion({
                 major: 15,
                 minor: 0,
                 branch: 0,

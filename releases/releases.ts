@@ -6,7 +6,6 @@ import { IChromeConfig } from '../interfaces/interfaces'
 import type { Channel, OS, Platform } from '../interfaces/os.interfaces'
 import { logger } from '../log/logger'
 import { spinner } from '../log/spinner'
-import { ComparableVersion } from '../public_api'
 import { Store } from '../store/Store'
 import { sortDescendingReleases } from '../utils/sort.utils'
 import type { ApiRelease, Release } from './release.types'
@@ -57,8 +56,8 @@ export function mapApiReleasesToReleases(apiReleases: ApiRelease[], config: IChr
     const filteredVersions = apiReleases
         .map(apiRelease => mapApiReleaseToRelease(apiRelease, versionSet))
         .filter(release => !config.hideNegativeHits || !versionSet.has(release.version.value))
-        .filter(release => ComparableVersion.compare(release.version.comparable, config.min) !== Compared.LESS
-            && ComparableVersion.compare(release.version.comparable, config.max) !== Compared.GREATER)
+        .filter(release => release.version.comparable.compare(config.min) !== Compared.LESS
+            && release.version.comparable.compare(config.max) !== Compared.GREATER)
         .sort(sortDescendingReleases)
 
     const versionsRegardingInverse = config.inverse

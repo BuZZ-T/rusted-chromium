@@ -49,49 +49,44 @@ export class ComparableVersion implements IVersion {
         }
     }
 
+    /**
+     * Compares the ComparableVersion  with another one.
+     * if this < other, the result is Compared.LESS
+     * if this > other, the result is Compared.GREATER
+     * if this === other, the result is Compared.EQUAL
+     *
+     * @param other
+     */
     public compare(other: ComparableVersion): Compared {
-        return ComparableVersion.compare(this, other)
+        if (this.major > other.major) { return Compared.GREATER }
+        if (this.major < other.major) { return Compared.LESS }
+
+        if (this.minor > other.minor) { return Compared.GREATER }
+        if (this.minor < other.minor) { return Compared.LESS }
+
+        if (this.branch > other.branch) { return Compared.GREATER }
+        if (this.branch < other.branch) { return Compared.LESS }
+
+        if (this.patch > other.patch) { return Compared.GREATER }
+        if (this.patch < other.patch) { return Compared.LESS }
+
+        return Compared.EQUAL
+    }
+
+    public nextMajorVersion(plus = 1): ComparableVersion {
+        return new ComparableVersion({
+            major: this.major + plus,
+            minor: 0,
+            branch: 0,
+            patch: 0,
+        })
     }
 
     public toString(): string {
         return `${this.major}.${this.minor}.${this.branch}.${this.patch}`
     }
 
-    /**
-     * Compares two ComparableVersions with each other.
-     * if version < other, the result is Compared.LESS
-     * if version > other, the result is Compared.GREATER
-     * if version === other, the result is Compared.EQUAL
-     *
-     * @param version
-     * @param other
-     */
-    public static compare(version: ComparableVersion, other: ComparableVersion): Compared {
-        if (version.major > other.major) { return Compared.GREATER }
-        if (version.major < other.major) { return Compared.LESS }
-
-        if (version.minor > other.minor) { return Compared.GREATER }
-        if (version.minor < other.minor) { return Compared.LESS }
-
-        if (version.branch > other.branch) { return Compared.GREATER }
-        if (version.branch < other.branch) { return Compared.LESS }
-
-        if (version.patch > other.patch) { return Compared.GREATER }
-        if (version.patch < other.patch) { return Compared.LESS }
-
-        return Compared.EQUAL
-    }
-
     public static max(...versions: ComparableVersion[]): ComparableVersion {
-        return versions.reduce((currentMax, version) => ComparableVersion.compare(currentMax, version) === Compared.LESS ? version : currentMax)
-    }
-
-    public static nextMajorVersion(version: ComparableVersion, plus = 1): ComparableVersion {
-        return new ComparableVersion({
-            major: version.major + plus,
-            minor: 0,
-            branch: 0,
-            patch: 0,
-        })
+        return versions.reduce((currentMax, version) => currentMax.compare(version) === Compared.LESS ? version : currentMax)
     }
 }

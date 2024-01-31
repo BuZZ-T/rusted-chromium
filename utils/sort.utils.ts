@@ -8,7 +8,7 @@ import type { Release } from '../releases/release.types'
  * Ascending sort comparator for ComparableVersion
  */
 export function sortAscendingComparableVersions(a: ComparableVersion, b: ComparableVersion): -1 | 0 | 1 {
-    const compared = ComparableVersion.compare(a, b)
+    const compared = a.compare(b)
 
     if (compared === Compared.GREATER) {
         return 1
@@ -24,7 +24,7 @@ export function sortAscendingComparableVersions(a: ComparableVersion, b: Compara
  * Descending sort comparator for ComparableVersion
  */
 export function sortDescendingComparableVersions(a: ComparableVersion, b: ComparableVersion): -1 | 0 | 1 {
-    const compared = ComparableVersion.compare(a, b)
+    const compared = a.compare(b)
 
     if (compared === Compared.LESS) {
         return 1
