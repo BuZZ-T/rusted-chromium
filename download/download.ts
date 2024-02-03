@@ -25,20 +25,22 @@ const Progress = require('node-fetch-progress')
 /* eslint-enable @typescript-eslint/no-var-requires */
 
 function registerSigIntHandler(path: string): void {
-    process.on('SIGINT', () => {
-        return stat(path)
-            .then(stats => {
-                if (stats.isDirectory()) {
-                    return rmdir(path, { recursive: true })
-                } else if (stats.isFile()) {
-                    return unlink(path)
-                } else {
-                    return
-                }
-            })
-            .finally(() => {
-                process.exit(130)
-            })
+    process.on('SIGINT', async () => {
+        try {
+            const stats = await stat(path)
+
+            if (stats.isDirectory()) {
+                return rmdir(path, { recursive: true })
+            } else if (stats.isFile()) {
+                return unlink(path)
+            } else {
+                return
+            }
+
+        } finally {
+            logger.warn('Download aborted')
+            process.exit(130)
+        }
     })
 }
 

@@ -146,6 +146,8 @@ describe('download', () => {
             progressMock.fraction.mockReset()
 
             loggerMock.info.mockReset()
+            loggerMock.warn.mockReset()
+            loggerMock.error.mockReset()
             loggerMock.setDebugMode.mockReset()
 
             spinnerMock.start.mockReset()
