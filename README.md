@@ -457,3 +457,6 @@ There are two possible solutions for this:
 
 The  [OmahaProxy](https://omahaproxy.appspot.com/), which API was used by rusted-chromium, has been switched off. Which version 0.1.0, rusted-chromium migrated to [ChromiumDash](https://chromiumdash.appspot.com/) and is functional again. But earlier versions, which version number "0.0.X" are not usable anymore. Be sure to install version 0.1.0 or later!
 
+### What is new / has changed?
+
+See the [Changelog](CHANGELOG.md).
