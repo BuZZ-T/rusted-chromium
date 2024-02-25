@@ -1,5 +1,5 @@
 import { ComparableVersion } from '../commons/ComparableVersion'
-import { ALL_FALSE_SINGLE_CONFIG } from '../commons/constants'
+import { DEFAULT_DOWNLOAD_FLUENT_SINGLE_CONFIG } from '../commons/constants'
 import type { DownloadReportEntry, IChromeSingleConfig } from '../interfaces/interfaces'
 import type { Channel, OS } from '../interfaces/os.interfaces'
 import type { Arch } from '../interfaces/store.interfaces'
@@ -17,7 +17,7 @@ export abstract class FluentDownloadSingle<T> {
 
     constructor(config?: IChromeSingleConfig) {
         this.config = {
-            ...ALL_FALSE_SINGLE_CONFIG,
+            ...DEFAULT_DOWNLOAD_FLUENT_SINGLE_CONFIG,
             ...config
         }
     }
@@ -51,7 +51,6 @@ export abstract class FluentDownloadSingle<T> {
         return this.self()
     }
 
-    // TODO: directly set debug mode?
     public debug(): T {
         this.config.debug = true
 
