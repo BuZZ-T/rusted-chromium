@@ -4,11 +4,11 @@ import { ComparableVersion } from './ComparableVersion'
 
 export const LOCAL_STORE_FILE = 'localstore.json'
 
-export const ALL_FALSE_FULL_CONFIG: IChromeFullConfig = {
+export const DEFAULT_DOWNLOAD_FLUENT_FULL_CONFIG: IChromeFullConfig = {
     arch: 'x64',
     autoUnzip: false,
     channel: 'Stable',
-    color: false,
+    color: true,
     debug: false,
     download: false,
     downloadFolder: null,
@@ -22,23 +22,23 @@ export const ALL_FALSE_FULL_CONFIG: IChromeFullConfig = {
     onFail: 'nothing',
     onlyNewestMajor: false,
     os: 'linux',
-    progress: false,
+    progress: true,
     quiet: false,
     results: Infinity,
     single: null,
     store: false,
 }
 
-export const ALL_FALSE_SINGLE_CONFIG: IChromeSingleConfig = {
+export const DEFAULT_DOWNLOAD_FLUENT_SINGLE_CONFIG: IChromeSingleConfig = {
     arch: 'x64',
     autoUnzip: false,
     channel: 'Stable',
-    color: false,
+    color: true,
     debug: false,
     download: false,
     downloadFolder: null,
     os: 'linux',
-    progress: false,
+    progress: true,
     quiet: false,
     single: new ComparableVersion(0, 0, 0, 0),
     store: false,

@@ -220,15 +220,10 @@ describe('ProgressBar', () => {
             .fraction(0.3)
             .fraction(1)
 
-        expect(stdioMock.write).toHaveBeenCalledTimes(7)
+        expect(stdioMock.write).toHaveBeenCalledTimes(2)
         expect(stdioMock.write.mock.calls).toEqual([
             ['start_text'],
             ['\n'],
-            ['0/4 unit_text'],
-            ['1/4 unit_text'],
-            ['4/4 unit_text'],
-            ['green: ✔ success_text'],
-            ['\n']
         ])
     })
 })

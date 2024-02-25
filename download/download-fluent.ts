@@ -1,5 +1,5 @@
 import { ComparableVersion } from '../commons/ComparableVersion'
-import { ALL_FALSE_FULL_CONFIG } from '../commons/constants'
+import { DEFAULT_DOWNLOAD_FLUENT_FULL_CONFIG } from '../commons/constants'
 import type { IChromeFullConfig } from '../interfaces/interfaces'
 import type { DownloadReportEntry } from '../interfaces/interfaces'
 import type { Channel, OS } from '../interfaces/os.interfaces'
@@ -19,7 +19,7 @@ export class FluentDownload {
 
     public constructor() {
         this.config  = {
-            ...ALL_FALSE_FULL_CONFIG,
+            ...DEFAULT_DOWNLOAD_FLUENT_FULL_CONFIG,
         }
     }
 

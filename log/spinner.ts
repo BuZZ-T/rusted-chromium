@@ -27,7 +27,7 @@ export class Spinner extends Printer<Spinner> {
 
     private writeLine(): Spinner {
         return this.clearLine()
-            .write(`${this.spinnerStates[this.count]} ${this.runningText}`)
+            .write(`${this.showProgress ? this.spinnerStates[this.count] + ' ' : ''}${this.runningText}`)
     }
 
     protected self(): Spinner {
@@ -55,12 +55,14 @@ export class Spinner extends Printer<Spinner> {
         this.stop()
         this.count = 0
         this.timer = setInterval(() => {
-            this.increaseCount()
+            if (this.showProgress) {
+                this.increaseCount()
+            }
 
             this.writeLine()
         }, 100)
 
-        this.write(`${this.spinnerStates[0]} ${this.runningText}`)
+        this.write(`${this.showProgress ? this.spinnerStates[0] + ' ' : ''}${this.runningText}`)
 
         return this
     }

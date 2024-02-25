@@ -61,14 +61,14 @@ export class ProgressBar extends Printer<ProgressBar> {
     }
 
     public fraction(fraction: number): ProgressBar {
-        if (!this.config) {
+        if (!this.config || !this.showProgress) {
             return this
         }
         const barLength: number = this.config.barLength as number
         const doneAmount = Math.floor(barLength * fraction)
         const restAmount = barLength - doneAmount
 
-        const progressBar = this.showProgress ? `[${chalk.bgWhite(' ').repeat(doneAmount)}${chalk.grey('.').repeat(restAmount)}]` : ''
+        const progressBar = `[${chalk.bgWhite(' ').repeat(doneAmount)}${chalk.grey('.').repeat(restAmount)}]`
 
         return this.clearLine()
             .write(`${progressBar}${this.config.showNumeric ? this.calcNumeric(this.config, fraction) : ''}`)
