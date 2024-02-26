@@ -119,10 +119,6 @@ export class FluentDownload {
         return this.addToConfig({ results })
     }
 
-    public store(): FluentDownload {
-        return this.addToConfig({ store: true })
-    }
-
     public start(): Promise<DownloadReportEntry[]> {
         return downloadChromium(this.config)
     }

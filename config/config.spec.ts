@@ -6,10 +6,9 @@
 
 import { ComparableVersion } from '../commons/ComparableVersion'
 import { DEFAULT_CONFIG_OPTIONS } from '../commons/constants'
-import type { IChromeConfigWrapper, IStoreConfigWrapper, IExportConfigWrapper } from '../interfaces/interfaces'
 import type { OS } from '../interfaces/os.interfaces'
 import { Logger, logger } from '../log/logger'
-import { createChromeOptions, createExportConfig, createImportConfig, createChromeSingleConfig, createChromeFullConfig } from '../test/test.utils'
+import { createChromeOptions, createChromeSingleConfig, createChromeFullConfig } from '../test/test.utils'
 import { readConfig } from './config'
 
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */
@@ -56,18 +55,15 @@ describe('config', () => {
 
                 const config = readConfig([''], 'linux')
 
-                const expectedConfig: IChromeConfigWrapper = {
-                    action: 'loadChrome',
-                    config: createChromeFullConfig({
-                        min: new ComparableVersion({
-                            branch: 0,
-                            major: 20,
-                            minor: 0,
-                            patch: 0,
-                        }),
-                        results: Infinity,
-                    })
-                }
+                const expectedConfig = createChromeFullConfig({
+                    min: new ComparableVersion({
+                        branch: 0,
+                        major: 20,
+                        minor: 0,
+                        patch: 0,
+                    }),
+                    results: Infinity,
+                })
 
                 expect(config).toEqual(expectedConfig)
             })
@@ -79,17 +75,14 @@ describe('config', () => {
 
                 const config = readConfig([''], 'linux')
 
-                const expectedConfig: IChromeConfigWrapper = {
-                    action: 'loadChrome',
-                    config: createChromeFullConfig({
-                        max: new ComparableVersion({
-                            branch: 1234,
-                            major: 30,
-                            minor: 0,
-                            patch: 33,
-                        }),
-                    })
-                }
+                const expectedConfig = createChromeFullConfig({
+                    max: new ComparableVersion({
+                        branch: 1234,
+                        major: 30,
+                        minor: 0,
+                        patch: 33,
+                    }),
+                })
 
                 expect(config).toEqual(expectedConfig)
             })
@@ -101,12 +94,9 @@ describe('config', () => {
 
                 const config = readConfig([''], 'linux')
 
-                const expectedConfig: IChromeConfigWrapper = {
-                    action: 'loadChrome',
-                    config: createChromeFullConfig({
-                        onFail: 'decrease',
-                    })
-                }
+                const expectedConfig = createChromeFullConfig({
+                    onFail: 'decrease',
+                })
 
                 expect(config).toEqual(expectedConfig)
             })
@@ -119,12 +109,9 @@ describe('config', () => {
 
                 const config = readConfig([''], 'linux')
 
-                const expectedConfig: IChromeConfigWrapper = {
-                    action: 'loadChrome',
-                    config: createChromeFullConfig({
-                        onFail: 'increase',
-                    })
-                }
+                const expectedConfig = createChromeFullConfig({
+                    onFail: 'increase',
+                })
 
                 expect(config).toEqual(expectedConfig)
             })
@@ -136,12 +123,9 @@ describe('config', () => {
 
                 const config = readConfig([''], 'linux')
 
-                const expectedConfig: IChromeConfigWrapper = {
-                    action: 'loadChrome',
-                    config: createChromeFullConfig({
-                        autoUnzip: true,
-                    })
-                }
+                const expectedConfig = createChromeFullConfig({
+                    autoUnzip: true,
+                })
 
                 expect(config).toEqual(expectedConfig)
             })
@@ -153,12 +137,9 @@ describe('config', () => {
 
                 const config = readConfig([''], 'linux')
 
-                const expectedConfig: IChromeConfigWrapper = {
-                    action: 'loadChrome',
-                    config: createChromeFullConfig({
-                        results: 24,
-                    })
-                }
+                const expectedConfig = createChromeFullConfig({
+                    results: 24,
+                })
 
                 expect(config).toEqual(expectedConfig)
             })
@@ -170,12 +151,9 @@ describe('config', () => {
 
                 const config = readConfig([''], 'linux')
 
-                const expectedConfig: IChromeConfigWrapper = {
-                    action: 'loadChrome',
-                    config: createChromeFullConfig({
-                        download: false,
-                    })
-                }
+                const expectedConfig = createChromeFullConfig({
+                    download: false,
+                })
 
                 expect(config).toEqual(expectedConfig)
             })
@@ -187,12 +165,9 @@ describe('config', () => {
 
                 const config = readConfig([''], 'linux')
 
-                const expectedConfig: IChromeConfigWrapper = {
-                    action: 'loadChrome',
-                    config: createChromeFullConfig({
-                        hideNegativeHits: true,
-                    })
-                }
+                const expectedConfig = createChromeFullConfig({
+                    hideNegativeHits: true,
+                })
 
                 expect(config).toEqual(expectedConfig)
             })
@@ -204,12 +179,9 @@ describe('config', () => {
 
                 const config = readConfig([''], 'linux')
 
-                const expectedConfig: IChromeConfigWrapper = {
-                    action: 'loadChrome',
-                    config: createChromeFullConfig({
-                        interactive: false,
-                    })
-                }
+                const expectedConfig = createChromeFullConfig({
+                    interactive: false,
+                })
 
                 expect(loggerMock.warn).toHaveBeenCalledTimes(1)
                 expect(loggerMock.warn).toHaveBeenCalledWith('Setting "--non-interactive" has no effect, when "--decrease-on-fail" is not set!')
@@ -225,13 +197,10 @@ describe('config', () => {
 
                 const config = readConfig([''], 'linux')
 
-                const expectedConfig: IChromeConfigWrapper = {
-                    action: 'loadChrome',
-                    config: createChromeFullConfig({
-                        interactive: false,
-                        onFail: 'decrease',
-                    })
-                }
+                const expectedConfig = createChromeFullConfig({
+                    interactive: false,
+                    onFail: 'decrease',
+                })
 
                 expect(loggerMock.warn).toHaveBeenCalledTimes(0)
                 expect(config).toEqual(expectedConfig)
@@ -244,12 +213,9 @@ describe('config', () => {
 
                 const config = readConfig([''], 'linux')
 
-                const expectedConfig: IChromeConfigWrapper = {
-                    action: 'loadChrome',
-                    config: createChromeFullConfig({
-                        debug: true,
-                    })
-                }
+                const expectedConfig = createChromeFullConfig({
+                    debug: true,
+                })
 
                 expect(config).toEqual(expectedConfig)
             })
@@ -261,46 +227,9 @@ describe('config', () => {
 
                 const config = readConfig([''], 'linux')
 
-                const expectedConfig: IChromeConfigWrapper = {
-                    action: 'loadChrome',
-                    config: createChromeFullConfig({
-                        quiet: true,
-                    })
-                }
-
-                expect(config).toEqual(expectedConfig)
-            })
-
-            it('should set store=false on --no-store', () => {
-                programMock.opts.mockReturnValue(createChromeOptions({
-                    store: false,
-                }))
-
-                const config = readConfig([''], 'linux')
-
-                const expectedConfig: IChromeConfigWrapper = {
-                    action: 'loadChrome',
-                    config: createChromeFullConfig({
-                        store: false,
-                    })
-                }
-
-                expect(config).toEqual(expectedConfig)
-            })
-
-            it('should set ignoreStore on --ignore-store', () => {
-                programMock.opts.mockReturnValue(createChromeOptions({
-                    ignoreStore: true,
-                }))
-
-                const config = readConfig([''], 'linux')
-
-                const expectedConfig: IChromeConfigWrapper = {
-                    action: 'loadChrome',
-                    config: createChromeFullConfig({
-                        ignoreStore: true,
-                    })
-                }
+                const expectedConfig = createChromeFullConfig({
+                    quiet: true,
+                })
 
                 expect(config).toEqual(expectedConfig)
             })
@@ -313,12 +242,9 @@ describe('config', () => {
 
                     const config = readConfig([''], 'linux')
 
-                    const expectedConfig: IChromeConfigWrapper = {
-                        action: 'loadChrome',
-                        config: createChromeFullConfig({
-                            arch: 'x64'
-                        })
-                    }
+                    const expectedConfig = createChromeFullConfig({
+                        arch: 'x64'
+                    })
 
                     expect(loggerMock.warn).toHaveBeenCalledTimes(1)
                     expect(loggerMock.warn).toHaveBeenLastCalledWith('Setting "--arch" has no effect, when "--os" is not set!')
@@ -334,13 +260,10 @@ describe('config', () => {
 
                     const config = readConfig([''], 'linux')
 
-                    const expectedConfig: IChromeConfigWrapper = {
-                        action: 'loadChrome',
-                        config: createChromeFullConfig({
-                            arch: 'x86',
-                            os: 'linux',
-                        })
-                    }
+                    const expectedConfig = createChromeFullConfig({
+                        arch: 'x86',
+                        os: 'linux',
+                    })
 
                     expect(loggerMock.warn).toHaveBeenCalledTimes(0)
                     expect(config).toEqual(expectedConfig)
@@ -353,12 +276,9 @@ describe('config', () => {
 
                     const config = readConfig([''], 'linux')
 
-                    const expectedConfig: IChromeConfigWrapper = {
-                        action: 'loadChrome',
-                        config: createChromeFullConfig({
-                            os: 'win'
-                        })
-                    }
+                    const expectedConfig = createChromeFullConfig({
+                        os: 'win'
+                    })
 
                     expect(config).toEqual(expectedConfig)
                 })
@@ -370,12 +290,9 @@ describe('config', () => {
 
                     const config = readConfig([''], 'linux')
 
-                    const expectedConfig: IChromeConfigWrapper = {
-                        action: 'loadChrome',
-                        config: createChromeFullConfig({
-                            os: 'win'
-                        })
-                    }
+                    const expectedConfig = createChromeFullConfig({
+                        os: 'win'
+                    })
 
                     expect(config).toEqual(expectedConfig)
                 })
@@ -387,12 +304,9 @@ describe('config', () => {
 
                     const config = readConfig([''], 'linux')
 
-                    const expectedConfig: IChromeConfigWrapper = {
-                        action: 'loadChrome',
-                        config: createChromeFullConfig({
-                            os: 'mac'
-                        })
-                    }
+                    const expectedConfig = createChromeFullConfig({
+                        os: 'mac'
+                    })
 
                     expect(config).toEqual(expectedConfig)
                 })
@@ -404,12 +318,9 @@ describe('config', () => {
 
                     const config = readConfig([''], 'linux')
 
-                    const expectedConfig: IChromeConfigWrapper = {
-                        action: 'loadChrome',
-                        config: createChromeFullConfig({
-                            os: 'mac'
-                        })
-                    }
+                    const expectedConfig = createChromeFullConfig({
+                        os: 'mac'
+                    })
 
                     expect(config).toEqual(expectedConfig)
                 })
@@ -423,13 +334,10 @@ describe('config', () => {
 
                     const config = readConfig([''], 'linux')
 
-                    const expectedConfig: IChromeConfigWrapper = {
-                        action: 'loadChrome',
-                        config: createChromeFullConfig({
-                            os: 'linux',
-                            arch: 'x86',
-                        })
-                    }
+                    const expectedConfig = createChromeFullConfig({
+                        os: 'linux',
+                        arch: 'x86',
+                    })
 
                     expect(config).toEqual(expectedConfig)
                 })
@@ -456,71 +364,16 @@ describe('config', () => {
 
                     const config = readConfig([''], 'linux')
 
-                    const expectedConfig: IChromeConfigWrapper = {
-                        action: 'loadChrome',
-                        config: createChromeSingleConfig({
-                            arch: 'x64',
-                            os: 'win',
-                            download: true,
-                            single: new ComparableVersion(10, 11, 12, 13),
-                        })
-                    }
+                    const expectedConfig = createChromeSingleConfig({
+                        arch: 'x64',
+                        os: 'win',
+                        download: true,
+                        single: new ComparableVersion(10, 11, 12, 13),
+                    })
 
                     expect(loggerMock.warn).toHaveBeenCalledTimes(0)
                     expect(config).toEqual(expectedConfig)
                 })
-            })
-        })
-
-        describe('importStore', () => {
-            it('should set importStore', () => {
-                programMock.opts.mockReturnValue(createChromeOptions({
-                    importStore: 'some-url',
-                }))
-
-                const config = readConfig([''], 'linux')
-
-                const expectedConfig: IStoreConfigWrapper = {
-                    action: 'importStore',
-                    config: createImportConfig()
-                }
-
-                expect(config).toEqual(expectedConfig)
-            })
-
-        })
-
-        describe('exportStore', () => {
-            it('should set exportStore without path', () => {
-                programMock.opts.mockReturnValue(createChromeOptions({
-                    exportStore: true
-                }))
-
-                const config = readConfig([''], 'linux')
-
-                const expectedConfig: IExportConfigWrapper = {
-                    action: 'exportStore',
-                    config: createExportConfig({ path: undefined })
-                }
-
-                expect(config).toEqual(expectedConfig)
-            })
-
-            it('should set exportStore with path', () => {
-                programMock.opts.mockReturnValue(createChromeOptions({
-                    exportStore: 'some-path'
-                }))
-
-                const config = readConfig([''], 'linux')
-
-                const expectedConfig: IExportConfigWrapper = {
-                    action: 'exportStore',
-                    config: createExportConfig({
-                        path: 'some-path',
-                    })
-                }
-
-                expect(config).toEqual(expectedConfig)
             })
         })
     })

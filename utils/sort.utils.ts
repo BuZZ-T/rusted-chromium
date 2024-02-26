@@ -1,7 +1,5 @@
 import { ComparableVersion } from '../commons/ComparableVersion'
-import type { MappedVersion } from '../commons/MappedVersion'
 import { Compared } from '../interfaces/enums'
-import type { IListStore } from '../interfaces/store.interfaces'
 import type { Release } from '../releases/release.types'
 
 /**
@@ -36,34 +34,4 @@ export function sortDescendingComparableVersions(a: ComparableVersion, b: Compar
     return 0
 }
 
-/**
- * Ascending sort comparator for MappedVersion
- */
-export const sortAscendingMappedVersions = (a: MappedVersion, b: MappedVersion): -1 | 0 | 1 => sortAscendingComparableVersions(a.comparable, b.comparable)
-
-/**
-* Descending sort comparator for MappedVersion
-*/
-export const sortDescendingMappedVersions = (a: MappedVersion, b: MappedVersion): -1 | 0 | 1 => sortDescendingComparableVersions(a.comparable, b.comparable)
-
-/**
-* Immutally sorts the entries of the given Store
-*/
-export function sortStoreEntries(store: IListStore): IListStore {
-    return {
-        win: {
-            x64: [...store.win.x64].map(v => new ComparableVersion(v)).sort(sortAscendingComparableVersions).map(c => c.toString()),
-            x86: [...store.win.x86].map(v => new ComparableVersion(v)).sort(sortAscendingComparableVersions).map(c => c.toString()),
-        },
-        linux: {
-            x64: [...store.linux.x64].map(v => new ComparableVersion(v)).sort(sortAscendingComparableVersions).map(c => c.toString()),
-            x86: [...store.linux.x86].map(v => new ComparableVersion(v)).sort(sortAscendingComparableVersions).map(c => c.toString()),
-        },
-        mac: {
-            x64: [...store.mac.x64].map(v => new ComparableVersion(v)).sort(sortAscendingComparableVersions).map(c => c.toString()),
-            arm: [...store.mac.arm].map(v => new ComparableVersion(v)).sort(sortAscendingComparableVersions).map(c => c.toString()),
-        },
-    }
-}
-
-export const sortDescendingReleases = (a: Release, b: Release): -1 | 0 | 1 => sortDescendingComparableVersions(a.version.comparable, b.version.comparable)
+export const sortDescendingReleases = (a: Release, b: Release): -1 | 0 | 1 => sortDescendingComparableVersions(a.version, b.version)

@@ -6,14 +6,12 @@ import { fetchChromeZipFile } from '../api'
 import { DEFAULT_FULL_CONFIG, DEFAULT_SINGLE_CONFIG } from '../commons/constants'
 import { DOWNLOAD_ZIP, EXTRACT_ZIP } from '../commons/loggerTexts'
 import { NoChromiumDownloadError } from '../errors'
-import type { DownloadReportEntry, IChromeConfig, IChromeGeneralConfig } from '../interfaces/interfaces'
+import type { DownloadReportEntry, IChromeConfig } from '../interfaces/interfaces'
 import { logger } from '../log/logger'
 import { applyConfigToLoggers } from '../log/logger.utils'
 import { progress } from '../log/progress'
 import { spinner } from '../log/spinner'
 import { loadReleases, mapApiReleasesToReleases } from '../releases/releases'
-import { EMPTY_STORE, loadStore } from '../store/loadStore'
-import { Store } from '../store/Store'
 import { existsAndIsFolder } from '../utils/file.utils'
 import { isChromeSingleConfig } from '../utils/typeguards'
 import { getChromeDownloadUrl } from '../versions'
@@ -45,7 +43,9 @@ function registerSigIntHandler(path: string): void {
     })
 }
 
-function enrichAdditionalConfig(additionalConfig: Partial<IChromeConfig> = {}): IChromeGeneralConfig & IChromeConfig {
+export type Simplify<T> = { [KeyType in keyof T]: T[KeyType] } & unknown;
+
+function enrichAdditionalConfig(additionalConfig: Partial<IChromeConfig> = {}): IChromeConfig {
     if (isChromeSingleConfig(additionalConfig)) {
         return {
             ...DEFAULT_SINGLE_CONFIG,
@@ -80,23 +80,17 @@ async function extractZip(downloadPath: string) {
  * @see DEFAULT_SINGLE_CONFIG
  * @param additionalConfig Manually set config, which will override the settings in the default config
  */
-async function downloadForConfig(config: IChromeGeneralConfig & IChromeConfig): Promise<DownloadReportEntry[]> {
+async function downloadForConfig(config: IChromeConfig): Promise<DownloadReportEntry[]> {
     applyConfigToLoggers(config)
-
-    const store = config.single || config.ignoreStore ? new Store(EMPTY_STORE) : await loadStore()
 
     const apiReleases = await loadReleases(config.os, config.channel)
 
-    const mappedReleases = mapApiReleasesToReleases(apiReleases, config, store)
+    const mappedReleases = mapApiReleasesToReleases(apiReleases, config)
 
     if (!isChromeSingleConfig(config) && config.list) {
         logger.info('versions:')
         mappedReleases.forEach(r => {
-            if (r.version.disabled) {
-                logger.warn(r.version.value)
-            } else {
-                logger.info(r.version.value)
-            }
+            logger.info(r.version.toString())
         })
         return []
     }
@@ -106,7 +100,7 @@ async function downloadForConfig(config: IChromeGeneralConfig & IChromeConfig): 
     const { chromeUrl, filenameOS, report, selectedRelease: release } = await getChromeDownloadUrl(config, mappedReleases)
 
     if (chromeUrl && release && config.download) {
-        const filename = `chrome-${filenameOS}-${config.arch}-${release.version.value}`
+        const filename = `chrome-${filenameOS}-${config.arch}-${release.version.toString()}`
         const downloadPath = config.downloadFolder
             ? pathJoin(config.downloadFolder, filename)
             : filename
@@ -116,7 +110,7 @@ async function downloadForConfig(config: IChromeGeneralConfig & IChromeConfig): 
             logger.info(`${config.downloadFolder} created'`)
         }
 
-        logger.debug(`Downloading version: ${release.version.value}`)
+        logger.debug(`Downloading version: ${release.version.toString()}`)
         const zipFileResponse = await fetchChromeZipFile(chromeUrl)
 
         let isFirstProgress = true

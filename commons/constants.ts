@@ -13,7 +13,6 @@ export const DEFAULT_DOWNLOAD_FLUENT_FULL_CONFIG: IChromeFullConfig = {
     download: false,
     downloadFolder: null,
     hideNegativeHits: false,
-    ignoreStore: false,
     interactive: false,
     inverse: false,
     list: false,
@@ -26,7 +25,6 @@ export const DEFAULT_DOWNLOAD_FLUENT_FULL_CONFIG: IChromeFullConfig = {
     quiet: false,
     results: Infinity,
     single: null,
-    store: false,
 }
 
 export const DEFAULT_DOWNLOAD_FLUENT_SINGLE_CONFIG: IChromeSingleConfig = {
@@ -41,7 +39,6 @@ export const DEFAULT_DOWNLOAD_FLUENT_SINGLE_CONFIG: IChromeSingleConfig = {
     progress: true,
     quiet: false,
     single: new ComparableVersion(0, 0, 0, 0),
-    store: false,
 }
 
 export const DEFAULT_CONFIG_OPTIONS: IConfigOptions = {
@@ -51,7 +48,6 @@ export const DEFAULT_CONFIG_OPTIONS: IConfigOptions = {
     decreaseOnFail: false,
     download: true,
     hideNegativeHits: false,
-    ignoreStore: false,
     increaseOnFail: false,
     inverse: false,
     list: false,
@@ -61,7 +57,6 @@ export const DEFAULT_CONFIG_OPTIONS: IConfigOptions = {
     onlyNewestMajor: false,
     progress: true,
     quiet: false,
-    store: true,
     unzip: false,
 }
 
@@ -74,7 +69,6 @@ export const DEFAULT_FULL_CONFIG: IChromeFullConfig = {
     download: true,
     downloadFolder: null,
     hideNegativeHits: false,
-    ignoreStore: false,
     interactive: true,
     inverse: false,
     list: false,
@@ -87,7 +81,6 @@ export const DEFAULT_FULL_CONFIG: IChromeFullConfig = {
     quiet: false,
     results: 10,
     single: null,
-    store: true,
 }
 
 export const DEFAULT_SINGLE_CONFIG: IChromeSingleConfig = {
@@ -102,5 +95,4 @@ export const DEFAULT_SINGLE_CONFIG: IChromeSingleConfig = {
     progress: true,
     quiet: false,
     single: new ComparableVersion(10, 0, 0, 0),
-    store: true,
 }

@@ -4,7 +4,7 @@
  * @group unit/file/api
  */
 
-import { fetchChromeUrl, fetchChromeZipFile, fetchLocalStore } from './api'
+import { fetchChromeUrl, fetchChromeZipFile } from './api'
 import type { IOSSettings } from './interfaces/os.interfaces'
 import { spinner, Spinner } from './log/spinner'
 import { Release } from './releases/release.types'
@@ -38,39 +38,6 @@ describe('api', () => {
         spinnerMock.start.mockClear()
         spinnerMock.success.mockClear()
         spinnerMock.error.mockClear()
-    })
-
-    describe('fetchLocalStore', () => {
-        it('should return the parsed store file', async () => {
-            const url = 'local-store-url'
-
-            fetchMock.mockResolvedValue({
-                ok: true,
-                json() {
-                    return Promise.resolve({ some: 'store' })
-                }
-            })
-
-            expect(await fetchLocalStore(url)).toEqual({ some: 'store' })
-            expect(fetchMock.mock.calls.length).toBe(1)
-            expect(fetch).toHaveBeenCalledWith(url)
-        })
-
-        it('should throw an error on non-ok http response', async () => {
-            const url = 'local-store-url'
-
-            fetchMock.mockResolvedValue({
-                ok: false,
-                url: 'some-url',
-                status: 400,
-                error: 'some-error-message',
-            })
-
-            await expect(() => fetchLocalStore(url)).rejects.toThrow(new Error('Status Code: 400 some-url some-error-message'))
-
-            expect(fetchMock.mock.calls.length).toBe(1)
-            expect(fetch).toHaveBeenCalledWith(url)
-        })
     })
 
     describe('fetchChromeUrl', () => {

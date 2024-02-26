@@ -33,6 +33,7 @@ export abstract class FluentDownloadSingle<T> {
 
     protected abstract self(): T
 
+    // TODO: is the type correct?
     public arch(arch: Arch): T {
         this.config.arch = arch
 
@@ -91,11 +92,6 @@ export abstract class FluentDownloadSingle<T> {
         logger.noProgress()
         spinner.noProgress()
         progress.noProgress()
-        return this.self()
-    }
-
-    public store(): T {
-        this.config.store = true
         return this.self()
     }
 }

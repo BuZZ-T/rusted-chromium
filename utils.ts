@@ -1,6 +1,5 @@
 import type { IChromeConfig } from './interfaces/interfaces'
 import type { OSSetting, OS, ExtendedOS } from './interfaces/os.interfaces'
-import type { IListStore, ISetStore } from './interfaces/store.interfaces'
 
 export function detectOperatingSystem(config: IChromeConfig): OSSetting {
 
@@ -55,23 +54,6 @@ export function mapOS(extendedOS: string): OS {
     }
 
     throw new Error(`unknown OS: ${extendedOS}`)
-}
-
-export function setStoreToListStore(setStore: ISetStore): IListStore {
-    return {
-        linux: {
-            x64: [...setStore.linux.x64],
-            x86: [...setStore.linux.x86],
-        },
-        win: {
-            x64: [...setStore.win.x64],
-            x86: [...setStore.win.x86],
-        },
-        mac: {
-            x64: [...setStore.mac.x64],
-            arm: [...setStore.mac.arm],
-        },
-    }
 }
 
 export function* popArray<T>(array: T[]): Generator<T, void, void> {

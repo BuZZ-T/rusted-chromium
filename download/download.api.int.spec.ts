@@ -8,12 +8,11 @@
 import * as mockFs from 'mock-fs'
 /* eslint-disable-next-line import/no-namespace */
 import * as fetch from 'node-fetch'
-import { writeFile, unlink } from 'node:fs/promises'
+import { unlink } from 'node:fs/promises'
 import { join as pathJoin, resolve } from 'node:path'
 
 import { ComparableVersion } from '../commons/ComparableVersion'
 import { mockNodeFetch, chromeZipStream, getJestTmpFolder } from '../test/int.utils'
-import { createStore } from '../test/test.utils'
 import { existsAndIsFile } from '../utils/file.utils'
 import { downloadChromium } from './download'
 
@@ -26,7 +25,6 @@ jest.mock('prompts')
 describe.skip('[int] download API', () => {
     const chromeZip10 = pathJoin(__dirname, '../', 'chrome-linux-x64-10.0.0.0.zip')
     const chromeZip20 = pathJoin(__dirname, '../', 'chrome-linux-x64-20.0.0.0.zip')
-    const localStoreFile = pathJoin(__dirname, '../', 'localstore.json')
 
     let promptsMock: jest.MaybeMocked<typeof prompts>
     let nodeFetchMock: jest.MaybeMocked<typeof fetch>
@@ -36,8 +34,6 @@ describe.skip('[int] download API', () => {
 
         const jestFolder = await getJestTmpFolder()
         mockFs({
-            '../localstore.json': JSON.stringify(createStore()),
-
             // pass some folders to the mock for jest to be able to run
             './node_modules': mockFs.load(resolve(__dirname, '../node_modules')),
             [`/tmp/${jestFolder}`]: mockFs.load(resolve(`/tmp/${jestFolder}`)),
@@ -46,7 +42,6 @@ describe.skip('[int] download API', () => {
 
     beforeEach(async () => {
         // clear mock-fs
-        await writeFile(localStoreFile, JSON.stringify(createStore()))
         if (await existsAndIsFile(chromeZip10)) {
             await unlink(chromeZip10)
         }
@@ -80,7 +75,6 @@ describe.skip('[int] download API', () => {
             download: true,
             downloadFolder: null,
             hideNegativeHits: false,
-            ignoreStore: false,
             interactive: true,
             inverse: false,
             list: false,
@@ -93,7 +87,6 @@ describe.skip('[int] download API', () => {
             quiet: false,
             results: 1,
             single: null,
-            store: true,
         })
 
         chromeZipStream.push('asdf')
@@ -123,7 +116,6 @@ describe.skip('[int] download API', () => {
             .os('linux')
             .download()
             .results(1)
-            .store()
             .start()
 
         chromeZipStream.push('asdf')
@@ -140,7 +132,6 @@ describe.skip('[int] download API', () => {
             .arch('x64')
             .os('linux')
             .download()
-            .store()
             .single(new ComparableVersion('10.0.0.0'))
             .start()
 
@@ -158,7 +149,6 @@ describe.skip('[int] download API', () => {
             .arch('x64')
             .os('linux')
             .download()
-            .store()
             .single('10.0.0.0')
             .start()
 

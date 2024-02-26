@@ -10,15 +10,12 @@ import { mkdir, stat, rmdir, unlink }from 'node:fs/promises'
 
 import { fetchChromeZipFile } from '../api'
 import { ComparableVersion } from '../commons/ComparableVersion'
-import { MappedVersion } from '../commons/MappedVersion'
 import { NoChromiumDownloadError } from '../errors'
 import { Logger, logger, DebugMode } from '../log/logger'
 import { progress, ProgressBar } from '../log/progress'
 import { spinner, Spinner } from '../log/spinner'
 import { loadReleases, mapApiReleasesToReleases } from '../releases/releases'
-import { loadStore } from '../store/loadStore'
-import { Store } from '../store/Store'
-import { createChromeFullConfig, createStore, createGetChromeDownloadUrlReturn, createChromeSingleConfig, createApiRelease } from '../test/test.utils'
+import { createChromeFullConfig, createGetChromeDownloadUrlReturn, createChromeSingleConfig, createApiRelease } from '../test/test.utils'
 import { existsAndIsFolder } from '../utils/file.utils'
 import { getChromeDownloadUrl } from '../versions'
 import { downloadChromium } from './download'
@@ -40,7 +37,6 @@ jest.mock('../log/progress')
 jest.mock('../log/spinner')
 jest.mock('../log/logger')
 jest.mock('../log/printer')
-jest.mock('../store/loadStore')
 jest.mock('../versions', () => ({
     ...jest.requireActual('../versions'),
     getChromeDownloadUrl: jest.fn(),
@@ -51,7 +47,6 @@ jest.mock('../releases/releases')
 describe('download', () => {
     describe('downloadChromium', () => {
         let loadReleasesMock: jest.MaybeMocked<typeof loadReleases>
-        let loadStoreMock: jest.MaybeMocked<typeof loadStore>
         let mapApiReleasesToReleasesMock: jest.MaybeMocked<typeof mapApiReleasesToReleases>
         let getChromeDownloadUrlMock: jest.MaybeMocked<typeof getChromeDownloadUrl>
 
@@ -80,7 +75,6 @@ describe('download', () => {
 
         beforeAll(() => {
             loadReleasesMock = jest.mocked(loadReleases)
-            loadStoreMock = jest.mocked(loadStore)
             mapApiReleasesToReleasesMock = jest.mocked(mapApiReleasesToReleases)
             getChromeDownloadUrlMock = jest.mocked(getChromeDownloadUrl)
             fetchChromeZipFileMock = jest.mocked(fetchChromeZipFile)
@@ -124,18 +118,15 @@ describe('download', () => {
                 createApiRelease({version: '15.0.0.0'}),
             ])
 
-            loadStoreMock.mockReset()
-            loadStoreMock.mockResolvedValue(new Store(createStore()))
-
             mapApiReleasesToReleasesMock.mockReset()
             mapApiReleasesToReleasesMock.mockReturnValue([
                 {
                     branchPosition: 123,
-                    version: new MappedVersion('10.0.0.0', true),
+                    version: new ComparableVersion('10.0.0.0'),
                 },
                 {
                     branchPosition: 124,
-                    version: new MappedVersion('11.0.0.0', true),
+                    version: new ComparableVersion('11.0.0.0'),
                 },
             ])
 
@@ -187,7 +178,7 @@ describe('download', () => {
             mapApiReleasesToReleasesMock.mockReturnValue([
                 {
                     branchPosition: 123,
-                    version: new MappedVersion(10, 0, 0, 1, false),
+                    version: new ComparableVersion(10, 0, 0, 1),
                 },
             ])
             getChromeDownloadUrlMock.mockResolvedValue(createGetChromeDownloadUrlReturn())
@@ -201,8 +192,6 @@ describe('download', () => {
                 downloadFolder: 'down_folder',
             })
             await downloadChromium(config)
-
-            expect(loadStoreMock).toHaveBeenCalledTimes(1)
 
             expect(existsAndIsFolderMock).toHaveBeenCalledTimes(1)
             expect(existsAndIsFolderMock).toHaveBeenCalledWith('down_folder')
@@ -225,7 +214,7 @@ describe('download', () => {
 
             expect(getChromeDownloadUrlMock).toHaveBeenCalledWith(expected, [{
                 branchPosition: 123,
-                version: new MappedVersion(10, 0, 0, 1, false),
+                version: new ComparableVersion(10, 0, 0, 1),
             }])
         })
 
@@ -288,7 +277,7 @@ describe('download', () => {
         it('should fetch the zip with defaults', async () => {
             mapApiReleasesToReleasesMock.mockReturnValue([{
                 branchPosition: 123,
-                version: new MappedVersion(10, 0, 0, 2, false),
+                version: new ComparableVersion(10, 0, 0, 2),
             }])
             getChromeDownloadUrlMock.mockResolvedValue(createGetChromeDownloadUrlReturn())
 
@@ -312,7 +301,7 @@ describe('download', () => {
 
             expect(getChromeDownloadUrlMock).toHaveBeenCalledWith(expected, [{
                 branchPosition: 123,
-                version: new MappedVersion(10, 0, 0, 2, false),
+                version: new ComparableVersion(10, 0, 0, 2),
             }])
         })
 
@@ -361,12 +350,11 @@ describe('download', () => {
             getChromeDownloadUrlMock.mockResolvedValue(createGetChromeDownloadUrlReturn({
                 selectedRelease: {
                     branchPosition: 123,
-                    version: new MappedVersion({
+                    version: new ComparableVersion({
                         major: 11,
                         minor: 12,
                         branch: 13,
                         patch: 14,
-                        disabled: false,
                     })
                 }
             }))
@@ -411,12 +399,11 @@ describe('download', () => {
             getChromeDownloadUrlMock.mockResolvedValue(createGetChromeDownloadUrlReturn({
                 selectedRelease: {
                     branchPosition: 123,
-                    version: new MappedVersion({
+                    version: new ComparableVersion({
                         major: 11,
                         minor: 12,
                         branch: 13,
                         patch: 14,
-                        disabled: false,
                     })
                 }
             }))
@@ -468,12 +455,11 @@ describe('download', () => {
             getChromeDownloadUrlMock.mockResolvedValue(createGetChromeDownloadUrlReturn({
                 selectedRelease: {
                     branchPosition: 123,
-                    version: new MappedVersion({
+                    version: new ComparableVersion({
                         major: 11,
                         minor: 12,
                         branch: 13,
                         patch: 14,
-                        disabled: false,
                     })
                 }
             }))
@@ -524,12 +510,11 @@ describe('download', () => {
             getChromeDownloadUrlMock.mockResolvedValue(createGetChromeDownloadUrlReturn({
                 selectedRelease: {
                     branchPosition: 123,
-                    version: new MappedVersion({
+                    version: new ComparableVersion({
                         major: 11,
                         minor: 12,
                         branch: 13,
                         patch: 14,
-                        disabled: false,
                     })
                 }
             }))
@@ -581,12 +566,11 @@ describe('download', () => {
             getChromeDownloadUrlMock.mockResolvedValue(createGetChromeDownloadUrlReturn({
                 selectedRelease: {
                     branchPosition: 123,
-                    version: new MappedVersion({
+                    version: new ComparableVersion({
                         major: 11,
                         minor: 12,
                         branch: 13,
                         patch: 14,
-                        disabled: false,
                     })
                 }
             }))
@@ -642,12 +626,11 @@ describe('download', () => {
             getChromeDownloadUrlMock.mockResolvedValue(createGetChromeDownloadUrlReturn({
                 selectedRelease: {
                     branchPosition: 123,
-                    version: new MappedVersion({
+                    version: new ComparableVersion({
                         major: 11,
                         minor: 12,
                         branch: 13,
                         patch: 14,
-                        disabled: false,
                     })
                 }
             }))
@@ -832,7 +815,7 @@ describe('download', () => {
         it('should enable debugging on config.debug', async () => {
             mapApiReleasesToReleasesMock.mockReturnValue([{
                 branchPosition: 123,
-                version: new MappedVersion(10, 0, 0, 1, false),
+                version: new ComparableVersion(10, 0, 0, 1),
             }])
             getChromeDownloadUrlMock.mockResolvedValue(createGetChromeDownloadUrlReturn())
 
@@ -854,7 +837,7 @@ describe('download', () => {
         it('should silent the logger on config.quiet', async () => {
             mapApiReleasesToReleasesMock.mockReturnValue([{
                 branchPosition: 123,
-                version: new MappedVersion(10, 0, 0, 1, false),
+                version: new ComparableVersion(10, 0, 0, 1),
             }])
 
             getChromeDownloadUrlMock.mockResolvedValue(createGetChromeDownloadUrlReturn())
@@ -875,7 +858,7 @@ describe('download', () => {
         it('should remove the color from the logger on config.color === false', async () => {
             mapApiReleasesToReleasesMock.mockReturnValue([{
                 branchPosition: 123,
-                version: new MappedVersion(10, 0, 0, 1, false),
+                version: new ComparableVersion(10, 0, 0, 1),
             }])
 
             getChromeDownloadUrlMock.mockResolvedValue(createGetChromeDownloadUrlReturn())
@@ -896,7 +879,7 @@ describe('download', () => {
         it('should remove the progress bar from the logger on config.progress === false', async () => {
             mapApiReleasesToReleasesMock.mockReturnValue([{
                 branchPosition: 123,
-                version: new MappedVersion(10, 0, 0, 1, false),
+                version: new ComparableVersion(10, 0, 0, 1),
             }])
 
             getChromeDownloadUrlMock.mockResolvedValue(createGetChromeDownloadUrlReturn())
@@ -918,11 +901,11 @@ describe('download', () => {
             mapApiReleasesToReleasesMock.mockReturnValue([
                 {
                     branchPosition: 124,
-                    version: new MappedVersion(20, 0, 0, 1, true),
+                    version: new ComparableVersion(20, 0, 0, 1),
                 },
                 {
                     branchPosition: 456,
-                    version: new MappedVersion(10, 0, 0, 1, false)
+                    version: new ComparableVersion(10, 0, 0, 1)
                 }
             ])
             getChromeDownloadUrlMock.mockResolvedValue(createGetChromeDownloadUrlReturn())
@@ -936,31 +919,8 @@ describe('download', () => {
             })
             await downloadChromium(config)
 
-            expect(loggerMock.info).toHaveBeenCalledTimes(2)
-            expect(loggerMock.warn).toHaveBeenCalledTimes(1)
-            expect(loggerMock.info.mock.calls).toEqual([['versions:'], ['10.0.0.1']])
-            expect(loggerMock.warn).toHaveBeenCalledWith('20.0.0.1')
-        })
-
-        it('should not load the store on config.ignoreStore', async () => {
-            mapApiReleasesToReleasesMock.mockReturnValue([
-                {
-                    branchPosition: 124,
-                    version: new MappedVersion(20, 0, 0, 1, false),
-                },
-            ])
-            getChromeDownloadUrlMock.mockResolvedValue(createGetChromeDownloadUrlReturn())
-
-            fetchChromeZipFileMock.mockResolvedValue(zipFileResource)
-            existsAndIsFolderMock.mockResolvedValue(false)
-
-            // Act
-            const config = createChromeFullConfig({
-                ignoreStore: true
-            })
-            await downloadChromium(config)
-
-            expect(loadStoreMock).toHaveBeenCalledTimes(0)
+            expect(loggerMock.info).toHaveBeenCalledTimes(3)
+            expect(loggerMock.info.mock.calls).toEqual([['versions:'], ['20.0.0.1'], ['10.0.0.1']])
         })
     })
 })

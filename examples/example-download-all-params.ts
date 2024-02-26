@@ -9,7 +9,6 @@ downloadChromium({
     download: true,
     downloadFolder: null,
     hideNegativeHits: false,
-    ignoreStore: false,
     interactive: true,
     inverse: false,
     list: false,
@@ -22,5 +21,4 @@ downloadChromium({
     quiet: false,
     results: 10,
     single: null,
-    store: true,
 })

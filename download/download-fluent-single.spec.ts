@@ -19,7 +19,6 @@ jest.mock('../log/spinner')
 
 const allFalseSingleConfig = createChromeSingleConfig({
     download: false,
-    store: false,
 })
 
 describe('download-fluent-single', () => {
@@ -204,33 +203,5 @@ describe('download-fluent-single', () => {
         expect(progress.noProgress).toHaveBeenCalledWith()
         expect(spinner.noProgress).toHaveBeenCalledTimes(1)
         expect(spinner.noProgress).toHaveBeenCalledWith()
-    })
-
-    it('should call downloadChromium with store set', () => {
-        fluentDownloadSingle
-            .store()
-            .single('10.0.0.0')
-            .start()
-
-        expect(downloadChromiumMock).toHaveBeenCalledTimes(1)
-        expect(downloadChromiumMock).toHaveBeenCalledWith({
-            ...allFalseSingleConfig,
-            store: true,
-            single: new ComparableVersion('10.0.0.0'),
-        })
-    })
-
-    it('should set store after setting single', () => {
-        fluentDownloadSingle
-            .single('10.0.0.0')
-            .store()
-            .start()
-
-        expect(downloadChromiumMock).toHaveBeenCalledTimes(1)
-        expect(downloadChromiumMock).toHaveBeenCalledWith({
-            ...allFalseSingleConfig,
-            store: true,
-            single: new ComparableVersion('10.0.0.0'),
-        })
     })
 })

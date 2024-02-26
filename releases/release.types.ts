@@ -1,5 +1,5 @@
-import { MappedVersion } from '../commons/MappedVersion'
 import type { Channel, Platform } from '../interfaces/os.interfaces'
+import { ComparableVersion } from '../public_api'
 
 /**
  * Data returned from API call fetching releases
@@ -17,5 +17,5 @@ export interface ApiRelease {
 
 export interface Release {
     branchPosition: number
-    version: MappedVersion
+    version: ComparableVersion
 }

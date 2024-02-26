@@ -2,7 +2,6 @@ import { Response as NodeFetchResponse } from 'node-fetch'
 
 import type { IMetadataResponse } from './interfaces/interfaces'
 import type { Channel, IOSSettings, Platform } from './interfaces/os.interfaces'
-import type { IListStore } from './interfaces/store.interfaces'
 import type { ApiRelease } from './releases/release.types'
 
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */
@@ -17,12 +16,6 @@ function checkStatus(response: NodeFetchResponse) {
 }
 
 const toJson = (response: Response): Promise<unknown> => response.json()
-
-export async function fetchLocalStore(url: string): Promise<IListStore> {
-    return fetch(url)
-        .then(checkStatus)
-        .then(toJson)
-}
 
 export async function fetchChromeUrl(branchPosition: number, osSettings: IOSSettings): Promise<string | undefined> {
     const snapshotUrl = `https://www.googleapis.com/storage/v1/b/chromium-browser-snapshots/o?delimiter=/&prefix=${osSettings.url}/${branchPosition}/&fields=items(mediaLink,name)`

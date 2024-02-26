@@ -23,7 +23,6 @@ const allFalseConfig = createChromeFullConfig({
     max: new ComparableVersion(Infinity, 0, 0, 0),
     min: new ComparableVersion(-Infinity, 0, 0, 0),
     results: Infinity,
-    store: false,
 })
 
 describe('download-fluent', () => {
@@ -292,18 +291,6 @@ describe('download-fluent', () => {
         expect(downloadChromiumMock).toHaveBeenCalledWith({
             ...allFalseConfig,
             results: 5,
-        })
-    })
-
-    it('should call downloadChromium with store set', () => {
-        fluentDownload
-            .store()
-            .start()
-
-        expect(downloadChromiumMock).toHaveBeenCalledTimes(1)
-        expect(downloadChromiumMock).toHaveBeenCalledWith({
-            ...allFalseConfig,
-            store: true,
         })
     })
 })

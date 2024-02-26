@@ -25,18 +25,6 @@ export type MacStore = {
     arm: string[],
 }
 
-export interface IListStore {
-    linux: LinuxStore
-    mac: MacStore
-    win: WinStore
-}
-
-export interface ISetStore {
-    linux: LinuxStoreSet
-    mac: MacStoreSet
-    win: WinStoreSet
-}
-
 export type StoreSize = {
     [p in OS]: number
 }

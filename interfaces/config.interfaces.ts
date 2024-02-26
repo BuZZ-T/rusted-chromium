@@ -16,12 +16,7 @@ export interface IConfigOptions {
     increaseOnFail: boolean
     decreaseOnFail: boolean
 
-    importStore?: string
-    exportStore?: string | boolean
-
     unzip: boolean
-    store: boolean
-    ignoreStore: boolean,
     download: boolean
     loadStore?: string,
 

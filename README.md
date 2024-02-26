@@ -17,7 +17,6 @@ This cli tool can be used to download old (and therefore unsupported) versions o
 * [Supported node versions](#supported-node-versions)
 * [All available flags](#all-available-flags)
 * [Examples](#examples)
-* [Store file](#store-file)
 * [Chromium Version Format](#chromium-version-format)
 * [Use as API](#use-as-api)
 * [FAQ](#faq)
@@ -90,7 +89,7 @@ docker build -t rusted-chromium .
 
 | Flag | Short | Parameter | Default | Description |
 |-|-|-|-|-
-|`--single`|`-s`| string | - | Use a specific version. No interactive prompt is displayed. The [Store file](#store-file) is ignored, several other flags have no effect (like `-d`, `-i`, `-n`, `-M`, `-m`, `-r` and `-O`). Terminates with an error status code of 1, if no binary exists.
+|`--single`|`-s`| string | - | Use a specific version. No interactive prompt is displayed. Several flags have no effect (like `-d`, `-i`, `-n`, `-M`, `-m`, `-r` and `-O`). Terminates with an error status code of 1, if no binary exists.
 | `--max`| `-M` | integer | 10000 | Maximum version which should be selectable.
 | `--min`| `-m` | integer | 0 | Minimum version which should be selectable.
 | `--max-results`| `-r` | integer | 10 | Maximum number of results to select. Directly downloads the binary, if set to 1. **Important:**  `--max-results` is set to `Infinity`, if `--min` is set and `--max-results` is not set, so the default is overridden!
@@ -101,10 +100,6 @@ docker build -t rusted-chromium .
 | `--increase-on-fail`| `-i` | - | - | Automatically try the next higher version, if the selected version has no binary.
 |`--non-interactive` | `-n` | - | - | Don't display the version selection. Automatically select the newest version in the available range (set by `--min`, `--max` and `--max-results`). Only works when `--decrease-on-fail` is set as well.
 |`--no-download` | `-l` | - | - | Don't download the binary if it's found.
-|`--import-store` | `-I` | URL/File path | - | Download the store file "localstore.json" from a given URL or load it from a given path of the filesystem. Merges the import with an already existing store.
-|`--export-store` | `-E` | (optional) File path | - | Exports the "localstore.json" file to stdout. Optionally add a path where to find it. Uses "localstore.json" in the current folder of the rusted-chromium executable as default.
-|`--no-store` | `-t` | - | false | Don't add negative hits to the existing store
-|`--ignore-store`| `-S` | - | false | Don't use the store to disable already known negative hits
 |`--hide-negative-hits` | `-H` | - | false | Hide negative hits in the CLI prompt
 |`--folder` | `-f` | `path/to/folder` | Current folder executing the command | Set the folder to which the archive of the chromium binary or the extracted folder (if the flag `--unzip` is set)
 |`--only-newest-major` | `-O`| - | - | Show only the newest version for every major version in the user selection. If the newest versions are not available for the current os, they are skipped.
@@ -156,7 +151,7 @@ rusted-chromium --max 70 --max-results 30
 rusted-chromium -M 70 -r 30
 ```
 
-##### Don't download anything, just mark negative hits in the local store
+##### Don't download anything
 
 ```bash
 # long version
@@ -216,37 +211,6 @@ rusted-chromium --folder /tmp/rusted
 rusted-chromium -f /tmp/rusted
 ```
 
-##### Import a store file (and merge it with an existing store, if available)
-```bash
-# URL
-## long version
-rusted-chromium --import-store https://url/to/localstore.json
-## short version
-rusted-chromium -I https://url/to/localstore.json
-
-# filesystem
-## long version
-rusted-chromium --import-store /path/to/file
-## short version
-rusted-chromium -I /path/to/file
-```
-
-##### Export a store file (from default location)
-```bash
-# long version
-rusted-chromium --export-store
-# short version
-rusted-chromium -E
-```
-
-##### Export a store file (from given path)
-```bash
-# long version
-rusted-chromium --export-store /path/to/file
-# short version
-rusted-chromium -E /path/to/file
-```
-
 ##### Suppress colors in log output
 ```bash
 # long version
@@ -292,26 +256,6 @@ rusted-chromium --version
 rusted-chromium -V
 ```
 
-## Store file
-
-It's possible that for a given combination of
-
-* operating system (windows/linux/mac)
-* architecture (x86/x64 for Win/Linux or x64/arm for mac)
-* version (e.g. 63.0.3239.150)
-
-a binary might be not available.
-The reason for this is, if a new patch is released, it might only fix bugs for a certain combination of operating system and architecture. For all other combinations might no new version be released.
-Unfortunately, this can only be detected at the very end of the api-call chain.
-
-Every time a "negative hit" (so no binary is available) is detected, this is written to a Store file `localstore.json` in the same folder as the `rusted-chromium` executable.
-The next time a range of versions is requested by `rusted-chromium`, this version is automatically marked as "not-available".
-
-### Download Store file
-
-You can use `rusted-chromium` to download an existing `localstore.json` file, to setup an initial state of known unexisting binaries.
-This project provides one under https://rusted.buzz-t.eu/localstore.json, but there is no need to use it.
-
 ## Chromium Version Format
 
 A chrom(e/ium) version might look like this: "60.0.3112.93". The version can be split in:
@@ -339,35 +283,6 @@ E.g.:
 
 rusted-chromium can be used as API as well. See more examples [here](https://github.com/BuZZ-T/rusted-chromium/blob/main/examples/README.md).
 
-### Import store
-
-To import a store file, use `importAndMergeStore`:
-```ts
-import { importAndMergeLocalstore } from 'rusted-chromium';
-
-importAndMergeLocalstore({
-    color: true,
-    debug: false,
-    progress: true,
-    quiet: false,
-    url: '...', // File or URL
-});
-```
-
-### Export store
-
-To export a store file, use `exportStore`:
-```ts
-import { exportStore } from 'rusted-chromium'
-
-exportStore({
-    color: true,
-    debug: false,
-    progress: true,
-    quiet: false,
-}, process.stdout)
-```
-
 ### Download chromium
 
 To download a chromium version, use `downloadChromium`:
@@ -382,7 +297,6 @@ downloadChromium({
     download: true,
     downloadFolder: null,
     hideNegativeHits: false,
-    ignoreStore: false,
     interactive: true,
     inverse: false,
     list: false,
@@ -395,7 +309,6 @@ downloadChromium({
     quiet: false,
     results: 10,
     single: null,
-    store: true,
 })
 ```
 

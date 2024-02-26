@@ -1,12 +1,11 @@
 import { fetchReleases } from '../api'
 import { LOAD_RELEASES } from '../commons/loggerTexts'
-import { MappedVersion } from '../commons/MappedVersion'
 import { Compared } from '../interfaces/enums'
 import { IChromeConfig } from '../interfaces/interfaces'
 import type { Channel, OS, Platform } from '../interfaces/os.interfaces'
 import { logger } from '../log/logger'
 import { spinner } from '../log/spinner'
-import { Store } from '../store/Store'
+import { ComparableVersion } from '../public_api'
 import { sortDescendingReleases } from '../utils/sort.utils'
 import type { ApiRelease, Release } from './release.types'
 
@@ -33,14 +32,14 @@ export async function loadReleases(os: OS, channel: Channel = 'Dev'): Promise<Ap
         .catch(() => (spinner.error(), []))
 }
 
-function mapApiReleaseToRelease(apiRelease: ApiRelease, versionSet: Set<string>): Release {
+function mapApiReleaseToRelease(apiRelease: ApiRelease): Release {
     return {
         branchPosition: apiRelease.chromium_main_branch_position,
-        version: new MappedVersion(apiRelease.version, versionSet.has(apiRelease.version)),
+        version: new ComparableVersion(apiRelease.version),
     }
 }
 
-export function mapApiReleasesToReleases(apiReleases: ApiRelease[], config: IChromeConfig, store: Store): Release[] {
+export function mapApiReleasesToReleases(apiReleases: ApiRelease[], config: IChromeConfig): Release[] {
     if (config.single !== null) {
         const singleRelease = apiReleases.find(apiRelease => apiRelease.version === config.single.toString())
 
@@ -48,16 +47,14 @@ export function mapApiReleasesToReleases(apiReleases: ApiRelease[], config: IChr
             return []
         }
 
-        return [mapApiReleaseToRelease(singleRelease, new Set())]
+        return [mapApiReleaseToRelease(singleRelease)]
     }
 
-    const versionSet = store.getBy(config.os, config.arch)
-
     const filteredVersions = apiReleases
-        .map(apiRelease => mapApiReleaseToRelease(apiRelease, versionSet))
-        .filter(release => !config.hideNegativeHits || !versionSet.has(release.version.value))
-        .filter(release => release.version.comparable.compare(config.min) !== Compared.LESS
-            && release.version.comparable.compare(config.max) !== Compared.GREATER)
+        .map(apiRelease => mapApiReleaseToRelease(apiRelease))
+        // .filter(release => !config.hideNegativeHits || !versionSet.has(release.version))
+        .filter(release => release.version.compare(config.min) !== Compared.LESS
+            && release.version.compare(config.max) !== Compared.GREATER)
         .sort(sortDescendingReleases)
 
     const versionsRegardingInverse = config.inverse
@@ -68,10 +65,11 @@ export function mapApiReleasesToReleases(apiReleases: ApiRelease[], config: IChr
         const addedMajorVersions = new Set<string>()
 
         return  versionsRegardingInverse.filter((release) => {
-            const hasMajorVersion = addedMajorVersions.has(release.version.value.split('.')[0])
+            const majorString = release.version.toString().split('.')[0]
+            const hasMajorVersion = addedMajorVersions.has(majorString)
 
-            if (!hasMajorVersion && !release.version.disabled) {
-                addedMajorVersions.add(release.version.value.split('.')[0])
+            if (!hasMajorVersion/*  && !release.version.disabled */) {
+                addedMajorVersions.add(majorString)
 
                 return true
             }

@@ -4,7 +4,7 @@
  * @group unit/file/select
  */
 
-import { MappedVersion } from './commons/MappedVersion'
+import { ComparableVersion } from './commons/ComparableVersion'
 import { logger } from './log/logger'
 import { Release } from './releases/release.types'
 import { userSelectedVersion } from './select'
@@ -29,41 +29,50 @@ describe('userSelectedVersion', () => {
     })
 
     it('should select the vesion received by prompts', async () => {
-        const mappedRelease1: Release = {
+        const release1: Release = {
             branchPosition: 123,
-            version: new MappedVersion({
+            version: new ComparableVersion({
                 major: 10,
                 minor: 0,
                 branch: 0,
                 patch: 0,
-                disabled: false
             }),
         }
 
-        const mappedRelease2: Release = {
+        const release2: Release = {
             branchPosition: 456,
-            version: new MappedVersion({
+            version: new ComparableVersion({
                 major: 60,
                 minor: 1,
                 branch: 2,
                 patch: 3,
-                disabled: false
             }),
         }
 
-        promptsMock.mockReturnValue({ version: '10.0.0.0' })
+        promptsMock.mockReturnValue({ version: release1.version })
         const config = createChromeFullConfig({
             results: 10,
             onlyNewestMajor: false,
         })
 
-        expect(await userSelectedVersion([mappedRelease1, mappedRelease2], config)).toEqual(mappedRelease1)
+        expect(await userSelectedVersion([release1, release2], config, new Set())).toEqual(release1)
         expect(promptsMock).toHaveBeenCalledWith({
             type: 'select',
             name: 'version',
             message: 'Select a version',
             warn: 'This version seems to not have a binary',
-            choices: [mappedRelease1.version, mappedRelease2.version],
+            choices: [
+                {
+                    title: release1.version.toString(),
+                    value: release1.version,
+                    disable: false,
+                },
+                {
+                    title: release2.version.toString(),
+                    value: release2.version,
+                    disable: false,
+                }
+            ],
             hint: `for ${config.os} ${config.arch}`
         })
         expect(loggerMock.warn).toHaveBeenCalledTimes(0)
@@ -72,23 +81,21 @@ describe('userSelectedVersion', () => {
     it('should automatically select the first entry on config.results === 1', async () => {
         const mappedRelease1: Release = {
             branchPosition: 123,
-            version: new MappedVersion({
+            version: new ComparableVersion({
                 major: 10,
                 minor: 0,
                 branch: 0,
                 patch: 0,
-                disabled: false
             }),
         }
 
         const mappedRelease2: Release = {
             branchPosition: 456,
-            version: new MappedVersion({
+            version: new ComparableVersion({
                 major: 60,
                 minor: 1,
                 branch: 2,
                 patch: 3,
-                disabled: false
             }),
         }
 
@@ -97,7 +104,7 @@ describe('userSelectedVersion', () => {
             onlyNewestMajor: false,
         })
 
-        expect(await userSelectedVersion([mappedRelease1, mappedRelease2], config)).toEqual(mappedRelease1)
+        expect(await userSelectedVersion([mappedRelease1, mappedRelease2], config, new Set())).toEqual(mappedRelease1)
         expect(promptsMock).toHaveBeenCalledTimes(0)
         expect(loggerMock.warn).toHaveBeenCalledTimes(0)
     })
@@ -108,29 +115,29 @@ describe('userSelectedVersion', () => {
             onlyNewestMajor: false,
         })
 
-        expect(await userSelectedVersion([], config)).toBeNull()
+        expect(await userSelectedVersion([], config, new Set())).toBeNull()
         expect(loggerMock.warn).toHaveBeenCalledTimes(1)
         expect(loggerMock.warn).toHaveBeenCalledWith('All versions in the range are disabled, try a different range and amount!')
     })
 
     it('should return null on config.results === 1 with version disabled', async () => {
-        const mappedRelease1: Release = {
+        const release1: Release = {
             branchPosition: 123,
-            version: new MappedVersion({
+            version: new ComparableVersion({
                 major: 10,
                 minor: 0,
                 branch: 0,
                 patch: 0,
-                disabled: true
             }),
         }
 
         const config = createChromeFullConfig({
-            results: 1,
+            hideNegativeHits: true,
             onlyNewestMajor: false,
+            results: 1,
         })
 
-        expect(await userSelectedVersion([mappedRelease1], config)).toBeNull()
+        expect(await userSelectedVersion([release1], config, new Set([release1.version]))).toBeNull()
         expect(promptsMock).toHaveBeenCalledTimes(0)
         expect(loggerMock.warn).toHaveBeenCalledTimes(1)
         expect(loggerMock.warn).toHaveBeenCalledWith('All versions in the range are disabled, try a different range and amount!')
@@ -138,34 +145,33 @@ describe('userSelectedVersion', () => {
     })
 
     it('should return null with all versions disabled', async () => {
-        const mappedRelease1: Release = {
+        const release1: Release = {
             branchPosition: 123,
-            version: new MappedVersion({
+            version: new ComparableVersion({
                 major: 10,
                 minor: 0,
                 branch: 0,
                 patch: 0,
-                disabled: true
             }),
         }
 
-        const mappedRelease2: Release = {
+        const release2: Release = {
             branchPosition: 456,
-            version: new MappedVersion({
+            version: new ComparableVersion({
                 major: 20,
                 minor: 0,
                 branch: 0,
                 patch: 0,
-                disabled: true
             }),
         }
 
         const config = createChromeFullConfig({
-            results: 1,
+            hideNegativeHits: true,
             onlyNewestMajor: false,
+            results: 1,
         })
 
-        expect(await userSelectedVersion([mappedRelease1, mappedRelease2], config)).toBeNull()
+        expect(await userSelectedVersion([release1, release2], config, new Set([release1.version, release2.version]))).toBeNull()
         expect(promptsMock).toHaveBeenCalledTimes(0)
         expect(loggerMock.warn).toHaveBeenCalledTimes(1)
         expect(loggerMock.warn).toHaveBeenCalledWith('All versions in the range are disabled, try a different range and amount!')

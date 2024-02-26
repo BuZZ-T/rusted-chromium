@@ -6,7 +6,7 @@ import { checkValidChannel } from '../channel/checkValidChannel'
 import { ComparableVersion } from '../commons/ComparableVersion'
 import { DEFAULT_CONFIG_OPTIONS } from '../commons/constants'
 import type { IConfigOptions } from '../interfaces/config.interfaces'
-import type { ConfigWrapper, IChromeSingleConfig } from '../interfaces/interfaces'
+import type { IChromeConfig } from '../interfaces/interfaces'
 import { logger } from '../log/logger'
 /* eslint-disable-next-line import/no-namespace */
 import * as packageJson from '../package.json'
@@ -16,7 +16,7 @@ import { mapOS } from '../utils'
 /**
  * Checks the arguments passed to the programm and returns them
  */
-export function readConfig(args: string[], platform: NodeJS.Platform): ConfigWrapper {
+export function readConfig(args: string[], platform: NodeJS.Platform): IChromeConfig {
     program
         .version(packageJson.version)
         .option('-c, --channel <channel>', 'The channel to download from. Valid values are "stable", "beta", "dev" and "canary"', DEFAULT_CONFIG_OPTIONS.channel)
@@ -29,11 +29,7 @@ export function readConfig(args: string[], platform: NodeJS.Platform): ConfigWra
         .option('-i, --increase-on-fail', 'If a binary does not exist, go to the next higher version number and try again (regarding --min, --max and --max-results), overwrites "--decrease-on-fail" if both set', false)
         .option('-z, --unzip', 'Directly unzip the downloaded zip-file and delete the .zip afterwards', DEFAULT_CONFIG_OPTIONS.unzip)
         .option('-n, --non-interactive', 'Don\'t show the selection menu. Automatically select the newest version. Only works when --decrease-on-fail is also set.', false)
-        .option('-t, --no-store', 'Don\'t store negative hits in the local store file.', DEFAULT_CONFIG_OPTIONS.store)
-        .option('-S, --ignore-store', 'Ignore the local store file and always try to download the binary', DEFAULT_CONFIG_OPTIONS.ignoreStore)
         .option('-l, --no-download', 'Don\'t download the binary. It also continues with the next version, if --decrease-on-fail or --increase-on-fail is set. Useful to build up the negative hit store', DEFAULT_CONFIG_OPTIONS.download)
-        .option('-I, --import-store <url>', 'Imports a localstore.json file either by URL (starting with "http://" or "https://" or by local file')
-        .option('-E, --export-store [path]', 'Exports the localstore.json file to stdout')
         .option('-H, --hide-negative-hits', 'Hide negative hits', DEFAULT_CONFIG_OPTIONS.hideNegativeHits)
         .option('-f, --folder <folder>', 'Set the download folder', null)
         .option('-O, --only-newest-major', 'Show only the newest major version in user selection', DEFAULT_CONFIG_OPTIONS.onlyNewestMajor)
@@ -74,34 +70,8 @@ export function readConfig(args: string[], platform: NodeJS.Platform): ConfigWra
 
     const color = options.color
 
-    if (options.importStore) {
-        return {
-            action: 'importStore',
-            config: {
-                color,
-                debug: options.debug,
-                quiet: options.quiet,
-                progress: options.progress,
-                url: options.importStore,
-            },
-        }
-    }
-
-    if (options.exportStore !== undefined) {
-        return {
-            action: 'exportStore',
-            config: {
-                color,
-                debug: options.debug,
-                path: typeof options.exportStore === 'string' ? options.exportStore : undefined,
-                progress: options.progress,
-                quiet: options.quiet,
-            }
-        }
-    }
-
     if (options.single) {
-        const config: IChromeSingleConfig = {
+        return {
             arch,
             autoUnzip: options.unzip,
             channel: options.channel,
@@ -113,40 +83,29 @@ export function readConfig(args: string[], platform: NodeJS.Platform): ConfigWra
             progress: options.progress,
             quiet: options.quiet,
             single: new ComparableVersion(options.single),
-            store: options.store,
-        }
-
-        return {
-            action: 'loadChrome',
-            config,
         }
     }
 
     return {
-        action: 'loadChrome',
-        config: {
-            arch,
-            autoUnzip: options.unzip,
-            channel: options.channel,
-            color,
-            debug: options.debug,
-            download: options.download,
-            downloadFolder: options.folder || null,
-            hideNegativeHits: options.hideNegativeHits,
-            ignoreStore: options.ignoreStore,
-            interactive: !options.nonInteractive,
-            inverse: options.inverse,
-            list: options.list,
-            max: new ComparableVersion(options.max),
-            min: new ComparableVersion(options.min),
-            onFail: options.increaseOnFail ? 'increase' : options.decreaseOnFail ? 'decrease' : 'nothing',
-            onlyNewestMajor: options.onlyNewestMajor,
-            os,
-            progress: options.progress,
-            quiet: options.quiet,
-            results: minIsSet && !maxResultsIsSet ? Infinity : (parseInt(options.maxResults as string, 10) || 10),
-            single: null,
-            store: options.store,
-        },
+        arch,
+        autoUnzip: options.unzip,
+        channel: options.channel,
+        color,
+        debug: options.debug,
+        download: options.download,
+        downloadFolder: options.folder || null,
+        hideNegativeHits: options.hideNegativeHits,
+        interactive: !options.nonInteractive,
+        inverse: options.inverse,
+        list: options.list,
+        max: new ComparableVersion(options.max),
+        min: new ComparableVersion(options.min),
+        onFail: options.increaseOnFail ? 'increase' : options.decreaseOnFail ? 'decrease' : 'nothing',
+        onlyNewestMajor: options.onlyNewestMajor,
+        os,
+        progress: options.progress,
+        quiet: options.quiet,
+        results: minIsSet && !maxResultsIsSet ? Infinity : (parseInt(options.maxResults as string, 10) || 10),
+        single: null,
     }
 }

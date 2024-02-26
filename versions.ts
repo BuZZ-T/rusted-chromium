@@ -1,6 +1,5 @@
 import { fetchChromeUrl } from './api'
 import { SEARCH_BINARY } from './commons/loggerTexts'
-import { MappedVersion } from './commons/MappedVersion'
 import type { ContinueFetchingChromeUrlReturn, GetChromeDownloadUrlReturn } from './interfaces/function.interfaces'
 import { ContinueFetchingChromeUrlParams } from './interfaces/function.interfaces'
 import type { IChromeFullConfig, IChromeSingleConfig, IChromeConfig } from './interfaces/interfaces'
@@ -9,9 +8,9 @@ import type { IOSSettings } from './interfaces/os.interfaces'
 import type { OSSetting } from './interfaces/os.interfaces'
 import { logger } from './log/logger'
 import { spinner } from './log/spinner'
+import { ComparableVersion } from './public_api'
 import { Release } from './releases/release.types'
 import { userSelectedVersion } from './select'
-import { storeNegativeHit } from './store/storeNegativeHit'
 import { detectOperatingSystem } from './utils'
 
 export async function getChromeDownloadUrl(config: IChromeConfig, releases: Release[]): Promise<GetChromeDownloadUrlReturn> {
@@ -26,13 +25,15 @@ export async function getChromeDownloadUrl(config: IChromeConfig, releases: Rele
 
 async function continueFetchingChromeUrl({
     config,
-    releases,
     osSetting,
+    releases,
     selectedRelease,
 }: ContinueFetchingChromeUrlParams): Promise<ContinueFetchingChromeUrlReturn> {
 
     let chromeUrl: string | undefined
     const report: DownloadReportEntry[] = []
+
+    const notAvailableVersions = new Set<ComparableVersion>()
 
     do {
         if (!selectedRelease) {
@@ -40,7 +41,7 @@ async function continueFetchingChromeUrl({
             break
         }
 
-        if (!selectedRelease.version.disabled) {
+        if (!notAvailableVersions.has(selectedRelease.version)) {
             chromeUrl = await fetchChromeUrlForVersion(config, osSetting, selectedRelease)
 
             report.push({
@@ -49,10 +50,8 @@ async function continueFetchingChromeUrl({
                 release: selectedRelease,
             })
 
-            if (chromeUrl) {
-                if (config.download) {
-                    return { chromeUrl, report, selectedRelease }
-                }
+            if (chromeUrl && config.download) {
+                return { chromeUrl, report, selectedRelease }
             }
         } else {
             logger.warn('Already disabled version!')
@@ -63,7 +62,9 @@ async function continueFetchingChromeUrl({
             })
         }
 
-        await storeIfNoBinary(config, chromeUrl, selectedRelease.version)
+        if (!chromeUrl) {
+            notAvailableVersions.add(selectedRelease.version)
+        }
 
         if (chromeUrl && !config.download) {
             chromeUrl = undefined
@@ -71,16 +72,14 @@ async function continueFetchingChromeUrl({
         }
 
         const sRelease: Release = selectedRelease
-        const index = releases.findIndex(release => release.version.value === sRelease.version.value)
+        const index = releases.findIndex(release => release.version === sRelease.version)
 
         switch (config.onFail) {
             case 'increase': {
                 if (index > 0) {
                     selectedRelease = releases[index - 1]
-                    if (!selectedRelease.version.disabled) {
-                        const higherLower = config.inverse ? 'lower' : 'higher'
-                        logger.info(`Continue with next ${higherLower} version "${selectedRelease.version.value}"`)
-                    }
+
+                    logger.info(`Continue with next ${config.inverse ? 'lower' : 'higher'} version "${selectedRelease.version.toString()}"`)
                 } else {
                     return { chromeUrl: undefined, report, selectedRelease: undefined }
                 }
@@ -89,19 +88,16 @@ async function continueFetchingChromeUrl({
             case 'decrease': {
                 if (index < releases.length - 1) {
                     selectedRelease = releases[index + 1]
-                    if (!selectedRelease.version.disabled) {
 
-                        const higherLower = config.inverse ? 'higher' : 'lower'
-
-                        logger.info(`Continue with next ${higherLower} version "${selectedRelease.version.value}"`)
-                    }
+                    logger.info(`Continue with next ${config.inverse ? 'higher' : 'lower'} version "${selectedRelease.version.toString()}"`)
                 } else {
                     return { chromeUrl: undefined, report, selectedRelease: undefined }
                 }
                 break
             }
             case 'nothing': {
-                selectedRelease = await userSelectedVersion(releases, config)
+                // TODO: pass notAvailableReleases to userSelectedVersion to disable non-available versions
+                selectedRelease = await userSelectedVersion(releases, config, notAvailableVersions)
             }
         }
     } while (!chromeUrl || !config.download)
@@ -115,13 +111,18 @@ async function getChromeUrlForFull(config: IChromeFullConfig, osSetting: OSSetti
 
     const release = isAutoSearch
         ? releases[0]
-        : await userSelectedVersion(releases, config)
+        : await userSelectedVersion(releases, config, new Set())
 
     if (isAutoSearch && !!release) {
-        logger.info(`Auto-searching with version ${release.version.value}`)
+        logger.info(`Auto-searching with version ${release.version}`)
     }
 
-    const { chromeUrl, report, selectedRelease } = await continueFetchingChromeUrl({config, osSetting, selectedRelease: release, releases})
+    const { chromeUrl, report, selectedRelease } = await continueFetchingChromeUrl({
+        config,
+        osSetting,
+        releases,
+        selectedRelease: release,
+    })
 
     return { chromeUrl, selectedRelease: selectedRelease, filenameOS: osSetting.filename, report }
 }
@@ -129,8 +130,6 @@ async function getChromeUrlForFull(config: IChromeFullConfig, osSetting: OSSetti
 async function getChromeUrlForSingle(config: IChromeSingleConfig, oSSetting: OSSetting, releases: Release[]): Promise<GetChromeDownloadUrlReturn> {
     const release = releases[0]
     const chromeUrl = await fetchChromeUrlForVersion(config, oSSetting, release)
-
-    await storeIfNoBinary(config, chromeUrl, release.version)
 
     const report: DownloadReportEntry[] = [
         {
@@ -149,7 +148,7 @@ async function getChromeUrlForSingle(config: IChromeSingleConfig, oSSetting: OSS
 }
 
 async function fetchChromeUrlForVersion(config: IChromeConfig, osSettings: IOSSettings, release: Release): Promise<string | undefined> {
-    logger.debug(`fetching chrome url for version ${release.version.value} (${release.branchPosition})`)
+    logger.debug(`fetching chrome url for version ${release.version} (${release.branchPosition})`)
     spinner.start(SEARCH_BINARY)
     return fetchChromeUrl(release.branchPosition, osSettings)
         .then((chromeUrl) => {
@@ -163,13 +162,3 @@ async function fetchChromeUrlForVersion(config: IChromeConfig, osSettings: IOSSe
         .catch(() => (spinner.error(), undefined))
 }
 
-async function storeIfNoBinary(config: IChromeConfig, chromeUrl: string | undefined, version: MappedVersion): Promise<void> {
-    if (!chromeUrl && !version.disabled) {
-        // disable the version in the prompt
-        version.disable()
-        if (config.store) {
-            // TODO: remove await?
-            await storeNegativeHit(version.comparable, config.os, config.arch)
-        }
-    }
-}

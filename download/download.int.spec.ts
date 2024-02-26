@@ -8,14 +8,12 @@
 import * as mockFs from 'mock-fs'
 /* eslint-disable-next-line import/no-namespace */
 import * as fetch from 'node-fetch'
-import { readFile, writeFile, unlink } from 'node:fs/promises'
+import { readFile, unlink } from 'node:fs/promises'
 import { join as pathJoin, resolve } from 'node:path'
 
 import { MappedVersion } from '../commons/MappedVersion'
-import type { IListStore } from '../interfaces/store.interfaces'
 import { rusted } from '../rusted'
 import { mockNodeFetch, chromeZipStream, getJestTmpFolder, minimalValidZipfile } from '../test/int.utils'
-import { createStore } from '../test/test.utils'
 import { popArray } from '../utils'
 import { existsAndIsFile, existsAndIsFolder } from '../utils/file.utils'
 
@@ -29,7 +27,6 @@ describe.skip('[int] download chromium', () => {
     const chromeZip10 = pathJoin(__dirname, '../', 'chrome-linux-x64-10.0.0.0.zip')
     const chromeZip20 = pathJoin(__dirname, '../', 'chrome-linux-x64-20.0.0.0.zip')
     const chromeFolder20 = pathJoin(__dirname, '../', 'chrome-linux-x64-20.0.0.0')
-    const localStoreFile = pathJoin(__dirname, '../', 'localstore.json')
 
     let promptsMock: jest.MaybeMocked<typeof prompts>
     let nodeFetchMock: jest.MaybeMocked<typeof fetch>
@@ -39,8 +36,6 @@ describe.skip('[int] download chromium', () => {
 
         const jestFolder = await getJestTmpFolder()
         mockFs({
-            '../localstore.json': JSON.stringify(createStore()),
-
             // pass some folders to the mock for jest to be able to run
             './node_modules': mockFs.load(resolve(__dirname, '../node_modules')),
             [`/tmp/${jestFolder}`]: mockFs.load(resolve(`/tmp/${jestFolder}`)),
@@ -49,7 +44,6 @@ describe.skip('[int] download chromium', () => {
 
     beforeEach(async () => {
         // clear mock-fs
-        await writeFile(localStoreFile, JSON.stringify(createStore()))
         if (await existsAndIsFile(chromeZip10)) {
             await unlink(chromeZip10)
         }
@@ -207,89 +201,6 @@ describe.skip('[int] download chromium', () => {
             type: 'select',
             warn: 'This version seems to not have a binary',
         })
-    })
-
-    it('should mark a chrome version as disabled, on no binary found', async () => {
-        mockNodeFetch(nodeFetchMock, {
-            params: {
-                // branchPosition: '4444',
-            }
-        })
-        promptsMock.mockReturnValue({ version: '10.0.0.0' })
-
-        const rustedPromise = rusted(['/some/path/to/node', '/some/path/to/rusted-chromium'], 'linux')
-        chromeZipStream.end()
-        await rustedPromise
-
-        expect(await existsAndIsFile(chromeZip10)).toBe(false)
-
-        const storedStore = await readFile(localStoreFile, { encoding: 'utf-8' })
-        const store: IListStore = JSON.parse(storedStore)
-
-        expect(store.linux.x64).toEqual(['10.0.0.0'])
-        expect(store.linux.x86).toEqual([])
-        expect(store.win.x64).toEqual([])
-        expect(store.win.x86).toEqual([])
-        expect(store.mac.x64).toEqual([])
-        expect(store.mac.arm).toEqual([])
-    })
-
-    it('should mark a chrome version as disabled, on no binary found and init with an empty store on no store file found', async () => {
-        await unlink(localStoreFile)
-        mockNodeFetch(nodeFetchMock, {
-            params: {
-                // branchPosition: '4444',
-            }
-        })
-        promptsMock.mockReturnValue({ version: '10.0.0.0' })
-
-        expect(await existsAndIsFile(localStoreFile)).toBe(false)
-
-        const rustedPromise = rusted(['/some/path/to/node', '/some/path/to/rusted-chromium'], 'linux')
-        chromeZipStream.end()
-        await rustedPromise
-
-        expect(await existsAndIsFile(chromeZip10)).toBe(false)
-        expect(await existsAndIsFile(localStoreFile)).toBe(true)
-
-        const storedStore = await readFile(localStoreFile, { encoding: 'utf-8' })
-        const store: IListStore = JSON.parse(storedStore)
-
-        expect(store.linux.x64).toEqual(['10.0.0.0'])
-        expect(store.linux.x86).toEqual([])
-        expect(store.win.x64).toEqual([])
-        expect(store.win.x86).toEqual([])
-        expect(store.mac.x64).toEqual([])
-        expect(store.mac.arm).toEqual([])
-    })
-
-    it('should mark a chrome version as disabled, on no binary found and init with an empty store on currupt JSON', async () => {
-        await writeFile(localStoreFile, '{ asdf')
-        mockNodeFetch(nodeFetchMock, {
-            params: {
-                // branchPosition: '4444',
-            }
-        })
-        promptsMock.mockReturnValue({ version: '10.0.0.0' })
-
-        const rustedPromise = rusted(['/some/path/to/node', '/some/path/to/rusted-chromium'], 'linux')
-
-        chromeZipStream.end()
-
-        await rustedPromise
-
-        expect(await existsAndIsFile(chromeZip10)).toBe(false)
-        expect(await existsAndIsFile(localStoreFile)).toBe(true)
-
-        const storedStore = await readFile(localStoreFile, { encoding: 'utf-8' })
-        const store: IListStore = JSON.parse(storedStore)
-
-        expect(store.linux.x64).toEqual(['10.0.0.0'])
-        expect(store.linux.x86).toEqual([])
-        expect(store.win.x64).toEqual([])
-        expect(store.win.x86).toEqual([])
-        expect(store.mac.x64).toEqual([])
-        expect(store.mac.arm).toEqual([])
     })
 
     it('should decrease on fail', async () => {

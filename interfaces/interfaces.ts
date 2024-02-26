@@ -3,47 +3,23 @@ import type { Release } from '../releases/release.types'
 import type { Channel, OS } from './os.interfaces'
 import type { Arch } from './store.interfaces'
 
-export interface IStoreConfigWrapper {
-    action: 'importStore'
-    config: IStoreConfig
-}
-
-export interface IChromeConfigWrapper {
-    action: 'loadChrome'
-    config: IChromeConfig
-}
-
-export interface IExportConfigWrapper {
-    action: 'exportStore'
-    config: IExportConfig
-}
-
 export type IChromeConfig = IChromeFullConfig | IChromeSingleConfig
 
-/**
- * Configuration, which is not passed to the three actions (importAndMerge, download and export),
- * as it's interpreted beforehands.
- */
-export interface IChromeGeneralConfig {
+export interface IChromeCoreConfig {
     color: boolean
     debug: boolean
     progress: boolean
     quiet: boolean
-}
-
-export interface IChromeCoreConfig extends IChromeGeneralConfig {
     arch: Arch
     autoUnzip: boolean
     channel: Channel
     download: boolean
     downloadFolder: string | null
     os: OS
-    store: boolean
 }
 
 export interface IChromeFullConfig extends IChromeCoreConfig {
     hideNegativeHits: boolean
-    ignoreStore: boolean
     interactive: boolean
     inverse: boolean
     list: boolean
@@ -57,22 +33,6 @@ export interface IChromeFullConfig extends IChromeCoreConfig {
 
 export interface IChromeSingleConfig extends IChromeCoreConfig {
     single: ComparableVersion
-}
-
-export interface IStoreConfig extends IChromeGeneralConfig {
-    url: string
-}
-
-export interface IExportConfig extends IChromeGeneralConfig {
-    path?: string
-}
-
-export type ConfigWrapper = IStoreConfigWrapper | IChromeConfigWrapper | IExportConfigWrapper
-
-export interface IMappedVersion {
-    value: string
-    comparable: ComparableVersion
-    disabled: boolean
 }
 
 export interface IComparableVersion {

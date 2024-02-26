@@ -1,10 +1,8 @@
 import { Response as NodeFetchResponse, RequestInfo as NodeFetchRequestInfo, Request as NodeFetchRequest } from 'node-fetch'
-import { readdir, writeFile } from 'node:fs/promises'
-import { join } from 'node:path'
+import { readdir } from 'node:fs/promises'
 import { PassThrough, Readable } from 'node:stream'
 
 import { ApiRelease } from '../releases/release.types'
-import { Store } from '../store/Store'
 import { testMetadataResponse } from './test.metadata'
 
 const unmockedNodeFetch = jest.requireActual('node-fetch')
@@ -183,16 +181,6 @@ export function mockNodeFetch(nodeFetchMock: jest.MaybeMockedDeep<any>, { params
 
         throw new Error(`No mock found for url: ${url}`)
     })
-}
-
-/**
- * Updates the localstore for integration tests. Don't ever call this in unit tests,
- * as it will update the actual localstore.json (as fs is not mocked there...)
- * @param store
- * @returns
- */
-export function setLocalstore(store: Store): Promise<void> {
-    return writeFile(join(__dirname, 'localstore.json'), store.toFormattedString())
 }
 
 export async function getJestTmpFolder(): Promise<string | undefined> {

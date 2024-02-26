@@ -17,7 +17,7 @@ export interface GetChromeDownloadUrlReturn {
 
 export interface ContinueFetchingChromeUrlParams {
     config: IChromeFullConfig
-    releases: Release[]
     osSetting: OSSetting
+    releases: Release[]
     selectedRelease: Nullable<Release>
 }
