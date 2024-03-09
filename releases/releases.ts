@@ -52,7 +52,6 @@ export function mapApiReleasesToReleases(apiReleases: ApiRelease[], config: IChr
 
     const filteredVersions = apiReleases
         .map(apiRelease => mapApiReleaseToRelease(apiRelease))
-        // .filter(release => !config.hideNegativeHits || !versionSet.has(release.version))
         .filter(release => release.version.compare(config.min) !== Compared.LESS
             && release.version.compare(config.max) !== Compared.GREATER)
         .sort(sortDescendingReleases)
@@ -68,7 +67,7 @@ export function mapApiReleasesToReleases(apiReleases: ApiRelease[], config: IChr
             const majorString = release.version.toString().split('.')[0]
             const hasMajorVersion = addedMajorVersions.has(majorString)
 
-            if (!hasMajorVersion/*  && !release.version.disabled */) {
+            if (!hasMajorVersion) {
                 addedMajorVersions.add(majorString)
 
                 return true

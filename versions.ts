@@ -42,7 +42,7 @@ async function continueFetchingChromeUrl({
         }
 
         if (!notAvailableVersions.has(selectedRelease.version)) {
-            chromeUrl = await fetchChromeUrlForVersion(config, osSetting, selectedRelease)
+            chromeUrl = await fetchChromeUrlForVersion(osSetting, selectedRelease)
 
             report.push({
                 binaryExists: !!chromeUrl,
@@ -129,7 +129,7 @@ async function getChromeUrlForFull(config: IChromeFullConfig, osSetting: OSSetti
 
 async function getChromeUrlForSingle(config: IChromeSingleConfig, oSSetting: OSSetting, releases: Release[]): Promise<GetChromeDownloadUrlReturn> {
     const release = releases[0]
-    const chromeUrl = await fetchChromeUrlForVersion(config, oSSetting, release)
+    const chromeUrl = await fetchChromeUrlForVersion(oSSetting, release)
 
     const report: DownloadReportEntry[] = [
         {
@@ -147,7 +147,7 @@ async function getChromeUrlForSingle(config: IChromeSingleConfig, oSSetting: OSS
     }
 }
 
-async function fetchChromeUrlForVersion(config: IChromeConfig, osSettings: IOSSettings, release: Release): Promise<string | undefined> {
+async function fetchChromeUrlForVersion(osSettings: IOSSettings, release: Release): Promise<string | undefined> {
     logger.debug(`fetching chrome url for version ${release.version} (${release.branchPosition})`)
     spinner.start(SEARCH_BINARY)
     return fetchChromeUrl(release.branchPosition, osSettings)

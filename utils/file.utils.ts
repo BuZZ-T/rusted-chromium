@@ -4,7 +4,7 @@ import { stat } from 'node:fs/promises'
 async function exists(filename: string): Promise<Stats | false> {
     try {
         return await stat(filename)
-    } catch(e) {
+    } catch {
         return false
     }
 }
