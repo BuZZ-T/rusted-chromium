@@ -6,8 +6,9 @@
 
 import { fetchChromeUrl, fetchChromeZipFile } from './api'
 import type { IOSSettings } from './interfaces/os.interfaces'
-import { spinner, Spinner } from './log/spinner'
-import { Release } from './releases/release.types'
+import type { Spinner } from './log/spinner'
+import { spinner } from './log/spinner'
+import type { Release } from './releases/release.types'
 
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */
 const fetch = require('node-fetch')

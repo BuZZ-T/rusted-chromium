@@ -3,8 +3,8 @@ import { DEFAULT_FULL_CONFIG, DEFAULT_SINGLE_CONFIG, DEFAULT_CONFIG_OPTIONS } fr
 import type { IConfigOptions } from '../interfaces/config.interfaces'
 import type { GetChromeDownloadUrlReturn } from '../interfaces/function.interfaces'
 import type { IChromeFullConfig, IChromeSingleConfig } from '../interfaces/interfaces'
-import { PrinterWriteStream } from '../interfaces/printer.interfaces'
-import { ApiRelease } from '../releases/release.types'
+import type { PrinterWriteStream } from '../interfaces/printer.interfaces'
+import type { ApiRelease } from '../releases/release.types'
 
 export const createChromeFullConfig = (config?: Partial<IChromeFullConfig>): IChromeFullConfig => ({
     ...DEFAULT_FULL_CONFIG,

@@ -4,7 +4,7 @@ import * as prompts from 'prompts'
 import type { IChromeFullConfig } from './interfaces/interfaces'
 import type { Nullable } from './interfaces/interfaces'
 import { logger } from './log/logger'
-import { ComparableVersion } from './public_api'
+import type { ComparableVersion } from './public_api'
 import type { Release } from './releases/release.types'
 
 /**

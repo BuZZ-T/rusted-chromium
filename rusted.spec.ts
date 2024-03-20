@@ -6,9 +6,12 @@
 
 import { readConfig } from './config/config'
 import { downloadChromium } from './download/download'
-import { logger, Logger } from './log/logger'
-import { progress, ProgressBar } from './log/progress'
-import { spinner, Spinner } from './log/spinner'
+import type { Logger } from './log/logger'
+import { logger } from './log/logger'
+import type { ProgressBar } from './log/progress'
+import { progress } from './log/progress'
+import type { Spinner } from './log/spinner'
+import { spinner } from './log/spinner'
 import { rusted } from './rusted'
 import { createChromeFullConfig } from './test/test.utils'
 

@@ -1,4 +1,4 @@
-import { ComparableVersion } from '../commons/ComparableVersion'
+import type { ComparableVersion } from '../commons/ComparableVersion'
 import { Compared } from '../interfaces/enums'
 import type { Release } from '../releases/release.types'
 

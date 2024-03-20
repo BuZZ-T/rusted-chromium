@@ -1,4 +1,4 @@
-import { Response as NodeFetchResponse } from 'node-fetch'
+import type { Response as NodeFetchResponse } from 'node-fetch'
 
 import type { IMetadataResponse } from './interfaces/interfaces'
 import type { Channel, IOSSettings, Platform } from './interfaces/os.interfaces'

@@ -1,5 +1,5 @@
 import type { Channel, Platform } from '../interfaces/os.interfaces'
-import { ComparableVersion } from '../public_api'
+import type { ComparableVersion } from '../public_api'
 
 /**
  * Data returned from API call fetching releases

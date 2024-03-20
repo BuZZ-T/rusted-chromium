@@ -4,16 +4,20 @@
  * @group unit/file/download
  */
 
-import { Response as NodeFetchResponse } from 'node-fetch'
-import { createWriteStream, Stats } from 'node:fs'
+import type { Response as NodeFetchResponse } from 'node-fetch'
+import type { Stats } from 'node:fs'
+import { createWriteStream } from 'node:fs'
 import { mkdir, stat, rmdir, unlink }from 'node:fs/promises'
 
 import { fetchChromeZipFile } from '../api'
 import { ComparableVersion } from '../commons/ComparableVersion'
 import { NoChromiumDownloadError } from '../errors'
-import { Logger, logger, DebugMode } from '../log/logger'
-import { progress, ProgressBar } from '../log/progress'
-import { spinner, Spinner } from '../log/spinner'
+import type { Logger} from '../log/logger'
+import { logger, DebugMode } from '../log/logger'
+import type { ProgressBar } from '../log/progress'
+import { progress } from '../log/progress'
+import type { Spinner } from '../log/spinner'
+import { spinner } from '../log/spinner'
 import { loadReleases, mapApiReleasesToReleases } from '../releases/releases'
 import { createChromeFullConfig, createGetChromeDownloadUrlReturn, createChromeSingleConfig, createApiRelease } from '../test/test.utils'
 import { existsAndIsFolder } from '../utils/file.utils'

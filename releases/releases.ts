@@ -1,7 +1,7 @@
 import { fetchReleases } from '../api'
 import { LOAD_RELEASES } from '../commons/loggerTexts'
 import { Compared } from '../interfaces/enums'
-import { IChromeConfig } from '../interfaces/interfaces'
+import type { IChromeConfig } from '../interfaces/interfaces'
 import type { Channel, OS, Platform } from '../interfaces/os.interfaces'
 import { logger } from '../log/logger'
 import { spinner } from '../log/spinner'

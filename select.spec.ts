@@ -6,7 +6,7 @@
 
 import { ComparableVersion } from './commons/ComparableVersion'
 import { logger } from './log/logger'
-import { Release } from './releases/release.types'
+import type { Release } from './releases/release.types'
 import { userSelectedVersion } from './select'
 import { createChromeFullConfig } from './test/test.utils'
 

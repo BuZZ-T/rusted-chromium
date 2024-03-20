@@ -1,4 +1,4 @@
-import { IChromeCoreConfig } from '../interfaces/interfaces'
+import type { IChromeCoreConfig } from '../interfaces/interfaces'
 import { DebugMode, logger } from './logger'
 import { progress } from './progress'
 import { spinner } from './spinner'

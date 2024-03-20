@@ -1,8 +1,9 @@
-import { Response as NodeFetchResponse, RequestInfo as NodeFetchRequestInfo, Request as NodeFetchRequest } from 'node-fetch'
+import type { Response as NodeFetchResponse, RequestInfo as NodeFetchRequestInfo, Request as NodeFetchRequest } from 'node-fetch'
 import { readdir } from 'node:fs/promises'
-import { PassThrough, Readable } from 'node:stream'
+import type { Readable } from 'node:stream'
+import { PassThrough } from 'node:stream'
 
-import { ApiRelease } from '../releases/release.types'
+import type { ApiRelease } from '../releases/release.types'
 import { testMetadataResponse } from './test.metadata'
 
 const unmockedNodeFetch = jest.requireActual('node-fetch')

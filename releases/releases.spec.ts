@@ -10,7 +10,7 @@ import { LOAD_RELEASES } from '../commons/loggerTexts'
 import { logger } from '../log/logger'
 import { spinner } from '../log/spinner'
 import { createApiRelease, createChromeFullConfig, createChromeSingleConfig } from '../test/test.utils'
-import { Release } from './release.types'
+import type { Release } from './release.types'
 import { loadReleases, mapApiReleasesToReleases } from './releases'
 
 jest.mock('../log/spinner')

@@ -1,4 +1,4 @@
-import { LoggerConfig, StringLoggerConfig, TextFunction } from '../interfaces/interfaces'
+import type { LoggerConfig, StringLoggerConfig, TextFunction } from '../interfaces/interfaces'
 
 export const LOAD_CONFIG: StringLoggerConfig = {
     start: 'Downloading local storage file',
