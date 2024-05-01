@@ -116,7 +116,7 @@ describe('sort utils', () => {
             })
         })
 
-        it('should sort the MappedVersion arrays accordingly', () => {
+        it('should sort the ComparableVersion arrays accordingly', () => {
             expect([versionMajor1, versionMajor2].sort(sortDescendingComparableVersions)).toEqual([versionMajor2, versionMajor1])
             expect([versionMajor2, versionMajor1].sort(sortDescendingComparableVersions)).toEqual([versionMajor2, versionMajor1])
 

@@ -11,7 +11,7 @@ import * as fetch from 'node-fetch'
 import { readFile, unlink } from 'node:fs/promises'
 import { join as pathJoin, resolve } from 'node:path'
 
-import { MappedVersion } from '../commons/MappedVersion'
+import { ComparableVersion } from '../public_api'
 import { rusted } from '../rusted'
 import { mockNodeFetch, chromeZipStream, getJestTmpFolder, minimalValidZipfile } from '../test/int.utils'
 import { popArray } from '../utils'
@@ -130,19 +130,17 @@ describe.skip('[int] download chromium', () => {
         expect(promptsMock).toHaveBeenCalledTimes(1)
         expect(promptsMock).toHaveBeenCalledWith({
             choices: [
-                new MappedVersion({
+                new ComparableVersion({
                     major: 20,
                     minor: 0,
                     branch: 0,
                     patch: 0,
-                    disabled: false,
                 }),
-                new MappedVersion({
+                new ComparableVersion({
                     major: 10,
                     minor: 0,
                     branch: 0,
                     patch: 0,
-                    disabled: false,
                 }),
             ],
             hint: 'for linux x64',
@@ -180,19 +178,17 @@ describe.skip('[int] download chromium', () => {
         expect(promptsMock).toHaveBeenCalledTimes(1)
         expect(promptsMock).toHaveBeenCalledWith({
             choices: [
-                new MappedVersion({
+                new ComparableVersion({
                     major: 20,
                     minor: 0,
                     branch: 0,
                     patch: 0,
-                    disabled: false,
                 }),
-                new MappedVersion({
+                new ComparableVersion({
                     major: 10,
                     minor: 0,
                     branch: 0,
                     patch: 0,
-                    disabled: false,
                 }),
             ],
             hint: 'for linux x64',
@@ -291,7 +287,7 @@ describe.skip('[int] download chromium', () => {
             message: 'Select a version',
             // FIXME: Check missing warn field in PromptObject
             warn: 'This version seems to not have a binary',
-            choices: [new MappedVersion('30.0.0.0', false), new MappedVersion('20.0.0.1', false), new MappedVersion('10.0.3.0', false)],
+            choices: [new ComparableVersion('30.0.0.0'), new ComparableVersion('20.0.0.1'), new ComparableVersion('10.0.3.0')],
             hint: expect.any(String),
         })
     })
