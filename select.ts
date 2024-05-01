@@ -26,7 +26,7 @@ export async function userSelectedVersion(releases: Release[], config: IChromeFu
         return releases[0]
     }
 
-    const choices: prompts.Choice[] = releases.map(release => ({
+    const choices = releases.map((release): prompts.Choice => ({
         title: release.version.toString(),
         value: release.version,
         disabled: notAvailableVersions.has(release.version)
