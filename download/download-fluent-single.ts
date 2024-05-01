@@ -1,3 +1,4 @@
+import { downloadChromium } from './download'
 import { ComparableVersion } from '../commons/ComparableVersion'
 import { DEFAULT_DOWNLOAD_FLUENT_SINGLE_CONFIG } from '../commons/constants'
 import type { DownloadReportEntry, IChromeSingleConfig } from '../interfaces/interfaces'
@@ -6,7 +7,6 @@ import type { Arch } from '../interfaces/store.interfaces'
 import { logger } from '../log/logger'
 import { progress } from '../log/progress'
 import { spinner } from '../log/spinner'
-import { downloadChromium } from './download'
 
 // https://stackoverflow.com/questions/56933109/pick-one-key-value-pair-from-type
 type PickOne<T> = { [P in keyof T]: Record<P, T[P]> & Partial<Record<Exclude<keyof T, P>, undefined>> }[keyof T]

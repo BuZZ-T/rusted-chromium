@@ -1,6 +1,6 @@
+import { ComparableVersion } from './ComparableVersion'
 import type { IConfigOptions } from '../interfaces/config.interfaces'
 import type { IChromeFullConfig, IChromeSingleConfig } from '../interfaces/interfaces'
-import { ComparableVersion } from './ComparableVersion'
 
 export const LOCAL_STORE_FILE = 'localstore.json'
 

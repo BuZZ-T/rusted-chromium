@@ -4,13 +4,13 @@
  * @group unit/file/download-fluent
  */
 
+import { downloadChromium } from './download'
+import { FluentDownload } from './download-fluent'
 import { ComparableVersion } from '../commons/ComparableVersion'
 import { logger } from '../log/logger'
 import { progress } from '../log/progress'
 import { spinner } from '../log/spinner'
 import { createChromeFullConfig } from '../test/test.utils'
-import { downloadChromium } from './download'
-import { FluentDownload } from './download-fluent'
 
 jest.mock('./download')
 jest.mock('../log/logger')

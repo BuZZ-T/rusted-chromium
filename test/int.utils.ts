@@ -3,8 +3,8 @@ import { readdir } from 'node:fs/promises'
 import type { Readable } from 'node:stream'
 import { PassThrough } from 'node:stream'
 
-import type { ApiRelease } from '../releases/release.types'
 import { testMetadataResponse } from './test.metadata'
+import type { ApiRelease } from '../releases/release.types'
 
 const unmockedNodeFetch = jest.requireActual('node-fetch')
 

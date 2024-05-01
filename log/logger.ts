@@ -1,5 +1,5 @@
-import type { PrinterWriteStream } from '../interfaces/printer.interfaces'
 import { Printer } from './printer'
+import type { PrinterWriteStream } from '../interfaces/printer.interfaces'
 
 export enum DebugMode {
     NONE,

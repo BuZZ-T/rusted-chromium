@@ -1,7 +1,7 @@
-import type { IChromeCoreConfig } from '../interfaces/interfaces'
 import { DebugMode, logger } from './logger'
 import { progress } from './progress'
 import { spinner } from './spinner'
+import type { IChromeCoreConfig } from '../interfaces/interfaces'
 
 export function applyConfigToLoggers(config: IChromeCoreConfig): void {
     if (config.debug) {

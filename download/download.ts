@@ -2,6 +2,8 @@ import { createWriteStream } from 'node:fs'
 import { mkdir, stat, rmdir, unlink } from 'node:fs/promises'
 import { join as pathJoin } from 'node:path'
 
+import { FluentDownload } from './download-fluent'
+import { FluentDownloadSingleIncomplete } from './download-fluent-single'
 import { fetchChromeZipFile } from '../api'
 import { DEFAULT_FULL_CONFIG, DEFAULT_SINGLE_CONFIG } from '../commons/constants'
 import { DOWNLOAD_ZIP, EXTRACT_ZIP } from '../commons/loggerTexts'
@@ -15,8 +17,6 @@ import { loadReleases, mapApiReleasesToReleases } from '../releases/releases'
 import { existsAndIsFolder } from '../utils/file.utils'
 import { isChromeSingleConfig } from '../utils/typeguards'
 import { getChromeDownloadUrl } from '../versions'
-import { FluentDownload } from './download-fluent'
-import { FluentDownloadSingleIncomplete } from './download-fluent-single'
 
 /* eslint-disable @typescript-eslint/no-var-requires */
 const extract = require('extract-zip')

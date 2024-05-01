@@ -4,9 +4,9 @@
  * @group unit/file/progress
  */
 
+import { ProgressBar } from './progress'
 import type { PrinterWriteStream } from '../interfaces/printer.interfaces'
 import { createStdioMock } from '../test/test.utils'
-import { ProgressBar } from './progress'
 
 jest.mock('chalk', () => ({
     bgWhite: (text: string) => `bgWhite: ${text}`,

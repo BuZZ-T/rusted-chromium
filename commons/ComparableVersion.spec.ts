@@ -4,8 +4,8 @@
  * @group unit/class/ComparableVersion
  */
 
-import { Compared } from '../interfaces/enums'
 import { ComparableVersion } from './ComparableVersion'
+import { Compared } from '../interfaces/enums'
 
 describe('ComparableVersion', () => {
 

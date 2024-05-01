@@ -1,7 +1,7 @@
-import type { ComparableVersion } from '../commons/ComparableVersion'
-import type { Release } from '../releases/release.types'
 import type { Channel, OS } from './os.interfaces'
 import type { Arch } from './store.interfaces'
+import type { ComparableVersion } from '../commons/ComparableVersion'
+import type { Release } from '../releases/release.types'
 
 export type IChromeConfig = IChromeFullConfig | IChromeSingleConfig
 

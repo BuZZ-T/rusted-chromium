@@ -1,7 +1,7 @@
+import { Printer } from './printer'
 import type { AnyLoggerConfig, TextFunction } from '../interfaces/interfaces'
 import type { PrinterWriteStream } from '../interfaces/printer.interfaces'
 import { isTextFunction } from '../utils/typeguards'
-import { Printer } from './printer'
 
 export class Spinner extends Printer<Spinner> {
 

@@ -1,8 +1,8 @@
 /* eslint-disable-next-line import/no-namespace */
 import * as chalk from 'chalk'
 
-import type { ProgressConfig } from '../interfaces/interfaces'
 import { Printer } from './printer'
+import type { ProgressConfig } from '../interfaces/interfaces'
 
 export class ProgressBar extends Printer<ProgressBar> {
 

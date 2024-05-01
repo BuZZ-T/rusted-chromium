@@ -4,9 +4,9 @@
  * @group unit/file/loger
  */
 
+import { DebugMode, Logger } from './logger'
 import type { PrinterWriteStream } from '../interfaces/printer.interfaces'
 import { createStdioMock } from '../test/test.utils'
-import { DebugMode, Logger } from './logger'
 
 jest.mock('chalk', () => ({
     blue: (text: string) => `blue: ${text}`,

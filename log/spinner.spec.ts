@@ -7,9 +7,9 @@
 /* eslint-disable-next-line import/no-namespace */
 import * as chalk from 'chalk'
 
+import { Spinner } from './spinner'
 import type { PrinterWriteStream } from '../interfaces/printer.interfaces'
 import { createStdioMock } from '../test/test.utils'
-import { Spinner } from './spinner'
 
 jest.mock('chalk', () => ({
     green: (text: string) => `green: ${text}`,

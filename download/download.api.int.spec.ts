@@ -11,10 +11,10 @@ import * as fetch from 'node-fetch'
 import { unlink } from 'node:fs/promises'
 import { join as pathJoin, resolve } from 'node:path'
 
+import { downloadChromium } from './download'
 import { ComparableVersion } from '../commons/ComparableVersion'
 import { mockNodeFetch, chromeZipStream, getJestTmpFolder } from '../test/int.utils'
 import { existsAndIsFile } from '../utils/file.utils'
-import { downloadChromium } from './download'
 
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */
 const prompts = require('prompts')

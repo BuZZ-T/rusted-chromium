@@ -4,9 +4,9 @@
  * @group unit/file/printer
  */
 
+import { Printer } from './printer'
 import type { PrinterWriteStream } from '../interfaces/printer.interfaces'
 import { createStdioMock } from '../test/test.utils'
-import { Printer } from './printer'
 
 jest.mock('chalk', () => ({
     yellow: (text: string) => `yellow: ${text}`,

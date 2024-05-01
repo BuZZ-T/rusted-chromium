@@ -4,13 +4,13 @@
  * @group unit/file/config
  */
 
+import { readConfig } from './config'
 import { ComparableVersion } from '../commons/ComparableVersion'
 import { DEFAULT_CONFIG_OPTIONS } from '../commons/constants'
 import type { OS } from '../interfaces/os.interfaces'
 import type { Logger} from '../log/logger'
 import { logger } from '../log/logger'
 import { createChromeOptions, createChromeSingleConfig, createChromeFullConfig } from '../test/test.utils'
-import { readConfig } from './config'
 
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */
 const program = require('commander')

@@ -1,6 +1,6 @@
-import type { Release } from '../releases/release.types'
 import type { DownloadReportEntry, IChromeFullConfig, Nullable } from './interfaces'
 import type { OSSetting } from './os.interfaces'
+import type { Release } from '../releases/release.types'
 
 export interface ContinueFetchingChromeUrlReturn {
     chromeUrl: Nullable<string>

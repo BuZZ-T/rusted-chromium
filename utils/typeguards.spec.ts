@@ -4,8 +4,8 @@
  * @group unit/utils/typeguard
  */
 
-import { ComparableVersion } from '../commons/ComparableVersion'
 import { isTextFunction, isIVersion, isIVersionWithDisabled, isChromeSingleConfig } from './typeguards'
+import { ComparableVersion } from '../commons/ComparableVersion'
 
 describe('typeguards', () => {
 

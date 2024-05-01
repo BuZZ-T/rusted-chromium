@@ -4,8 +4,8 @@
  * @group unit/utils/sort
  */
 
-import { ComparableVersion } from '../commons/ComparableVersion'
 import { sortAscendingComparableVersions, sortDescendingComparableVersions } from './sort.utils'
+import { ComparableVersion } from '../commons/ComparableVersion'
 
 describe('sort utils', () => {
 

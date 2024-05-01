@@ -9,6 +9,7 @@ import type { Stats } from 'node:fs'
 import { createWriteStream } from 'node:fs'
 import { mkdir, stat, rmdir, unlink }from 'node:fs/promises'
 
+import { downloadChromium } from './download'
 import { fetchChromeZipFile } from '../api'
 import { ComparableVersion } from '../commons/ComparableVersion'
 import { NoChromiumDownloadError } from '../errors'
@@ -22,7 +23,6 @@ import { loadReleases, mapApiReleasesToReleases } from '../releases/releases'
 import { createChromeFullConfig, createGetChromeDownloadUrlReturn, createChromeSingleConfig, createApiRelease } from '../test/test.utils'
 import { existsAndIsFolder } from '../utils/file.utils'
 import { getChromeDownloadUrl } from '../versions'
-import { downloadChromium } from './download'
 
 /* eslint-disable @typescript-eslint/no-var-requires */
 const extract = require('extract-zip')
