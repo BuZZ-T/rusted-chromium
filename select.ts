@@ -29,7 +29,7 @@ export async function userSelectedVersion(releases: Release[], config: IChromeFu
     const choices: prompts.Choice[] = releases.map(release => ({
         title: release.version.toString(),
         value: release.version,
-        disable: notAvailableVersions.has(release.version)
+        disabled: notAvailableVersions.has(release.version)
     }))
 
     const { version } = await prompts({

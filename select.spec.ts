@@ -65,12 +65,12 @@ describe('userSelectedVersion', () => {
                 {
                     title: release1.version.toString(),
                     value: release1.version,
-                    disable: false,
+                    disabled: false,
                 },
                 {
                     title: release2.version.toString(),
                     value: release2.version,
-                    disable: false,
+                    disabled: false,
                 }
             ],
             hint: `for ${config.os} ${config.arch}`
