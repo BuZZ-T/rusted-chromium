@@ -135,17 +135,18 @@ async function downloadForConfig(config: IChromeConfig): Promise<DownloadReportE
         const filenameWithExtension = downloadPath + '.zip'
         const file = createWriteStream(filenameWithExtension)
         registerSigIntHandler(filenameWithExtension)
-        zipFileResponse.body.pipe(file)
+
+        zipFileResponse.body?.pipe(file)
 
         return new Promise((resolve, reject) => {
-            zipFileResponse.body.on('end', async () => {
+            zipFileResponse.body?.on('end', async () => {
                 if (config.autoUnzip) {
                     await extractZip(downloadPath)
                 }
                 resolve(report)
             })
 
-            zipFileResponse.body.on('error', () => {
+            zipFileResponse.body?.on('error', () => {
                 reject()
             })
         })
