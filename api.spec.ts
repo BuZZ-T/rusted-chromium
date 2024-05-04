@@ -20,7 +20,6 @@ jest.mock('node-fetch-progress', () => jest.fn(() => ({
     on: onMock,
 })))
 jest.mock('./log/spinner')
-jest.mock('./log/progress')
 
 describe('api', () => {
 

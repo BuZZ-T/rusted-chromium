@@ -16,7 +16,8 @@
     "plugins": [
         "@typescript-eslint",
         "import",
-        "jest"
+        "jest",
+        "jest-mock-config"
     ],
     "rules": {
         "indent": [
@@ -89,6 +90,10 @@
         "no-restricted-imports": ["error",
          "assert","buffer","child_process","cluster","crypto","dgram","dns","domain","events","freelist","fs","http","https","module","net","os","path","punycode","querystring","readline","repl","smalloc","stream","string_decoder","sys","timers","tls","tracing","tty","url","util","vm","zlib"
         ],
-        "no-trailing-spaces": "error"    
+        "no-trailing-spaces": "error",
+        "jest-mock-config/jest-mock-without-import": ["error", { "ignoreMockWithFactory": true } ],
+        "jest-mock-config/jest-mocked-without-mock": "error",
+        "jest-mock-config/jest-mock-multiple-with-same-path": "error"
+
     }
 }

@@ -40,7 +40,6 @@ jest.mock('../api')
 jest.mock('../log/progress')
 jest.mock('../log/spinner')
 jest.mock('../log/logger')
-jest.mock('../log/printer')
 jest.mock('../versions', () => ({
     ...jest.requireActual('../versions'),
     getChromeDownloadUrl: jest.fn(),
