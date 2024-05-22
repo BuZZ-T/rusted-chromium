@@ -2,6 +2,8 @@ export type OS = 'win' | 'linux' | 'mac'
 export type ExtendedOS = OS | 'darwin' | 'win32'
 export type UrlOS = 'Linux_x64' | 'Linux' | 'Win_x64' | 'Win' | 'Mac' | 'Mac_Arm'
 
+export type Arch = 'x64' | 'x86' | 'arm'
+
 export interface IOSSettings {
     url: UrlOS
     filename: OS
