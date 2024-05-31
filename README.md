@@ -1,6 +1,6 @@
 # rusted chromium
 
-[![NPM Version](https://img.shields.io/npm/v/rusted-chromium.svg)](https://www.npmjs.com/package/rusted-chromium) [![Package License](https://img.shields.io/npm/l/rusted-chromium.svg)](https://www.npmjs.com/package/rusted-chromium) [![Build Status](https://travis-ci.com/BuZZ-T/rusted-chromium.svg?branch=master)](https://travis-ci.com/github/BuZZ-T/rusted-chromium)
+[![NPM Version](https://img.shields.io/npm/v/rusted-chromium.svg)](https://www.npmjs.com/package/rusted-chromium) [![Package License](https://img.shields.io/npm/l/rusted-chromium.svg)](https://www.npmjs.com/package/rusted-chromium) [![Build Status](https://img.shields.io/github/actions/workflow/status/BuZZ-T/rusted-chromium/test.yml?branch=main)](https://img.shields.io/github/actions/workflow/status/BuZZ-T/rusted-chromium/test.yml?branch=main)
 
 | Test | Coverage | Report
 |-|-|-|
