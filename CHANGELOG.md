@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.2.0
+
+* replace `--production` with `--omit=dev` flag in Dockerfile
+* updated supported node versions in README.md
+* add github-actions build status
+* add eslint-plugin-jest-mock-config
+* add tsc config noUncheckedIndexedAccess
+* add github action
+* upgrade eslint to 8
+* display temporarily disabled versions
+* add consistent-type-imports eslint rule
+* remove support for localstore.json file
+* add `--no-progress` removing the progress bar for CI logs
+* show abort warning on CTRL-C while downloading
+* add CHANGELOG.md, link in README.md FAQ
+* make compare and nextMajorVersion of ComparableVersion non-static
+
 ## 0.1.0
 * migrate project to new Chromium API
 
@@ -7,7 +24,7 @@
  * (no mentionable changes)
 
 ## 0.0.20
-* README information that rusted-chromium is not working anymore (3 weeks ago) <Bastian Gebhardt>
+* README information that rusted-chromium is not working anysmore
 * add node 21 to supported versions
 
 ## 0.0.19
