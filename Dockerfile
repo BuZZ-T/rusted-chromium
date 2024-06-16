@@ -16,6 +16,6 @@ WORKDIR /app
 COPY --from=build /build/dist /app/
 COPY ./bin/rusted-chromium.js /app/bin/rusted-chromium.js
 
-RUN npm install --production
+RUN npm install --omit=dev
 
 ENTRYPOINT ["node", "/app/bin/rusted-chromium.js"]
