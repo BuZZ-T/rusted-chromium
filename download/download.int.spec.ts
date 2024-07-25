@@ -6,8 +6,6 @@
 
 /* eslint-disable-next-line import/no-namespace */
 import * as mockFs from 'mock-fs'
-/* eslint-disable-next-line import/no-namespace */
-import * as fetch from 'node-fetch'
 import { readFile, unlink } from 'node:fs/promises'
 import { join as pathJoin, resolve } from 'node:path'
 
@@ -20,7 +18,6 @@ import { existsAndIsFile, existsAndIsFolder } from '../utils/file.utils'
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */
 const prompts = require('prompts')
 
-jest.mock('node-fetch', () => jest.fn())
 jest.mock('prompts')
 
 describe.skip('[int] download chromium', () => {

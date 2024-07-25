@@ -45,7 +45,6 @@
     "chalk": "^3.0.0",
     "commander": "^4.1.1",
     "extract-zip": "^2.0.1",
-    "node-fetch": "^2.6.7",
     "node-fetch-progress": "^1.0.2",
     "prompts": "^2.4.2"
   },
@@ -53,7 +52,6 @@
     "@types/jest": "^29.5.12",
     "@types/mock-fs": "^4.13.4",
     "@types/node": "^20.14.10",
-    "@types/node-fetch": "^2.6.11",
     "@types/prompts": "^2.4.9",
     "@types/unzipper": "^0.10.9",
     "@typescript-eslint/eslint-plugin": "^5.62.0",

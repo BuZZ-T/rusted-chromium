@@ -1,4 +1,3 @@
-import type { Response as NodeFetchResponse, RequestInfo as NodeFetchRequestInfo, Request as NodeFetchRequest } from 'node-fetch'
 import { readdir } from 'node:fs/promises'
 import type { Readable } from 'node:stream'
 import { PassThrough } from 'node:stream'
@@ -6,7 +5,7 @@ import { PassThrough } from 'node:stream'
 import { testMetadataResponse } from './test.metadata'
 import type { ApiRelease } from '../releases/release.types'
 
-const unmockedNodeFetch = jest.requireActual('node-fetch')
+const unmockedNodeFetch = jest.requireActual('node:fetch')
 
 export interface IMocks {
     mockStream: PassThrough | Readable
@@ -108,23 +107,23 @@ export interface IMocksConfig {
     contentLength?: number
 }
 
-function getUrlFromRequestInfo(requestInfo: NodeFetchRequestInfo): string {
+function getUrlFromRequestInfo(requestInfo: RequestInfo): string {
     if (typeof (requestInfo as { href: 'string' }).href === 'string') {
         return (requestInfo as { href: 'string' }).href
     }
-    if (typeof (requestInfo as NodeFetchRequest).url === 'string') {
-        return (requestInfo as NodeFetchRequest).url
+    if (typeof (requestInfo as Request).url === 'string') {
+        return (requestInfo as Request).url
     }
 
     return requestInfo as string
 }
 
 /**
- * Mocks all requests of node-fetch
+ * Mocks all requests of fetch
  * Allows to pass params and config to the mock.
  *
  * - Using params, the function returning the mock data can be parameterized.
- * - Using config, the mocked node-fetch itself can be configured (e.g. headers can be added to the response)
+ * - Using config, the mocked fetch itself can be configured (e.g. headers can be added to the response)
  * - Using urls, addiotional URLs can be mocked
  * @param nodeFetchMock
  * @param options
@@ -133,7 +132,7 @@ export function mockNodeFetch(nodeFetchMock: jest.MaybeMockedDeep<any>, { params
 
     chromeZipStream = new PassThrough()
 
-    nodeFetchMock.mockImplementation((url: NodeFetchRequestInfo): Promise<NodeFetchResponse> => {
+    nodeFetchMock.mockImplementation((url: RequestInfo): Promise<Response> => {
         const stringUrl = getUrlFromRequestInfo(url)
 
         // additional mocks can be completely configured from the outside, no need to pass params or config for them...!

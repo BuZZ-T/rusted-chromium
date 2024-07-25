@@ -11,11 +11,9 @@ import { spinner } from './log/spinner'
 import type { Release } from './releases/release.types'
 
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */
-const fetch = require('node-fetch')
 
 const onMock = jest.fn()
 
-jest.mock('node-fetch', () => jest.fn())
 jest.mock('node-fetch-progress', () => jest.fn(() => ({
     on: onMock,
 })))

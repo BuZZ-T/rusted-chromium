@@ -4,7 +4,6 @@
  * @group unit/file/download
  */
 
-import type { Response as NodeFetchResponse } from 'node-fetch'
 import type { Stats } from 'node:fs'
 import { createWriteStream } from 'node:fs'
 import { mkdir, stat, rmdir, unlink }from 'node:fs/promises'
@@ -71,7 +70,7 @@ describe('download', () => {
 
         let pipeMock: jest.Mock
         let onMock: jest.Mock
-        let zipFileResource: NodeFetchResponse
+        let zipFileResource: Response
 
         let processOnSpy: jest.SpyInstance
         let processExitSpy: jest.SpyInstance
@@ -103,7 +102,7 @@ describe('download', () => {
                     pipe: pipeMock,
                     on: onMock,
                 } as unknown as NodeJS.ReadableStream
-            } as NodeFetchResponse
+            } as Response
             fetchChromeZipFileMock.mockResolvedValue(zipFileResource)
 
             processOnSpy = jest.spyOn(process, 'on')
