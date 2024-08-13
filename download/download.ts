@@ -1,6 +1,7 @@
 import { createWriteStream } from 'node:fs'
 import { mkdir, stat, rmdir, unlink } from 'node:fs/promises'
 import { join as pathJoin } from 'node:path'
+import { Readable } from 'node:stream'
 
 import { FluentDownload } from './download-fluent'
 import { FluentDownloadSingleIncomplete } from './download-fluent-single'
@@ -136,17 +137,26 @@ async function downloadForConfig(config: IChromeConfig): Promise<DownloadReportE
         const file = createWriteStream(filenameWithExtension)
         registerSigIntHandler(filenameWithExtension)
 
-        zipFileResponse.body?.pipe(file)
+        const body = zipFileResponse.body
+
+        if (!body) {
+            return[]
+        }
+
+        const castedBody = body as Parameters<typeof Readable.fromWeb>[0]
+
+        const readable = Readable.fromWeb(castedBody)
+        readable.pipe(file)
 
         return new Promise((resolve, reject) => {
-            zipFileResponse.body?.on('end', async () => {
+            readable.on('end', async () => {
                 if (config.autoUnzip) {
                     await extractZip(downloadPath)
                 }
                 resolve(report)
             })
 
-            zipFileResponse.body?.on('error', () => {
+            readable.on('error', () => {
                 reject()
             })
         })
