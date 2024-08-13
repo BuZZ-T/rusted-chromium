@@ -19,6 +19,6 @@
     "rusted-chromium": "../"
   },
   "devDependencies": {
-    "@types/node": "^16.11.48"
+    "@types/node": "^20.14.12"
   }
 }
