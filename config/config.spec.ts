@@ -4,6 +4,8 @@
  * @group unit/file/config
  */
 
+import { program } from 'commander'
+
 import { readConfig } from './config'
 import { ComparableVersion } from '../commons/ComparableVersion'
 import { DEFAULT_CONFIG_OPTIONS } from '../commons/constants'
@@ -11,9 +13,6 @@ import type { OS } from '../interfaces/os.interfaces'
 import type { Logger} from '../log/logger'
 import { logger } from '../log/logger'
 import { createChromeOptions, createChromeSingleConfig, createChromeFullConfig } from '../test/test.utils'
-
-/* eslint-disable-next-line @typescript-eslint/no-require-imports */
-const program = require('commander')
 
 jest.mock('commander')
 jest.mock('../log/logger')
@@ -35,8 +34,8 @@ describe('config', () => {
             programMock.parse.mockClear()
             programMock.opts.mockClear()
 
-            programMock.version.mockReturnValue(programMock)
-            programMock.option.mockReturnValue(programMock)
+            programMock.version.mockReturnThis()
+            programMock.option.mockReturnThis()
         })
 
         it('should pass the args to program.parse()', () => {
