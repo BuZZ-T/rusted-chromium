@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.0
+
+* upgrade several package to the latest version
+* drop support of Node 21
+* added support of Node 23
+* fix conflicting short flag `-c` of `--no-color` and `--channel`
+* upgrade packages to fix security vulnerabilities in example projects
+
 ## 0.2.0
 
 * replace `--production` with `--omit=dev` flag in Dockerfile
