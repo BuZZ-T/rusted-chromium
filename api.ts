@@ -4,7 +4,7 @@ import type { IMetadataResponse } from './interfaces/interfaces'
 import type { Channel, IOSSettings, Platform } from './interfaces/os.interfaces'
 import type { ApiRelease } from './releases/release.types'
 
-/* eslint-disable-next-line @typescript-eslint/no-var-requires */
+/* eslint-disable-next-line @typescript-eslint/no-require-imports */
 const fetch = require('node-fetch')
 
 function checkStatus(response: NodeFetchResponse) {

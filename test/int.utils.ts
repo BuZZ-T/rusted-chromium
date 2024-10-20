@@ -15,6 +15,7 @@ export interface IMocks {
 export type MockNames = 'chromeZip' | 'chromeUrl' | 'releases'
 
 export type MockParams = {
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     [key in MockNames]?: any
 }
 
@@ -129,6 +130,7 @@ function getUrlFromRequestInfo(requestInfo: NodeFetchRequestInfo): string {
  * @param nodeFetchMock
  * @param options
  */
+/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
 export function mockNodeFetch(nodeFetchMock: jest.MaybeMockedDeep<any>, { params, config, urls }: IMockOptions = {}): void {
 
     chromeZipStream = new PassThrough()

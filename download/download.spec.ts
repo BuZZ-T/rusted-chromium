@@ -24,10 +24,10 @@ import { createChromeFullConfig, createGetChromeDownloadUrlReturn, createChromeS
 import { existsAndIsFolder } from '../utils/file.utils'
 import { getChromeDownloadUrl } from '../versions'
 
-/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/no-require-imports */
 const extract = require('extract-zip')
 const Progress = require('node-fetch-progress')
-/* eslint-enable @typescript-eslint/no-var-requires */
+/* eslint-enable @typescript-eslint/no-require-imports */
 
 const progressOnMock = jest.fn()
 

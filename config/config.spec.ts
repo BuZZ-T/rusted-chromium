@@ -12,7 +12,7 @@ import type { Logger} from '../log/logger'
 import { logger } from '../log/logger'
 import { createChromeOptions, createChromeSingleConfig, createChromeFullConfig } from '../test/test.utils'
 
-/* eslint-disable-next-line @typescript-eslint/no-var-requires */
+/* eslint-disable-next-line @typescript-eslint/no-require-imports */
 const program = require('commander')
 
 jest.mock('commander')

@@ -16,7 +16,7 @@ import { ComparableVersion } from '../commons/ComparableVersion'
 import { mockNodeFetch, chromeZipStream, getJestTmpFolder } from '../test/int.utils'
 import { existsAndIsFile } from '../utils/file.utils'
 
-/* eslint-disable-next-line @typescript-eslint/no-var-requires */
+/* eslint-disable-next-line @typescript-eslint/no-require-imports */
 const prompts = require('prompts')
 
 jest.mock('node-fetch', () => jest.fn())

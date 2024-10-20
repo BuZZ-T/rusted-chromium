@@ -10,7 +10,7 @@ import type { Spinner } from './log/spinner'
 import { spinner } from './log/spinner'
 import type { Release } from './releases/release.types'
 
-/* eslint-disable-next-line @typescript-eslint/no-var-requires */
+/* eslint-disable-next-line @typescript-eslint/no-require-imports */
 const fetch = require('node-fetch')
 
 const onMock = jest.fn()

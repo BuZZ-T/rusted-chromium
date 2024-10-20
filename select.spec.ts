@@ -10,7 +10,7 @@ import type { Release } from './releases/release.types'
 import { userSelectedVersion } from './select'
 import { createChromeFullConfig } from './test/test.utils'
 
-/* eslint-disable-next-line @typescript-eslint/no-var-requires */
+/* eslint-disable-next-line @typescript-eslint/no-require-imports */
 const prompts = require('prompts')
 
 jest.mock('prompts')

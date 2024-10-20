@@ -17,7 +17,7 @@ import { mockNodeFetch, chromeZipStream, getJestTmpFolder, minimalValidZipfile }
 import { popArray } from '../utils'
 import { existsAndIsFile, existsAndIsFolder } from '../utils/file.utils'
 
-/* eslint-disable-next-line @typescript-eslint/no-var-requires */
+/* eslint-disable-next-line @typescript-eslint/no-require-imports */
 const prompts = require('prompts')
 
 jest.mock('node-fetch', () => jest.fn())
