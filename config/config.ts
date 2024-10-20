@@ -36,7 +36,7 @@ export function readConfig(args: string[], platform: NodeJS.Platform): IChromeCo
         .option('-v, --inverse', 'Sort the selectable versions ascending', DEFAULT_CONFIG_OPTIONS.inverse)
         .option('-s, --single <version>', 'Download a specific version in non-interactive mode, even if the file is listed in the localstore.json. Several other flags have no effect.')
         .option('--list', 'List versions matching the criteria, doing nothing more', DEFAULT_CONFIG_OPTIONS.list)
-        .option('-c, --no-color', 'Don\'t print colors in the console', DEFAULT_CONFIG_OPTIONS.color)
+        .option('-C, --no-color', 'Don\'t print colors in the console', DEFAULT_CONFIG_OPTIONS.color)
         .option('-P --no-progress', 'Don\'t show visual progress updates', DEFAULT_CONFIG_OPTIONS.progress)
         .option('-q, --quiet', 'Suppress any logging output', DEFAULT_CONFIG_OPTIONS.quiet)
         .option('--debug', 'Activates the debug mode (extended logging)', DEFAULT_CONFIG_OPTIONS.debug)

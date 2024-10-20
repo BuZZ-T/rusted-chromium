@@ -95,6 +95,7 @@ docker build -t rusted-chromium .
 | `--max-results`| `-r` | integer | 10 | Maximum number of results to select. Directly downloads the binary, if set to 1. **Important:**  `--max-results` is set to `Infinity`, if `--min` is set and `--max-results` is not set, so the default is overridden!
 | `--os`| `-o` | "win"/"linux"/"mac"/"darwin" | The operation system on the current system | Set the operation system of the binary.
 | `--arch`| `-a` |  "x86"/"x64" for "win" or "linux.  "x64"/"arm" for "mac" | The architecture on the current system | Set the architecture of the binary. The flag is only regarded, if `--os` is present.
+| `--channel` | `-c` | "Canary"/"Dev"/"Beta"/"Stable" (depending on architecture) | "Stable" | Set the channel for fetching releases.
 | `--unzip` | `-z` | - | - | Directly unzip the downloaded zip-file and delete the .zip afterwards
 | `--decrease-on-fail`| `-d` | - | - | Automatically try the next lower version, if the selected version has no binary.
 | `--increase-on-fail`| `-i` | - | - | Automatically try the next higher version, if the selected version has no binary.
@@ -105,7 +106,7 @@ docker build -t rusted-chromium .
 |`--only-newest-major` | `-O`| - | - | Show only the newest version for every major version in the user selection. If the newest versions are not available for the current os, they are skipped.
 | `--list` | | - | false | Only log all matching versions to stdout, quit the program afterwards.
 | `--quiet` | `-q` | - | false | Suppress all log output.
-|`--no-color` | `-c` | - | false | Suppress colors in log output.
+|`--no-color` | `-C` | - | false | Suppress colors in log output.
 |`--no-progress` | `-P` | - | false | Suppress progress bar log output.
 | `--debug` | | - | false | Add additional debug logging.
 | `--version`| `-V` | - | - | Show current version.
