@@ -1,6 +1,5 @@
 
-/* eslint-disable-next-line import/no-namespace */
-import * as program from 'commander'
+import { program } from 'commander'
 
 import { checkValidChannel } from '../channel/checkValidChannel'
 import { ComparableVersion } from '../commons/ComparableVersion'
@@ -22,7 +21,7 @@ export function readConfig(args: string[], platform: NodeJS.Platform): IChromeCo
         .option('-c, --channel <channel>', 'The channel to download from. Valid values are "stable", "beta", "dev" and "canary"', DEFAULT_CONFIG_OPTIONS.channel)
         .option('-m, --min <version>', 'The minimum version', DEFAULT_CONFIG_OPTIONS.min)
         .option('-M, --max <version>', 'The maximum version. Newest version if not specificied', DEFAULT_CONFIG_OPTIONS.max)
-        .option('-r, --max-results <results>', 'The maximum amount of results to choose from', null)
+        .option('-r, --max-results <results>', 'The maximum amount of results to choose from', undefined)
         .option('-o, --os <os>', 'The operating system for what the binary should be downloaded')
         .option('-a, --arch <arch>', 'The architecture for what the binary should be downloaded. Valid values are "x86" and "x64". Only works when --os is also set')
         .option('-d, --decrease-on-fail', 'If a binary does not exist, go to the next lower version number and try again (regarding --min, --max and --max-results)', false)
@@ -31,7 +30,7 @@ export function readConfig(args: string[], platform: NodeJS.Platform): IChromeCo
         .option('-n, --non-interactive', 'Don\'t show the selection menu. Automatically select the newest version. Only works when --decrease-on-fail is also set.', false)
         .option('-l, --no-download', 'Don\'t download the binary. It also continues with the next version, if --decrease-on-fail or --increase-on-fail is set. Useful to build up the negative hit store', DEFAULT_CONFIG_OPTIONS.download)
         .option('-H, --hide-negative-hits', 'Hide negative hits', DEFAULT_CONFIG_OPTIONS.hideNegativeHits)
-        .option('-f, --folder <folder>', 'Set the download folder', null)
+        .option('-f, --folder <folder>', 'Set the download folder', undefined)
         .option('-O, --only-newest-major', 'Show only the newest major version in user selection', DEFAULT_CONFIG_OPTIONS.onlyNewestMajor)
         .option('-v, --inverse', 'Sort the selectable versions ascending', DEFAULT_CONFIG_OPTIONS.inverse)
         .option('-s, --single <version>', 'Download a specific version in non-interactive mode, even if the file is listed in the localstore.json. Several other flags have no effect.')

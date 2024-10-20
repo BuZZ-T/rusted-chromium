@@ -43,7 +43,7 @@
   "license": "MIT",
   "dependencies": {
     "chalk": "^3.0.0",
-    "commander": "^4.1.1",
+    "commander": "^12.1.0",
     "extract-zip": "^2.0.1",
     "node-fetch": "^2.6.7",
     "node-fetch-progress": "^1.0.2",
