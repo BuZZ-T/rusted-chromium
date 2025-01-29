@@ -2,11 +2,6 @@
 
 [![NPM Version](https://img.shields.io/npm/v/rusted-chromium.svg)](https://www.npmjs.com/package/rusted-chromium) [![Package License](https://img.shields.io/npm/l/rusted-chromium.svg)](https://www.npmjs.com/package/rusted-chromium) [![Build Status](https://img.shields.io/github/actions/workflow/status/BuZZ-T/rusted-chromium/test.yml?branch=main)](https://img.shields.io/github/actions/workflow/status/BuZZ-T/rusted-chromium/test.yml?branch=main)
 
-| Test | Coverage | Report
-|-|-|-|
-|Unit tests|  [![Coverage Status](https://coveralls.io/repos/github/BuZZ-T/rusted-chromium/badge.svg?branch=master)](https://coveralls.io/github/BuZZ-T/rusted-chromium?branch=main) | [coverage](https://rusted.buzz-t.eu/coverage/lcov-report/index.html)
-|Integration tests|[![Coverage Status](https://coveralls.io/repos/github/BuZZ-T/rusted-chromium/badge.svg?branch=main-int)](https://coveralls.io/github/BuZZ-T/rusted-chromium?branch=main-int) | [coverage-int](https://rusted.buzz-t.eu/coverage-int/lcov-report/index.html)
-
 This cli tool can be used to download old (and therefore unsupported) versions of chromium.
 
 ## Table of contents

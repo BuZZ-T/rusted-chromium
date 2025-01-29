@@ -42,11 +42,6 @@ jobs:
       - name: Test integration
         run: npm run test:int
 
-        # - name: Coveralls
-        # uses: coverallsapp/github-action@master
-        # with:
-        #   github-token: ${{ secrets.GITHUB_TOKEN }}
-
   test-examples:
     runs-on: ubuntu-latest
     strategy:
