@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.3.1
+
+* remove coveralls (not in use anymore and with currently unfixable vulnerabilities)>
+* remove travis ci config (replaced by github actions)
+* upgrade several packages for update or security reasons
+  * upgrade
+  * cross-spawn
+  * eslint, eslint-plugin-jest
+  * @typescript-eslint/eslint-plugin, @typescript-eslint/parser
+  * @types/jest, @types/node
+
 ## 0.3.0
 
 * upgrade several package to the latest version
