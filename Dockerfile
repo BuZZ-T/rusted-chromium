@@ -1,4 +1,4 @@
-FROM node:20-alpine as build
+FROM node:24-alpine AS build
 
 WORKDIR /build
 
@@ -9,7 +9,7 @@ COPY ./package-lock.json /build
 RUN npm ci
 RUN npm run build -- --outDir ./dist
 
-FROM node:20-alpine
+FROM node:24-alpine AS production
 
 WORKDIR /app
 
