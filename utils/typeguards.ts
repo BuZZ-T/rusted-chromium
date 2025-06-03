@@ -1,4 +1,6 @@
-import type { IChromeConfig, IChromeSingleConfig, IVersionWithDisabled, IVersion, TextFunction } from '../interfaces/interfaces'
+import type { TextFunction } from 'yalpt'
+
+import type { IChromeConfig, IChromeSingleConfig, IVersionWithDisabled, IVersion } from '../interfaces/interfaces'
 
 export function isTextFunction(value: string | TextFunction | undefined): value is TextFunction {
     return typeof value === 'function'

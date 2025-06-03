@@ -4,19 +4,17 @@
  * @group unit/file/releases
  */
 
+import { logger, spinner } from 'yalpt'
+
 import type { Release } from './release.types'
 import { loadReleases, mapApiReleasesToReleases } from './releases'
 import { fetchReleases } from '../api'
 import { ComparableVersion } from '../commons/ComparableVersion'
 import { LOAD_RELEASES } from '../commons/loggerTexts'
-import { logger } from '../log/logger'
-import { spinner } from '../log/spinner'
 import { createApiRelease, createChromeFullConfig, createChromeSingleConfig } from '../test/test.utils'
 
-jest.mock('../log/spinner')
+jest.mock('yalpt')
 const spinnerMock = jest.mocked(spinner)
-
-jest.mock('../log/logger')
 const loggerMock = jest.mocked(logger)
 
 jest.mock('../api')

@@ -1,9 +1,9 @@
 /* eslint-disable-next-line import/no-namespace */
 import * as prompts from 'prompts'
+import { logger } from 'yalpt'
 
 import type { IChromeFullConfig } from './interfaces/interfaces'
 import type { Nullable } from './interfaces/interfaces'
-import { logger } from './log/logger'
 import type { ComparableVersion } from './public_api'
 import type { Release } from './releases/release.types'
 

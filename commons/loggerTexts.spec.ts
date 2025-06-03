@@ -4,8 +4,9 @@
  * @group unit/file/loggerTexts
  */
 
+import type { TextFunction } from 'yalpt'
+
 import { EXTRACT_ZIP, READ_CONFIG } from './loggerTexts'
-import type { TextFunction } from '../interfaces/interfaces'
 
 describe('constants', () => {
 

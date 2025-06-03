@@ -4,39 +4,43 @@
  * @group unit/file/download-fluent-single
  */
 
+import { logger, progress, spinner } from 'yalpt'
+
 import { downloadChromium } from './download'
 import { FluentDownloadSingleIncomplete } from './download-fluent-single'
 import { ComparableVersion } from '../commons/ComparableVersion'
-import { logger } from '../log/logger'
-import { progress } from '../log/progress'
-import { spinner } from '../log/spinner'
 import { createChromeSingleConfig } from '../test/test.utils'
 
 jest.mock('./download')
-jest.mock('../log/logger')
-jest.mock('../log/progress')
-jest.mock('../log/spinner')
+jest.mock('yalpt')
 
 const allFalseSingleConfig = createChromeSingleConfig({
     download: false,
 })
 
+const downloadChromiumMock = jest.mocked(downloadChromium)
+const loggerMock = jest.mocked(logger)
+const spinnerMock = jest.mocked(spinner)
+const progressMock = jest.mocked(progress)
+
 describe('download-fluent-single', () => {
 
     let fluentDownloadSingle: FluentDownloadSingleIncomplete
 
-    let downloadChromiumMock: jest.MaybeMocked<typeof downloadChromium>
-    const loggerMock = jest.mocked(logger)
-    const spinnerMock = jest.mocked(spinner)
-    const progressMock = jest.mocked(progress)
-
     beforeEach(() => {
-        downloadChromiumMock = jest.mocked(downloadChromium)
 
         downloadChromiumMock.mockReset()
-        loggerMock.silent.mockReset()
-        spinnerMock.silent.mockReset()
-        progressMock.silent.mockReset()
+        loggerMock.silent = jest.fn()
+        spinnerMock.silent = jest.fn()
+        progressMock.silent = jest.fn()
+
+        loggerMock.noColor = jest.fn()
+        spinnerMock.noColor = jest.fn()
+        progressMock.noColor = jest.fn()
+
+        loggerMock.noProgress = jest.fn()
+        spinnerMock.noProgress = jest.fn()
+        progressMock.noProgress = jest.fn()
 
         fluentDownloadSingle = new FluentDownloadSingleIncomplete()
     })
@@ -160,12 +164,12 @@ describe('download-fluent-single', () => {
             ...allFalseSingleConfig,
             single: new ComparableVersion('10.0.0.0'),
         })
-        expect(logger.silent).toHaveBeenCalledTimes(1)
-        expect(logger.silent).toHaveBeenCalledWith()
-        expect(progress.silent).toHaveBeenCalledTimes(1)
-        expect(progress.silent).toHaveBeenCalledWith()
-        expect(spinner.silent).toHaveBeenCalledTimes(1)
-        expect(spinner.silent).toHaveBeenCalledWith()
+        expect(loggerMock.silent).toHaveBeenCalledTimes(1)
+        expect(loggerMock.silent).toHaveBeenCalledWith()
+        expect(progressMock.silent).toHaveBeenCalledTimes(1)
+        expect(progressMock.silent).toHaveBeenCalledWith()
+        expect(spinnerMock.silent).toHaveBeenCalledTimes(1)
+        expect(spinnerMock.silent).toHaveBeenCalledWith()
     })
 
     it('should noColor the loggers with noColor set', () => {
@@ -178,12 +182,12 @@ describe('download-fluent-single', () => {
         expect(downloadChromiumMock).toHaveBeenCalledWith({
             ...allFalseSingleConfig,
         })
-        expect(logger.noColor).toHaveBeenCalledTimes(1)
-        expect(logger.noColor).toHaveBeenCalledWith()
-        expect(progress.noColor).toHaveBeenCalledTimes(1)
-        expect(progress.noColor).toHaveBeenCalledWith()
-        expect(spinner.noColor).toHaveBeenCalledTimes(1)
-        expect(spinner.noColor).toHaveBeenCalledWith()
+        expect(loggerMock.noColor).toHaveBeenCalledTimes(1)
+        expect(loggerMock.noColor).toHaveBeenCalledWith()
+        expect(progressMock.noColor).toHaveBeenCalledTimes(1)
+        expect(progressMock.noColor).toHaveBeenCalledWith()
+        expect(spinnerMock.noColor).toHaveBeenCalledTimes(1)
+        expect(spinnerMock.noColor).toHaveBeenCalledWith()
     })
 
     it('should noProgress the loggers with noProgress set', () => {
@@ -197,11 +201,11 @@ describe('download-fluent-single', () => {
             ...allFalseSingleConfig,
             single: new ComparableVersion('10.0.0.0'),
         })
-        expect(logger.noProgress).toHaveBeenCalledTimes(1)
-        expect(logger.noProgress).toHaveBeenCalledWith()
-        expect(progress.noProgress).toHaveBeenCalledTimes(1)
-        expect(progress.noProgress).toHaveBeenCalledWith()
-        expect(spinner.noProgress).toHaveBeenCalledTimes(1)
-        expect(spinner.noProgress).toHaveBeenCalledWith()
+        expect(loggerMock.noProgress).toHaveBeenCalledTimes(1)
+        expect(loggerMock.noProgress).toHaveBeenCalledWith()
+        expect(progressMock.noProgress).toHaveBeenCalledTimes(1)
+        expect(progressMock.noProgress).toHaveBeenCalledWith()
+        expect(spinnerMock.noProgress).toHaveBeenCalledTimes(1)
+        expect(spinnerMock.noProgress).toHaveBeenCalledWith()
     })
 })

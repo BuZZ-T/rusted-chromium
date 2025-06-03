@@ -1,3 +1,5 @@
+import { logger, spinner } from 'yalpt'
+
 import { fetchChromeUrl } from './api'
 import { SEARCH_BINARY } from './commons/loggerTexts'
 import type { ContinueFetchingChromeUrlReturn, GetChromeDownloadUrlReturn } from './interfaces/function.interfaces'
@@ -6,8 +8,6 @@ import type { IChromeFullConfig, IChromeSingleConfig, IChromeConfig } from './in
 import type { DownloadReportEntry } from './interfaces/interfaces'
 import type { IOSSettings } from './interfaces/os.interfaces'
 import type { OSSetting } from './interfaces/os.interfaces'
-import { logger } from './log/logger'
-import { spinner } from './log/spinner'
 import type { ComparableVersion } from './public_api'
 import type { Release } from './releases/release.types'
 import { userSelectedVersion } from './select'

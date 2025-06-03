@@ -8,17 +8,12 @@ import type { Response as NodeFetchResponse } from 'node-fetch'
 import type { Stats } from 'node:fs'
 import { createWriteStream } from 'node:fs'
 import { mkdir, stat, rmdir, unlink }from 'node:fs/promises'
+import { DebugMode, logger, progress, spinner } from 'yalpt'
 
 import { downloadChromium } from './download'
 import { fetchChromeZipFile } from '../api'
 import { ComparableVersion } from '../commons/ComparableVersion'
 import { NoChromiumDownloadError } from '../errors'
-import type { Logger} from '../log/logger'
-import { logger, DebugMode } from '../log/logger'
-import type { ProgressBar } from '../log/progress'
-import { progress } from '../log/progress'
-import type { Spinner } from '../log/spinner'
-import { spinner } from '../log/spinner'
 import { loadReleases, mapApiReleasesToReleases } from '../releases/releases'
 import { createChromeFullConfig, createGetChromeDownloadUrlReturn, createChromeSingleConfig, createApiRelease } from '../test/test.utils'
 import { existsAndIsFolder } from '../utils/file.utils'
@@ -36,10 +31,12 @@ jest.mock('node:fs/promises')
 jest.mock('node-fetch-progress')
 jest.mock('extract-zip')
 
+jest.mock('yalpt')
+const progressMock = jest.mocked(progress)
+const spinnerMock = jest.mocked(spinner)
+const loggerMock = jest.mocked(logger)
+
 jest.mock('../api')
-jest.mock('../log/progress')
-jest.mock('../log/spinner')
-jest.mock('../log/logger')
 jest.mock('../versions', () => ({
     ...jest.requireActual('../versions'),
     getChromeDownloadUrl: jest.fn(),
@@ -47,28 +44,26 @@ jest.mock('../versions', () => ({
 jest.mock('../utils/file.utils')
 jest.mock('../releases/releases')
 
+const progressBarStartMock = jest.fn()
+const progressBarFractionMock = jest.fn()
+
+const progressConstructorMock = jest.mocked(Progress)
+const extractMock = jest.mocked(extract)
+
+const loadReleasesMock = jest.mocked(loadReleases)
+const mapApiReleasesToReleasesMock = jest.mocked(mapApiReleasesToReleases)
+const getChromeDownloadUrlMock = jest.mocked(getChromeDownloadUrl)
+const fetchChromeZipFileMock = jest.mocked(fetchChromeZipFile)
+
+const existsAndIsFolderMock = jest.mocked(existsAndIsFolder)
+const createWriteStreamMock = jest.mocked(createWriteStream)
+const mkdirMock = jest.mocked(mkdir)
+const statMock = jest.mocked(stat)
+const rmdirMock = jest.mocked(rmdir)
+const unlinkMock = jest.mocked(unlink)
+
 describe('download', () => {
     describe('downloadChromium', () => {
-        let loadReleasesMock: jest.MaybeMocked<typeof loadReleases>
-        let mapApiReleasesToReleasesMock: jest.MaybeMocked<typeof mapApiReleasesToReleases>
-        let getChromeDownloadUrlMock: jest.MaybeMocked<typeof getChromeDownloadUrl>
-
-        let fetchChromeZipFileMock: jest.MaybeMocked<typeof fetchChromeZipFile>
-
-        let progressConstructorMock: jest.MaybeMocked<typeof Progress>
-        let progressMock: jest.MaybeMockedDeep<ProgressBar>
-        let loggerMock: jest.MaybeMockedDeep<Logger>
-        let spinnerMock: jest.MaybeMockedDeep<Spinner>
-
-        let extractMock: jest.MaybeMockedDeep<typeof extract>
-
-        let existsAndIsFolderMock: jest.MaybeMocked<typeof existsAndIsFolder>
-        let createWriteStreamMock: jest.MaybeMockedDeep<typeof createWriteStream>
-        let mkdirMock: jest.MaybeMocked<typeof mkdir>
-        let statMock: jest.MaybeMocked<typeof stat>
-        let rmdirMock: jest.MaybeMocked<typeof rmdir>
-        let unlinkMock: jest.MaybeMocked<typeof unlink>
-
         let pipeMock: jest.Mock
         let onMock: jest.Mock
         let zipFileResource: NodeFetchResponse
@@ -77,25 +72,6 @@ describe('download', () => {
         let processExitSpy: jest.SpyInstance
 
         beforeAll(() => {
-            loadReleasesMock = jest.mocked(loadReleases)
-            mapApiReleasesToReleasesMock = jest.mocked(mapApiReleasesToReleases)
-            getChromeDownloadUrlMock = jest.mocked(getChromeDownloadUrl)
-            fetchChromeZipFileMock = jest.mocked(fetchChromeZipFile)
-
-            progressConstructorMock = jest.mocked(Progress)
-            progressMock = jest.mocked(progress)
-            loggerMock = jest.mocked(logger)
-            spinnerMock = jest.mocked(spinner)
-
-            extractMock = jest.mocked(extract)
-
-            existsAndIsFolderMock = jest.mocked(existsAndIsFolder)
-            createWriteStreamMock = jest.mocked(createWriteStream)
-            mkdirMock = jest.mocked(mkdir)
-            statMock = jest.mocked(stat)
-            rmdirMock = jest.mocked(rmdir)
-            unlinkMock = jest.mocked(unlink)
-
             pipeMock = jest.fn()
             onMock = jest.fn()
             zipFileResource = {
@@ -108,6 +84,18 @@ describe('download', () => {
 
             processOnSpy = jest.spyOn(process, 'on')
             processExitSpy = jest.spyOn(process, 'exit')
+
+            logger.silent = jest.fn()
+            spinner.silent = jest.fn()
+            progress.silent = jest.fn()
+
+            logger.noColor = jest.fn()
+            spinner.noColor = jest.fn()
+            progress.noColor = jest.fn()
+
+            logger.noProgress = jest.fn()
+            spinner.noProgress = jest.fn()
+            progress.noProgress = jest.fn()
         })
 
         beforeEach(() => {
@@ -136,18 +124,24 @@ describe('download', () => {
             getChromeDownloadUrlMock.mockReset()
             fetchChromeZipFileMock.mockReset()
 
-            progressMock.start.mockReset()
-            progressMock.fraction.mockReset()
+            progressBarStartMock.mockReset()
+            progressBarFractionMock.mockReset()
 
             loggerMock.info.mockReset()
             loggerMock.warn.mockReset()
             loggerMock.error.mockReset()
             loggerMock.setDebugMode.mockReset()
+            loggerMock.silent.mockReset()
+            loggerMock.noColor.mockReset()
+            loggerMock.noProgress.mockReset()
 
             spinnerMock.start.mockReset()
             spinnerMock.success.mockReset()
             spinnerMock.error.mockReset()
             spinnerMock.update.mockReset()
+
+            progressMock.start.mockReset()
+            progressMock.fraction.mockReset()
 
             extractMock.mockReset()
 

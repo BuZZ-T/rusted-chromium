@@ -4,10 +4,11 @@
  * @group unit/file/api
  */
 
+import type { Spinner } from 'yalpt'
+import { spinner } from 'yalpt'
+
 import { fetchChromeUrl, fetchChromeZipFile } from './api'
 import type { IOSSettings } from './interfaces/os.interfaces'
-import type { Spinner } from './log/spinner'
-import { spinner } from './log/spinner'
 import type { Release } from './releases/release.types'
 
 /* eslint-disable-next-line @typescript-eslint/no-require-imports */
@@ -19,7 +20,7 @@ jest.mock('node-fetch', () => jest.fn())
 jest.mock('node-fetch-progress', () => jest.fn(() => ({
     on: onMock,
 })))
-jest.mock('./log/spinner')
+jest.mock('yalpt')
 
 describe('api', () => {
 

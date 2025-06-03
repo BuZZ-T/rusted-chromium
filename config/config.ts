@@ -1,12 +1,12 @@
 
 import { program } from 'commander'
+import { logger } from 'yalpt'
 
 import { checkValidChannel } from '../channel/checkValidChannel'
 import { ComparableVersion } from '../commons/ComparableVersion'
 import { DEFAULT_CONFIG_OPTIONS } from '../commons/constants'
 import type { IConfigOptions } from '../interfaces/config.interfaces'
 import type { IChromeConfig } from '../interfaces/interfaces'
-import { logger } from '../log/logger'
 /* eslint-disable-next-line import/no-namespace */
 import * as packageJson from '../package.json'
 import { mapOsToPlatform } from '../releases/releases'

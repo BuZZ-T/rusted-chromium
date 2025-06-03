@@ -4,18 +4,15 @@
  * @group unit/file/download-fluent
  */
 
+import { logger, progress, spinner } from 'yalpt'
+
 import { downloadChromium } from './download'
 import { FluentDownload } from './download-fluent'
 import { ComparableVersion } from '../commons/ComparableVersion'
-import { logger } from '../log/logger'
-import { progress } from '../log/progress'
-import { spinner } from '../log/spinner'
 import { createChromeFullConfig } from '../test/test.utils'
 
 jest.mock('./download')
-jest.mock('../log/logger')
-jest.mock('../log/progress')
-jest.mock('../log/spinner')
+jest.mock('yalpt')
 
 const allFalseConfig = createChromeFullConfig({
     download: false,
@@ -39,9 +36,18 @@ describe('download-fluent', () => {
 
         downloadChromiumMock.mockReset()
 
-        loggerMock.silent.mockReset()
-        progressMock.silent.mockReset()
-        spinnerMock.silent.mockReset()
+        loggerMock.silent = jest.fn()
+        progressMock.silent = jest.fn()
+        spinnerMock.silent = jest.fn()
+
+        loggerMock.noColor = jest.fn()
+        progressMock.noColor = jest.fn()
+        spinnerMock.noColor = jest.fn()
+
+        loggerMock.noProgress = jest.fn()
+        progressMock.noProgress = jest.fn()
+        spinnerMock.noProgress = jest.fn()
+
     })
 
     it('should call downloadChromium with the default values', () => {

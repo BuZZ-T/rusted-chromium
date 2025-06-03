@@ -1,12 +1,11 @@
+import { logger, progress, spinner } from 'yalpt'
+
 import { downloadChromium } from './download'
 import { ComparableVersion } from '../commons/ComparableVersion'
 import { DEFAULT_DOWNLOAD_FLUENT_FULL_CONFIG } from '../commons/constants'
 import type { IChromeFullConfig } from '../interfaces/interfaces'
 import type { DownloadReportEntry } from '../interfaces/interfaces'
 import type { Arch, Channel, OS } from '../interfaces/os.interfaces'
-import { logger } from '../log/logger'
-import { progress } from '../log/progress'
-import { spinner } from '../log/spinner'
 
 /**
  * Allows to setup the configuration for downloading rusted-chromium via a fluent interface.

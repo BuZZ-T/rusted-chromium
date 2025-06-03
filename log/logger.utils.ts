@@ -1,9 +1,19 @@
-import { DebugMode, logger } from './logger'
-import { progress } from './progress'
-import { spinner } from './spinner'
+import { DebugMode } from 'yalpt'
+import type { Logger, ProgressBar, Spinner } from 'yalpt'
+
 import type { IChromeCoreConfig } from '../interfaces/interfaces'
 
-export function applyConfigToLoggers(config: IChromeCoreConfig): void {
+export function applyConfigToLoggers({
+    config,
+    logger,
+    spinner,
+    progress,
+}: {
+    config: IChromeCoreConfig,
+    logger: Logger,
+    spinner: Spinner,
+    progress: ProgressBar,
+}): void {
     if (config.debug) {
         logger.setDebugMode(DebugMode.DEBUG)
     }

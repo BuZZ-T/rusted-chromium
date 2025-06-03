@@ -1,6 +1,7 @@
 import { createWriteStream } from 'node:fs'
 import { mkdir, stat, rmdir, unlink } from 'node:fs/promises'
 import { join as pathJoin } from 'node:path'
+import { logger, progress, spinner } from 'yalpt'
 
 import { FluentDownload } from './download-fluent'
 import { FluentDownloadSingleIncomplete } from './download-fluent-single'
@@ -9,10 +10,7 @@ import { DEFAULT_FULL_CONFIG, DEFAULT_SINGLE_CONFIG } from '../commons/constants
 import { DOWNLOAD_ZIP, EXTRACT_ZIP } from '../commons/loggerTexts'
 import { NoChromiumDownloadError } from '../errors'
 import type { DownloadReportEntry, IChromeConfig } from '../interfaces/interfaces'
-import { logger } from '../log/logger'
 import { applyConfigToLoggers } from '../log/logger.utils'
-import { progress } from '../log/progress'
-import { spinner } from '../log/spinner'
 import { loadReleases, mapApiReleasesToReleases } from '../releases/releases'
 import { existsAndIsFolder } from '../utils/file.utils'
 import { isChromeSingleConfig } from '../utils/typeguards'
@@ -81,7 +79,7 @@ async function extractZip(downloadPath: string) {
  * @param additionalConfig Manually set config, which will override the settings in the default config
  */
 async function downloadForConfig(config: IChromeConfig): Promise<DownloadReportEntry[]> {
-    applyConfigToLoggers(config)
+    applyConfigToLoggers({config, logger, progress, spinner})
 
     const apiReleases = await loadReleases(config.os, config.channel)
 

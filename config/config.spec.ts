@@ -5,27 +5,26 @@
  */
 
 import { program } from 'commander'
+import { logger } from 'yalpt'
 
 import { readConfig } from './config'
 import { ComparableVersion } from '../commons/ComparableVersion'
 import { DEFAULT_CONFIG_OPTIONS } from '../commons/constants'
 import type { OS } from '../interfaces/os.interfaces'
-import type { Logger} from '../log/logger'
-import { logger } from '../log/logger'
 import { createChromeOptions, createChromeSingleConfig, createChromeFullConfig } from '../test/test.utils'
 
 jest.mock('commander')
-jest.mock('../log/logger')
+jest.mock('yalpt')
+
+const loggerMock = jest.mocked(logger)
 
 describe('config', () => {
 
     let programMock: jest.MaybeMockedDeep<typeof program>
-    let loggerMock: jest.MaybeMockedDeep<Logger>
 
     describe('readConfig', () => {
 
         beforeEach(() => {
-            loggerMock = jest.mocked(logger)
             loggerMock.warn.mockClear()
 
             programMock = jest.mocked(program)

@@ -4,15 +4,14 @@
  * @group unit/file/versions
  */
 
+import type { Logger, Spinner } from 'yalpt'
+import { logger, spinner } from 'yalpt'
+
 import { fetchChromeUrl } from './api'
 import { ComparableVersion } from './commons/ComparableVersion'
 import { SEARCH_BINARY } from './commons/loggerTexts'
 import type { GetChromeDownloadUrlReturn } from './interfaces/function.interfaces'
 import type { OSSetting } from './interfaces/os.interfaces'
-import { logger} from './log/logger'
-import type { Logger } from './log/logger'
-import { spinner } from './log/spinner'
-import type { Spinner } from './log/spinner'
 import type { Release } from './releases/release.types'
 import { userSelectedVersion } from './select'
 import { createChromeSingleConfig, createChromeFullConfig } from './test/test.utils'
@@ -23,8 +22,7 @@ import { getChromeDownloadUrl } from './versions'
 
 jest.mock('./select')
 jest.mock('./api')
-jest.mock('./log/spinner')
-jest.mock('./log/logger')
+jest.mock('yalpt')
 
 // don't mock compareComparableVersions to test the sort and filtering based on version.comparableVersion
 jest.mock('./utils', () => ({

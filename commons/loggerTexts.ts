@@ -1,4 +1,4 @@
-import type { LoggerConfig, StringLoggerConfig, TextFunction } from '../interfaces/interfaces'
+import type { LoggerConfig, StringLoggerConfig, TextFunction } from 'yalpt'
 
 export const LOAD_CONFIG: StringLoggerConfig = {
     start: 'Downloading local storage file',

@@ -59,28 +59,6 @@ export interface IMetadataResponse {
     items: IMetadata[]
 }
 
-export interface LoggerConfig<Success extends string | TextFunction, Fail extends string | TextFunction> {
-    start: string
-    success: Success
-    fail: Fail
-}
-
-export type StringLoggerConfig = LoggerConfig<string, string>
-
-export type AnyLoggerConfig = LoggerConfig<string | TextFunction, string | TextFunction>
-
-export interface ProgressConfig {
-    start: string
-    success: string
-    fail: string
-    showNumeric?: boolean
-    barLength?: number
-    steps?: number
-    unit?: string
-}
-
-export type TextFunction = (key: string) => string
-
 export interface IVersion {
     major: number
     minor: number

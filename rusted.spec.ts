@@ -4,22 +4,17 @@
  * @group unit/file/rusted
  */
 
+import type { Logger, ProgressBar, Spinner } from 'yalpt'
+import { logger, progress, spinner } from 'yalpt'
+
 import { readConfig } from './config/config'
 import { downloadChromium } from './download/download'
-import type { Logger } from './log/logger'
-import { logger } from './log/logger'
-import type { ProgressBar } from './log/progress'
-import { progress } from './log/progress'
-import type { Spinner } from './log/spinner'
-import { spinner } from './log/spinner'
 import { rusted } from './rusted'
 import { createChromeFullConfig } from './test/test.utils'
 
 jest.mock('./download/download')
 jest.mock('./config/config')
-jest.mock('./log/logger')
-jest.mock('./log/spinner')
-jest.mock('./log/progress')
+jest.mock('yalpt')
 
 describe('rusted', () => {
     let readConfigMock: jest.MaybeMocked<typeof readConfig>

@@ -4,8 +4,9 @@
  * @group unit/file/select
  */
 
+import { logger } from 'yalpt'
+
 import { ComparableVersion } from './commons/ComparableVersion'
-import { logger } from './log/logger'
 import type { Release } from './releases/release.types'
 import { userSelectedVersion } from './select'
 import { createChromeFullConfig } from './test/test.utils'
@@ -14,7 +15,7 @@ import { createChromeFullConfig } from './test/test.utils'
 const prompts = require('prompts')
 
 jest.mock('prompts')
-jest.mock('./log/logger')
+jest.mock('yalpt')
 
 describe('userSelectedVersion', () => {
     let promptsMock: jest.MaybeMocked<typeof prompts>
