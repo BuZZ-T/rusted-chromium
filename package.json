@@ -16,6 +16,7 @@
     "test:debug": "node --inspect --inspect-brk node_modules/.bin/jest --group=unit --runInBand",
     "test:int:debug": "node --inspect --inspect-brk node_modules/.bin/jest --group=int --runInBand",
     "init:examples": "cd examples/ && npm install",
+    "prepack": "clean-package",
     "prebuild": "npm run clean",
     "build": "tsc -p tsconfig.json",
     "build:silent": "npm run build -- --noEmit",
@@ -26,6 +27,14 @@
     "release-github": "npm run clean && npm run build && npm publish --registry=https://npm.pkg.github.com/",
     "publish:coverage": "npm run test:coverage && npm run test:int:coverage && scp -r coverage rusted.buzz-t.eu:/srv/www/buzz-t.eu/rusted/ && scp -r coverage-int rusted.buzz-t.eu:/srv/www/buzz-t.eu/rusted/"
   },
+  "clean-package": {
+    "indent": 2,
+    "remove": [
+      "clean-package",
+      "devDependencies",
+      "scripts"
+    ]
+  }, 
   "bin": {
     "rusted-chromium": "bin/rusted-chromium.js"
   },
@@ -58,6 +67,7 @@
     "@types/unzipper": "^0.10.10",
     "@typescript-eslint/eslint-plugin": "^8.13.0",
     "@typescript-eslint/parser": "^8.13.0",
+    "clean-package": "^2.2.0",
     "eslint": "^8.57.1",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-jest": "^28.9.0",
