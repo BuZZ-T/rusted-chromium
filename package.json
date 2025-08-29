@@ -34,7 +34,7 @@
       "devDependencies",
       "scripts"
     ]
-  }, 
+  },
   "bin": {
     "rusted-chromium": "bin/rusted-chromium.js"
   },
@@ -50,7 +50,6 @@
   "author": "Bastian Gebhardt <buzz-t@buzz-t.eu>",
   "license": "MIT",
   "dependencies": {
-    "chalk": "^3.0.0",
     "commander": "^12.1.0",
     "extract-zip": "^2.0.1",
     "node-fetch": "^2.6.7",
