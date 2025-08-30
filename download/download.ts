@@ -97,64 +97,66 @@ async function downloadForConfig(config: IChromeConfig): Promise<DownloadReportE
 
     const { chromeUrl, filenameOS, report, selectedRelease: release } = await getChromeDownloadUrl(config, mappedReleases)
 
-    if (chromeUrl && release && config.download) {
-        const filename = `chrome-${filenameOS}-${config.arch}-${release.version.toString()}`
-        const downloadPath = config.downloadFolder
-            ? pathJoin(config.downloadFolder, filename)
-            : filename
-
-        if (!!config.downloadFolder && !(await existsAndIsFolder(config.downloadFolder))) {
-            await mkdir(config.downloadFolder, { recursive: true })
-            logger.info(`${config.downloadFolder} created'`)
-        }
-
-        logger.debug(`Downloading version: ${release.version.toString()}`)
-        const zipFileResponse = await fetchChromeZipFile(chromeUrl)
-
-        let isFirstProgress = true
-
-        new Progress(zipFileResponse, { throttle: 100 }).on('progress', (p: { progress: number, total: number }) => {
-            if (isFirstProgress) {
-                progress.start({
-                    barLength: 40,
-                    fail: DOWNLOAD_ZIP.fail,
-                    showNumeric: true,
-                    start: DOWNLOAD_ZIP.start,
-                    steps: Math.round(p.total / 1024 / 1024),
-                    success: DOWNLOAD_ZIP.success(downloadPath),
-                    unit: 'MB',
-                })
-                isFirstProgress = false
-            } else {
-                progress.fraction(p.progress)
-            }
-        })
-
-        const filenameWithExtension = downloadPath + '.zip'
-        const file = createWriteStream(filenameWithExtension)
-        registerSigIntHandler(filenameWithExtension)
-
-        zipFileResponse.body?.pipe(file)
-
-        return new Promise((resolve, reject) => {
-            zipFileResponse.body?.on('end', async () => {
-                if (config.autoUnzip) {
-                    await extractZip(downloadPath)
-                }
-                resolve(report)
-            })
-
-            zipFileResponse.body?.on('error', () => {
-                reject()
-            })
-        })
-    }
-
     if (!chromeUrl && config.download && config.single) {
         throw new NoChromiumDownloadError()
     }
 
-    return report
+    if (!chromeUrl || !release || !config.download) {
+        return report
+    }
+
+    const filename = `chrome-${filenameOS}-${config.arch}-${release.version.toString()}`
+    const downloadPath = config.downloadFolder
+        ? pathJoin(config.downloadFolder, filename)
+        : filename
+
+    if (!!config.downloadFolder && !(await existsAndIsFolder(config.downloadFolder))) {
+        await mkdir(config.downloadFolder, { recursive: true })
+        logger.info(`${config.downloadFolder} created'`)
+    }
+
+    logger.debug(`Downloading version: ${release.version.toString()}`)
+    const zipFileResponse = await fetchChromeZipFile(chromeUrl)
+
+    let isFirstProgress = true
+
+    new Progress(zipFileResponse, { throttle: 100 }).on('progress', (p: { progress: number, total: number }) => {
+        if (isFirstProgress) {
+            progress.start({
+                barLength: 40,
+                fail: DOWNLOAD_ZIP.fail,
+                showNumeric: true,
+                start: DOWNLOAD_ZIP.start,
+                steps: Math.round(p.total / 1024 / 1024),
+                success: DOWNLOAD_ZIP.success(downloadPath),
+                unit: 'MB',
+            })
+            isFirstProgress = false
+        } else {
+            progress.fraction(p.progress)
+        }
+    })
+
+    const filenameWithExtension = downloadPath + '.zip'
+    const file = createWriteStream(filenameWithExtension)
+    registerSigIntHandler(filenameWithExtension)
+
+    logger.debug(`Writing downloaded ZIP to file ${filenameWithExtension}`)
+
+    zipFileResponse.body?.pipe(file)
+
+    return new Promise((resolve, reject) => {
+        zipFileResponse.body?.on('end', async () => {
+            if (config.autoUnzip) {
+                await extractZip(downloadPath)
+            }
+            resolve(report)
+        })
+
+        zipFileResponse.body?.on('error', () => {
+            reject()
+        })
+    })
 }
 
 const fluent = new FluentDownload()
