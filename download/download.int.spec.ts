@@ -258,8 +258,6 @@ describe('[int] download chromium', () => {
     })
 
     it('should prompt only the newest majors', async () => {
-        const gen = popArray(['4444'])
-
         mockNodeFetch(nodeFetchMock, {
             params: {
                 releases: ['30.0.0.0', '20.0.0.1', '20.0.0.0', '10.0.3.0', '10.0.0.0']
@@ -290,7 +288,7 @@ describe('[int] download chromium', () => {
                 disabled: false
             }
         ]
-        
+
         expect(promptsMock).toHaveBeenCalledWith({
             type: 'select',
             name: 'version',
