@@ -71,8 +71,7 @@ async function continueFetchingChromeUrl({
             logger.warn('Not downloading binary.')
         }
 
-        const sRelease: Release = selectedRelease
-        const index = releases.findIndex(release => release.version === sRelease.version)
+        const index = releases.findIndex(release => release.version === selectedRelease?.version)
 
         switch (config.onFail) {
             case 'increase': {
@@ -97,7 +96,6 @@ async function continueFetchingChromeUrl({
                 break
             }
             case 'nothing': {
-                // TODO: pass notAvailableReleases to userSelectedVersion to disable non-available versions
                 selectedRelease = await userSelectedVersion(releases, config, notAvailableVersions)
             }
         }

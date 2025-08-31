@@ -15,7 +15,7 @@ function checkStatus(response: NodeFetchResponse) {
     return response
 }
 
-const toJson = (response: Response): Promise<unknown> => response.json()
+const toJson = (response: NodeFetchResponse): Promise<unknown> => response.json()
 
 export async function fetchChromeUrl(branchPosition: number, osSettings: IOSSettings): Promise<string | undefined> {
     const snapshotUrl = `https://www.googleapis.com/storage/v1/b/chromium-browser-snapshots/o?delimiter=/&prefix=${osSettings.url}/${branchPosition}/&fields=items(mediaLink,name)`

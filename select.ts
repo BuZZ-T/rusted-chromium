@@ -2,6 +2,7 @@
 import * as prompts from 'prompts'
 import { logger } from 'yalpt'
 
+import { Compared } from './interfaces/enums'
 import type { IChromeFullConfig } from './interfaces/interfaces'
 import type { Nullable } from './interfaces/interfaces'
 import type { ComparableVersion } from './public_api'
@@ -46,5 +47,7 @@ export async function userSelectedVersion(releases: Release[], config: IChromeFu
         hint: `for ${config.os} ${config.arch}`
     } as unknown as prompts.PromptObject)
 
-    return releases.find(release => release.version === version)
+    logger.debug(`User selected version: ${version}`)
+
+    return releases.find(release => version && release.version.compare(version) === Compared.EQUAL)
 }
