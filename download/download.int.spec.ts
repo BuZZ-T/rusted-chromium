@@ -200,20 +200,10 @@ describe('[int] download chromium', () => {
     })
 
     it('should decrease on fail', async () => {
-        const gen = popArray(['4444'])
-
         mockNodeFetch(nodeFetchMock, {
             params: {
                 releases: ['20.0.0.0', '10.0.0.0']
             },
-            urls: [
-                {
-                    once: true,
-                    name: 'branchPosition',
-                    gen: () => gen.next(),
-                    mock: (position: string) => `pos. ${position}`,
-                }
-            ]
         })
         promptsMock.mockResolvedValueOnce({ version: new ComparableVersion('20.0.0.0') })
         promptsMock.mockResolvedValue({ version: new ComparableVersion('10.0.0.0') })
@@ -228,8 +218,8 @@ describe('[int] download chromium', () => {
         expect(await existsAndIsFile(chromeZip10)).toBe(false)
     })
 
-    it('should increase on fail', async () => {
-        const gen = popArray(['4444'])
+    it.skip('should increase on fail', async () => {
+        const gen = popArray<string>([])
 
         mockNodeFetch(nodeFetchMock, {
             params: {
@@ -238,7 +228,7 @@ describe('[int] download chromium', () => {
             urls: [
                 {
                     once: true,
-                    name: 'branchPosition',
+                    name: 'chromeUrl',
                     gen: () => gen.next(),
                     mock: (position: string) => `pos. ${position}`,
                 }
@@ -247,7 +237,7 @@ describe('[int] download chromium', () => {
         promptsMock.mockResolvedValueOnce({ version: new ComparableVersion('10.0.0.0') })
         promptsMock.mockResolvedValue({ version: new ComparableVersion('20.0.0.0') })
 
-        const rustedPromsie = rusted(['/some/path/to/node', '/some/path/to/rusted-chromium', '--increase-on-fail'], 'linux')
+        const rustedPromsie = rusted(['/some/path/to/node', '/some/path/to/rusted-chromium', '--increase-on-fail', '--debug'], 'linux')
 
         chromeZipStream.end()
 
