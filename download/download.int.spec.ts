@@ -116,7 +116,7 @@ describe('[int] download chromium', () => {
                 releases: ['10.0.0.0', '20.0.0.0']
             }
         })
-        promptsMock.mockResolvedValue({ version: '20.0.0.0' })
+        promptsMock.mockResolvedValue({ version: new ComparableVersion('20.0.0.0') })
 
         const rustedPromise = rusted(['/some/path/to/node', '/some/path/to/rusted-chromium'], 'linux')
 
@@ -162,7 +162,7 @@ describe('[int] download chromium', () => {
                 }
             }
         })
-        promptsMock.mockResolvedValue({ version: '20.0.0.0' })
+        promptsMock.mockResolvedValue({ version: new ComparableVersion('20.0.0.0') })
 
         const rustedPromise = rusted(['/some/path/to/node', '/some/path/to/rusted-chromium', '--unzip'], 'linux')
 
@@ -215,8 +215,8 @@ describe('[int] download chromium', () => {
                 }
             ]
         })
-        promptsMock.mockResolvedValueOnce({ version: '20.0.0.0' })
-        promptsMock.mockResolvedValue({ version: '10.0.0.0' })
+        promptsMock.mockResolvedValueOnce({ version: new ComparableVersion('20.0.0.0') })
+        promptsMock.mockResolvedValue({ version: new ComparableVersion('10.0.0.0') })
 
         const rustedPromise = rusted(['/some/path/to/node', '/some/path/to/rusted-chromium', '--decrease-on-fail'], 'linux')
 
@@ -244,8 +244,8 @@ describe('[int] download chromium', () => {
                 }
             ]
         })
-        promptsMock.mockResolvedValueOnce({ version: '10.0.0.0' })
-        promptsMock.mockResolvedValue({ version: '20.0.0.0' })
+        promptsMock.mockResolvedValueOnce({ version: new ComparableVersion('10.0.0.0') })
+        promptsMock.mockResolvedValue({ version: new ComparableVersion('20.0.0.0') })
 
         const rustedPromsie = rusted(['/some/path/to/node', '/some/path/to/rusted-chromium', '--increase-on-fail'], 'linux')
 
@@ -263,7 +263,7 @@ describe('[int] download chromium', () => {
                 releases: ['30.0.0.0', '20.0.0.1', '20.0.0.0', '10.0.3.0', '10.0.0.0']
             },
         })
-        promptsMock.mockResolvedValue({ version: '20.0.0.1' })
+        promptsMock.mockResolvedValue({ version: new ComparableVersion('20.0.0.1') })
 
         const rustedPromise = rusted(['/some/path/to/node', '/some/path/to/rusted-chromium', '--only-newest-major'], 'linux')
 
