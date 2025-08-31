@@ -1,5 +1,5 @@
 
-import { program } from 'commander'
+import { Command } from 'commander'
 import { logger } from 'yalpt'
 
 import { checkValidChannel } from '../channel/checkValidChannel'
@@ -16,6 +16,8 @@ import { mapOS } from '../utils'
  * Checks the arguments passed to the programm and returns them
  */
 export function readConfig(args: string[], platform: NodeJS.Platform): IChromeConfig {
+    const program = new Command()
+
     program
         .version(packageJson.version)
         .option('-c, --channel <channel>', 'The channel to download from. Valid values are "stable", "beta", "dev" and "canary"', DEFAULT_CONFIG_OPTIONS.channel)

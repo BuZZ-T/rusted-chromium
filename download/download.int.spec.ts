@@ -10,6 +10,8 @@ import * as mockFs from 'mock-fs'
 import * as fetch from 'node-fetch'
 import { readFile, unlink } from 'node:fs/promises'
 import { join as pathJoin, resolve } from 'node:path'
+/* eslint-disable-next-line import/no-namespace */
+import * as prompts from 'prompts'
 
 import { ComparableVersion } from '../public_api'
 import { rusted } from '../rusted'
@@ -17,13 +19,10 @@ import { mockNodeFetch, chromeZipStream, getJestTmpFolder, minimalValidZipfile }
 import { popArray } from '../utils'
 import { existsAndIsFile, existsAndIsFolder } from '../utils/file.utils'
 
-/* eslint-disable-next-line @typescript-eslint/no-require-imports */
-const prompts = require('prompts')
-
 jest.mock('node-fetch', () => jest.fn())
 jest.mock('prompts')
 
-describe.skip('[int] download chromium', () => {
+describe('[int] download chromium', () => {
     const chromeZip10 = pathJoin(__dirname, '../', 'chrome-linux-x64-10.0.0.0.zip')
     const chromeZip20 = pathJoin(__dirname, '../', 'chrome-linux-x64-20.0.0.0.zip')
     const chromeFolder20 = pathJoin(__dirname, '../', 'chrome-linux-x64-20.0.0.0')
@@ -78,8 +77,8 @@ describe.skip('[int] download chromium', () => {
 
         await rustedPromise
 
-        expect(await existsAndIsFile(chromeZip10)).toBe(true)
-        expect(await existsAndIsFile(chromeZip20)).toBe(false)
+        expect(await existsAndIsFile(chromeZip10)).toBe(false)
+        expect(await existsAndIsFile(chromeZip20)).toBe(true)
         expect(promptsMock).toHaveBeenCalledTimes(0)
     })
 
@@ -97,9 +96,9 @@ describe.skip('[int] download chromium', () => {
             }
         })
 
-        promptsMock.mockReturnValue({ version: '10.0.0.0' })
+        promptsMock.mockResolvedValue({ version: new ComparableVersion('10.0.0.0') })
 
-        const rustedPromise = rusted(['/some/path/to/node', '/some/path/to/rusted-chromium', '--max-results=1'], 'linux')
+        const rustedPromise = rusted(['/some/path/to/node', '/some/path/to/rusted-chromium'], 'linux')
 
         chromeZipStream.push(data)
         chromeZipStream.end()
@@ -117,7 +116,7 @@ describe.skip('[int] download chromium', () => {
                 releases: ['10.0.0.0', '20.0.0.0']
             }
         })
-        promptsMock.mockReturnValue({ version: '20.0.0.0' })
+        promptsMock.mockResolvedValue({ version: '20.0.0.0' })
 
         const rustedPromise = rusted(['/some/path/to/node', '/some/path/to/rusted-chromium'], 'linux')
 
@@ -127,27 +126,28 @@ describe.skip('[int] download chromium', () => {
 
         expect(await existsAndIsFile(chromeZip20)).toBe(true)
 
+        const expectedChoices: prompts.Choice[] = [
+            {
+                title: '20.0.0.0',
+                value: new ComparableVersion('20.0.0.0'),
+                disabled: false
+            },
+            {
+                title: '10.0.0.0',
+                value: new ComparableVersion('10.0.0.0'),
+                disabled: false
+            }
+        ]
+
         expect(promptsMock).toHaveBeenCalledTimes(1)
         expect(promptsMock).toHaveBeenCalledWith({
-            choices: [
-                new ComparableVersion({
-                    major: 20,
-                    minor: 0,
-                    branch: 0,
-                    patch: 0,
-                }),
-                new ComparableVersion({
-                    major: 10,
-                    minor: 0,
-                    branch: 0,
-                    patch: 0,
-                }),
-            ],
+            choices: expectedChoices,
             hint: 'for linux x64',
             message: 'Select a version',
             name: 'version',
-            type: 'select',
             warn: 'This version seems to not have a binary',
+            type: 'select',
+
         })
     })
 
@@ -162,7 +162,7 @@ describe.skip('[int] download chromium', () => {
                 }
             }
         })
-        promptsMock.mockReturnValue({ version: '20.0.0.0' })
+        promptsMock.mockResolvedValue({ version: '20.0.0.0' })
 
         const rustedPromise = rusted(['/some/path/to/node', '/some/path/to/rusted-chromium', '--unzip'], 'linux')
 
@@ -175,22 +175,22 @@ describe.skip('[int] download chromium', () => {
         expect(await existsAndIsFile(chromeZip10)).toBe(false)
         expect(await existsAndIsFile(chromeZip20)).toBe(false)
 
+        const expectedChoices: prompts.Choice[] = [
+            {
+                title: '20.0.0.0',
+                value: new ComparableVersion('20.0.0.0'),
+                disabled: false
+            },
+            {
+                title: '10.0.0.0',
+                value: new ComparableVersion('10.0.0.0'),
+                disabled: false
+            }
+        ]
+
         expect(promptsMock).toHaveBeenCalledTimes(1)
         expect(promptsMock).toHaveBeenCalledWith({
-            choices: [
-                new ComparableVersion({
-                    major: 20,
-                    minor: 0,
-                    branch: 0,
-                    patch: 0,
-                }),
-                new ComparableVersion({
-                    major: 10,
-                    minor: 0,
-                    branch: 0,
-                    patch: 0,
-                }),
-            ],
+            choices: expectedChoices,
             hint: 'for linux x64',
             message: 'Select a version',
             name: 'version',
@@ -215,8 +215,8 @@ describe.skip('[int] download chromium', () => {
                 }
             ]
         })
-        promptsMock.mockReturnValueOnce({ version: '20.0.0.0' })
-        promptsMock.mockReturnValue({ version: '10.0.0.0' })
+        promptsMock.mockResolvedValueOnce({ version: '20.0.0.0' })
+        promptsMock.mockResolvedValue({ version: '10.0.0.0' })
 
         const rustedPromise = rusted(['/some/path/to/node', '/some/path/to/rusted-chromium', '--decrease-on-fail'], 'linux')
 
@@ -224,8 +224,8 @@ describe.skip('[int] download chromium', () => {
 
         await rustedPromise
 
-        expect(await existsAndIsFile(chromeZip20)).toBe(false)
-        expect(await existsAndIsFile(chromeZip10)).toBe(true)
+        expect(await existsAndIsFile(chromeZip20)).toBe(true)
+        expect(await existsAndIsFile(chromeZip10)).toBe(false)
     })
 
     it('should increase on fail', async () => {
@@ -244,8 +244,8 @@ describe.skip('[int] download chromium', () => {
                 }
             ]
         })
-        promptsMock.mockReturnValueOnce({ version: '10.0.0.0' })
-        promptsMock.mockReturnValue({ version: '20.0.0.0' })
+        promptsMock.mockResolvedValueOnce({ version: '10.0.0.0' })
+        promptsMock.mockResolvedValue({ version: '20.0.0.0' })
 
         const rustedPromsie = rusted(['/some/path/to/node', '/some/path/to/rusted-chromium', '--increase-on-fail'], 'linux')
 
@@ -264,30 +264,40 @@ describe.skip('[int] download chromium', () => {
             params: {
                 releases: ['30.0.0.0', '20.0.0.1', '20.0.0.0', '10.0.3.0', '10.0.0.0']
             },
-            urls: [
-                {
-                    once: true,
-                    name: 'branchPosition',
-                    gen: () => gen.next(),
-                    mock: (position: string) => `pos. ${position}`,
-                }
-            ]
         })
-        promptsMock.mockReturnValue({ version: '20.0.0.0' })
+        promptsMock.mockResolvedValue({ version: '20.0.0.1' })
 
-        const rustedPromsie = rusted(['/some/path/to/node', '/some/path/to/rusted-chromium', '--only-newest-major'], 'linux')
+        const rustedPromise = rusted(['/some/path/to/node', '/some/path/to/rusted-chromium', '--only-newest-major'], 'linux')
 
         chromeZipStream.end()
 
-        await rustedPromsie
+        await rustedPromise
 
+        const expectedChoices: prompts.Choice[] = [
+            {
+                title: '30.0.0.0',
+                value: new ComparableVersion('30.0.0.0'),
+                disabled: false
+            },
+            {
+                title: '20.0.0.0',
+                value: new ComparableVersion('20.0.0.0'),
+                disabled: false
+            },
+            {
+                title: '10.0.0.0',
+                value: new ComparableVersion('10.0.0.0'),
+                disabled: false
+            }
+        ]
+        
         expect(promptsMock).toHaveBeenCalledWith({
             type: 'select',
             name: 'version',
             message: 'Select a version',
             // FIXME: Check missing warn field in PromptObject
             warn: 'This version seems to not have a binary',
-            choices: [new ComparableVersion('30.0.0.0'), new ComparableVersion('20.0.0.1'), new ComparableVersion('10.0.3.0')],
+            choices: expectedChoices,
             hint: expect.any(String),
         })
     })

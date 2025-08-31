@@ -72,6 +72,16 @@ const apiReleases: Record<string, ApiRelease> = {
         time: 2,
         version: '10.0.0.0'
     },
+    '10.0.3.0': {
+        channel: 'Beta',
+        chromium_main_branch_position: 12345,
+        hashes: {},
+        milestone: 1,
+        platform: 'Linux',
+        previous_version: '9.0.0.0',
+        time: 2,
+        version: '10.0.0.0'
+    },
     '20.0.0.0': {
         channel: 'Beta',
         chromium_main_branch_position: 12345,
@@ -81,7 +91,27 @@ const apiReleases: Record<string, ApiRelease> = {
         previous_version: '19.0.0.0',
         time: 3,
         version: '20.0.0.0',
-    }
+    },
+    '20.0.0.1': {
+        channel: 'Beta',
+        chromium_main_branch_position: 12345,
+        hashes: {},
+        milestone: 1,
+        platform: 'Linux',
+        previous_version: '19.0.0.0',
+        time: 3,
+        version: '20.0.0.0',
+    },
+    '30.0.0.0': {
+        channel: 'Beta',
+        chromium_main_branch_position: 12345,
+        hashes: {},
+        milestone: 1,
+        platform: 'Linux',
+        previous_version: '29.0.0.0',
+        time: 4,
+        version: '30.0.0.0'
+    },
 }
 
 const releaseResponse = (releases: string[]): Array<ApiRelease | undefined> => releases.map(release => apiReleases[release])
