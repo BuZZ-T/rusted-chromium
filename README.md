@@ -78,7 +78,7 @@ docker build -t rusted-chromium .
 
 ## Supported node versions
 
-18.x, 20.x, 22.x, 23.x
+20.x, 22.x, 24.x
 
 ## All available flags
 
