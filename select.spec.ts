@@ -118,7 +118,7 @@ describe('userSelectedVersion', () => {
 
         expect(await userSelectedVersion([], config, new Set())).toBeNull()
         expect(loggerMock.warn).toHaveBeenCalledTimes(1)
-        expect(loggerMock.warn).toHaveBeenCalledWith('All versions in the range are disabled, try a different range and amount!')
+        expect(loggerMock.warn).toHaveBeenCalledWith('--max-results is set to 1, but version is not available!')
     })
 
     it('should return null on config.results === 1 with version disabled', async () => {
@@ -141,7 +141,7 @@ describe('userSelectedVersion', () => {
         expect(await userSelectedVersion([release1], config, new Set([release1.version]))).toBeNull()
         expect(promptsMock).toHaveBeenCalledTimes(0)
         expect(loggerMock.warn).toHaveBeenCalledTimes(1)
-        expect(loggerMock.warn).toHaveBeenCalledWith('All versions in the range are disabled, try a different range and amount!')
+        expect(loggerMock.warn).toHaveBeenCalledWith('--max-results is set to 1, but version is not available!')
 
     })
 
@@ -175,6 +175,6 @@ describe('userSelectedVersion', () => {
         expect(await userSelectedVersion([release1, release2], config, new Set([release1.version, release2.version]))).toBeNull()
         expect(promptsMock).toHaveBeenCalledTimes(0)
         expect(loggerMock.warn).toHaveBeenCalledTimes(1)
-        expect(loggerMock.warn).toHaveBeenCalledWith('All versions in the range are disabled, try a different range and amount!')
+        expect(loggerMock.warn).toHaveBeenCalledWith('--max-results is set to 1, but version is not available!')
     })
 })

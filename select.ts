@@ -16,9 +16,12 @@ import type { Release } from './releases/release.types'
  * @param config
  */
 export async function userSelectedVersion(releases: Release[], config: IChromeFullConfig, notAvailableVersions: Set<ComparableVersion>): Promise<Nullable<Release>> {
-    const filteredReleases = config.hideNegativeHits ? releases.filter(release => !notAvailableVersions.has(release.version)) : releases
-    if (filteredReleases.length === 0) {
-        logger.warn('All versions in the range are disabled, try a different range and amount!')
+    if (releases.length === notAvailableVersions.size) {
+        if (config.results === 1) {
+            logger.warn('--max-results is set to 1, but version is not available!')
+        } else {
+            logger.warn('All versions in the range are disabled, try a different range and amount!')
+        }
         return null
     }
 
