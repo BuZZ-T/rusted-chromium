@@ -15,8 +15,8 @@ import * as prompts from 'prompts'
 import { DebugMode, logger, progress, spinner, table } from 'yalpt'
 
 import { ComparableVersion, rusted } from '../public_api'
-import { chromeZipStream, getJestTmpFolder, mockNodeFetch } from '../test/int.utils'
-/* eslint-disable-next-line import/no-namespace */
+import { createFetchMockImplementation, getJestTmpFolder, KnownUrls } from '../test/int.utils'
+import { createApiRelease } from '../test/test.utils'
 import { existsAndIsFile } from '../utils/file.utils'
 
 jest.mock('node-fetch')
@@ -53,28 +53,15 @@ describe('[int] logging ouput', () => {
             await unlink(chromeZip20)
         }
 
-        mockNodeFetch(nodeFetchMock, {
-            params: {
-                releases: ['10.0.0.0', '20.0.0.0']
-            },
-            config: {
-                chromeZip: {
-                    contentLength: 20,
-                }
-            }
-        })
-
         promptsMock.mockClear()
+        loggerMock.info.mockClear()
+        nodeFetchMock.mockClear()
     })
 
     it('should do nothing on default', async () => {
         promptsMock.mockResolvedValue({ version: new ComparableVersion('20.0.0.0') })
 
-        const rustedPromise = rusted(['/some/path/to/node', '/some/path/to/rusted-chromium'], 'linux')
-
-        chromeZipStream.end()
-
-        await rustedPromise
+        await rusted(['/some/path/to/node', '/some/path/to/rusted-chromium'], 'linux')
 
         expect(loggerMock.silent).not.toHaveBeenCalled()
         expect(spinnerMock.silent).not.toHaveBeenCalled()
@@ -92,16 +79,14 @@ describe('[int] logging ouput', () => {
         expect(spinnerMock.noColor).not.toHaveBeenCalled()
         expect(tableMock.noColor).not.toHaveBeenCalled()
         expect(progressMock.noColor).not.toHaveBeenCalled()
+
+        expect(nodeFetchMock).toHaveBeenCalled()
     })
 
     it('should silent the output', async () => {
         promptsMock.mockResolvedValue({ version: new ComparableVersion('20.0.0.0') })
 
-        const rustedPromise = rusted(['/some/path/to/node', '/some/path/to/rusted-chromium', '--quiet'], 'linux')
-
-        chromeZipStream.end()
-
-        await rustedPromise
+        await rusted(['/some/path/to/node', '/some/path/to/rusted-chromium', '--quiet'], 'linux')
 
         expect(loggerMock.silent).toHaveBeenCalled()
         expect(spinnerMock.silent).toHaveBeenCalled()
@@ -112,11 +97,7 @@ describe('[int] logging ouput', () => {
     it('should set the debug mode', async () => {
         promptsMock.mockResolvedValue({ version: new ComparableVersion('20.0.0.0') })
 
-        const rustedPromise = rusted(['/some/path/to/node', '/some/path/to/rusted-chromium', '--debug'], 'linux')
-
-        chromeZipStream.end()
-
-        await rustedPromise
+        await rusted(['/some/path/to/node', '/some/path/to/rusted-chromium', '--debug'], 'linux')
 
         expect(loggerMock.setDebugMode).toHaveBeenCalledWith(DebugMode.DEBUG)
     })
@@ -124,11 +105,7 @@ describe('[int] logging ouput', () => {
     it('should set no-progress', async () => {
         promptsMock.mockResolvedValue({ version: new ComparableVersion('20.0.0.0') })
 
-        const rustedPromise = rusted(['/some/path/to/node', '/some/path/to/rusted-chromium', '--no-progress'], 'linux')
-
-        chromeZipStream.end()
-
-        await rustedPromise
+        await rusted(['/some/path/to/node', '/some/path/to/rusted-chromium', '--no-progress'], 'linux')
 
         expect(loggerMock.noProgress).toHaveBeenCalled()
         expect(spinnerMock.noProgress).toHaveBeenCalled()
@@ -139,15 +116,62 @@ describe('[int] logging ouput', () => {
     it('should set no-color', async () => {
         promptsMock.mockResolvedValue({ version: new ComparableVersion('20.0.0.0') })
 
-        const rustedPromise = rusted(['/some/path/to/node', '/some/path/to/rusted-chromium', '--no-color'], 'linux')
-
-        chromeZipStream.end()
-
-        await rustedPromise
+        await rusted(['/some/path/to/node', '/some/path/to/rusted-chromium', '--no-color'], 'linux')
 
         expect(loggerMock.noColor).toHaveBeenCalled()
         expect(spinnerMock.noColor).toHaveBeenCalled()
         expect(tableMock.noColor).toHaveBeenCalled()
         expect(progressMock.noColor).toHaveBeenCalled()
+    })
+
+    it('should log that no versions could be listed', async () => {
+        nodeFetchMock.mockImplementation(createFetchMockImplementation([
+            {
+                url: KnownUrls.releases,
+                response: [],
+                stringify: true,
+            },
+        ]))
+        promptsMock.mockResolvedValue({ version: new ComparableVersion('20.0.0.0') })
+
+        const rustedPromise = rusted(['/some/path/to/node', '/some/path/to/rusted-chromium', '--list'], 'linux')
+
+        await rustedPromise
+
+        expect(promptsMock).toHaveBeenCalledTimes(0)
+        expect(nodeFetchMock).toHaveBeenCalledTimes(1)
+        expect(nodeFetchMock).toHaveBeenCalledWith('https://chromiumdash.appspot.com/fetch_releases?channel=Stable&platform=Linux&num=100&offset=0')
+
+        expect(loggerMock.info).toHaveBeenCalledTimes(1)
+        expect(loggerMock.info).toHaveBeenCalledWith('No versions found for the given configuration')
+    })
+
+    it('should log the versions and quit', async () => {
+        const branchPosition = 1234
+
+        nodeFetchMock.mockImplementation(createFetchMockImplementation([
+            {
+                url: KnownUrls.releases,
+                response: [
+                    createApiRelease({ chromium_main_branch_position: branchPosition, version: '20.0.0.0'}),
+                    createApiRelease({ chromium_main_branch_position: branchPosition, version: '10.0.0.0'}),
+                ],
+                stringify: true,
+            },
+        ]))
+        promptsMock.mockResolvedValue({ version: new ComparableVersion('20.0.0.0') })
+
+        const rustedPromise = rusted(['/some/path/to/node', '/some/path/to/rusted-chromium', '--list'], 'linux')
+
+        await rustedPromise
+
+        expect(promptsMock).toHaveBeenCalledTimes(0)
+        expect(nodeFetchMock).toHaveBeenCalledTimes(1)
+        expect(nodeFetchMock).toHaveBeenCalledWith('https://chromiumdash.appspot.com/fetch_releases?channel=Stable&platform=Linux&num=100&offset=0')
+
+        expect(loggerMock.info).toHaveBeenCalledTimes(3)
+        expect(loggerMock.info).toHaveBeenCalledWith('versions:')
+        expect(loggerMock.info).toHaveBeenCalledWith('20.0.0.0')
+        expect(loggerMock.info).toHaveBeenCalledWith('10.0.0.0')
     })
 })

@@ -1,4 +1,5 @@
 import type { Response as NodeFetchResponse, RequestInfo as NodeFetchRequestInfo, Request as NodeFetchRequest } from 'node-fetch'
+import type fetch from 'node-fetch'
 import { readdir } from 'node:fs/promises'
 import type { Readable } from 'node:stream'
 import { PassThrough } from 'node:stream'
@@ -13,6 +14,12 @@ export interface IMocks {
 }
 
 export type MockNames = 'chromeZip' | 'chromeUrl' | 'releases'
+
+export enum KnownUrls {
+    chromeZip = 'https://www.googleapis.com/download/storage',
+    chromeUrl = 'https://www.googleapis.com/storage/v1/b/chromium-browser-snapshots',
+    releases = 'https://chromiumdash.appspot.com/fetch_releases?channel=Stable&platform=Linux&num=100&offset=0'
+}
 
 export type MockParams = {
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
@@ -223,3 +230,41 @@ export async function getJestTmpFolder(): Promise<string | undefined> {
 
 // https://stackoverflow.com/questions/2438800/what-is-the-smallest-legal-zip-jar-file
 export const minimalValidZipfile = new Uint8Array([80, 75, 5, 6].concat(Array.from({length: 18}).map(() => 0)))
+
+type FetchMockSingle = {
+    response: unknown;
+    responses?: never;
+    responseHeader?: Record<string, string | number>;
+    url: string;
+    stringify?: boolean;
+}
+
+type FetchMockMultiple = {
+    responses: unknown[];
+    response?: never;
+    responseHeader?: Record<string, string | number>;
+    url: string;
+    stringify?: boolean;
+}
+
+type FetchMock = FetchMockSingle | FetchMockMultiple
+
+const isMultiple = (mock: FetchMock): mock is FetchMockMultiple => (mock as FetchMockMultiple).responses !== undefined
+
+export const createFetchMockImplementation = (fetchMocks: FetchMock[]): (url: fetch.RequestInfo) => Promise<NodeFetchResponse> =>
+    (url: fetch.RequestInfo): Promise<NodeFetchResponse> => {
+        // TODO: only supporting string urls for now
+        const mock = fetchMocks.find(m => (url as string).startsWith(m.url))
+        if (mock) {
+            const response = isMultiple(mock)
+                ? mock.responses.length > 1
+                    ? mock.responses.shift()
+                    : mock.responses[0]
+                : mock.response
+
+            return Promise.resolve(new unmockedNodeFetch.Response(mock.stringify ? JSON.stringify(response) : response, { headers: mock.responseHeader }))
+        }
+        // eslint-disable-next-line no-console
+        console.error(`No mock found for url: ${url}`)
+        process.exit(1)
+    }

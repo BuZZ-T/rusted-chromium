@@ -54,7 +54,7 @@ async function continueFetchingChromeUrl({
                 return { chromeUrl, report, selectedRelease }
             }
         } else {
-            logger.warn('Already disabled version!')
+            logger.warn(`Already disabled version: ${selectedRelease.version}!`)
             report.push({
                 binaryExists: false,
                 download: config.download,
