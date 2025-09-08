@@ -133,7 +133,6 @@ describe('userSelectedVersion', () => {
         }
 
         const config = createChromeFullConfig({
-            hideNegativeHits: true,
             onlyNewestMajor: false,
             results: 1,
         })
@@ -167,7 +166,6 @@ describe('userSelectedVersion', () => {
         }
 
         const config = createChromeFullConfig({
-            hideNegativeHits: true,
             onlyNewestMajor: false,
             results: 1,
         })

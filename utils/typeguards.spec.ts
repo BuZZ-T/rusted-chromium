@@ -151,7 +151,6 @@ describe('typeguards', () => {
 
         it('should return false on single === null', () => {
             expect(isChromeSingleConfig({
-                hideNegativeHits: true,
                 single: null,
             })).toBe(false)
         })

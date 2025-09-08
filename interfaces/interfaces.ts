@@ -18,7 +18,6 @@ export interface IChromeCoreConfig {
 }
 
 export interface IChromeFullConfig extends IChromeCoreConfig {
-    hideNegativeHits: boolean
     interactive: boolean
     inverse: boolean
     list: boolean

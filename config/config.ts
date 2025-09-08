@@ -31,7 +31,6 @@ export function readConfig(args: string[], platform: NodeJS.Platform): IChromeCo
         .option('-z, --unzip', 'Directly unzip the downloaded zip-file and delete the .zip afterwards', DEFAULT_CONFIG_OPTIONS.unzip)
         .option('-n, --non-interactive', 'Don\'t show the selection menu. Automatically select the newest version. Only works when --decrease-on-fail is also set.', false)
         .option('-l, --no-download', 'Don\'t download the binary. It also continues with the next version, if --decrease-on-fail or --increase-on-fail is set. Useful to build up the negative hit store', DEFAULT_CONFIG_OPTIONS.download)
-        .option('-H, --hide-negative-hits', 'Hide negative hits', DEFAULT_CONFIG_OPTIONS.hideNegativeHits)
         .option('-f, --folder <folder>', 'Set the download folder', undefined)
         .option('-O, --only-newest-major', 'Show only the newest major version in user selection', DEFAULT_CONFIG_OPTIONS.onlyNewestMajor)
         .option('-v, --inverse', 'Sort the selectable versions ascending', DEFAULT_CONFIG_OPTIONS.inverse)
@@ -95,7 +94,6 @@ export function readConfig(args: string[], platform: NodeJS.Platform): IChromeCo
         debug: options.debug,
         download: options.download,
         downloadFolder: options.folder || null,
-        hideNegativeHits: options.hideNegativeHits,
         interactive: !options.nonInteractive,
         inverse: options.inverse,
         list: options.list,

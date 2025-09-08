@@ -157,20 +157,6 @@ describe('config', () => {
                 expect(config).toEqual(expectedConfig)
             })
 
-            it('should set hide negative hits', () => {
-                programMock.opts.mockReturnValue(createChromeOptions({
-                    hideNegativeHits: true,
-                }))
-
-                const config = readConfig([''], 'linux')
-
-                const expectedConfig = createChromeFullConfig({
-                    hideNegativeHits: true,
-                })
-
-                expect(config).toEqual(expectedConfig)
-            })
-
             it('should warn on non-interactive without decrease-on-fail set', () => {
                 programMock.opts.mockReturnValue(createChromeOptions({
                     nonInteractive: true

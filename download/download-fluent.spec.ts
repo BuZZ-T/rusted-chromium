@@ -117,18 +117,6 @@ describe('download-fluent', () => {
         })
     })
 
-    it('should call downloadChromium with hideNegativeHits set', () => {
-        fluentDownload
-            .hideNegativeHits()
-            .start()
-
-        expect(downloadChromiumMock).toHaveBeenCalledTimes(1)
-        expect(downloadChromiumMock).toHaveBeenCalledWith({
-            ...allFalseConfig,
-            hideNegativeHits: true,
-        })
-    })
-
     it('should call downloadChromium with interactive set', () => {
         fluentDownload
             .interactive()

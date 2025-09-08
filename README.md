@@ -96,7 +96,6 @@ docker build -t rusted-chromium .
 | `--increase-on-fail`| `-i` | - | - | Automatically try the next higher version, if the selected version has no binary.
 |`--non-interactive` | `-n` | - | - | Don't display the version selection. Automatically select the newest version in the available range (set by `--min`, `--max` and `--max-results`). Only works when `--decrease-on-fail` is set as well.
 |`--no-download` | `-l` | - | - | Don't download the binary if it's found.
-|`--hide-negative-hits` | `-H` | - | false | Hide negative hits in the CLI prompt
 |`--folder` | `-f` | `path/to/folder` | Current folder executing the command | Set the folder to which the archive of the chromium binary or the extracted folder (if the flag `--unzip` is set)
 |`--only-newest-major` | `-O`| - | - | Show only the newest version for every major version in the user selection. If the newest versions are not available for the current os, they are skipped.
 | `--list` | | - | false | Only log all matching versions to stdout, quit the program afterwards.
@@ -292,7 +291,6 @@ downloadChromium({
     debug: false,
     download: true,
     downloadFolder: null,
-    hideNegativeHits: false,
     interactive: true,
     inverse: false,
     list: false,

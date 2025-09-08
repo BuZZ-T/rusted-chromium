@@ -54,10 +54,6 @@ export class FluentDownload {
         return this.addToConfig({ downloadFolder })
     }
 
-    public hideNegativeHits(): FluentDownload {
-        return this.addToConfig({ hideNegativeHits: true })
-    }
-
     public interactive(): FluentDownload {
         return this.addToConfig({ interactive: true })
     }

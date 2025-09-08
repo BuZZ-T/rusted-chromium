@@ -8,7 +8,6 @@ downloadChromium({
     debug: false,
     download: true,
     downloadFolder: null,
-    hideNegativeHits: false,
     interactive: true,
     inverse: false,
     list: false,

@@ -41,7 +41,6 @@ downloadChromium({
     debug: false,
     download: true,
     downloadFolder: null,
-    hideNegativeHits: false,
     interactive: true,
     inverse: false,
     max: new ComparableVersion(95, 0, 0, 0),

@@ -20,8 +20,6 @@ export interface IConfigOptions {
     download: boolean
     loadStore?: string,
 
-    hideNegativeHits: boolean,
-
     folder?: string,
     onlyNewestMajor: boolean
     single?: string,
