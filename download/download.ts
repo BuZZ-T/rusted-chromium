@@ -86,6 +86,10 @@ async function downloadForConfig(config: IChromeConfig): Promise<DownloadReportE
     const mappedReleases = mapApiReleasesToReleases(apiReleases, config)
 
     if (!isChromeSingleConfig(config) && config.list) {
+        if (mappedReleases.length === 0) {
+            logger.info('No versions found for the given configuration')
+            return []
+        }
         logger.info('versions:')
         mappedReleases.forEach(r => {
             logger.info(r.version.toString())
